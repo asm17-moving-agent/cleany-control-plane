@@ -5,7 +5,9 @@ control-plane monorepo다.
 
 ## 경계
 
-- 제품 범위와 큰 책임 경계는 `cleany-docs` KB를 따른다.
+- 제품 범위와 큰 책임 경계는 `docs/cleany-docs/` submodule의 KB를 따른다.
+- KB가 비어 있으면 `git submodule update --init --recursive docs/cleany-docs`로
+  초기화한다. 명시적인 KB 수정 요청이 있을 때만 submodule 내부를 편집한다.
 - ROS 2 node, Robot Mission Manager와 Sim/Real backend는 `cleany` 저장소에 둔다.
 - 이 저장소는 Dashboard, Mission Queue, Robot 연결, 외부 lifecycle과 결과 참조를
   소유한다.
@@ -26,4 +28,3 @@ control-plane monorepo다.
 - 취소, safe stop, e-stop을 서로 다른 경로로 취급한다.
 - 시간, timeout, heartbeat과 보관 기간은 코드에 숨기지 않고 설정으로 관리한다.
 - 변경 후 가장 작은 단위 테스트와 contract 검사부터 실행한다.
-

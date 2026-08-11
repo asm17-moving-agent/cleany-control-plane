@@ -60,7 +60,8 @@ Dashboard
 ### 실행
 
 ```bash
-git clone git@github.com:asm17-moving-agent/cleany-control-plane.git
+git clone --recurse-submodules \
+  git@github.com:asm17-moving-agent/cleany-control-plane.git
 cd cleany-control-plane
 python3 apps/backend/run.py
 ```
@@ -68,6 +69,12 @@ python3 apps/backend/run.py
 브라우저에서 [http://127.0.0.1:8080](http://127.0.0.1:8080)을 열고 좌석과
 우선순위를 선택해 Mission을 생성합니다. 서버 종료는 실행한 터미널에서 `Ctrl+C`를
 누릅니다.
+
+이미 저장소를 clone했다면 KB submodule을 별도로 초기화합니다.
+
+```bash
+git submodule update --init --recursive docs/cleany-docs
+```
 
 ## API
 
@@ -92,12 +99,14 @@ apps/dashboard/        scenario validation Dashboard
 packages/contracts/    API/event JSON Schema
 docs/architecture/     cross-app architecture
 docs/adr/              기술 선택 기록
+docs/cleany-docs/      제품·기획·예비설계 KB submodule
 ```
 
 세부 설명은 다음 문서를 참고합니다.
 
 - [Backend](apps/backend/README.md)
 - [Dashboard](apps/dashboard/README.md)
+- [Cleany KB](docs/cleany-docs/README.md)
 - [Control-plane architecture](docs/architecture/control-plane-overview.md)
 - [ADR: control-plane monorepo](docs/adr/0001-control-plane-monorepo.md)
 - [ADR: dependency-free prototype](docs/adr/0002-prototype-without-framework.md)
