@@ -9,7 +9,7 @@ Cleany의 Web Dashboard, Mission Queue, Robot 연결 경계와 외부 Mission li
 
 ## MVP 시나리오
 
-운영자가 배치도에서 좌석을 선택하고 Mission을 요청하면, Mock Backend가 우선순위
+운영자가 18층 시설 지도에서 구역을 선택하고 Mission을 요청하면, Mock Backend가 우선순위
 Queue와 단일 Robot lifecycle을 실행합니다. Dashboard는 Server-Sent Events로 상태
 변경과 최종 결과를 갱신합니다.
 
@@ -27,10 +27,10 @@ Dashboard
 ### Dashboard
 
 - React Router 기반 운영 화면과 TanStack Query 기반 server state
-- `3석–통로–2석–통로–3석` 구조의 48석 배치도
-- 단일 좌석 선택과 `NORMAL`/`HIGH` 우선순위 Mission 요청
+- 시설 도면 기반 대화형 SVG 지도와 단일 구역 선택
+- 구역·좌석을 포괄하는 Mission target과 `NORMAL`/`HIGH` 우선순위 요청
 - Mission 단계·우선순위 필터, 진행률, checkpoint 취소와 최종 결과
-- Robot heartbeat, 좌석 사용률과 최근 활동 모니터링
+- Robot heartbeat, Mission 처리율과 최근 활동 모니터링
 - Robot 연결 및 현재 할당 Mission 확인
 - 브라우저별 화면 갱신·Mission 기본값 설정
 
@@ -42,7 +42,7 @@ Dashboard
 - 외부 Mission lifecycle 및 terminal outcome 불변성
 - idempotency key 기반 중복 Mission 생성 방지
 - 안전 checkpoint에서 처리하는 취소 요청
-- 좌석, Mission, Robot 조회 API와 SSE 상태 event
+- 좌석 fixture, Mission, Robot 조회 API와 SSE 상태 event
 
 ### Contracts
 
@@ -72,7 +72,7 @@ uv sync --project apps/backend --extra dev
 uv run --project apps/backend python apps/backend/run.py
 ```
 
-브라우저에서 [http://127.0.0.1:8080](http://127.0.0.1:8080)을 열고 좌석과
+브라우저에서 [http://127.0.0.1:8080](http://127.0.0.1:8080)을 열고 시설 구역과
 우선순위를 선택해 Mission을 생성합니다. 서버 종료는 실행한 터미널에서 `Ctrl+C`를
 누릅니다.
 
@@ -128,7 +128,7 @@ uv run --project apps/backend --extra dev pytest apps/backend/tests
 uv run --project apps/backend --extra dev ruff check apps/backend
 ```
 
-테스트는 priority dispatch, idempotency, terminal Mission 불변성, 취소 처리와 좌석
+테스트는 priority dispatch, idempotency, terminal Mission 불변성, 취소 처리와 target
 계약을 검증합니다.
 
 ## 현재 제한사항
