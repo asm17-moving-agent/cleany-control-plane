@@ -7,6 +7,6 @@
     "build": "pnpm --filter @cleany/dashboard build",
     "typecheck": "pnpm --filter @cleany/dashboard typecheck",
     "test": "pnpm --filter @cleany/dashboard test",
-    "test:e2e": "pnpm --filter @cleany/dashboard test:e2e"
+    "test:e2e": "pnpm build && pnpm --filter @cleany/dashboard test:e2e"
   }
 }

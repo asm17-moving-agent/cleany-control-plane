@@ -11,6 +11,7 @@ import {
   SettingsIcon,
 } from "../components/Icons";
 import { useOperations } from "../operations/OperationsContext";
+import logoUrl from "../../logo.svg?url";
 
 const navigation = [
   { path: "/", label: "홈", Icon: HomeIcon },
@@ -43,7 +44,7 @@ export function AppShell() {
     <div className="app-shell min-h-screen">
       <aside className="app-sidebar">
         <div className="brand-mark" aria-label="Cleany">
-          <img src="/logo.svg" alt="" aria-hidden="true" />
+          <img src={logoUrl} alt="" aria-hidden="true" />
         </div>
         <nav className="primary-nav" aria-label="주요 메뉴">
           {navigation.map(({ path, label, Icon }) => (
