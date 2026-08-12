@@ -1,20 +1,20 @@
 import { expect, test } from "@playwright/test";
 
-test("operator can navigate, select a seat, and request a mission", async ({ page }) => {
+test("operator can navigate, select a facility zone, and request a mission", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "로봇 관제 시나리오" })).toBeVisible();
-  await expect(page.getByRole("button", { name: /번 좌석/ })).toHaveCount(48);
+  await expect(page.getByRole("heading", { name: /안녕하세요, 운영자님/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /SPACE A1.*선택 가능/ })).toBeVisible();
   await expect(page.locator(".brand-mark img")).toHaveJSProperty("complete", true);
 
-  const seat = page.getByRole("button", { name: /18번 좌석/ });
-  await seat.click();
-  await expect(seat).toHaveAttribute("aria-pressed", "true");
-  await expect(page.getByText("B-3", { exact: true })).toBeVisible();
+  const zone = page.getByRole("button", { name: /THE GROND.*선택 가능/ });
+  await zone.click();
+  await expect(zone).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByText("THE GROND", { exact: true }).last()).toBeVisible();
 
   await page.getByRole("button", { name: "Mission 요청" }).click();
-  await expect(page.getByText("Mission을 Queue에 등록했습니다.")).toBeVisible();
-  await expect(page.getByText("18번 좌석", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("THE GROND 작업을 Queue에 등록했습니다.")).toBeVisible();
+  await expect(page.getByText("THE GROND", { exact: true }).first()).toBeVisible();
 
   await page.getByRole("link", { name: "미션" }).click();
   await expect(page).toHaveURL(/\/missions$/);

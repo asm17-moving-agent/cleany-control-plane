@@ -22,7 +22,7 @@ const navigation = [
 ] as const;
 
 const routeMeta: Record<string, { title: string; documentTitle: string }> = {
-  "/": { title: "로봇 관제 시나리오", documentTitle: "Cleany Operations" },
+  "/": { title: "안녕하세요, 운영자님! 👋", documentTitle: "Cleany Operations" },
   "/missions": { title: "미션 관리", documentTitle: "Mission · Cleany" },
   "/monitoring": { title: "운영 모니터링", documentTitle: "Monitoring · Cleany" },
   "/robots": { title: "로봇 관리", documentTitle: "Robots · Cleany" },
@@ -45,6 +45,7 @@ export function AppShell() {
       <aside className="app-sidebar">
         <div className="brand-mark" aria-label="Cleany">
           <img src={logoUrl} alt="" aria-hidden="true" />
+          <strong>Cleany</strong>
         </div>
         <nav className="primary-nav" aria-label="주요 메뉴">
           {navigation.map(({ path, label, Icon }) => (
@@ -59,7 +60,10 @@ export function AppShell() {
             </NavLink>
           ))}
         </nav>
-        <div className="sidebar-footer"><small>PROTOTYPE</small><span>v1.11.0</span></div>
+        <div className="sidebar-footer">
+          <span className="sidebar-robot-status">로봇 1대 연결</span>
+          <span className="sidebar-operator"><i>OP</i><strong>운영자</strong></span>
+        </div>
       </aside>
 
       <main className="app-main">
