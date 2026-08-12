@@ -1,0 +1,12 @@
+{
+  "name": "cleany-control-plane",
+  "private": true,
+  "packageManager": "pnpm@11.21.0",
+  "scripts": {
+    "dev": "pnpm --filter @cleany/dashboard dev",
+    "build": "pnpm --filter @cleany/dashboard build",
+    "typecheck": "pnpm --filter @cleany/dashboard typecheck",
+    "test": "pnpm --filter @cleany/dashboard test",
+    "test:e2e": "pnpm --filter @cleany/dashboard test:e2e"
+  }
+}
