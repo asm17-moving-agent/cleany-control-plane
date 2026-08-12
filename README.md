@@ -26,6 +26,7 @@ Dashboard
 
 ### Dashboard
 
+- React Router 기반 운영 화면과 TanStack Query 기반 server state
 - `3석–통로–2석–통로–3석` 구조의 48석 배치도
 - 단일 좌석 선택과 `NORMAL`/`HIGH` 우선순위 Mission 요청
 - Mission 단계·우선순위 필터, 진행률, checkpoint 취소와 최종 결과
@@ -35,6 +36,7 @@ Dashboard
 
 ### Mock Backend
 
+- FastAPI·Pydantic 기반 HTTP/SSE transport와 OpenAPI
 - 메모리 기반 Mission Queue와 `HIGH` 우선 처리
 - 단일 Mock Robot과 하나의 활성 Mission
 - 외부 Mission lifecycle 및 terminal outcome 불변성
@@ -50,11 +52,12 @@ Dashboard
 
 ## 빠른 시작
 
-별도 패키지 설치 없이 Python 표준 라이브러리만 사용합니다.
-
 ### 요구사항
 
 - Python 3.11 이상
+- Node.js 24 이상
+- uv
+- pnpm
 - 최신 Chromium, Chrome, Firefox 또는 Safari
 
 ### 실행
@@ -63,7 +66,10 @@ Dashboard
 git clone --recurse-submodules \
   git@github.com:asm17-moving-agent/cleany-control-plane.git
 cd cleany-control-plane
-python3 apps/backend/run.py
+pnpm install
+pnpm build
+uv sync --project apps/backend --extra dev
+uv run --project apps/backend python apps/backend/run.py
 ```
 
 브라우저에서 [http://127.0.0.1:8080](http://127.0.0.1:8080)을 열고 좌석과
@@ -94,8 +100,8 @@ Machine-readable payload의 Source of Truth는
 ## 저장소 구조
 
 ```text
-apps/backend/          dependency-free Mock Backend
-apps/dashboard/        scenario validation Dashboard
+apps/backend/          FastAPI transport와 Mock control-plane
+apps/dashboard/        React scenario validation Dashboard
 packages/contracts/    API/event JSON Schema
 docs/architecture/     cross-app architecture
 docs/adr/              기술 선택 기록
@@ -110,12 +116,16 @@ docs/cleany-docs/      제품·기획·예비설계 KB submodule
 - [Control-plane architecture](docs/architecture/control-plane-overview.md)
 - [ADR: control-plane monorepo](docs/adr/0001-control-plane-monorepo.md)
 - [ADR: dependency-free prototype](docs/adr/0002-prototype-without-framework.md)
+- [ADR: production application stack](docs/adr/0003-production-application-stack.md)
 
 ## 검증
 
 ```bash
-PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover \
-  -s apps/backend/tests -v
+pnpm typecheck
+pnpm test
+pnpm build
+uv run --project apps/backend --extra dev pytest apps/backend/tests
+uv run --project apps/backend --extra dev ruff check apps/backend
 ```
 
 테스트는 priority dispatch, idempotency, terminal Mission 불변성, 취소 처리와 좌석
@@ -128,4 +138,4 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover \
 - 인증, 권한, PostgreSQL과 실제 Robot transport는 아직 포함하지 않습니다.
 - Dashboard 설정은 Backend 계약이 확정되기 전까지 브라우저 `localStorage`에만
   저장됩니다.
-- 최종 Frontend·Backend framework는 계약과 사용자 시나리오 검증 후 결정합니다.
+- PostgreSQL 영속화와 실제 Robot Gateway는 다음 구현 단계입니다.

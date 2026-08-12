@@ -1,6 +1,8 @@
 # Scenario Dashboard
 
-Mock Backend와 연결해 관제 vertical slice를 검증하는 최소 Web UI다.
+React와 TypeScript로 구현하고 Mock Backend와 연결해 관제 vertical slice를 검증하는
+Web UI다. Vite를 build/dev server로, React Router를 화면 이동에, TanStack Query를
+HTTP·SSE server state 관리에 사용한다.
 
 현재는 직사각형 공간의 `3석-통로-2석-통로-3석` 구조를 6행으로 표현한 48석
 배치도 기반 좌석 선택, 좌석 사용 상태, 우선순위, Mission Queue, Robot 상태,
@@ -20,12 +22,28 @@ Dashboard shell은 좌측 운영 내비게이션, Robot/Mission 요약 카드, �
 - 로봇: 등록 Robot의 연결 정보와 현재 할당 Mission
 - 설정: polling 주기, 실시간 표시, 기본 우선순위와 완료 알림
 
-탭은 URL hash로 유지한다. 설정값은 아직 서버 설정 계약이 없으므로 브라우저
-`localStorage`에만 저장하며, 기본 우선순위와 보조 polling 주기에 반영한다.
-최종 Frontend framework와 디자인 시스템은 계약 검증 후 선택한다.
+탭은 `/missions`, `/monitoring`, `/robots`, `/settings` URL로 유지한다. 설정값은 아직
+서버 설정 계약이 없으므로 브라우저 `localStorage`에만 저장하며, 기본 우선순위와
+SSE 오류 시 보조 polling 주기에 반영한다.
+
+## 개발 환경
+
+```bash
+pnpm install
+pnpm dev
+```
+
+Vite Dashboard는 [http://127.0.0.1:5173](http://127.0.0.1:5173)에서 실행되며
+`/api` 요청을 [http://127.0.0.1:8080](http://127.0.0.1:8080)으로 전달한다.
+
+```bash
+pnpm typecheck
+pnpm test
+pnpm build
+```
 
 ## Color tokens
 
-화면 색상은 `styles.css`의 `:root` token을 사용한다. Background/Surface/Border,
-Primary, Text와 Success/Warning/Danger/Info 상태색을 직접 참조하며 컴포넌트에
-별도 브랜드 색을 하드코딩하지 않는다.
+화면 색상은 `src/styles.css`의 Tailwind `@theme`와 compatibility CSS의 `:root`
+token을 사용한다. Background/Surface/Border, Primary, Text와 상태색을 컴포넌트에
+별도 하드코딩하지 않는다. 좌석 grid와 1/4 원형 출입문은 전용 CSS를 유지한다.
