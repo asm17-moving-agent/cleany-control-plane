@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install Dashboard dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Backend dependencies
+        run: uv sync --project apps/backend --extra dev --locked
+
+      - name: Check Dashboard
+        run: |
+          pnpm typecheck
+          pnpm test
+          pnpm build
+
+      - name: Check Backend
+        run: |
+          uv run --project apps/backend --extra dev ruff check apps/backend
+          uv run --project apps/backend --extra dev pytest apps/backend/tests
+
+      - name: Install Playwright Chromium
+        run: pnpm --filter @cleany/dashboard exec playwright install --with-deps chromium
+
+      - name: Verify operator workflow
+        run: pnpm test:e2e
