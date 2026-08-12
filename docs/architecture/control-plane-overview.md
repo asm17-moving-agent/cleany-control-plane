@@ -25,6 +25,18 @@ Control Plane은 운영 단계와 결과만 관리한다.
 
 ## 현재 prototype
 
-현재 Backend는 in-memory Queue와 Mock Robot dispatcher를 사용한다. 이 단계의 목적은
-영속성이 아니라 Dashboard 사용자 흐름, phase, outcome과 event 계약 검증이다.
+현재 Backend는 FastAPI transport, in-memory Queue와 Mock Robot dispatcher를 사용한다.
+React Dashboard는 React Router로 화면을 분리하고 TanStack Query cache에 HTTP와 SSE
+server state를 반영한다. 이 단계의 목적은 영속성이 아니라 Dashboard 사용자 흐름,
+phase, outcome과 event 계약 검증이다.
 
+```text
+React page
+  → TanStack Query
+  → FastAPI HTTP / SSE
+  → ControlPlaneStore
+  → MockDispatcher
+```
+
+HTTP transport, domain store와 dispatcher는 분리한다. 이후 PostgreSQL repository와
+Robot Gateway를 추가해도 Dashboard 계약과 domain 불변식을 유지한다.

@@ -4,11 +4,10 @@ import sys
 import unittest
 from pathlib import Path
 
-
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BACKEND_ROOT))
 
-from control_plane.server import GRID_COLUMNS, SEATS  # noqa: E402
+from control_plane.fixtures import GRID_COLUMNS, SEATS  # noqa: E402
 
 
 class SeatFixtureTest(unittest.TestCase):
@@ -33,9 +32,7 @@ class SeatFixtureTest(unittest.TestCase):
 
     def test_each_row_preserves_two_aisles(self) -> None:
         for row in range(1, 7):
-            columns = tuple(
-                seat["grid_column"] for seat in SEATS if seat["row"] == row
-            )
+            columns = tuple(seat["grid_column"] for seat in SEATS if seat["row"] == row)
             self.assertEqual(GRID_COLUMNS, columns)
 
     def test_occupancy_includes_name_only_for_occupied_seats(self) -> None:

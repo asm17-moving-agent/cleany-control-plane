@@ -45,7 +45,7 @@ h1, h2, h3, p { margin-top: 0; }
 .brand-mark { display: grid; width: 48px; height: 48px; margin-bottom: 28px; place-items: center; border-radius: 15px; color: white; }
 .brand-mark img { width: 42px; height: 42px; filter: brightness(0) invert(1); }
 .primary-nav { display: grid; width: 100%; gap: 10px; }
-.nav-item { display: grid; width: 100%; min-height: 66px; place-items: center; gap: 5px; padding: 9px 2px; border: 0; border-radius: 10px; background: transparent; color: #adc1d0; font-size: .68rem; font-weight: 700; }
+.nav-item { display: grid; width: 100%; min-height: 66px; place-items: center; gap: 5px; padding: 9px 2px; border: 0; border-radius: 10px; background: transparent; color: #adc1d0; font-size: .68rem; font-weight: 700; text-decoration: none; }
 .nav-item:hover, .nav-item.active { background: rgba(255, 255, 255, .13); color: white; }
 .nav-item.active { box-shadow: inset 3px 0 rgba(255, 255, 255, .72); }
 .nav-item svg { width: 21px; height: 21px; }

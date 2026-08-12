@@ -1,6 +1,6 @@
 # ADR-0002: 최초 관제 vertical slice는 framework 없이 검증한다
 
-- 상태: Proposed
+- 상태: Superseded by ADR-0003
 
 ## Context
 
@@ -18,4 +18,3 @@ Python 표준 라이브러리 Backend와 정적 HTML, CSS, JavaScript로 최초 
 - 추가 설치 없이 사용자 흐름을 즉시 검증할 수 있다.
 - prototype은 생산 운영, 영속성, 인증과 framework 선택의 근거가 아니다.
 - framework 전환 전에 별도 ADR 검토가 필요하다.
-
