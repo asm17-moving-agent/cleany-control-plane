@@ -1,65 +1,13 @@
-export type Priority = "NORMAL" | "HIGH";
+import type { components } from "./generated/openapi";
 
-export type MissionPhase =
-  | "QUEUED"
-  | "OFFERED"
-  | "ACCEPTED"
-  | "NAVIGATING"
-  | "WORKING"
-  | "RETURNING"
-  | "TERMINAL";
-
-export type MissionOutcome =
-  | "SUCCESS"
-  | "PARTIAL_SUCCESS"
-  | "HUMAN_REVIEW_REQUIRED"
-  | "BLOCKED"
-  | "FAILED"
-  | "CANCELLED"
-  | "EXPIRED"
-  | "REJECTED"
-  | "INTERRUPTED";
-
-export interface Mission {
-  mission_id: string;
-  seat_id: string;
-  priority: Priority;
-  requested_by: string;
-  idempotency_key: string;
-  created_at: string;
-  phase: MissionPhase;
-  outcome: MissionOutcome | null;
-  message: string;
-  sequence: number;
-  cancel_requested: boolean;
-  before_observation: string | null;
-  after_observation: string | null;
-}
-
-export interface MissionRequest {
-  seat_id: string;
-  priority: Priority;
-  requested_by: string;
-  idempotency_key: string;
-}
-
-export type RobotState = "OFFLINE" | "IDLE" | "BUSY" | "ERROR";
-
-export interface Robot {
-  robot_id: string;
-  state: RobotState;
-  active_mission_id: string | null;
-  last_seen_at: string;
-}
-
-export interface Seat {
-  seat_id: string;
-  label: string;
-  row: number;
-  grid_column: 1 | 2 | 3 | 5 | 6 | 8 | 9 | 10;
-  occupancy: "AVAILABLE" | "OCCUPIED";
-  occupant_name: string | null;
-}
+export type Priority = components["schemas"]["Priority"];
+export type MissionPhase = components["schemas"]["MissionPhase"];
+export type MissionOutcome = components["schemas"]["MissionOutcome"];
+export type Mission = components["schemas"]["MissionResponse"];
+export type MissionRequest = components["schemas"]["MissionRequest"];
+export type RobotState = components["schemas"]["RobotState"];
+export type Robot = components["schemas"]["RobotResponse"];
+export type Seat = components["schemas"]["SeatResponse"];
 
 export interface OperationsEvent {
   schema_version: 1;

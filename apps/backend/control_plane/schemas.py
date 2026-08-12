@@ -9,7 +9,7 @@ from control_plane.domain import MissionOutcome, MissionPhase, Priority, RobotSt
 
 class MissionRequest(BaseModel):
     seat_id: str = Field(min_length=1)
-    priority: Priority = Priority.NORMAL
+    priority: Priority
     requested_by: str = Field(min_length=1)
     idempotency_key: str = Field(min_length=1)
 

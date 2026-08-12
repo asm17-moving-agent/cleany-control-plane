@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "pnpm --filter @cleany/dashboard dev",
     "build": "pnpm --filter @cleany/dashboard build",
+    "contracts": "uv run --project apps/backend python packages/contracts/scripts/export_openapi.py && pnpm --filter @cleany/dashboard contracts:types",
+    "contracts:check": "pnpm contracts && git diff --exit-code -- packages/contracts/openapi.json apps/dashboard/src/api/generated/openapi.ts",
     "typecheck": "pnpm --filter @cleany/dashboard typecheck",
     "test": "pnpm --filter @cleany/dashboard test",
     "test:e2e": "pnpm build && pnpm --filter @cleany/dashboard test:e2e"

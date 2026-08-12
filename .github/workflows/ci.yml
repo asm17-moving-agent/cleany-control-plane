@@ -37,6 +37,7 @@ jobs:
 
       - name: Check Dashboard
         run: |
+          pnpm contracts:check
           pnpm typecheck
           pnpm test
           pnpm build
