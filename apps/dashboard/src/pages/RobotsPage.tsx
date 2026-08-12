@@ -1,5 +1,5 @@
 import { RobotLargeIcon } from "../components/Icons";
-import { formatDateTime, missionProgress, seatLabel } from "../lib/operations";
+import { formatDateTime, missionProgress, missionTargetLabel } from "../lib/operations";
 import { useOperations } from "../operations/OperationsContext";
 
 export function RobotsPage() {
@@ -11,7 +11,7 @@ export function RobotsPage() {
       <div className="view-intro"><p className="eyebrow">ROBOT FLEET</p><h2>로봇 관리</h2><p>등록된 Robot과 현재 할당된 Mission을 확인합니다.</p></div>
       <article className="panel robot-hero">
         <div className="robot-avatar"><RobotLargeIcon /></div>
-        <div className="robot-identity"><p className="eyebrow">PRIMARY ROBOT</p><h2>{robot?.robot_id ?? "cleany-01"}</h2><p>단일 Robot MVP · 좌석 작업 시나리오</p></div>
+        <div className="robot-identity"><p className="eyebrow">PRIMARY ROBOT</p><h2>{robot?.robot_id ?? "cleany-01"}</h2><p>단일 Robot MVP · 시설 구역 작업 시나리오</p></div>
         <span className="robot-state-pill" data-state={robot?.state ?? "LOADING"}>{robot?.state ?? "LOADING"}</span>
       </article>
       <div className="robot-grid">
@@ -29,7 +29,7 @@ export function RobotsPage() {
           {active ? (
             <div className="assignment-card">
               <span>ACTIVE MISSION · {active.mission_id.slice(0, 8)}</span>
-              <strong>{seatLabel(seats, active.seat_id)}</strong>
+              <strong>{missionTargetLabel(active, seats)}</strong>
               <div className="progress"><i style={{ width: `${missionProgress(active.phase)}%` }} /></div>
               <p>{active.phase} · {active.message}</p>
             </div>

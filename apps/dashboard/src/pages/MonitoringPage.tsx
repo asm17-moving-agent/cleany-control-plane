@@ -1,14 +1,12 @@
-import { formatDateTime, seatLabel } from "../lib/operations";
+import { formatDateTime, missionTargetLabel } from "../lib/operations";
 import { useOperations } from "../operations/OperationsContext";
 
 export function MonitoringPage() {
   const { missions, robot, seats, events } = useOperations();
-  const occupied = seats.filter(({ occupancy }) => occupancy === "OCCUPIED").length;
   const terminal = missions.filter(({ phase }) => phase === "TERMINAL");
   const succeeded = terminal.filter(({ outcome }) => outcome === "SUCCESS").length;
   const activeCount = missions.filter(({ phase }) => !["QUEUED", "TERMINAL"].includes(phase)).length;
   const queuedCount = missions.filter(({ phase }) => phase === "QUEUED").length;
-  const seatRate = seats.length ? Math.round((occupied / seats.length) * 100) : 0;
   const successRate = terminal.length ? `${Math.round((succeeded / terminal.length) * 100)}%` : "-";
   const activities = events.length
     ? events.slice(0, 6).map((event) => ({
@@ -21,7 +19,7 @@ export function MonitoringPage() {
     : missions.slice(0, 6).map((mission) => ({
         id: mission.mission_id,
         title: mission.outcome ?? mission.phase,
-        description: `${seatLabel(seats, mission.seat_id)} · ${mission.message}`,
+        description: `${missionTargetLabel(mission, seats)} · ${mission.message}`,
         occurredAt: mission.created_at,
         success: mission.outcome === "SUCCESS",
       }));
@@ -31,7 +29,7 @@ export function MonitoringPage() {
       <div className="view-intro"><p className="eyebrow">LIVE MONITORING</p><h2>운영 모니터링</h2><p>Robot heartbeat와 Mission 처리 흐름을 실시간으로 확인합니다.</p></div>
       <div className="metric-grid monitor-metrics">
         <article className="metric-card"><span>처리 중 / 대기</span><strong>{activeCount} / {queuedCount}</strong><small>현재 Mission</small></article>
-        <article className="metric-card"><span>좌석 사용률</span><strong>{seatRate}%</strong><small>{occupied} / {seats.length || 48}석</small></article>
+        <article className="metric-card"><span>완료 Mission</span><strong>{terminal.length}</strong><small>전체 {missions.length}건</small></article>
         <article className="metric-card"><span>성공률</span><strong>{successRate}</strong><small>종료 Mission 기준</small></article>
       </div>
       <div className="monitor-grid">

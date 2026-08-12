@@ -46,10 +46,23 @@ class MissionOutcome(StrEnum):
     INTERRUPTED = "INTERRUPTED"
 
 
+class TargetKind(StrEnum):
+    SEAT = "SEAT"
+    ZONE = "ZONE"
+    POINT = "POINT"
+
+
+@dataclass(frozen=True)
+class MissionTarget:
+    kind: TargetKind
+    reference_id: str
+    label: str | None = None
+
+
 @dataclass
 class Mission:
     mission_id: str
-    seat_id: str
+    target: MissionTarget
     priority: Priority
     requested_by: str
     idempotency_key: str
@@ -62,8 +75,15 @@ class Mission:
     before_observation: str | None = None
     after_observation: str | None = None
 
+    @property
+    def seat_id(self) -> str | None:
+        """Compatibility field for seat-based clients during contract migration."""
+        return self.target.reference_id if self.target.kind == TargetKind.SEAT else None
+
     def to_dict(self) -> dict[str, object]:
         result = asdict(self)
+        result["target"]["kind"] = self.target.kind.value
+        result["seat_id"] = self.seat_id
         result["priority"] = self.priority.value
         result["phase"] = self.phase.value
         result["outcome"] = self.outcome.value if self.outcome else None
@@ -122,13 +142,25 @@ class ControlPlaneStore:
     def create_mission(
         self,
         *,
-        seat_id: str,
         priority: str,
         requested_by: str,
         idempotency_key: str,
+        seat_id: str | None = None,
+        target: MissionTarget | None = None,
     ) -> tuple[Mission, bool]:
-        if not seat_id.strip():
-            raise ValueError("seat_id is required")
+        if target is not None and seat_id is not None:
+            raise ValueError("provide either target or seat_id, not both")
+        if target is None:
+            if seat_id is None or not seat_id.strip():
+                raise ValueError("target is required")
+            target = MissionTarget(TargetKind.SEAT, seat_id.strip())
+        if not target.reference_id.strip():
+            raise ValueError("target.reference_id is required")
+        target = MissionTarget(
+            kind=TargetKind(target.kind),
+            reference_id=target.reference_id.strip(),
+            label=target.label.strip() if target.label else None,
+        )
         if not requested_by.strip():
             raise ValueError("requested_by is required")
         if not idempotency_key.strip():
@@ -142,7 +174,7 @@ class ControlPlaneStore:
 
             mission = Mission(
                 mission_id=str(uuid4()),
-                seat_id=seat_id.strip(),
+                target=target,
                 priority=parsed_priority,
                 requested_by=requested_by.strip(),
                 idempotency_key=idempotency_key.strip(),
@@ -204,9 +236,13 @@ class ControlPlaneStore:
             mission.message = message
             mission.sequence += 1
             if phase == MissionPhase.WORKING and mission.before_observation is None:
-                mission.before_observation = "mock://observations/before-seat"
+                mission.before_observation = (
+                    f"mock://observations/before-{mission.target.reference_id}"
+                )
             if phase == MissionPhase.TERMINAL and outcome == MissionOutcome.SUCCESS:
-                mission.after_observation = "mock://observations/after-seat"
+                mission.after_observation = (
+                    f"mock://observations/after-{mission.target.reference_id}"
+                )
             self._publish("mission.status_changed", mission)
             return mission
 

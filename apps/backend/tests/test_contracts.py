@@ -16,6 +16,9 @@ def test_mission_request_model_matches_canonical_contract() -> None:
 
     assert set(model["required"]) == set(contract["required"])
     assert model["$defs"]["Priority"]["enum"] == contract["properties"]["priority"]["enum"]
+    assert model["$defs"]["TargetKind"]["enum"] == contract["properties"]["target"][
+        "properties"
+    ]["kind"]["enum"]
 
 
 def test_seat_model_preserves_canonical_shape() -> None:

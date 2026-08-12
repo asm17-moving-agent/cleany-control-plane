@@ -18,9 +18,16 @@ export function seatLocation(seat: Seat) {
   return `${SEAT_COLUMN_LABELS[index % SEAT_COLUMN_LABELS.length]}-${seatPosition(seat).row}`;
 }
 
-export function seatLabel(seats: Seat[], seatId: string) {
+export function seatLabel(seats: Seat[], seatId: string | null | undefined) {
+  if (!seatId) return "대상 미지정";
   const seat = seats.find((item) => item.seat_id === seatId);
   return seat ? `${seat.label}번 좌석` : seatId;
+}
+
+export function missionTargetLabel(mission: Mission, seats: Seat[]) {
+  if (mission.target.label) return mission.target.label;
+  if (mission.target.kind === "SEAT") return seatLabel(seats, mission.target.reference_id);
+  return mission.target.reference_id;
 }
 
 export function formatDateTime(value?: string | null) {

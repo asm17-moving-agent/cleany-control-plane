@@ -30,6 +30,15 @@ def mission_request(**overrides: str) -> dict[str, str]:
     }
 
 
+def zone_mission_request() -> dict[str, object]:
+    return {
+        "target": {"kind": "ZONE", "reference_id": "space-a1", "label": "SPACE A1"},
+        "priority": "NORMAL",
+        "requested_by": "test-operator",
+        "idempotency_key": "zone-request-1",
+    }
+
+
 @pytest.mark.anyio
 async def test_health_and_fixture_endpoints() -> None:
     async for client in make_client():
@@ -48,6 +57,20 @@ async def test_create_and_list_mission() -> None:
         assert mission["seat_id"] == "seat-18"
         assert mission["phase"] == "QUEUED"
         assert (await client.get("/api/missions")).json()["items"] == [mission]
+
+
+@pytest.mark.anyio
+async def test_create_zone_mission() -> None:
+    async for client in make_client():
+        created = await client.post("/api/missions", json=zone_mission_request())
+        assert created.status_code == 201
+        mission = created.json()
+        assert mission["target"] == {
+            "kind": "ZONE",
+            "reference_id": "space-a1",
+            "label": "SPACE A1",
+        }
+        assert mission["seat_id"] is None
 
 
 @pytest.mark.anyio
@@ -70,3 +93,12 @@ async def test_cancel_and_validation_errors() -> None:
         assert (await client.post("/api/missions/missing/cancel")).status_code == 404
         invalid = await client.post("/api/missions", json=mission_request(priority="URGENT"))
         assert invalid.status_code == 422
+        missing_target = mission_request()
+        missing_target.pop("seat_id")
+        assert (await client.post("/api/missions", json=missing_target)).status_code == 422
+        both_targets = mission_request()
+        both_targets["target"] = {
+            "kind": "ZONE",
+            "reference_id": "space-a1",
+        }
+        assert (await client.post("/api/missions", json=both_targets)).status_code == 422

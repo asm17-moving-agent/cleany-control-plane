@@ -2,7 +2,7 @@
 
 ## 목표
 
-운영자의 개별 좌석 요청을 Queue에 보존하고 실행 가능한 Robot에 Mission을
+운영자의 좌석·구역·지점 요청을 Queue에 보존하고 실행 가능한 Robot에 Mission을
 제안한다. Robot이 수락한 후에는 Mission Manager가 내부 lifecycle을 소유하고,
 Control Plane은 운영 단계와 결과만 관리한다.
 
@@ -10,7 +10,7 @@ Control Plane은 운영 단계와 결과만 관리한다.
 
 | 구성요소 | 책임 |
 |---|---|
-| Dashboard | 좌석 선택, Mission 요청과 취소, 진행과 결과 표시 |
+| Dashboard | 시설 target 선택, Mission 요청과 취소, 진행과 결과 표시 |
 | Backend | priority Queue, Mission Offer, Robot 가용 상태, 외부 lifecycle |
 | Robot Gateway | Backend 연결, 중복 제거, ROS Action 변환, 재전송 |
 | Mission Manager | Mission 수락과 거절, 내부 실행, checkpoint 취소, 최종 report |

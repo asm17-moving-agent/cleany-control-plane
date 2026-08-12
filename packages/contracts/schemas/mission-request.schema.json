@@ -4,12 +4,25 @@
   "title": "MissionRequest",
   "type": "object",
   "additionalProperties": false,
-  "required": ["seat_id", "priority", "requested_by", "idempotency_key"],
+  "required": ["priority", "requested_by", "idempotency_key"],
+  "oneOf": [
+    { "required": ["seat_id"], "not": { "required": ["target"] } },
+    { "required": ["target"], "not": { "required": ["seat_id"] } }
+  ],
   "properties": {
     "seat_id": { "type": "string", "minLength": 1 },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "reference_id"],
+      "properties": {
+        "kind": { "enum": ["SEAT", "ZONE", "POINT"] },
+        "reference_id": { "type": "string", "minLength": 1 },
+        "label": { "type": ["string", "null"] }
+      }
+    },
     "priority": { "enum": ["NORMAL", "HIGH"] },
     "requested_by": { "type": "string", "minLength": 1 },
     "idempotency_key": { "type": "string", "minLength": 1 }
   }
 }
-

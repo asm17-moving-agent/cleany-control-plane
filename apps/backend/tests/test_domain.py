@@ -11,6 +11,8 @@ from control_plane.domain import (  # noqa: E402
     ControlPlaneStore,
     MissionOutcome,
     MissionPhase,
+    MissionTarget,
+    TargetKind,
 )
 
 
@@ -34,6 +36,18 @@ class ControlPlaneStoreTest(unittest.TestCase):
         self.assertFalse(second_created)
         self.assertEqual(first.mission_id, second.mission_id)
         self.assertEqual(1, len(self.store.list_missions()))
+
+    def test_zone_target_is_preserved_without_legacy_seat_id(self) -> None:
+        mission, _ = self.store.create_mission(
+            target=MissionTarget(TargetKind.ZONE, "space-a1", "SPACE A1"),
+            priority="NORMAL",
+            requested_by="operator",
+            idempotency_key="zone-target",
+        )
+
+        self.assertEqual(TargetKind.ZONE, mission.target.kind)
+        self.assertEqual("space-a1", mission.target.reference_id)
+        self.assertIsNone(mission.seat_id)
 
     def test_high_priority_is_dispatched_before_normal(self) -> None:
         normal, _ = self.create("normal")

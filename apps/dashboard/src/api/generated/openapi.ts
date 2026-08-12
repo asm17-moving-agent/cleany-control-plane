@@ -148,7 +148,8 @@ export interface components {
             /** Requested By */
             requested_by: string;
             /** Seat Id */
-            seat_id: string;
+            seat_id?: string | null;
+            target?: components["schemas"]["MissionTargetModel"] | null;
         };
         /** MissionResponse */
         MissionResponse: {
@@ -172,9 +173,18 @@ export interface components {
             /** Requested By */
             requested_by: string;
             /** Seat Id */
-            seat_id: string;
+            seat_id: string | null;
             /** Sequence */
             sequence: number;
+            target: components["schemas"]["MissionTargetModel"];
+        };
+        /** MissionTargetModel */
+        MissionTargetModel: {
+            kind: components["schemas"]["TargetKind"];
+            /** Label */
+            label?: string | null;
+            /** Reference Id */
+            reference_id: string;
         };
         /**
          * Priority
@@ -227,6 +237,11 @@ export interface components {
             /** Seat Id */
             seat_id: string;
         };
+        /**
+         * TargetKind
+         * @enum {string}
+         */
+        TargetKind: "SEAT" | "ZONE" | "POINT";
         /** ValidationError */
         ValidationError: {
             /** Context */

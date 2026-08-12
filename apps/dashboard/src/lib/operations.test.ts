@@ -17,6 +17,7 @@ function mission(overrides: Partial<Mission> = {}): Mission {
   return {
     mission_id: "mission-1",
     seat_id: "seat-01",
+    target: { kind: "SEAT", reference_id: "seat-01", label: "01번 좌석" },
     priority: "NORMAL",
     requested_by: "operator",
     idempotency_key: "key-1",

@@ -71,6 +71,7 @@
         "type": "string"
       },
       "MissionRequest": {
+        "additionalProperties": false,
         "properties": {
           "idempotency_key": {
             "minLength": 1,
@@ -86,13 +87,29 @@
             "type": "string"
           },
           "seat_id": {
-            "minLength": 1,
-            "title": "Seat Id",
-            "type": "string"
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seat Id"
+          },
+          "target": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MissionTargetModel"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
-          "seat_id",
           "priority",
           "requested_by",
           "idempotency_key"
@@ -165,16 +182,27 @@
             "type": "string"
           },
           "seat_id": {
-            "title": "Seat Id",
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seat Id"
           },
           "sequence": {
             "title": "Sequence",
             "type": "integer"
+          },
+          "target": {
+            "$ref": "#/components/schemas/MissionTargetModel"
           }
         },
         "required": [
           "mission_id",
+          "target",
           "seat_id",
           "priority",
           "requested_by",
@@ -189,6 +217,36 @@
           "after_observation"
         ],
         "title": "MissionResponse",
+        "type": "object"
+      },
+      "MissionTargetModel": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/TargetKind"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "reference_id": {
+            "minLength": 1,
+            "title": "Reference Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "reference_id"
+        ],
+        "title": "MissionTargetModel",
         "type": "object"
       },
       "Priority": {
@@ -337,6 +395,15 @@
         ],
         "title": "SeatResponse",
         "type": "object"
+      },
+      "TargetKind": {
+        "enum": [
+          "SEAT",
+          "ZONE",
+          "POINT"
+        ],
+        "title": "TargetKind",
+        "type": "string"
       },
       "ValidationError": {
         "properties": {
