@@ -96,7 +96,7 @@ export const FACILITY_ZONES: FacilityZone[] = [
   {
     id: "the-grond",
     label: "THE GROND",
-    shortLabel: "GROND",
+    shortLabel: "THE GROND",
     category: "COMMON",
     points: [{ x: 275, y: 155 }, { x: 510, y: 155 }, { x: 510, y: 425 }, { x: 275, y: 425 }],
     center: { x: 392, y: 290 },

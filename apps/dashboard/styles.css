@@ -60,11 +60,13 @@ h1, h2, h3, p { margin-top: 0; }
   width: min(calc(100% - 104px), 1536px);
   min-height: 100vh;
   margin-left: max(104px, calc(50% - 716px));
-  padding: 26px 34px 64px;
+  padding: 20px 34px 52px;
   background: #fbfbfc;
 }
-.topbar { display: grid; grid-template-columns: minmax(250px, 1fr) auto auto; align-items: center; gap: 16px; margin-bottom: 0; padding-bottom: 22px; border-bottom: 1px solid #e1e6ea; }
+.topbar { display: grid; grid-template-columns: minmax(250px, 1fr) auto auto; align-items: center; gap: 16px; margin-bottom: 0; padding-bottom: 17px; border-bottom: 1px solid #e1e6ea; }
 .topbar h1 { margin: 0; color: #071730; font-size: clamp(1.8rem, 2.5vw, 2.35rem); letter-spacing: -.045em; white-space: nowrap; }
+.topbar-copy { display: grid; gap: 6px; }
+.topbar-copy p { margin: 0; color: var(--text-sub); font-size: .68rem; }
 .topbar-actions { display: flex; align-items: center; gap: 12px; padding-top: 6px; color: #294668; font-size: .78rem; }
 .connection { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
 .icon-button { display: grid; width: 38px; height: 38px; place-items: center; border: 0; background: transparent; color: var(--text); }

@@ -33,17 +33,16 @@ function poiSymbol(kind: (typeof FACILITY_POIS)[number]["kind"]) {
 
 export function FacilityMap({ selectedZoneId, onSelectZone, robotState }: FacilityMapProps) {
   const selectedZone = getFacilityZone(selectedZoneId);
-  const routeEnd = selectedZone?.center ?? { x: 392, y: 290 };
-  const route = `286,720 286,635 270,610 270,455 255,425 255,290 ${routeEnd.x},${routeEnd.y}`;
 
   return (
-    <div className="facility-map-stage">
-      <svg
-        aria-label={`${FACILITY_18F.name} 배치도`}
-        className="facility-map-svg"
-        role="img"
-        viewBox={FACILITY_18F.viewBox}
-      >
+    <div className="facility-map-shell">
+      <div className="facility-map-stage">
+        <svg
+          aria-label={`${FACILITY_18F.name} 배치도`}
+          className="facility-map-svg"
+          role="img"
+          viewBox={FACILITY_18F.viewBox}
+        >
         <defs>
           <pattern id="facility-grid" width="20" height="20" patternUnits="userSpaceOnUse">
             <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" strokeOpacity=".07" strokeWidth="1" />
@@ -53,8 +52,25 @@ export function FacilityMap({ selectedZoneId, onSelectZone, robotState }: Facili
           </filter>
         </defs>
 
-        <rect className="facility-map-background" x="16" y="16" width="668" height="748" rx="24" />
-        <rect className="facility-map-grid" x="16" y="16" width="668" height="748" rx="24" />
+        <rect className="facility-map-background" x="26" y="24" width="648" height="732" />
+        <rect className="facility-map-grid" x="26" y="24" width="648" height="732" />
+
+        <g className="facility-service-core" aria-label="공용 설비 구역">
+          <path d="M38 100H230V180H38ZM38 190H104V260H38ZM120 190H186V260H120ZM38 278H104V348H38ZM120 278H186V348H120ZM38 368H230V468H38ZM38 482H186V600H38ZM38 614H186V748H38Z" />
+          <path className="service-stairs" d="M50 112H105M50 122H105M50 132H105M50 142H105M50 152H105M50 162H105" />
+          <path className="service-detail" d="M70 190V260M152 190V260M70 278V348M152 278V348M120 482V600M120 614V748" />
+          <text x="155" y="142">계단·공용부</text>
+          <text x="71" y="229">EV</text>
+          <text x="153" y="229">EV</text>
+          <text x="71" y="317">EV</text>
+          <text x="153" y="317">EV</text>
+          <text x="112" y="421">비상 EV</text>
+          <text x="112" y="544">화장실 (여)</text>
+          <text x="112" y="681">화장실 (남)</text>
+        </g>
+
+        <path className="facility-main-corridor" d="M236 24H270V145H520V168H512V427H275V435H292V650H350V748H236V615H216V355H236Z" />
+        <path className="facility-corridor-edge" d="M250 24V150H520M250 150V355H216V475H250V615H280V650H350" />
 
         {FACILITY_ZONES.map((zone) => {
           const selected = zone.id === selectedZoneId;
@@ -82,16 +98,7 @@ export function FacilityMap({ selectedZoneId, onSelectZone, robotState }: Facili
           );
         })}
 
-        <g className="facility-service-core" aria-label="공용 설비 구역">
-          <path d="M38 100H242V420H265V748H38V100Z" />
-          <path d="M38 185H230M38 270H230M38 390H230M38 475H230M38 610H230" />
-          <path d="M118 185V390M118 475V748" />
-        </g>
-
-        <polyline className={`facility-route${selectedZone ? " is-active" : ""}`} points={route} />
-        {selectedZone ? <circle className="facility-target" cx={routeEnd.x} cy={routeEnd.y} r="10" /> : null}
-
-        {FACILITY_POIS.map((poi) => (
+        {FACILITY_POIS.filter(({ kind }) => ["EXIT", "CHARGER"].includes(kind)).map((poi) => (
           <g className={`facility-poi poi-${poi.kind.toLowerCase()}`} key={poi.id} transform={`translate(${poi.position.x} ${poi.position.y})`}>
             <circle r="15" />
             <text textAnchor="middle" y="4">{poiSymbol(poi.kind)}</text>
@@ -99,7 +106,7 @@ export function FacilityMap({ selectedZoneId, onSelectZone, robotState }: Facili
           </g>
         ))}
 
-        <g className="facility-robot-marker" filter="url(#robot-shadow)" transform="translate(286 635)">
+        <g className="facility-robot-marker" filter="url(#robot-shadow)" transform="translate(272 615)">
           <circle r="22" />
           <rect x="-11" y="-8" width="22" height="17" rx="7" />
           <circle cx="-5" cy="0" r="1.7" />
@@ -108,13 +115,13 @@ export function FacilityMap({ selectedZoneId, onSelectZone, robotState }: Facili
           <title>cleany-01 · {robotState ?? "연결 확인 중"} · 시나리오 위치</title>
         </g>
 
-        <path className="facility-outline" d="M26 26H674V758H26V26ZM250 26V150M250 150H520M250 430H674M280 650H674" />
-      </svg>
-
+        <path className="facility-outline" d="M26 24H674V756H26V24ZM250 430H674M280 650H674" />
+        </svg>
+      </div>
       <div className="facility-map-note">
         <span><i className="map-note-dot robot" />Robot 시나리오 위치</span>
-        <span><i className="map-note-line" />예상 이동 경로</span>
-        <span><i className="map-note-dot target" />선택 구역</span>
+        <span><i className="map-note-swatch" />선택 가능한 구역</span>
+        {selectedZone ? <strong>{selectedZone.label} 선택됨</strong> : null}
       </div>
     </div>
   );

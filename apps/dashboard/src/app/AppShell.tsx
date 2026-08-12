@@ -68,7 +68,10 @@ export function AppShell() {
 
       <main className="app-main">
         <header className="topbar">
-          <h1>{meta.title}</h1>
+          <div className="topbar-copy">
+            <h1>{meta.title}</h1>
+            {location.pathname === "/" ? <p>오늘 공간의 청소 현황과 자동화 제안을 확인해 보세요.</p> : null}
+          </div>
           <section className="summary-grid" aria-label="관제 요약">
             <article className="summary-card robot-summary">
               <div className="summary-icon"><RobotIcon /></div>

@@ -32,6 +32,12 @@ const recommendations = [
     title: "D-HUB 스팟 청소",
     description: "넓은 개방 구역을 단일 Mission으로 검증합니다.",
   },
+  {
+    zoneId: "relax-zone-w",
+    eyebrow: "휴게 공간",
+    title: "RELAX W 저소음 청소",
+    description: "휴게 공간을 분리된 작업 구역으로 선택합니다.",
+  },
 ] as const;
 
 export function HomePage() {
@@ -100,8 +106,6 @@ export function HomePage() {
 
   return (
     <section className="facility-dashboard" aria-label="18층 로봇 관제 대시보드">
-      <p className="facility-dashboard-subtitle">오늘 공간의 청소 현황과 자동화 제안을 확인해 보세요.</p>
-
       <div className="facility-dashboard-grid">
         <aside className="dashboard-rail dashboard-left-rail" aria-label="운영 요약">
           <article className="dashboard-card schedule-card">
@@ -198,35 +202,49 @@ export function HomePage() {
               <button type="button" disabled={!activeMission} onClick={() => void requestActiveCancel()}><span>Ⅱ</span>안전 정지</button>
               <button type="button" disabled title="Robot Edge 연동 후 활성화됩니다."><span>ϟ</span>충전 이동</button>
               <button type="button" onClick={() => void refresh()}><span>↻</span>상태 갱신</button>
+              <button type="button" disabled={!selectedZone} onClick={() => setSelectedZoneId(null)}><span>×</span>선택 해제</button>
+              <button type="button" disabled title="Robot Edge 연동 후 활성화됩니다."><span>◉</span>음성 안내</button>
             </div>
           </article>
         </aside>
       </div>
 
       <form className="dashboard-card mission-composer" onSubmit={submitMission}>
-        <div className="composer-heading">
-          <p className="eyebrow">MISSION REQUEST</p>
-          <h2>청소 작업 요청</h2>
-          <p>지도에서 구역을 선택하고 Mission을 생성합니다.</p>
+        <div className="composer-main">
+          <div className="composer-heading">
+            <p className="eyebrow">MISSION REQUEST</p>
+            <h2>청소 작업 요청</h2>
+            <p>지도에서 구역을 선택하고 Mission을 생성합니다.</p>
+          </div>
+          <div className="composer-fields">
+            <fieldset>
+              <legend>작업 유형</legend>
+              <label className="choice-chip"><input defaultChecked name="jobType" type="radio" />구역 청소</label>
+            </fieldset>
+            <label className="composer-field">우선순위
+              <select {...register("priority")}>
+                <option value="NORMAL">보통 (NORMAL)</option>
+                <option value="HIGH">높음 (HIGH)</option>
+              </select>
+            </label>
+            <div className="composer-target">
+              <span>선택된 구역</span>
+              <strong>{selectedZone?.label ?? "지도의 구역을 선택하세요"}</strong>
+            </div>
+            <button className="submit-mission" type="submit" disabled={!selectedZone || isCreatingMission}>
+              <SendIcon />Mission 요청
+            </button>
+          </div>
+          <p className="composer-message" aria-live="polite">{message}</p>
         </div>
-        <fieldset>
-          <legend>작업 유형</legend>
-          <label className="choice-chip"><input defaultChecked name="jobType" type="radio" />구역 청소</label>
-        </fieldset>
-        <label className="composer-field">우선순위
-          <select {...register("priority")}>
-            <option value="NORMAL">보통 (NORMAL)</option>
-            <option value="HIGH">높음 (HIGH)</option>
-          </select>
-        </label>
-        <div className="composer-target">
-          <span>선택된 구역</span>
-          <strong>{selectedZone?.label ?? "지도의 구역을 선택하세요"}</strong>
-        </div>
-        <button className="submit-mission" type="submit" disabled={!selectedZone || isCreatingMission}>
-          <SendIcon />Mission 요청
-        </button>
-        <p className="composer-message" aria-live="polite">{message}</p>
+        <aside className="composer-result" aria-label="요청 요약">
+          <h3>요청 요약</h3>
+          <dl>
+            <div><dt>작업 대상</dt><dd>{selectedZone?.shortLabel ?? "미선택"}</dd></div>
+            <div><dt>예상 시작</dt><dd>즉시</dd></div>
+            <div><dt>이동 경로</dt><dd>Edge 연동 후 계산</dd></div>
+          </dl>
+        </aside>
       </form>
     </section>
   );

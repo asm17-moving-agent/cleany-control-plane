@@ -1,19 +1,13 @@
 .facility-dashboard {
-  --dashboard-gap: 18px;
+  --dashboard-gap: 20px;
   display: grid;
-  gap: 20px;
-  padding-top: 12px;
-}
-
-.facility-dashboard-subtitle {
-  margin: -7px 0 1px;
-  color: var(--text-sub);
-  font-size: .75rem;
+  gap: 22px;
+  padding-top: 22px;
 }
 
 .facility-dashboard-grid {
   display: grid;
-  grid-template-columns: 236px minmax(610px, 1fr) 250px;
+  grid-template-columns: 260px minmax(620px, 1fr) 278px;
   align-items: start;
   gap: var(--dashboard-gap);
 }
@@ -53,7 +47,10 @@
 .history-card,
 .report-card,
 .recommendation-card,
-.quick-control-card { padding: 16px; }
+.quick-control-card { padding: 18px; }
+.schedule-card { min-height: 188px; }
+.history-card { min-height: 205px; }
+.report-card { min-height: 188px; }
 .empty-schedule { color: var(--navy); font-size: .82rem; }
 .schedule-card > p { margin: 6px 0 1px; color: var(--text-sub); font-size: .61rem; line-height: 1.5; }
 
@@ -73,8 +70,8 @@
 .report-card dt { color: var(--text-sub); font-size: .55rem; }
 .report-card dd { margin: 0; color: var(--navy); font-size: .74rem; font-weight: 900; }
 
-.map-dashboard-card { min-width: 0; overflow: hidden; padding: 16px; }
-.map-card-heading { display: flex; min-height: 38px; align-items: flex-start; justify-content: space-between; gap: 15px; }
+.map-dashboard-card { min-width: 0; overflow: hidden; padding: 18px; }
+.map-card-heading { display: flex; min-height: 44px; align-items: flex-start; justify-content: space-between; gap: 15px; }
 .map-card-heading > div:first-child { display: flex; align-items: center; gap: 9px; }
 .scenario-status { border-radius: 99px; padding: 5px 8px; background: #e6f6ef; color: #238c70; font-size: .54rem; font-weight: 900; }
 .map-card-tools { display: flex; align-items: center; gap: 8px; }
@@ -95,6 +92,7 @@
 .pause-action { min-height: 39px; border: 1px solid #d6e0e7; border-radius: 8px; padding: 0 12px; background: #fff; color: var(--primary); font-size: .62rem; font-weight: 900; }
 .pause-action:disabled { cursor: not-allowed; color: var(--text-disabled); }
 
+.recommendation-card { min-height: 405px; }
 .recommendation-list { display: grid; }
 .recommendation-item { display: grid; grid-template-columns: 34px 1fr; gap: 10px; padding: 15px 0; border-bottom: 1px solid #e5eaee; }
 .recommendation-item:last-child { border-bottom: 0; }
@@ -106,12 +104,15 @@
 .recommendation-item p { margin: 0; color: var(--text-sub); font-size: .55rem; line-height: 1.5; }
 .recommendation-item button { justify-self: start; margin-top: 3px; border: 0; border-radius: 6px; padding: 6px 8px; background: #f1f4f6; color: var(--primary); font-size: .54rem; font-weight: 900; }
 
-.quick-control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding-top: 14px; }
+.quick-control-card { min-height: 224px; }
+.quick-control-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding-top: 14px; }
 .quick-control-grid button { display: grid; min-height: 62px; place-items: center; gap: 5px; border: 1px solid #dce4e9; border-radius: 9px; background: #fff; color: var(--primary); font-size: .56rem; font-weight: 800; }
 .quick-control-grid button span { font-size: 1rem; }
 .quick-control-grid button:disabled { cursor: not-allowed; background: #fafbfc; color: var(--text-disabled); }
 
-.mission-composer { position: relative; display: grid; grid-template-columns: 1.35fr .8fr .9fr 1.1fr 190px; align-items: end; gap: 22px; padding: 20px 24px 30px; }
+.mission-composer { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 260px; align-items: stretch; gap: 28px; padding: 22px 24px; }
+.composer-main { position: relative; display: grid; gap: 20px; min-width: 0; padding-bottom: 18px; }
+.composer-fields { display: grid; grid-template-columns: .8fr 1fr 1.2fr 190px; align-items: end; gap: 20px; }
 .composer-heading h2 { margin: 2px 0 6px; color: var(--navy); font-size: 1rem; }
 .composer-heading > p:last-child { margin: 0; color: var(--text-sub); font-size: .6rem; }
 .mission-composer fieldset { display: grid; gap: 8px; margin: 0; border: 0; padding: 0; }
@@ -126,16 +127,26 @@
 .composer-target strong { overflow: hidden; min-height: 39px; border: 1px solid #d6e0e7; border-radius: 8px; padding: 11px 10px; color: var(--navy); font-size: .62rem; text-overflow: ellipsis; white-space: nowrap; }
 .mission-composer .submit-mission { min-height: 39px; border-radius: 8px; font-size: .69rem; }
 .mission-composer .submit-mission svg { width: 18px; height: 18px; }
-.composer-message { position: absolute; right: 24px; bottom: 8px; margin: 0; color: var(--selected); font-size: .56rem; }
+.composer-message { position: absolute; right: 0; bottom: 0; margin: 0; color: var(--selected); font-size: .56rem; }
+.composer-result { border-radius: 11px; padding: 16px; background: #f6f8fa; }
+.composer-result h3 { margin: 0 0 12px; color: var(--navy); font-size: .68rem; }
+.composer-result dl { display: grid; margin: 0; }
+.composer-result dl div { display: flex; min-height: 34px; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid #e1e7eb; }
+.composer-result dl div:last-child { border-bottom: 0; }
+.composer-result dt { color: var(--text-sub); font-size: .54rem; }
+.composer-result dd { margin: 0; color: var(--navy); font-size: .58rem; font-weight: 850; text-align: right; }
 
-@media (max-width: 1320px) {
+@media (max-width: 1420px) {
+  .facility-dashboard-grid { grid-template-columns: 230px minmax(570px, 1fr) 240px; }
+}
+
+@media (max-width: 1250px) {
   .facility-dashboard-grid { grid-template-columns: 210px minmax(560px, 1fr); }
   .dashboard-right-rail { grid-column: 1 / -1; grid-template-columns: 1.4fr 1fr; }
   .recommendation-list { grid-template-columns: 1fr 1fr; gap: 20px; }
   .recommendation-item { border-bottom: 0; }
-  .mission-composer { grid-template-columns: 1.2fr .8fr 1fr 1fr; }
-  .mission-composer .submit-mission { grid-column: 4; }
-  .composer-heading { grid-row: 1 / 3; }
+  .mission-composer { grid-template-columns: 1fr 240px; }
+  .composer-fields { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 1020px) {
@@ -143,17 +154,15 @@
   .map-dashboard-card { grid-row: 1; }
   .dashboard-left-rail { grid-row: 2; grid-template-columns: repeat(3, 1fr); }
   .dashboard-right-rail { grid-column: auto; grid-row: 3; }
-  .mission-composer { grid-template-columns: 1fr 1fr; align-items: stretch; }
-  .composer-heading { grid-row: auto; }
-  .mission-composer .submit-mission { grid-column: auto; }
+  .mission-composer { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 760px) {
-  .facility-dashboard-subtitle { margin-top: 0; }
   .dashboard-left-rail,
   .dashboard-right-rail,
   .recommendation-list,
-  .mission-composer { grid-template-columns: 1fr; }
+  .mission-composer,
+  .composer-fields { grid-template-columns: 1fr; }
   .map-dashboard-card { padding: 12px; }
   .map-status-strip { grid-template-columns: 1fr; }
   .map-status-strip dl div:first-child { border-left: 0; }

@@ -1,27 +1,34 @@
+.facility-map-shell {
+  display: grid;
+  gap: 9px;
+}
+
 .facility-map-stage {
   position: relative;
   width: 100%;
   min-height: 0;
   overflow: hidden;
-  border-radius: 16px;
-  background: linear-gradient(145deg, #f7faff 0%, #f2f6fb 100%);
+  border: 1px solid #e1e7ec;
+  border-radius: 12px;
+  background: #f7f9fb;
 }
 
 .facility-map-svg {
   display: block;
   width: 100%;
-  height: min(620px, 61vh);
-  min-height: 510px;
+  height: min(500px, 49vh);
+  min-height: 460px;
   color: #53769c;
 }
+.facility-map-svg text { stroke: none; }
 
-.facility-map-background { fill: #f9fbfd; stroke: #d6e0e8; stroke-width: 1.5; }
+.facility-map-background { fill: #fbfcfd; stroke: #9aabb9; stroke-width: 1.6; }
 .facility-map-grid { fill: url(#facility-grid); }
 
 .facility-zone { outline: none; }
 .facility-zone polygon {
-  stroke: #aebdca;
-  stroke-width: 1.6;
+  stroke: #aab9c5;
+  stroke-width: 1.35;
   transition: fill .18s ease, stroke .18s ease, filter .18s ease, opacity .18s ease;
 }
 .facility-zone.zone-workspace polygon { fill: #eaf2ff; }
@@ -42,25 +49,18 @@
   stroke-width: 3;
   filter: drop-shadow(0 7px 10px rgba(20, 102, 216, .15));
 }
-.facility-zone-label { fill: #17375e; font-size: 13px; font-weight: 900; pointer-events: none; }
+.facility-zone-label { fill: #173c65; font-size: 13px; font-weight: 850; pointer-events: none; }
 
-.facility-service-core { fill: #f4f6f8; stroke: #aeb9c3; stroke-width: 1.7; }
-.facility-service-core path:first-child { fill-rule: evenodd; opacity: .82; }
-.facility-service-core path:last-child { fill: none; }
+.facility-service-core { fill: #f5f7f9; stroke: #aab8c3; stroke-width: 1.35; }
+.facility-service-core path:first-child { fill-rule: evenodd; }
+.facility-service-core .service-stairs,
+.facility-service-core .service-detail { fill: none; stroke: #bac5ce; stroke-width: 1; }
+.facility-service-core text { fill: #657789; font-size: 9px; font-weight: 750; text-anchor: middle; }
 
-.facility-outline { fill: none; stroke: #7f909f; stroke-width: 2.2; pointer-events: none; }
-.facility-route {
-  fill: none;
-  stroke: #2c7be5;
-  stroke-dasharray: 7 7;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 4;
-  opacity: .32;
-  transition: opacity .18s ease;
-}
-.facility-route.is-active { opacity: .9; }
-.facility-target { fill: #fff; stroke: #209b88; stroke-width: 5; }
+.facility-main-corridor { fill: #fafbfd; stroke: none; pointer-events: none; }
+.facility-corridor-edge { fill: none; stroke: #7d8f9e; stroke-width: 1.7; pointer-events: none; }
+
+.facility-outline { fill: none; stroke: #788b9a; stroke-width: 1.8; pointer-events: none; }
 
 .facility-poi circle { fill: #fff; stroke: #b9c7d2; stroke-width: 1.2; }
 .facility-poi text { fill: #526b82; font-size: 9px; font-weight: 900; }
@@ -75,32 +75,26 @@
 .facility-robot-marker path { fill: none; stroke: #fff; stroke-linecap: round; stroke-width: 1.8; }
 
 .facility-map-note {
-  position: absolute;
-  right: 16px;
-  bottom: 14px;
   display: flex;
   align-items: center;
   gap: 14px;
-  border: 1px solid rgba(202, 214, 225, .9);
-  border-radius: 9px;
-  padding: 8px 10px;
-  background: rgba(255, 255, 255, .88);
+  min-height: 28px;
+  padding: 0 4px;
   color: #5b7191;
   font-size: .58rem;
   font-weight: 700;
-  backdrop-filter: blur(7px);
 }
 .facility-map-note span { display: flex; align-items: center; gap: 6px; }
+.facility-map-note strong { margin-left: auto; color: #1466d8; font-size: .58rem; }
 .map-note-dot { width: 8px; height: 8px; border-radius: 50%; background: #072b55; }
-.map-note-dot.target { border: 2px solid #209b88; background: white; }
-.map-note-line { width: 20px; border-top: 2px dashed #2c7be5; }
+.map-note-swatch { width: 14px; height: 10px; border: 1px solid #aab9c5; border-radius: 2px; background: #eaf2ff; }
 
 @media (max-width: 1180px) {
-  .facility-map-svg { height: 620px; min-height: 560px; }
+  .facility-map-svg { height: 560px; min-height: 520px; }
 }
 
 @media (max-width: 760px) {
   .facility-map-stage { overflow-x: auto; }
   .facility-map-svg { width: 640px; height: 700px; min-height: 700px; }
-  .facility-map-note { position: sticky; left: 10px; width: max-content; }
+  .facility-map-note { width: 640px; }
 }
