@@ -1,63 +1,27 @@
 from __future__ import annotations
 
+import asyncio
 import json
-import queue
-import time
-from http import HTTPStatus
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from pathlib import Path
-from threading import Event, Thread
-from urllib.parse import urlparse
 
-from control_plane.domain import (
-    ControlPlaneStore,
-    MissionOutcome,
-    MissionPhase,
-    RobotState,
+import uvicorn
+from fastapi import FastAPI, HTTPException, Response, status
+from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
+
+from control_plane.domain import ControlPlaneStore, MissionOutcome, MissionPhase, RobotState
+from control_plane.fixtures import SEATS
+from control_plane.schemas import (
+    HealthResponse,
+    MissionListResponse,
+    MissionRequest,
+    MissionResponse,
+    RobotListResponse,
+    SeatListResponse,
 )
-
-
-OCCUPANTS = {
-    3: "김태현",
-    4: "김혜성",
-    6: "신홍재",
-    9: "김응현",
-    10: "오혜린",
-    11: "김정현",
-    13: "이창학",
-    14: "강정민",
-    15: "조성민",
-    16: "최규호",
-    17: "심여준",
-    19: "정지은",
-    21: "장현",
-    22: "서예진",
-    24: "심재혁",
-    30: "이학성",
-    31: "황선규",
-    32: "권상재",
-    34: "오창은",
-    36: "방현우",
-    37: "이강룡",
-    38: "정지우",
-    39: "엄현준",
-    42: "박재영",
-    46: "박창수",
-    48: "이정현",
-}
-GRID_COLUMNS = (1, 2, 3, 5, 6, 8, 9, 10)
-
-SEATS = [
-    {
-        "seat_id": f"seat-{number:02d}",
-        "label": f"{number:02d}",
-        "row": (number - 1) // 8 + 1,
-        "grid_column": GRID_COLUMNS[(number - 1) % 8],
-        "occupancy": "OCCUPIED" if number in OCCUPANTS else "AVAILABLE",
-        "occupant_name": OCCUPANTS.get(number),
-    }
-    for number in range(1, 49)
-]
+from control_plane.settings import Settings
 
 
 class MockDispatcher:
@@ -70,6 +34,8 @@ class MockDispatcher:
     )
 
     def __init__(self, store: ControlPlaneStore, step_delay: float = 0.8) -> None:
+        from threading import Event, Thread
+
         self.store = store
         self.step_delay = step_delay
         self._stop = Event()
@@ -117,157 +83,134 @@ class MockDispatcher:
 
 
 class ControlPlaneApplication:
-    def __init__(self, dashboard_root: Path) -> None:
+    def __init__(self, *, start_dispatcher: bool = True) -> None:
         self.store = ControlPlaneStore()
-        self.dashboard_root = dashboard_root
         self.dispatcher = MockDispatcher(self.store)
+        self.start_dispatcher = start_dispatcher
 
 
-def make_handler(application: ControlPlaneApplication) -> type[BaseHTTPRequestHandler]:
-    class Handler(BaseHTTPRequestHandler):
-        server_version = "CleanyMockControlPlane/0.1"
-        protocol_version = "HTTP/1.1"
+def create_app(
+    application: ControlPlaneApplication | None = None,
+    *,
+    dashboard_root: Path | None = None,
+) -> FastAPI:
+    control_plane = application or ControlPlaneApplication()
+    dashboard_dist = dashboard_root or Path(__file__).resolve().parents[2] / "dashboard" / "dist"
 
-        def log_message(self, format: str, *args: object) -> None:
-            print(f"[{self.log_date_time_string()}] {format % args}")
+    @asynccontextmanager
+    async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+        if control_plane.start_dispatcher:
+            control_plane.dispatcher.start()
+        try:
+            yield
+        finally:
+            if control_plane.start_dispatcher:
+                control_plane.dispatcher.stop()
 
-        def _json(self, status: HTTPStatus, payload: object) -> None:
-            body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-            self.send_response(status)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
-            self.send_header("Content-Length", str(len(body)))
-            self.end_headers()
-            self.wfile.write(body)
+    app = FastAPI(
+        title="Cleany Control Plane",
+        version="0.2.0",
+        lifespan=lifespan,
+    )
+    app.state.control_plane = control_plane
 
-        def _read_json(self) -> dict[str, object]:
-            length = int(self.headers.get("Content-Length", "0"))
-            if length <= 0:
-                return {}
-            return json.loads(self.rfile.read(length))
+    @app.get("/api/health", response_model=HealthResponse)
+    async def health() -> HealthResponse:
+        return HealthResponse()
 
-        def do_GET(self) -> None:
-            path = urlparse(self.path).path
-            if path == "/api/health":
-                self._json(HTTPStatus.OK, {"status": "ok"})
-            elif path == "/api/seats":
-                self._json(HTTPStatus.OK, {"items": SEATS})
-            elif path == "/api/robots":
-                self._json(HTTPStatus.OK, {"items": [application.store.robot.to_dict()]})
-            elif path == "/api/missions":
-                self._json(
-                    HTTPStatus.OK,
-                    {"items": [item.to_dict() for item in application.store.list_missions()]},
-                )
-            elif path == "/api/events/stream":
-                self._serve_events()
-            else:
-                self._serve_static(path)
+    @app.get("/api/seats", response_model=SeatListResponse)
+    async def list_seats() -> SeatListResponse:
+        return SeatListResponse(items=SEATS)
 
-        def do_POST(self) -> None:
-            path = urlparse(self.path).path
-            try:
-                if path == "/api/missions":
-                    payload = self._read_json()
-                    mission, created = application.store.create_mission(
-                        seat_id=str(payload.get("seat_id", "")),
-                        priority=str(payload.get("priority", "NORMAL")),
-                        requested_by=str(payload.get("requested_by", "operator")),
-                        idempotency_key=str(payload.get("idempotency_key", "")),
-                    )
-                    self._json(
-                        HTTPStatus.CREATED if created else HTTPStatus.OK,
-                        mission.to_dict(),
-                    )
-                    return
+    @app.get("/api/robots", response_model=RobotListResponse)
+    async def list_robots() -> RobotListResponse:
+        return RobotListResponse(items=[control_plane.store.robot])
 
-                parts = path.strip("/").split("/")
-                if len(parts) == 4 and parts[:2] == ["api", "missions"] and parts[3] == "cancel":
-                    mission = application.store.get_mission(parts[2])
-                    if mission is None:
-                        self._json(HTTPStatus.NOT_FOUND, {"error": "mission not found"})
-                        return
-                    self._json(
-                        HTTPStatus.ACCEPTED,
-                        application.store.request_cancel(parts[2]).to_dict(),
-                    )
-                    return
-            except (ValueError, json.JSONDecodeError) as error:
-                self._json(HTTPStatus.BAD_REQUEST, {"error": str(error)})
-                return
+    @app.get("/api/missions", response_model=MissionListResponse)
+    async def list_missions() -> MissionListResponse:
+        return MissionListResponse(items=control_plane.store.list_missions())
 
-            self._json(HTTPStatus.NOT_FOUND, {"error": "not found"})
+    @app.post("/api/missions", response_model=MissionResponse)
+    async def create_mission(request: MissionRequest, response: Response) -> MissionResponse:
+        try:
+            mission, created = control_plane.store.create_mission(
+                seat_id=request.seat_id,
+                priority=request.priority.value,
+                requested_by=request.requested_by,
+                idempotency_key=request.idempotency_key,
+            )
+        except ValueError as error:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=str(error),
+            ) from error
+        response.status_code = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        return MissionResponse.model_validate(mission)
 
-        def _serve_events(self) -> None:
-            events: queue.Queue[dict[str, object]] = queue.Queue(maxsize=100)
+    @app.post("/api/missions/{mission_id}/cancel", response_model=MissionResponse, status_code=202)
+    async def cancel_mission(mission_id: str) -> MissionResponse:
+        mission = control_plane.store.get_mission(mission_id)
+        if mission is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="mission not found")
+        try:
+            return MissionResponse.model_validate(control_plane.store.request_cancel(mission_id))
+        except ValueError as error:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=str(error),
+            ) from error
+
+    @app.get("/api/events/stream")
+    async def stream_events() -> StreamingResponse:
+        async def generate() -> AsyncIterator[str]:
+            event_queue: asyncio.Queue[dict[str, object]] = asyncio.Queue(maxsize=100)
+            loop = asyncio.get_running_loop()
 
             def listener(event: dict[str, object]) -> None:
-                try:
-                    events.put_nowait(event)
-                except queue.Full:
-                    pass
+                def enqueue() -> None:
+                    if not event_queue.full():
+                        event_queue.put_nowait(event)
 
-            unsubscribe = application.store.subscribe(listener)
-            self.send_response(HTTPStatus.OK)
-            self.send_header("Content-Type", "text/event-stream")
-            self.send_header("Cache-Control", "no-cache")
-            self.send_header("Connection", "keep-alive")
-            self.end_headers()
+                loop.call_soon_threadsafe(enqueue)
+
+            unsubscribe = control_plane.store.subscribe(listener)
             try:
-                self.wfile.write(b": connected\n\n")
-                self.wfile.flush()
+                yield ": connected\n\n"
                 while True:
                     try:
-                        event = events.get(timeout=10)
-                        data = json.dumps(event, ensure_ascii=False)
-                        self.wfile.write(f"event: update\ndata: {data}\n\n".encode())
-                    except queue.Empty:
-                        self.wfile.write(b": heartbeat\n\n")
-                    self.wfile.flush()
-            except (BrokenPipeError, ConnectionResetError):
-                pass
+                        event = await asyncio.wait_for(event_queue.get(), timeout=10)
+                        payload = json.dumps(event, ensure_ascii=False)
+                        yield f"event: update\ndata: {payload}\n\n"
+                    except TimeoutError:
+                        yield ": heartbeat\n\n"
             finally:
                 unsubscribe()
 
-        def _serve_static(self, path: str) -> None:
-            relative = "index.html" if path == "/" else path.lstrip("/")
-            requested = (application.dashboard_root / relative).resolve()
-            root = application.dashboard_root.resolve()
-            if root not in requested.parents and requested != root:
-                self._json(HTTPStatus.FORBIDDEN, {"error": "forbidden"})
-                return
-            if not requested.is_file():
-                self._json(HTTPStatus.NOT_FOUND, {"error": "not found"})
-                return
-            content_types = {
-                ".html": "text/html; charset=utf-8",
-                ".js": "text/javascript; charset=utf-8",
-                ".css": "text/css; charset=utf-8",
-                ".svg": "image/svg+xml",
-            }
-            body = requested.read_bytes()
-            self.send_response(HTTPStatus.OK)
-            self.send_header(
-                "Content-Type",
-                content_types.get(requested.suffix, "application/octet-stream"),
-            )
-            self.send_header("Content-Length", str(len(body)))
-            self.end_headers()
-            self.wfile.write(body)
+        return StreamingResponse(
+            generate(),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        )
 
-    return Handler
+    if dashboard_dist.is_dir():
+        assets = dashboard_dist / "assets"
+        if assets.is_dir():
+            app.mount("/assets", StaticFiles(directory=assets), name="dashboard-assets")
+
+        @app.get("/{path:path}", include_in_schema=False)
+        async def dashboard(path: str) -> FileResponse:
+            requested = (dashboard_dist / path).resolve()
+            root = dashboard_dist.resolve()
+            if requested.is_file() and (requested == root or root in requested.parents):
+                return FileResponse(requested)
+            return FileResponse(dashboard_dist / "index.html")
+
+    return app
 
 
-def run(host: str = "127.0.0.1", port: int = 8080) -> None:
-    dashboard_root = Path(__file__).resolve().parents[2] / "dashboard"
-    application = ControlPlaneApplication(dashboard_root)
-    server = ThreadingHTTPServer((host, port), make_handler(application))
-    application.dispatcher.start()
-    print(f"Cleany mock control plane: http://{host}:{port}")
-    try:
-        server.serve_forever()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        server.shutdown()
-        application.dispatcher.stop()
-        server.server_close()
+app = create_app()
+
+
+def run(host: str | None = None, port: int | None = None) -> None:
+    settings = Settings()
+    uvicorn.run(app, host=host or settings.host, port=port or settings.port)

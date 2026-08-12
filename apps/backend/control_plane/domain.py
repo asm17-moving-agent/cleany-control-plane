@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
-from enum import Enum
+from enum import StrEnum
 from threading import RLock
-from typing import Callable
 from uuid import uuid4
 
 
@@ -12,19 +12,19 @@ def utc_now() -> str:
     return datetime.now(UTC).isoformat()
 
 
-class Priority(str, Enum):
+class Priority(StrEnum):
     NORMAL = "NORMAL"
     HIGH = "HIGH"
 
 
-class RobotState(str, Enum):
+class RobotState(StrEnum):
     OFFLINE = "OFFLINE"
     IDLE = "IDLE"
     BUSY = "BUSY"
     ERROR = "ERROR"
 
 
-class MissionPhase(str, Enum):
+class MissionPhase(StrEnum):
     QUEUED = "QUEUED"
     OFFERED = "OFFERED"
     ACCEPTED = "ACCEPTED"
@@ -34,7 +34,7 @@ class MissionPhase(str, Enum):
     TERMINAL = "TERMINAL"
 
 
-class MissionOutcome(str, Enum):
+class MissionOutcome(StrEnum):
     SUCCESS = "SUCCESS"
     PARTIAL_SUCCESS = "PARTIAL_SUCCESS"
     HUMAN_REVIEW_REQUIRED = "HUMAN_REVIEW_REQUIRED"
