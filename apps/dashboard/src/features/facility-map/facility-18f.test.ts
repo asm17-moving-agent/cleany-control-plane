@@ -7,9 +7,9 @@ describe("18F facility map", () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it("exposes selectable mission zones and keeps storage read-only", () => {
+  it("exposes only selectable mission zones", () => {
     expect(getFacilityZone("the-grond")?.selectable).toBe(true);
-    expect(getFacilityZone("storage-north-west")?.selectable).toBe(false);
+    expect(FACILITY_ZONES.every(({ selectable }) => selectable)).toBe(true);
     expect(getFacilityZone("missing-zone")).toBeNull();
   });
 });

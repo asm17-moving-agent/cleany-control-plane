@@ -27,7 +27,7 @@ Dashboard
 ### Dashboard
 
 - React Router 기반 운영 화면과 TanStack Query 기반 server state
-- 시설 도면 기반 대화형 SVG 지도와 단일 구역 선택
+- 정제된 시설 도면 PNG와 SVG 선택 overlay를 결합한 단일 구역 선택
 - 구역·좌석을 포괄하는 Mission target과 `NORMAL`/`HIGH` 우선순위 요청
 - Mission 단계·우선순위 필터, 진행률, checkpoint 취소와 최종 결과
 - Robot heartbeat, Mission 처리율과 최근 활동 모니터링
