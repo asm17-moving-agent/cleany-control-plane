@@ -27,7 +27,7 @@ Dashboard
 ### Dashboard
 
 - React Router 기반 운영 화면과 TanStack Query 기반 server state
-- 정제된 시설 도면 PNG와 SVG 선택 overlay를 결합한 단일 구역 선택
+- 실제 안내도 비율을 반영한 가로형 SVG 도면과 SVG 선택 overlay를 결합한 구역 선택
 - 구역·좌석을 포괄하는 Mission target과 `NORMAL`/`HIGH` 우선순위 요청
 - Mission 단계·우선순위 필터, 진행률, checkpoint 취소와 최종 결과
 - Robot heartbeat, Mission 처리율과 최근 활동 모니터링
@@ -57,8 +57,37 @@ Dashboard
 - Python 3.11 이상
 - Node.js 24 이상
 - uv
-- pnpm
+- pnpm 11.21.0
 - 최신 Chromium, Chrome, Firefox 또는 Safari
+
+### pnpm이 없을 때
+
+이 저장소는 루트 `package.json`의 `packageManager`에 `pnpm@11.21.0`을 고정한다.
+먼저 `node --version`으로 Node.js 24 이상이 설치되어 있는지 확인한다. Node.js가
+없다면 [Node.js 다운로드](https://nodejs.org/en/download) 또는 운영체제 패키지
+관리자로 설치한 뒤 다음 명령으로 저장소와 같은 pnpm 버전을 설치한다.
+
+```bash
+curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION=11.21.0 sh -
+```
+
+설치가 끝나면 새 터미널을 열고 확인한다.
+
+```bash
+pnpm --version
+# 11.21.0
+```
+
+현재 checkout처럼 `apps/dashboard/dist/index.html`이 이미 존재하면 pnpm 없이도
+빌드된 Dashboard를 실행할 수 있다.
+
+```bash
+test -f apps/dashboard/dist/index.html
+uv sync --project apps/backend --extra dev
+uv run --project apps/backend python apps/backend/run.py
+```
+
+이 경우 브라우저에서 [http://127.0.0.1:8080](http://127.0.0.1:8080)을 연다.
 
 ### 실행
 
@@ -75,6 +104,37 @@ uv run --project apps/backend python apps/backend/run.py
 브라우저에서 [http://127.0.0.1:8080](http://127.0.0.1:8080)을 열고 시설 구역과
 우선순위를 선택해 Mission을 생성합니다. 서버 종료는 실행한 터미널에서 `Ctrl+C`를
 누릅니다.
+
+### 개발 서버(hot reload)
+
+Backend와 Vite를 터미널 두 개에서 실행한다.
+
+터미널 1:
+
+```bash
+uv sync --project apps/backend --extra dev
+uv run --project apps/backend python apps/backend/run.py
+```
+
+터미널 2:
+
+```bash
+pnpm install
+pnpm dev
+```
+
+브라우저에서 [http://127.0.0.1:5173](http://127.0.0.1:5173)을 연다. Vite가
+`/api` 요청을 `127.0.0.1:8080`으로 전달한다.
+
+이 Codex 작업 환경에서만 pnpm과 Node.js가 PATH에 없고 기존 `node_modules`가 남아
+있다면 다음 임시 명령으로 Vite를 직접 실행할 수도 있다. 반드시 Dashboard app
+디렉터리에서 실행해야 한다.
+
+```bash
+cd apps/dashboard
+/usr/lib/chatgpt/resources/cua_node/bin/node \
+  node_modules/vite/bin/vite.js --host 127.0.0.1
+```
 
 이미 저장소를 clone했다면 KB submodule을 별도로 초기화합니다.
 
