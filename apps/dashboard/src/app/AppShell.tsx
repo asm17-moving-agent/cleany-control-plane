@@ -31,9 +31,11 @@ const routeMeta: Record<string, { title: string; documentTitle: string }> = {
 
 export function AppShell() {
   const location = useLocation();
-  const { robot, missions, connectionState, error } = useOperations();
+  const { robot, robots, missions, connectionState, error } = useOperations();
   const meta = routeMeta[location.pathname] ?? routeMeta["/"];
   const queuedCount = missions.filter(({ phase }) => phase === "QUEUED").length;
+  const isHome = location.pathname === "/";
+  const connectedRobotCount = robots.filter(({ state }) => state !== "OFFLINE").length;
 
   useEffect(() => {
     document.title = meta.documentTitle;
@@ -41,7 +43,7 @@ export function AppShell() {
   }, [meta.documentTitle]);
 
   return (
-    <div className="app-shell min-h-screen">
+    <div className={`app-shell min-h-screen${isHome ? " is-home-workspace" : ""}`}>
       <aside className="app-sidebar">
         <div className="brand-mark" aria-label="Cleany">
           <img src={logoUrl} alt="" aria-hidden="true" />
@@ -50,9 +52,11 @@ export function AppShell() {
         <nav className="primary-nav" aria-label="주요 메뉴">
           {navigation.map(({ path, label, Icon }) => (
             <NavLink
+              aria-label={label}
               className={({ isActive }) => `nav-item${isActive ? " active" : ""}`}
               end={path === "/"}
               key={path}
+              title={label}
               to={path}
             >
               <Icon />
@@ -61,13 +65,13 @@ export function AppShell() {
           ))}
         </nav>
         <div className="sidebar-footer">
-          <span className="sidebar-robot-status">로봇 1대 연결</span>
+          <span className="sidebar-robot-status">로봇 {connectedRobotCount}대 연결</span>
           <span className="sidebar-operator"><i>OP</i><strong>운영자</strong></span>
         </div>
       </aside>
 
       <main className="app-main">
-        <header className="topbar">
+        {isHome ? null : <header className="topbar">
           <div className="topbar-copy">
             <h1>{meta.title}</h1>
             {location.pathname === "/" ? <p>오늘 공간의 청소 현황과 자동화 제안을 확인해 보세요.</p> : null}
@@ -90,7 +94,7 @@ export function AppShell() {
             <button className="icon-button" type="button" aria-label="알림"><BellIcon /></button>
             <span className="operator-avatar">OP</span><strong className="operator-name">운영자</strong><span aria-hidden="true">⌄</span>
           </div>
-        </header>
+        </header>}
         <span className="connection" data-state={connectionState} aria-live="polite">
           {error ? `API 연결 오류: ${error.message}` : connectionState === "connected" ? "LIVE" : "SSE 연결 중"}
         </span>

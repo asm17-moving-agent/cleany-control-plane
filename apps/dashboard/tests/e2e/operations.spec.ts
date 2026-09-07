@@ -1,20 +1,22 @@
 import { expect, test } from "@playwright/test";
 
-test("operator can navigate, select a facility zone, and request a mission", async ({ page }) => {
+test("operator can inspect the facility overview and dashboard pages", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: /안녕하세요, 운영자님/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: /SPACE A1.*선택 가능/ })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "부산 소마 센터 18층" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "로봇 현황" })).toBeVisible();
+  const floorSelect = page.getByLabel("운영 층 선택");
+  await expect(floorSelect).toHaveValue("BUSAN_SOMA_18F");
+  await expect(page.getByText("Cleany D1")).toBeVisible();
+  await expect(page.getByText("자동 운행")).toBeVisible();
+  await floorSelect.selectOption("BUSAN_SOMA_19F");
+  await expect(page.getByRole("heading", { level: 1, name: "부산 소마 센터 19층" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "19층 지도 연결 전" })).toBeVisible();
+  await page.getByRole("button", { name: "18층 지도 보기" }).click();
+  await expect(floorSelect).toHaveValue("BUSAN_SOMA_18F");
+  await expect(page.locator(".facility-plan-label", { hasText: "SPACE A1" })).toBeVisible();
+  await expect(page.locator(".facility-zone-overlay")).toHaveCount(0);
   await expect(page.locator(".brand-mark img")).toHaveJSProperty("complete", true);
-
-  const zone = page.getByRole("button", { name: /THE GROND.*선택 가능/ });
-  await zone.click();
-  await expect(zone).toHaveAttribute("aria-pressed", "true");
-  await expect(page.getByText("THE GROND", { exact: true }).last()).toBeVisible();
-
-  await page.getByRole("button", { name: "Mission 요청" }).click();
-  await expect(page.getByText("THE GROND 작업을 Queue에 등록했습니다.")).toBeVisible();
-  await expect(page.getByText("THE GROND", { exact: true }).first()).toBeVisible();
 
   await page.getByRole("link", { name: "미션" }).click();
   await expect(page).toHaveURL(/\/missions$/);

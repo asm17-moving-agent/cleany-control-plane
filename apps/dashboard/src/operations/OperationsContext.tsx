@@ -18,6 +18,7 @@ type ConnectionState = "connecting" | "connected" | "error";
 interface OperationsContextValue {
   seats: Seat[];
   missions: Mission[];
+  robots: Robot[];
   robot: Robot | null;
   events: OperationsEvent[];
   connectionState: ConnectionState;
@@ -89,10 +90,12 @@ export function OperationsProvider({ children }: PropsWithChildren) {
   });
 
   const errors = [seatsQuery.error, missionsQuery.error, robotsQuery.error].filter(Boolean);
+  const robots = useMemo(() => robotsQuery.data?.items ?? [], [robotsQuery.data?.items]);
   const value = useMemo<OperationsContextValue>(() => ({
     seats: seatsQuery.data?.items ?? [],
     missions: missionsQuery.data?.items ?? [],
-    robot: robotsQuery.data?.items[0] ?? null,
+    robots,
+    robot: robots[0] ?? null,
     events,
     connectionState,
     isLoading: seatsQuery.isLoading || missionsQuery.isLoading || robotsQuery.isLoading,
@@ -111,7 +114,7 @@ export function OperationsProvider({ children }: PropsWithChildren) {
     missionsQuery.data,
     missionsQuery.isLoading,
     refresh,
-    robotsQuery.data,
+    robots,
     robotsQuery.isLoading,
     seatsQuery.data,
     seatsQuery.isLoading,

@@ -15,23 +15,36 @@ export interface FacilityZone {
   selectable: true;
 }
 
+export const PORTRAIT_PLAN_WIDTH = 670;
+export const PORTRAIT_PLAN_HEIGHT = 1160;
+
+export function rotatePortraitPoint({ x, y }: FacilityPoint): FacilityPoint {
+  return { x: y, y: PORTRAIT_PLAN_WIDTH - x };
+}
+
 export const FACILITY_18F = {
   id: "facility-18f",
   name: "18층 운영 공간",
   floor: "18F",
-  viewBox: "0 0 1023 1537",
-  imageWidth: 1023,
-  imageHeight: 1537,
+  viewBox: `0 0 ${PORTRAIT_PLAN_HEIGHT} ${PORTRAIT_PLAN_WIDTH}`,
+  imageWidth: PORTRAIT_PLAN_HEIGHT,
+  imageHeight: PORTRAIT_PLAN_WIDTH,
+  orientation: "landscape",
 } as const;
 
-export const FACILITY_ZONES: FacilityZone[] = [
+type PortraitFacilityZone = Omit<FacilityZone, "points" | "center"> & {
+  points: FacilityPoint[];
+  center: FacilityPoint;
+};
+
+const PORTRAIT_FACILITY_ZONES: PortraitFacilityZone[] = [
   {
     id: "space-a1",
     label: "SPACE A1",
     shortLabel: "A1",
     category: "WORKSPACE",
-    points: [{ x: 368, y: 53 }, { x: 507, y: 53 }, { x: 507, y: 250 }, { x: 368, y: 250 }],
-    center: { x: 438, y: 152 },
+    points: [{ x: 258, y: 2 }, { x: 359, y: 2 }, { x: 359, y: 142 }, { x: 258, y: 142 }],
+    center: { x: 309, y: 72 },
     selectable: true,
   },
   {
@@ -39,8 +52,8 @@ export const FACILITY_ZONES: FacilityZone[] = [
     label: "SPACE A2",
     shortLabel: "A2",
     category: "WORKSPACE",
-    points: [{ x: 507, y: 53 }, { x: 640, y: 53 }, { x: 640, y: 250 }, { x: 507, y: 250 }],
-    center: { x: 574, y: 152 },
+    points: [{ x: 359, y: 2 }, { x: 458, y: 2 }, { x: 458, y: 142 }, { x: 359, y: 142 }],
+    center: { x: 408, y: 72 },
     selectable: true,
   },
   {
@@ -48,8 +61,8 @@ export const FACILITY_ZONES: FacilityZone[] = [
     label: "SPACE A3",
     shortLabel: "A3",
     category: "WORKSPACE",
-    points: [{ x: 640, y: 53 }, { x: 810, y: 53 }, { x: 810, y: 146 }, { x: 724, y: 250 }, { x: 640, y: 250 }],
-    center: { x: 716, y: 151 },
+    points: [{ x: 458, y: 2 }, { x: 580, y: 2 }, { x: 580, y: 69 }, { x: 512, y: 142 }, { x: 458, y: 142 }],
+    center: { x: 514, y: 72 },
     selectable: true,
   },
   {
@@ -57,8 +70,8 @@ export const FACILITY_ZONES: FacilityZone[] = [
     label: "SPACE A4",
     shortLabel: "A4",
     category: "WORKSPACE",
-    points: [{ x: 810, y: 146 }, { x: 951, y: 146 }, { x: 951, y: 312 }, { x: 724, y: 312 }, { x: 724, y: 250 }],
-    center: { x: 845, y: 230 },
+    points: [{ x: 580, y: 69 }, { x: 666, y: 69 }, { x: 666, y: 187 }, { x: 512, y: 187 }, { x: 512, y: 142 }],
+    center: { x: 600, y: 145 },
     selectable: true,
   },
   {
@@ -66,8 +79,8 @@ export const FACILITY_ZONES: FacilityZone[] = [
     label: "SPACE M1",
     shortLabel: "M1",
     category: "WORKSPACE",
-    points: [{ x: 723, y: 312 }, { x: 951, y: 312 }, { x: 951, y: 485 }, { x: 723, y: 485 }],
-    center: { x: 837, y: 398 },
+    points: [{ x: 512, y: 187 }, { x: 666, y: 187 }, { x: 666, y: 313 }, { x: 512, y: 313 }],
+    center: { x: 600, y: 250 },
     selectable: true,
   },
   {
@@ -75,8 +88,8 @@ export const FACILITY_ZONES: FacilityZone[] = [
     label: "SPACE M2",
     shortLabel: "M2",
     category: "WORKSPACE",
-    points: [{ x: 723, y: 485 }, { x: 951, y: 485 }, { x: 951, y: 651 }, { x: 723, y: 651 }],
-    center: { x: 837, y: 568 },
+    points: [{ x: 512, y: 313 }, { x: 666, y: 313 }, { x: 666, y: 442 }, { x: 512, y: 442 }],
+    center: { x: 600, y: 378 },
     selectable: true,
   },
   {
@@ -84,8 +97,8 @@ export const FACILITY_ZONES: FacilityZone[] = [
     label: "SPACE M3",
     shortLabel: "M3",
     category: "WORKSPACE",
-    points: [{ x: 723, y: 651 }, { x: 951, y: 651 }, { x: 951, y: 823 }, { x: 723, y: 823 }],
-    center: { x: 837, y: 737 },
+    points: [{ x: 512, y: 442 }, { x: 666, y: 442 }, { x: 666, y: 569 }, { x: 512, y: 569 }],
+    center: { x: 600, y: 506 },
     selectable: true,
   },
   {
@@ -93,8 +106,8 @@ export const FACILITY_ZONES: FacilityZone[] = [
     label: "THE GROND",
     shortLabel: "THE GROND",
     category: "COMMON",
-    points: [{ x: 318, y: 251 }, { x: 723, y: 251 }, { x: 723, y: 823 }, { x: 318, y: 823 }],
-    center: { x: 520, y: 537 },
+    points: [{ x: 204, y: 142 }, { x: 512, y: 142 }, { x: 512, y: 569 }, { x: 257, y: 569 }, { x: 257, y: 712 }, { x: 204, y: 712 }],
+    center: { x: 390, y: 360 },
     selectable: true,
   },
   {
@@ -102,8 +115,8 @@ export const FACILITY_ZONES: FacilityZone[] = [
     label: "D-HUB",
     shortLabel: "D-HUB",
     category: "COMMON",
-    points: [{ x: 382, y: 823 }, { x: 951, y: 823 }, { x: 951, y: 1285 }, { x: 382, y: 1285 }],
-    center: { x: 666, y: 1054 },
+    points: [{ x: 257, y: 569 }, { x: 666, y: 569 }, { x: 666, y: 969 }, { x: 312, y: 969 }, { x: 278, y: 958 }, { x: 257, y: 935 }],
+    center: { x: 462, y: 760 },
     selectable: true,
   },
   {
@@ -111,8 +124,11 @@ export const FACILITY_ZONES: FacilityZone[] = [
     label: "RELAX ZONE (W)",
     shortLabel: "RELAX W",
     category: "COMMON",
-    points: [{ x: 382, y: 1285 }, { x: 690, y: 1285 }, { x: 690, y: 1493 }, { x: 382, y: 1493 }],
-    center: { x: 536, y: 1389 },
+    // The photographed plan has a short entrance corridor above the W zone.
+    // Keep that corridor outside the selectable polygon instead of extending
+    // the zone up to the D-HUB boundary.
+    points: [{ x: 278, y: 1025 }, { x: 467, y: 1025 }, { x: 467, y: 1156 }, { x: 278, y: 1156 }],
+    center: { x: 380, y: 1091 },
     selectable: true,
   },
   {
@@ -120,11 +136,19 @@ export const FACILITY_ZONES: FacilityZone[] = [
     label: "RELAX ZONE (M)",
     shortLabel: "RELAX M",
     category: "COMMON",
-    points: [{ x: 690, y: 1285 }, { x: 951, y: 1285 }, { x: 951, y: 1493 }, { x: 690, y: 1493 }],
-    center: { x: 821, y: 1389 },
+    points: [{ x: 467, y: 969 }, { x: 666, y: 969 }, { x: 666, y: 1156 }, { x: 467, y: 1156 }],
+    center: { x: 570, y: 1063 },
     selectable: true,
   },
 ];
+
+export const FACILITY_ZONES: FacilityZone[] = PORTRAIT_FACILITY_ZONES
+  .filter(({ id }) => !id.startsWith("relax-zone-"))
+  .map((zone) => ({
+  ...zone,
+  points: zone.points.map(rotatePortraitPoint),
+  center: rotatePortraitPoint(zone.center),
+}));
 
 export function pointsToSvg(points: FacilityPoint[]) {
   return points.map(({ x, y }) => `${x},${y}`).join(" ");

@@ -322,3 +322,67 @@ select { width: 100%; border: 1px solid #b8c7d2; border-radius: 8px; padding: 13
   .settings-actions { align-items: stretch; flex-direction: column; }
   .settings-save { width: 100%; }
 }
+
+/* The Home route uses a focused fleet workspace while detail routes keep the
+   full navigation treatment above. */
+.app-shell.is-home-workspace .app-sidebar {
+  width: 72px;
+  border-right: 1px solid #dfe5e7;
+  padding: 17px 10px 14px;
+  background: #fff;
+  color: #697981;
+  box-shadow: none;
+}
+.app-shell.is-home-workspace .brand-mark {
+  width: 48px;
+  margin-bottom: 28px;
+  color: #273239;
+}
+.app-shell.is-home-workspace .brand-mark img {
+  width: 34px;
+  height: 34px;
+  filter: none;
+}
+.app-shell.is-home-workspace .brand-mark strong,
+.app-shell.is-home-workspace .nav-item span,
+.app-shell.is-home-workspace .sidebar-robot-status,
+.app-shell.is-home-workspace .sidebar-operator strong { display: none; }
+.app-shell.is-home-workspace .primary-nav { gap: 8px; }
+.app-shell.is-home-workspace .nav-item {
+  position: relative;
+  min-height: 48px;
+  border-radius: 4px;
+  padding: 0;
+  color: #7f8d94;
+}
+.app-shell.is-home-workspace .nav-item:hover { background: #f1f5f3; color: #355b4f; }
+.app-shell.is-home-workspace .nav-item.active {
+  background: #e8f5f0;
+  color: #32765f;
+  box-shadow: none;
+}
+.app-shell.is-home-workspace .nav-item.active::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: -10px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: #45ad8c;
+}
+.app-shell.is-home-workspace .nav-item svg { width: 20px; height: 20px; }
+.app-shell.is-home-workspace .sidebar-footer { justify-items: center; }
+.app-shell.is-home-workspace .sidebar-operator { display: block; }
+.app-shell.is-home-workspace .sidebar-operator i { width: 32px; height: 32px; background: #e5ece9; color: #52665e; }
+.app-shell.is-home-workspace .app-main {
+  width: calc(100% - 72px);
+  max-width: none;
+  margin-left: 72px;
+  padding: 0;
+  background: #fff;
+}
+
+@media (max-width: 760px) {
+  .app-shell.is-home-workspace .app-main { width: 100%; margin-left: 0; padding: 0; }
+}

@@ -1,116 +1,216 @@
-import type { RobotState } from "../../api/types";
-import planImageUrl from "../../assets/facility-18f-clean.png";
+import type { RobotState, Seat } from "../../api/types";
+import { DISPLAY_GRID_COLUMNS, SEAT_COLUMN_LABELS, seatPosition } from "../../lib/operations";
+import { FacilityPlanArtwork } from "./FacilityPlanArtwork";
 import {
   FACILITY_18F,
-  FACILITY_ZONES,
   getFacilityZone,
-  pointsToSvg,
 } from "./facility-18f";
 import "./facility-map.css";
 
 interface FacilityMapProps {
+  seats: Seat[];
   selectedZoneId: string | null;
-  onSelectZone: (zoneId: string) => void;
+  selectedSeatId: string | null;
+  onSelectSeat: (seatId: string) => void;
+  onBackToZones: () => void;
   robotState?: RobotState;
+  variant?: "selector" | "operations";
+  robots?: FacilityRobotMarker[];
+  selectedRobotId?: string | null;
+  onSelectRobot?: (robotId: string) => void;
 }
 
-const categoryLabel = {
-  WORKSPACE: "업무 공간",
-  COMMON: "공용 공간",
-} as const;
+export interface FacilityRobotMarker {
+  robotId: string;
+  state: RobotState;
+  x: number;
+  y: number;
+  route?: Array<{ x: number; y: number }>;
+  positionMode?: "live" | "scenario";
+}
 
-export function FacilityMap({ selectedZoneId, onSelectZone, robotState }: FacilityMapProps) {
+const robotStateLabel: Record<RobotState, string> = {
+  OFFLINE: "연결 끊김",
+  IDLE: "대기 중",
+  BUSY: "작업 중",
+  ERROR: "확인 필요",
+};
+
+export function FacilityMap({
+  seats,
+  selectedZoneId,
+  selectedSeatId,
+  onSelectSeat,
+  onBackToZones,
+  robotState,
+  variant = "selector",
+  robots,
+  selectedRobotId,
+  onSelectRobot,
+}: FacilityMapProps) {
   const selectedZone = getFacilityZone(selectedZoneId);
+  const selectedSeat = seats.find(({ seat_id }) => seat_id === selectedSeatId) ?? null;
+  const mapRobots: FacilityRobotMarker[] = robots ?? [{
+    robotId: "cleany-01",
+    state: robotState ?? "OFFLINE",
+    x: 820,
+    y: 320,
+    positionMode: "scenario",
+  }];
 
   return (
-    <div className="facility-map-shell">
+    <div className={`facility-map-shell${variant === "operations" ? " is-operations" : ""}`}>
       <div className="facility-map-stage">
-        <div className="facility-map-board">
-          <div className="facility-plan-canvas">
-            <img alt="18층 시설 배치도" className="facility-plan-image" src={planImageUrl} />
+        {selectedZone ? (
+          <div className="facility-seat-detail" key={selectedZone.id}>
+            <header className="seat-detail-heading">
+              <div className="seat-detail-breadcrumb" aria-label="지도 탐색 경로">
+                <button type="button" onClick={onBackToZones}>18층 전체</button>
+                <span aria-hidden="true">/</span>
+                <strong>{selectedZone.label}</strong>
+              </div>
+              <div>
+                <span className="seat-detail-kicker">SEAT MAP</span>
+                <h3>{selectedZone.label} 좌석 선택</h3>
+                <p>좌석을 선택하면 해당 좌석을 Mission 대상으로 지정합니다.</p>
+              </div>
+              <button className="seat-detail-back" type="button" onClick={onBackToZones}>
+                <span aria-hidden="true">←</span> 구역 다시 선택
+              </button>
+            </header>
 
-            <svg
-              aria-label={`${FACILITY_18F.name} 구역 선택 레이어`}
-              className="facility-zone-overlay"
-              role="img"
-              viewBox={FACILITY_18F.viewBox}
-            >
-              {FACILITY_ZONES.map((zone) => {
-                const selected = zone.id === selectedZoneId;
-                return (
-                  <polygon
-                    aria-label={`${zone.label} · ${categoryLabel[zone.category]} · 선택 가능`}
-                    aria-pressed={selected}
-                    className={`facility-zone-hit zone-${zone.category.toLowerCase()}${selected ? " is-selected" : ""}`}
-                    key={zone.id}
-                    onClick={() => onSelectZone(zone.id)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        event.preventDefault();
-                        onSelectZone(zone.id);
-                      }
-                    }}
-                    points={pointsToSvg(zone.points)}
-                    role="button"
-                    tabIndex={0}
-                  />
-                );
-              })}
-            </svg>
+            <div className="facility-seat-workspace">
+              <div className="facility-seat-plan">
+                <div className="facility-seat-grid" aria-label={`${selectedZone.label} 좌석 선택`}>
+                  {SEAT_COLUMN_LABELS.map((label, index) => (
+                    <span
+                      className="facility-seat-column"
+                      key={label}
+                      style={{ gridColumn: DISPLAY_GRID_COLUMNS[index], gridRow: 1 }}
+                    >
+                      {label}
+                    </span>
+                  ))}
+                  {seats.map((seat) => {
+                    const selected = seat.seat_id === selectedSeatId;
+                    const occupied = seat.occupancy === "OCCUPIED";
+                    const position = seatPosition(seat);
+                    const availability = occupied ? `${seat.occupant_name} 사용 중` : "비어 있음";
+                    return (
+                      <button
+                        aria-label={`${seat.label}번 좌석 · ${availability}${selected ? " · 선택됨" : ""}`}
+                        aria-pressed={selected}
+                        className={`facility-seat${occupied ? " is-occupied" : ""}${selected ? " is-selected" : ""}`}
+                        key={seat.seat_id}
+                        onClick={() => onSelectSeat(seat.seat_id)}
+                        style={{ gridColumn: position.column, gridRow: position.gridRow }}
+                        type="button"
+                      >
+                        <strong>{seat.label}</strong>
+                      </button>
+                    );
+                  })}
+                </div>
+                <span className="facility-seat-door door-left" aria-label="왼쪽 출입문" role="img" />
+                <span className="facility-seat-door door-right" aria-label="오른쪽 출입문" role="img" />
+              </div>
 
-            <div
-              aria-label={`cleany-01 · ${robotState ?? "연결 확인 중"} · 시나리오 위치`}
-              className="facility-robot-html"
-              role="img"
-            >
-              <span className="facility-robot-face"><i /><i /></span>
+              {variant === "selector" ? <aside className="facility-seat-summary" aria-live="polite">
+                <span className="seat-summary-label">선택한 좌석</span>
+                {selectedSeat ? (
+                  <>
+                    <strong>{selectedSeat.label}번</strong>
+                    <p>{selectedSeat.occupancy === "OCCUPIED"
+                      ? `${selectedSeat.occupant_name} 사용 중`
+                      : "현재 비어 있음"}</p>
+                    <button type="button" onClick={() => onSelectSeat(selectedSeat.seat_id)}>
+                      선택 해제
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <strong>미선택</strong>
+                    <p>배치도에서 작업할 좌석 하나를 선택하세요.</p>
+                  </>
+                )}
+                <div className="seat-detail-legend">
+                  <span><i className="available" />선택 가능</span>
+                  <span><i className="occupied" />사용 중</span>
+                  <span><i className="selected" />선택됨</span>
+                </div>
+              </aside> : null}
             </div>
           </div>
+        ) : (
+          <div className="facility-map-board" key="zone-overview">
+            <div className="facility-plan-canvas">
+            <FacilityPlanArtwork />
 
-          <aside className="facility-zone-index" aria-label="18층 구역 목록">
-            <div className="zone-index-heading">
-              <span>18F ZONE MAP</span>
-              <strong>{selectedZone?.label ?? "구역을 선택하세요"}</strong>
-              <p>도면의 구역 또는 아래 목록을 선택할 수 있습니다.</p>
+            <svg
+              aria-hidden="true"
+              className="facility-route-overlay"
+              preserveAspectRatio="none"
+              viewBox={FACILITY_18F.viewBox}
+            >
+              {mapRobots.map((mapRobot) => mapRobot.route && mapRobot.route.length > 1 ? (
+                <g key={mapRobot.robotId}>
+                  <polyline
+                    className="facility-robot-route"
+                    points={mapRobot.route.map(({ x, y }) => `${x},${y}`).join(" ")}
+                  />
+                  <circle
+                    className="facility-route-destination"
+                    cx={mapRobot.route.at(-1)?.x}
+                    cy={mapRobot.route.at(-1)?.y}
+                    r="18"
+                  />
+                </g>
+              ) : null)}
+            </svg>
+
+            {mapRobots.map((mapRobot) => (
+              <button
+                aria-label={`${mapRobot.robotId} 로봇 · ${robotStateLabel[mapRobot.state]} · ${mapRobot.positionMode === "live" ? "실시간 위치" : "시나리오 위치"}`}
+                aria-pressed={mapRobot.robotId === selectedRobotId}
+                className={`facility-robot-html${mapRobot.robotId === selectedRobotId ? " is-selected" : ""}`}
+                data-state={mapRobot.state}
+                key={mapRobot.robotId}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onSelectRobot?.(mapRobot.robotId);
+                }}
+                style={{
+                  left: `${mapRobot.x / FACILITY_18F.imageWidth * 100}%`,
+                  top: `${mapRobot.y / FACILITY_18F.imageHeight * 100}%`,
+                }}
+                type="button"
+              >
+                <span className="facility-robot-face"><i /><i /></span>
+                {mapRobot.robotId === selectedRobotId ? (
+                  <span className="facility-robot-name" aria-hidden="true">{mapRobot.robotId}</span>
+                ) : null}
+              </button>
+            ))}
             </div>
-            <div className="zone-index-group">
-              <span>업무 공간</span>
-              <div>
-                {FACILITY_ZONES.filter(({ category }) => category === "WORKSPACE").map((zone) => (
-                  <button
-                    aria-pressed={zone.id === selectedZoneId}
-                    key={zone.id}
-                    onClick={() => onSelectZone(zone.id)}
-                    type="button"
-                  >
-                    {zone.shortLabel}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="zone-index-group">
-              <span>공용 공간</span>
-              <div>
-                {FACILITY_ZONES.filter(({ category }) => category === "COMMON").map((zone) => (
-                  <button
-                    aria-pressed={zone.id === selectedZoneId}
-                    key={zone.id}
-                    onClick={() => onSelectZone(zone.id)}
-                    type="button"
-                  >
-                    {zone.shortLabel}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </aside>
-        </div>
+
+          </div>
+        )}
       </div>
 
       <div className="facility-map-note">
-        <span><i className="map-note-dot robot" />Robot 시나리오 위치</span>
-        <span><i className="map-note-swatch" />선택 가능한 구역</span>
-        {selectedZone ? <strong>{selectedZone.label} 선택됨</strong> : null}
+        {selectedZone ? (
+          <>
+            <span><i className="map-note-swatch" />{selectedZone.label} 상세</span>
+            <span><i className="map-note-dot seat" />좌석을 선택해 Mission 요청</span>
+            <strong>{selectedSeat ? `${selectedSeat.label}번 좌석 선택됨` : "좌석을 선택하세요"}</strong>
+          </>
+        ) : (
+          <>
+            <span><i className="map-note-dot robot" />Robot 위치</span>
+            <span><i className="map-note-inactive" />회색 영역: 운영 대상 외</span>
+            {mapRobots.some(({ route }) => route && route.length > 1) ? <span><i className="map-note-route" />이동 경로</span> : null}
+          </>
+        )}
       </div>
     </div>
   );

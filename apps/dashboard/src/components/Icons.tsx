@@ -34,6 +34,10 @@ export function BellIcon(props: IconProps) {
   return <svg viewBox="0 0 24 24" {...props}><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></svg>;
 }
 
+export function MapPinIcon(props: IconProps) {
+  return <svg viewBox="0 0 24 24" {...props}><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2.5" /></svg>;
+}
+
 export function SendIcon(props: IconProps) {
   return <svg viewBox="0 0 24 24" {...props}><path d="m21 3-8 18-3-7-7-3zM10 14l4-4" /></svg>;
 }
