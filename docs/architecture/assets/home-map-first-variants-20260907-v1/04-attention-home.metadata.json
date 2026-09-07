@@ -1,0 +1,32 @@
+{
+  "mode": "built-in image_gen",
+  "use_case": "ui-mockup",
+  "source": "/home/ehdrms/.codex/generated_images/01a07b90-cccb-7943-aee5-982948d3bf6c/exec-b5097e18-f68e-481a-8e1b-bacdf196dd5b.png",
+  "output": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-map-first-variants-20260907-v1/04-attention-home.png",
+  "reference_image": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/reference/original-home.png",
+  "dimensions": {
+    "width": 1672,
+    "height": 941
+  },
+  "target_dimensions": {
+    "width": 2048,
+    "height": 1152
+  },
+  "sha256": "fb71260e661d84264814f842a526b583bfb5ae7b8a782df60a32e08412499a12",
+  "source_sha256": "fb71260e661d84264814f842a526b583bfb5ae7b8a782df60a32e08412499a12",
+  "copied_without_bitmap_editing": true,
+  "prompt_file": "04-attention-home.prompt.txt",
+  "generation_attempts": 2,
+  "qa": {
+    "fleet_visible": true,
+    "issue_robot_first": true,
+    "issue_battery": "48%",
+    "orange_alert_and_marker": true,
+    "demo_and_connection_badges": true,
+    "drawer_open": false,
+    "results_separate": true,
+    "residual_issues": [
+      "Sidebar about 324px at 1672px canvas, wider than requested proportion. Orange marker has robot icon but no adjacent cleany-03 text."
+    ]
+  }
+}

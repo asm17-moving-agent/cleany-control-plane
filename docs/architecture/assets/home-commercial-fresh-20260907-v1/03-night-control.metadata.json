@@ -1,0 +1,21 @@
+{
+  "generator": "built-in imagegen",
+  "source": "/home/ehdrms/.codex/generated_images/01a07b74-9e48-7b53-9f3a-b7f17bd30c91/exec-48ea744d-cfe0-4895-bce8-65c8de1f9a94.png",
+  "width": 1672,
+  "height": 941,
+  "sha256": "1ffb63094227491811e77564c76aac8c16b740d397f76239b42438f5364a4581",
+  "source_bytes_verified": true,
+  "initial_reference_images": [],
+  "prompt": "03-night-control.prompt.txt",
+  "correction_prompt": "03-night-control.correction.prompt.txt",
+  "visually_reviewed": true,
+  "persistent_robot_status": true,
+  "map_robot_locations": true,
+  "operational_followup_entries": true,
+  "selected_seat_matches_request": "A-12",
+  "issue_count_matches_robot_state": true,
+  "notes": [
+    "생성본에 이동 막힘 상태가 포함되어 조치 건수1로 보정했다.",
+    "대기 요청에 추가 명령 예시가 생성되었다."
+  ]
+}

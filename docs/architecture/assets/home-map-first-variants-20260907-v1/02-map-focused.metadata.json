@@ -1,0 +1,34 @@
+{
+  "mode": "built-in image_gen",
+  "source_path": "/home/ehdrms/.codex/generated_images/01a07b90-7cfb-7ef0-8d92-2108a2f8702e/exec-6b8e4a17-1677-4b63-8e16-4f378e8176d0.png",
+  "reference_image_paths": [
+    "/home/ehdrms/.codex/generated_images/01a07b90-7cfb-7ef0-8d92-2108a2f8702e/exec-c93365a5-15cd-4ae8-be95-0847d327dedc.png"
+  ],
+  "original_geography_reference": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/reference/original-home.png",
+  "dimensions": {
+    "width": 1672,
+    "height": 941
+  },
+  "qa": {
+    "inspected": true,
+    "left_fleet_3": true,
+    "batteries": [
+      82,
+      67,
+      24
+    ],
+    "top_navigation": true,
+    "seat_click_hint": true,
+    "summary_actions": true,
+    "demo_label": true,
+    "robot_position_marker": true,
+    "example_position_label": true,
+    "no_large_task_card": true,
+    "no_right_drawer": true,
+    "layout": "slimmer list; larger map; two follow-up rows below map"
+  },
+  "residual_issues": [
+    "Generated size is 1672x941 rather than requested target 2048x1152.",
+    "Generated floorplan is illustrative, not a precise source SVG reproduction."
+  ]
+}

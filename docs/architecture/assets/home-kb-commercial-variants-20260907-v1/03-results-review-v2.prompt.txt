@@ -1,0 +1,31 @@
+Use case: ui-mockup edit.
+Asset type: polished Korean Cleany commercial operations dashboard screenshot.
+Input image 1 is the EXACT EDIT TARGET: the generated Cleany operations home screenshot with map/current task on top and results review workbench below.
+Input image 2 is supporting reference ONLY for the D-HUB table and chair topology in the original 18th-floor plan.
+Create one final screenshot in the same 16:9 aspect ratio and same framing as input image 1.
+
+Make ONLY the following two corrections to image 1. Keep everything else visually unchanged: page layout, dimensions, header, sidebar, typography, colors, map room boundaries, selected state colors, all other Korean texts, buttons, robot information, illustrative robot marker, map legend, task list, before/after photographs, notebook position, result summary, demo labels, footer, and spacing.
+
+CORRECTION 1 — EXTERNAL MISSION PROGRESS
+In the upper-right "현재 작업" panel, replace the existing four-step progress indicator ("이동", "관찰", "처리", "결과") with a tidy five-step indicator:
+"요청" → "이동" → "책상 작업" → "복귀" → "결과"
+Use five evenly spaced small circle nodes on one connecting line, with their labels directly below. ONLY the third node and label, "책상 작업", are highlighted as the current phase in the existing mint/navy active style. The other four nodes remain subtle neutral circles. The sequence must be exactly 요청, 이동, 책상 작업, 복귀, 결과, from left to right. Retain the text "대상 물체 처리 중" below, the "D-HUB · 12번 책상" title, the "작업 중" badge, cleany-01, the queued rows, and the recent completed row.
+
+CORRECTION 2 — CLEAN MAP SEAT REPRESENTATION
+Within D-HUB only, remove ALL the dense little individual seat numbers currently running from 01 up through the 40s. Redraw the tiny seats as clean small outline chair icons with no number or text inside. Keep the nine table arrangement in three columns by three rows from the original floorplan in input image 2:
+- Each of the three left-column tables has six chairs: three along its top edge, three along its bottom edge.
+- Each of the three middle-column tables has four chairs: two along its top edge, two along its bottom edge.
+- Each of the three right-column tables has six chairs: three along its top edge, three along its bottom edge.
+This is exactly nine rectangular tables and forty-eight outlined chairs in D-HUB. Preserve the room size and approximate current placement.
+Only four selected work seats are labeled at this map zoom level. Their complete labels appear exactly once each, as small attached status tags:
+"07 · 확인 필요" in muted amber;
+"12 · 작업 중" in mint;
+"18 · 대기" in muted blue;
+"24 · 대기" in muted blue.
+Keep these four tags and highlighted chairs near their current positions in image 1: 07 and 12 are around the middle-left D-HUB table, 18 around the upper-middle table, 24 around the lower-middle table. Do not put separate duplicate 07/12/18/24 numbers inside the chairs; the full attached status tag alone carries the seat number. Every other chair is unnumbered. There must be no duplicate seat identifiers and no isolated random numbers on the map.
+Keep the single robot marker and "예시 위치" label, and keep the full rest of the original-map room geometry unchanged.
+
+Hard preservation constraints:
+Do not change or regenerate the photos. The BEFORE photo has one paper cup at the left and a closed navy notebook on the right. AFTER shows the cup removed and the same notebook in exactly the same place. Preserve the "데모 이미지" badges.
+Keep conspicuous "데모 데이터", "관제 연결됨", "배터리 미연동", and "예시 위치" content.
+Keep the current page's calm bright warm-white commercial visual design and crisp Korean text. No extra features, no layout redesign, no new text, no OS or browser chrome, no additional image panels.

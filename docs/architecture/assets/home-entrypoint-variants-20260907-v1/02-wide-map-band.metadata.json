@@ -1,0 +1,77 @@
+{
+  "variant": "02-wide-map-band",
+  "title_ko": "가로 지도 밴드형: 상단 요청과 로봇, 중앙 전체 폭 지도, 하단 후속 진입점 3개",
+  "generator": {
+    "mode": "built-in",
+    "tool": "image_gen.imagegen"
+  },
+  "source_path": "/home/ehdrms/.codex/generated_images/01a07b79-37fd-7102-972e-2a9b0c47377f/exec-1f9bcd35-61a9-48b6-a50b-ec81ba703f6d.png",
+  "saved_path": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/02-wide-map-band.png",
+  "prompt_path": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/02-wide-map-band.prompt.txt",
+  "reference_image_paths": [
+    "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/reference/original-home.png",
+    "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/reference/top-navigation-reference.png"
+  ],
+  "dimensions": {
+    "width": 1672,
+    "height": 941
+  },
+  "sha256": "7d5761eb1b9cc420a3783ea7c45a7eaa56e4323ccb345a451d17fe0f2b2c9e89",
+  "prompt_sha256": "c68db269317035d4176dfd2da6684ec9213738d4db5bbd4701fe51802b25b1f0",
+  "generation_attempts": 2,
+  "original_preserved": true,
+  "source_copy_identical": true,
+  "generation_history": [
+    {
+      "attempt": 1,
+      "source_path": "/home/ehdrms/.codex/generated_images/01a07b79-37fd-7102-972e-2a9b0c47377f/exec-8167a484-a4d5-4a0f-be2f-74b118cba6b4.png",
+      "prompt_path": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/drafts/02-wide-map-band.initial.prompt.txt",
+      "preserved_copy_path": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/drafts/02-wide-map-band.initial.png",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024
+      },
+      "reason_for_correction": "초기 생성본이 3:2여서 공통 요구인 16:9 화면 비율로 1회 보정."
+    },
+    {
+      "attempt": 2,
+      "source_path": "/home/ehdrms/.codex/generated_images/01a07b79-37fd-7102-972e-2a9b0c47377f/exec-1f9bcd35-61a9-48b6-a50b-ec81ba703f6d.png",
+      "prompt_path": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/02-wide-map-band.prompt.txt",
+      "reference_image_paths_at_generation": [
+        "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/reference/original-home.png",
+        "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/reference/top-navigation-reference.png",
+        "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/02-wide-map-band.png"
+      ],
+      "preserved_edit_target": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/drafts/02-wide-map-band.initial.png",
+      "dimensions": {
+        "width": 1672,
+        "height": 941
+      },
+      "note": "생성 당시 세 번째 참조 경로의 내용은 보존된 initial PNG였음."
+    }
+  ],
+  "qa": {
+    "method": "Built-in generated result and saved PNG inspected using view_image.",
+    "checks": {
+      "six_entrypoint_labels_visible": true,
+      "horizontal_top_navigation": true,
+      "no_vertical_global_navigation": true,
+      "battery_82_visible": true,
+      "cleany_01_working_on_seat_12": true,
+      "demo_badge_and_connection_status_visible": true,
+      "location_map_with_example_marker_and_freshness": true,
+      "review_seat_07_count_1": true,
+      "request_summary_active_1_queued_2": true,
+      "completed_seat_03_at_1420": true,
+      "summary_level_without_stepper_or_expanded_photos": true,
+      "landscape_16_9_target": true
+    },
+    "notes": [
+      "초기 3:2 결과를 built-in imagegen으로 1회 보정하여 1672×941 최종본으로 저장함.",
+      "제목 앞에 1~6 번호가 추가로 렌더링됨. 모든 진입점 이름은 명확히 표시되며 단계표는 없음.",
+      "검토 요약에 작은 의자 아이콘이 포함됨. 전후 사진이나 펼친 물체 보고서는 없음.",
+      "지도는 참고 도면의 구역 배치를 따른 개략도이며 좌석 수와 가구 기하의 정밀 일치는 검증하지 않음.",
+      "생성된 데모 UI 이미지이며 앱 코드와 실제 동작을 변경하거나 검증하지 않음."
+    ]
+  }
+}

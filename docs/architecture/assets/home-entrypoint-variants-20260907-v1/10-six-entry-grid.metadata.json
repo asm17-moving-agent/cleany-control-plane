@@ -1,0 +1,22 @@
+{
+  "variant": 10,
+  "title": "여섯 영역 균등형",
+  "file": "10-six-entry-grid.png",
+  "source_path": "/home/ehdrms/.codex/generated_images/01a07b74-9e48-7b53-9f3a-b7f17bd30c91/exec-e87dd685-1ab2-45ab-b8ff-0e721e972e1a.png",
+  "width": 1672,
+  "height": 941,
+  "generator": "built-in imagegen",
+  "prompt_file": "10-six-entry-grid.prompt.txt",
+  "post_processing": "none; copied original bytes",
+  "qa": {
+    "six_entry_labels_visible": true,
+    "top_navigation": true,
+    "battery_82_visible": true,
+    "summary_only": true,
+    "demo_indicated": true
+  },
+  "notes": [
+    "지도는 개략도이며 일부 공간명과 좌석 도형은 원본과 차이가 있다.",
+    "로봇 그림은 제품 시안용 장식이며 실물 형상 자료가 아니다."
+  ]
+}

@@ -1,0 +1,37 @@
+Use case: ui-mockup.
+Asset type: one finished, high-fidelity commercial desktop web application screenshot, Cleany home dashboard, concept 03: results review workbench.
+Input image 1 is a reference for the existing Cleany brand and the 18th-floor facility map only. Redesign the whole page layout into a credible polished Korean B2B operations service. Preserve the meaningful geometry of the supplied floor plan. Do not reproduce browser tabs, browser address bar, operating-system chrome, pink floating tools, outer borders, or the old layout.
+Create exactly one full-screen landscape 16:9 image, preferably 1920x1080, straight-on pixel-sharp app screenshot, no device mockup, no presentation-board labels.
+
+ART DIRECTION
+Warm off-white canvas #f6f7f5, white surfaces, dark blue #17344c headings and primary action, restrained mint #4fa68a active accents, muted amber review states, blue-gray floorplan strokes. Calm professional commercial software, compact and readable, strong clear hierarchy. Exact baseline alignment, generous but useful whitespace, 8px spacing rhythm, 6 to 10px corner radii, barely visible hairline borders, subtle shadows only where necessary. Modern Korean sans-serif typography with crisp authentic Hangul. NO dark mode, no gradients, no decorative charts, no exaggerated pill-card design, no giant blank areas.
+
+LAYOUT
+Global header about 64px high: Cleany logo left, horizontal text tabs "홈" selected, "작업 요청", "결과", "로봇". Right show conspicuous warm outlined badge "데모 데이터", small green connection dot followed by "관제 연결됨", notification icon, small "OP" operator avatar.
+Below the header a narrow left facility and robot rail no wider than 180px, with small building icon and two-line facility selector "부산 소마 센터" / "18층". Robot section "로봇 1" and a compact cleany-01 row, mint "작업 중". Below: "배터리" and "미연동". Brief sidebar summary counters "작업 중 1", "대기 2", "확인 필요 1". All info compact, no huge card.
+The main content has 24px gutters. A single page title line "운영 홈", small subline "좌석별 작업과 확인할 결과를 한눈에", and top-right primary button "+ 좌석 작업 요청".
+Beneath that, the upper main area splits into a large map occupying two-thirds of available width, and a narrower current-work panel occupying one-third. The map is approximately 1080px wide by 465px tall in the final 1920 image and remains large and legible. The right panel aligns exactly to the map's top and bottom.
+The entire bottom third is a single wide integrated results-review workbench across the main content width. This horizontal workbench is the distinctive feature of this concept, it is not a right-side drawer.
+
+UPPER MAP
+Title row "18층 좌석 지도" and muted helpful text "좌석을 선택해 작업을 요청하세요", tiny minus/plus zoom controls on the right.
+Faithfully reinterpret the supplied facility map in clean thin vector-like architectural linework: SPACE A1 and A2 stacked down the left edge; SPACE A3 near upper-left diagonal wall; SPACE A4 along upper-left; SPACE M1, M2, M3 as three room bays across the top center; large empty "THE GROND" central-left lounge; D-HUB occupying the right-center with nine rectangular shared tables in a 3-by-3 arrangement and total 48 small outlined chair positions, six chairs at each left-column table and four chairs at each middle-column table and six chairs at each right-column table. RELAX ZONE is the rightmost vertical strip. Bottom service band with stairs/elevators/toilets is very pale gray, outside operating area.
+Preserve the floorplan topology; only clean up the drawing for software presentation. Neutral gray non-operation rooms; near-white operational floor. Use small legible numbered seats 01–48 in D-HUB, unobtrusive pointer affordance. Highlight only seat 12 with mint active outline and label "12 · 작업 중", seats 18 and 24 with understated blue small pills "18 · 대기" and "24 · 대기", seat 07 with small amber pill "07 · 확인 필요". A single navy robot marker close to seat 12 has a tiny attached label "예시 위치" so it cannot be mistaken for real live localization. No map roads, no extra buildings, no robot fleet.
+Below map tiny legend: "작업 중", "대기", "확인 필요", "운영 대상 외" with restrained colored dots.
+
+CURRENT-WORK PANEL
+Header "현재 작업" with a small mint badge "작업 중".
+Large clear task label "D-HUB · 12번 책상", subtitle "책상 위 물체 정리", robot identifier "cleany-01".
+A small four-step progress strip "이동 → 관찰 → 처리 → 결과" with "처리" currently highlighted. Under it concise readable line "대상 물체 처리 중".
+Thin divider, header "대기 요청 2", two compact task rows "18번 책상" with "다음 작업", "24번 책상" with "대기". Another thin divider and "최근 완료" with "03번 책상" and green "완료".
+Use real workflow density, not marketing text. Do not show pause, resume, remote stop, remote e-stop, automatic retry, or lost-property relocation controls.
+
+BOTTOM RESULTS REVIEW WORKBENCH
+About 260px high white card spanning main content width, header "확인할 결과" with amber count badge "1" and small right text link "전체 결과 보기 →". One horizontal content row with three areas:
+Left 23%: selected result heading "D-HUB · 07번 책상", amber badge "확인 필요", subtitle "미처리 물체가 남아 있습니다". Under it compact task reference "책상 위 물체 정리".
+Middle 48%: two clear photographic tabletop observation thumbnails side by side, labeled above "작업 전" and "작업 후", each also has a visible small "데모 이미지" badge. Same fixed camera viewpoint and same wood desk lighting in both images. Before image has one plain takeaway cup on the left and ONE small closed navy notebook on the right. After image has the cup removed, and the exact same closed navy notebook remains in the exact same position on the right. Natural realistic desk observation photo thumbnails, no hands, no robot manipulation shown, no people, no extra objects.
+Right 29%: compact aligned summary rows with mint check icon and text "처리" / "컵 1개", amber dot and text "미처리" / "작은 수첩 1개". Short muted text "남은 물체를 확인해 주세요". A visible outlined or navy button "결과 확인 →". Do not imply the notebook was moved, discarded, or collected.
+Footer below workbench very subtle text "표시된 작업과 이미지는 데모 데이터입니다."
+
+CRITICAL CONSTRAINTS
+This is a plausible high-quality implemented web page, not a wireframe. One robot only. Exactly one active job at seat 12, two queued jobs at seats 18 and 24, exactly one review-needed result at seat 07, and recently completed seat 03. The same state must agree across rail, map, and cards. Demo status must be visibly explicit, robot position labeled illustrative, battery unlinked. Never use "전체 청소", floor cleaning, revenue analytics, fleet maps, fake battery percentages, or hidden demo-only indicators. Make Korean text neat and concise with no random lorem ipsum. Preserve commercial spacing and visual balance.

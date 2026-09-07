@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "variant_id": "04-action-grid",
+  "title_ko": "비대칭 카드 그리드",
+  "tool": "built-in image_gen.imagegen",
+  "use_case": "ui-mockup",
+  "mode": "generate with two reference images",
+  "created_at_utc": "2026-09-07 10:53:18 UTC",
+  "source_generated_path": "/home/ehdrms/.codex/generated_images/01a07b79-b9a8-70d3-9b1d-3819a97e73da/exec-c37b3771-f18e-420e-b1de-eb2450a3bf8b.png",
+  "workspace_image_path": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/04-action-grid.png",
+  "prompt_path": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/04-action-grid.prompt.txt",
+  "prompt_sha256": "bbed0facb8b77ddf7d06e30aa97240eb374f1dea00c85cd9b72ba48f22af1891",
+  "common_brief_path": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/BRIEF.txt",
+  "common_brief_exact_prefix": true,
+  "prompt_matches_tool_argument": true,
+  "referenced_image_paths": [
+    "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/reference/original-home.png",
+    "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/reference/top-navigation-reference.png"
+  ],
+  "image": {
+    "format": "PNG",
+    "width": 1672,
+    "height": 941,
+    "bytes": 1032402,
+    "sha256": "e395e7e92539e9035cc3c1b8005caf02f374a1c848af52d9d090059517ea8b8c"
+  },
+  "source_preserved": true,
+  "image_postprocessing": "None; original PNG copied without modification.",
+  "generation_count": 1,
+  "correction_count": 0,
+  "inspection": {
+    "method": [
+      "generatedImage(result) inline rendering",
+      "view_image inspection of saved workspace PNG at original detail"
+    ],
+    "all_six_body_entry_titles_visible": true,
+    "visible_titles": [
+      "작업 요청",
+      "로봇 현황",
+      "현재 위치",
+      "검토 사항",
+      "요청 현황",
+      "최근 완료 결과"
+    ],
+    "horizontal_top_navigation": true,
+    "vertical_global_navigation": false,
+    "robot": "cleany-01",
+    "state": "작업 중",
+    "battery": "82%",
+    "assignment": "12번 좌석 작업 중",
+    "location_zone": "D-HUB",
+    "example_location_visible": true,
+    "freshness": "2초 전 갱신",
+    "demo_badge_visible": true,
+    "connection_status_visible": true,
+    "review": "1건 · 07번 좌석 · 미처리 물체 확인",
+    "request_status": "진행 1건 · 대기 2건",
+    "recent_completed": "03번 좌석 · 완료 · 14:20",
+    "expanded_form": false,
+    "workflow_stepper": false,
+    "before_after_photos": false,
+    "long_mission_list": false,
+    "primary_request_action_visible": true,
+    "result": "Pass for six-entry home concept; no critical omission requiring regeneration.",
+    "composition": "현재 위치 큰 카드를 왼쪽에 두고, 오른쪽 작업 요청·로봇 현황과 하단 검토·요청 현황·최근 완료 카드가 맞물리는 비대칭 그리드.",
+    "strengths": [
+      "현재 위치 지도와 작업 요청 버튼의 우선순위가 분명함.",
+      "검토·요청 현황·최근 완료가 하단의 독립된 짧은 카드로 읽힘."
+    ],
+    "limitations": [
+      "로봇 현황의 작은 실물형 로봇 썸네일은 생성된 예시이며 실제 모델 외형 검증 대상이 아님.",
+      "지도는 구역 배치를 참조한 시각 시안이며 정밀 도면이나 실제 좌석 위치의 증거가 아님."
+    ]
+  },
+  "scope": "Illustrative bitmap design concept. No app code, KB, contract, runtime controls or live telemetry changed."
+}

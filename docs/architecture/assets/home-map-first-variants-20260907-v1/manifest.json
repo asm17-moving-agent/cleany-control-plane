@@ -1,0 +1,61 @@
+{
+  "generator": "built-in imagegen",
+  "final_image_count": 5,
+  "images": [
+    {
+      "file": "01-balanced-home.png",
+      "width": 1672,
+      "height": 941,
+      "sha256": "da68cacb7751b9e30634100667e3f0373e70b6d33b8d0d024dd5d216ec9fa52e",
+      "source": "/home/ehdrms/.codex/generated_images/01a07b90-7cfb-7ef0-8d92-2108a2f8702e/exec-2f9a47e2-a02c-4d1c-b84c-d18adb81a580.png",
+      "prompt": "01-balanced-home.prompt.txt",
+      "metadata": "01-balanced-home.metadata.json",
+      "source_copy_verified": true,
+      "visually_reviewed": true
+    },
+    {
+      "file": "02-map-focused.png",
+      "width": 1672,
+      "height": 941,
+      "sha256": "ed99fd36686a840b2f9528ebc12a2e6c4f2fdc27daa79bc42fffa03fcaa03caa",
+      "source": "/home/ehdrms/.codex/generated_images/01a07b90-7cfb-7ef0-8d92-2108a2f8702e/exec-6b8e4a17-1677-4b63-8e16-4f378e8176d0.png",
+      "prompt": "02-map-focused.prompt.txt",
+      "metadata": "02-map-focused.metadata.json",
+      "source_copy_verified": true,
+      "visually_reviewed": true
+    },
+    {
+      "file": "03-seat-request.png",
+      "width": 1672,
+      "height": 941,
+      "sha256": "07be1a1f7a84f7c1a782169dfd3da288c8ba61d169d9bd1ec31daf9eb09d47bd",
+      "source": "/home/ehdrms/.codex/generated_images/01a07b74-9e48-7b53-9f3a-b7f17bd30c91/exec-507695c8-8015-4d29-810c-650c81ea77ab.png",
+      "prompt": "03-seat-request.prompt.txt",
+      "metadata": "03-seat-request.metadata.json",
+      "source_copy_verified": true,
+      "visually_reviewed": true
+    },
+    {
+      "file": "04-attention-home.png",
+      "width": 1672,
+      "height": 941,
+      "sha256": "fb71260e661d84264814f842a526b583bfb5ae7b8a782df60a32e08412499a12",
+      "source": "/home/ehdrms/.codex/generated_images/01a07b90-cccb-7943-aee5-982948d3bf6c/exec-b5097e18-f68e-481a-8e1b-bacdf196dd5b.png",
+      "prompt": "04-attention-home.prompt.txt",
+      "metadata": "04-attention-home.metadata.json",
+      "source_copy_verified": true,
+      "visually_reviewed": true
+    },
+    {
+      "file": "05-dense-request-home.png",
+      "width": 1672,
+      "height": 941,
+      "sha256": "78032a2232b3a6553f2e015b59bef0bbc7ff89a108b39115000156470dfbe2b9",
+      "source": "/home/ehdrms/.codex/generated_images/01a07b90-cccb-7943-aee5-982948d3bf6c/exec-14636e1c-05cf-4b3f-b8b3-04900f00fc2b.png",
+      "prompt": "05-dense-request-home.prompt.txt",
+      "metadata": "05-dense-request-home.metadata.json",
+      "source_copy_verified": true,
+      "visually_reviewed": true
+    }
+  ]
+}

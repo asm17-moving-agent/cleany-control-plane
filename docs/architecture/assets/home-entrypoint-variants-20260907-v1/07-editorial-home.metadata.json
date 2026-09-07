@@ -1,0 +1,72 @@
+{
+  "variant": "07-editorial-home",
+  "generated_on": "2026-09-07",
+  "artifact_file": "07-editorial-home.png",
+  "generator": "built-in tools.image_gen__imagegen",
+  "generation_mode": "reference-guided ui-mockup; separate built-in call per variant",
+  "prompt_file": "07-editorial-home.prompt.txt",
+  "common_brief_file": "BRIEF.txt",
+  "common_brief_included_verbatim_as_prompt_prefix": true,
+  "reference_images": [
+    {
+      "file": "reference/original-home.png",
+      "role": "facility geography and Cleany identity",
+      "view_image_inspected": true
+    },
+    {
+      "file": "reference/top-navigation-reference.png",
+      "role": "horizontal top navigation and commercial tone only",
+      "view_image_inspected": true
+    }
+  ],
+  "source_generated_path": "/home/ehdrms/.codex/generated_images/01a07b7a-43a0-7ff2-a401-780cdf286e4b/exec-a28460c3-46ba-4fd2-b600-0d2c4946e2c4.png",
+  "dimensions": {
+    "width": 1672,
+    "height": 941,
+    "unit": "px"
+  },
+  "format": "PNG",
+  "size_bytes": 947230,
+  "sha256": "40032105ec1996ff74e133df65e4f966b4dd1a5ba38c365b04f0e03e02e6cb5f",
+  "source_preserved": true,
+  "source_bytes_copied_without_editing": true,
+  "rendered_inline_with_generatedImage": true,
+  "composition": "밝은 off-white 바탕과 가는 구분선. 위 작업 요청/로봇 현황/검토 사항 3영역, 아래 지도와 요청/완료 요약.",
+  "qa": {
+    "method": "visual inspection of generated output and saved workspace file with view_image",
+    "six_body_entry_labels_visible": [
+      "작업 요청",
+      "로봇 현황",
+      "현재 위치",
+      "검토 사항",
+      "요청 현황",
+      "최근 완료 결과"
+    ],
+    "horizontal_top_navigation": true,
+    "vertical_global_navigation": false,
+    "robot_name": "cleany-01",
+    "robot_status": "작업 중",
+    "battery_visible": "82%",
+    "current_assignment": "12번 좌석 작업 중",
+    "review_summary": "07번 좌석 · 미처리 물체 확인 / 1건",
+    "request_summary": "진행 1건 · 대기 2건",
+    "completed_result": "03번 좌석 · 완료 · 14:20",
+    "demo_badge_visible": true,
+    "connection_status_distinct_from_demo": true,
+    "one_robot_map_marker": true,
+    "example_position_label_visible": true,
+    "map_freshness_visible": "2초 전 갱신",
+    "open_request_form": false,
+    "workflow_stepper": false,
+    "expanded_before_after_photos": false,
+    "long_queue_or_history_table": false,
+    "material_omission_found": false,
+    "correction_calls": 0,
+    "notes": [
+      "상단에 짧은 운영자 인사문구가 추가되었다.",
+      "완료 행은 완료 텍스트와 작은 완료 배지가 함께 있어 의미가 한 번 반복된다.",
+      "원본 도면의 구역 배치는 인식 가능하나 테이블, 벽, 서비스 설비 세부는 생성형 도식으로 단순화되었다."
+    ],
+    "runtime_functionality": "not applicable; illustrative raster mockup"
+  }
+}

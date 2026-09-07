@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "variant_id": "05-split-overview",
+  "title_ko": "좌우 균형 개요",
+  "tool": "built-in image_gen.imagegen",
+  "use_case": "ui-mockup",
+  "mode": "generate with two reference images",
+  "created_at_utc": "2026-09-07 10:53:18 UTC",
+  "source_generated_path": "/home/ehdrms/.codex/generated_images/01a07b79-b9a8-70d3-9b1d-3819a97e73da/exec-794799a1-c1b9-42eb-afb6-24953b959b62.png",
+  "workspace_image_path": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/05-split-overview.png",
+  "prompt_path": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/05-split-overview.prompt.txt",
+  "prompt_sha256": "e92c191a292c7ba90741a08ec5d7191ee03810965a663f24830dc856eae19b4a",
+  "common_brief_path": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/BRIEF.txt",
+  "common_brief_exact_prefix": true,
+  "prompt_matches_tool_argument": true,
+  "referenced_image_paths": [
+    "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/reference/original-home.png",
+    "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/reference/top-navigation-reference.png"
+  ],
+  "image": {
+    "format": "PNG",
+    "width": 1672,
+    "height": 941,
+    "bytes": 1004528,
+    "sha256": "b68eec8717c9fde121ec7765184da6b9caa8547f4ed0f55582c80d00a871788f"
+  },
+  "source_preserved": true,
+  "image_postprocessing": "None; original PNG copied without modification.",
+  "generation_count": 1,
+  "correction_count": 0,
+  "inspection": {
+    "method": [
+      "generatedImage(result) inline rendering",
+      "view_image inspection of saved workspace PNG at original detail"
+    ],
+    "all_six_body_entry_titles_visible": true,
+    "visible_titles": [
+      "작업 요청",
+      "로봇 현황",
+      "현재 위치",
+      "검토 사항",
+      "요청 현황",
+      "최근 완료 결과"
+    ],
+    "horizontal_top_navigation": true,
+    "vertical_global_navigation": false,
+    "robot": "cleany-01",
+    "state": "작업 중",
+    "battery": "82%",
+    "assignment": "12번 좌석 작업 중",
+    "location_zone": "D-HUB",
+    "example_location_visible": true,
+    "freshness": "2초 전 갱신",
+    "demo_badge_visible": true,
+    "connection_status_visible": true,
+    "review": "1건 · 07번 좌석 · 미처리 물체 확인",
+    "request_status": "진행 1건 · 대기 2건",
+    "recent_completed": "03번 좌석 · 완료 · 14:20",
+    "expanded_form": false,
+    "workflow_stepper": false,
+    "before_after_photos": false,
+    "long_mission_list": false,
+    "primary_request_action_visible": true,
+    "result": "Pass for six-entry home concept; no critical omission requiring regeneration.",
+    "composition": "왼쪽 지도·로봇 현황과 오른쪽 작업 요청·검토·요청 현황·최근 완료의 2×2 카드가 균형을 이루는 두 열.",
+    "strengths": [
+      "큰 네이비 작업 요청 버튼이 주요 진입을 강조함.",
+      "지도와 로봇 요약이 묶이고 나머지 네 업무 진입이 구분됨."
+    ],
+    "limitations": [
+      "생성 결과가 여섯 제목 앞에 1~6 번호를 붙였음. 제목과 진입점은 모두 명확해 핵심 오류로 보정하지 않음.",
+      "지도 세부 선과 좌석 개수는 시각 예시이며 실제 지리 정밀 검증 대상이 아님."
+    ]
+  },
+  "scope": "Illustrative bitmap design concept. No app code, KB, contract, runtime controls or live telemetry changed."
+}
