@@ -1,0 +1,210 @@
+{
+  "lidarOriginWebM": [
+    0.18,
+    0.46,
+    0
+  ],
+  "lidar": [
+    {
+      "y": 0.451,
+      "z": -0.095,
+      "hits": []
+    },
+    {
+      "y": 0.451,
+      "z": 0,
+      "hits": []
+    },
+    {
+      "y": 0.451,
+      "z": 0.095,
+      "hits": []
+    },
+    {
+      "y": 0.46,
+      "z": -0.095,
+      "hits": []
+    },
+    {
+      "y": 0.46,
+      "z": 0,
+      "hits": []
+    },
+    {
+      "y": 0.46,
+      "z": 0.095,
+      "hits": []
+    },
+    {
+      "y": 0.469,
+      "z": -0.095,
+      "hits": []
+    },
+    {
+      "y": 0.469,
+      "z": 0,
+      "hits": []
+    },
+    {
+      "y": 0.469,
+      "z": 0.095,
+      "hits": []
+    }
+  ],
+  "ultrasonic": [
+    {
+      "y": 0.295,
+      "z": -0.165,
+      "hits": []
+    },
+    {
+      "y": 0.289,
+      "z": -0.165,
+      "hits": []
+    },
+    {
+      "y": 0.301,
+      "z": -0.165,
+      "hits": []
+    },
+    {
+      "y": 0.295,
+      "z": -0.171,
+      "hits": []
+    },
+    {
+      "y": 0.295,
+      "z": -0.159,
+      "hits": []
+    },
+    {
+      "y": 0.295,
+      "z": 0.165,
+      "hits": []
+    },
+    {
+      "y": 0.289,
+      "z": 0.165,
+      "hits": []
+    },
+    {
+      "y": 0.301,
+      "z": 0.165,
+      "hits": []
+    },
+    {
+      "y": 0.295,
+      "z": 0.159,
+      "hits": []
+    },
+    {
+      "y": 0.295,
+      "z": 0.171,
+      "hits": []
+    }
+  ],
+  "recesses": [
+    {
+      "name": "ultrasonic-left-recess-back",
+      "point": [
+        0.1757,
+        0.295,
+        -0.165
+      ],
+      "distance": 0.1243
+    },
+    {
+      "name": "ultrasonic-right-recess-back",
+      "point": [
+        0.1757,
+        0.295,
+        0.165
+      ],
+      "distance": 0.1243
+    }
+  ],
+  "walls": [
+    {
+      "name": "lower-body",
+      "point": [
+        0.23000000417232513,
+        0.295,
+        0
+      ],
+      "distance": 0.06999999582767485
+    },
+    {
+      "name": "collection-bin-outer-shell",
+      "point": [
+        0.23000000417232513,
+        0.46,
+        0.14
+      ],
+      "distance": 0.06999999582767485
+    },
+    {
+      "name": "lower-body",
+      "point": [
+        0.23000000417232513,
+        0.4,
+        0
+      ],
+      "distance": 0.06999999582767485
+    }
+  ],
+  "shells": [
+    {
+      "name": "lower-body",
+      "bounds": [
+        [
+          -0.23000000417232513,
+          0.15899999995250255,
+          -0.2750000059604645
+        ],
+        [
+          0.23000000417232513,
+          0.40349999427795413,
+          0.2750000059604645
+        ]
+      ],
+      "normalsFinite": true
+    },
+    {
+      "name": "collection-bin-outer-shell",
+      "bounds": [
+        [
+          -0.23000000417232513,
+          0.4039999999525026,
+          -0.2750000059604645
+        ],
+        [
+          0.23000000417232513,
+          0.7915000009536743,
+          0.2750000059604645
+        ]
+      ],
+      "normalsFinite": true
+    }
+  ],
+  "originalMeshes": 128,
+  "sourceGlbSha256": "ef8f031b27c28b6e12fc40d56803a104c0bb632474953622113fd270292f3bde",
+  "scope": "Production enclosure with all 128 source GLB meshes reconstructed from their vertex/index buffers and world transforms in Firefox for ray checks. Static front aperture checks only; sensor mounting, acoustic field and full 360-degree LiDAR field of view are unverified.",
+  "browser": {
+    "framesAfterSettling": [
+      "23",
+      "23",
+      "23"
+    ],
+    "posterBytes": 144842,
+    "exteriorToggle": true,
+    "state": {
+      "diagnostics": "false",
+      "frames": "23",
+      "drawCalls": "105",
+      "triangles": "122260",
+      "loaded": "true",
+      "exterior": "true"
+    }
+  },
+  "sourceGlbUnchanged": true
+}
