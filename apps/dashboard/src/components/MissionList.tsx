@@ -1,4 +1,6 @@
 import type { Mission, Seat } from "../api/types";
+import { Link } from "react-router";
+import { formatDateTime } from "../lib/operations";
 import { missionProgress, missionTargetLabel, missionTone } from "../lib/operations";
 
 interface MissionListProps {
@@ -30,7 +32,8 @@ export function MissionList({ missions, seats, emptyMessage, onCancel }: Mission
         <div className="progress"><i style={{ width: `${missionProgress(mission.phase)}%` }} /></div>
         <p>{mission.message}</p>
         <div className="mission-footer">
-          <small>sequence {mission.sequence}</small>
+          <small>요청 {formatDateTime(mission.created_at)}</small>
+          {terminal && <Link to={"/results?mission=" + encodeURIComponent(mission.mission_id)}>결과 보기 →</Link>}
           {!terminal && onCancel ? (
             <button className="danger" type="button" onClick={() => onCancel(mission.mission_id)}>
               취소 요청

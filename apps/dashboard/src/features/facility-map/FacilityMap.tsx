@@ -1,216 +1,156 @@
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import type { RobotState, Seat } from "../../api/types";
-import { DISPLAY_GRID_COLUMNS, SEAT_COLUMN_LABELS, seatPosition } from "../../lib/operations";
+import { RobotIcon } from "../../components/Icons";
+import { TargetIcon } from "../../components/WorkspaceIcons";
+import { robotStateLabels } from "../../lib/home-summary";
 import { FacilityPlanArtwork } from "./FacilityPlanArtwork";
-import {
-  FACILITY_18F,
-  getFacilityZone,
-} from "./facility-18f";
+import { FACILITY_18F, FACILITY_ACTIVE_BOUNDS } from "./facility-18f";
+import { fitMapBounds } from "./map-viewport";
+import { D_HUB_DESK_WIDTH, D_HUB_DESK_HEIGHT, seatMapPosition } from "./seat-layout";
 import "./facility-map.css";
 
 interface FacilityMapProps {
   seats: Seat[];
-  selectedZoneId: string | null;
   selectedSeatId: string | null;
   onSelectSeat: (seatId: string) => void;
-  onBackToZones: () => void;
-  robotState?: RobotState;
-  variant?: "selector" | "operations";
-  robots?: FacilityRobotMarker[];
-  selectedRobotId?: string | null;
-  onSelectRobot?: (robotId: string) => void;
+  robots: FacilityRobotMarker[];
+  selectedRobotId: string | null;
+  onSelectRobot: (robotId: string) => void;
+  robotFocusKey?: number;
+  seatSelectionDisabled?: boolean;
 }
-
 export interface FacilityRobotMarker {
   robotId: string;
   state: RobotState;
-  x: number;
-  y: number;
-  route?: Array<{ x: number; y: number }>;
-  positionMode?: "live" | "scenario";
+  x: number; y: number;
+  positionMode: "live" | "scenario";
 }
-
-const robotStateLabel: Record<RobotState, string> = {
-  OFFLINE: "연결 끊김",
-  IDLE: "대기 중",
-  BUSY: "작업 중",
-  ERROR: "확인 필요",
-};
-
-export function FacilityMap({
-  seats,
-  selectedZoneId,
-  selectedSeatId,
-  onSelectSeat,
-  onBackToZones,
-  robotState,
-  variant = "selector",
-  robots,
-  selectedRobotId,
-  onSelectRobot,
-}: FacilityMapProps) {
-  const selectedZone = getFacilityZone(selectedZoneId);
-  const selectedSeat = seats.find(({ seat_id }) => seat_id === selectedSeatId) ?? null;
-  const mapRobots: FacilityRobotMarker[] = robots ?? [{
-    robotId: "cleany-01",
-    state: robotState ?? "OFFLINE",
-    x: 820,
-    y: 320,
-    positionMode: "scenario",
-  }];
-
+const width = FACILITY_18F.imageWidth;
+const height = FACILITY_18F.imageHeight;
+const fullBounds = { x: 0, y: 0, width, height };
+type MapView = { mode: "initial" | "active" | "all" } | { mode: "manual"; zoom: number; x: number; y: number };
+const initialView: MapView = { mode: "initial" };
+const initialZoom = 1.25;
+function clamp(value: number, min: number, max: number) { return Math.min(max, Math.max(min, value)); }
+export function FacilityMap({ seats, selectedSeatId, onSelectSeat, robots, selectedRobotId, onSelectRobot, robotFocusKey = 0, seatSelectionDisabled = false }: FacilityMapProps) {
+  const stage = useRef<HTMLDivElement>(null);
+  const [frame, setFrame] = useState({ width: 900, height: 650 });
+  const [view, setView] = useState<MapView>(initialView);
+  const [focusMotion, setFocusMotion] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const drag = useRef<{ clientX: number; clientY: number; x: number; y: number } | null>(null);
+  const fit = fitMapBounds(fullBounds, frame).scale;
+  const fitted = fitMapBounds(view.mode === "active" ? FACILITY_ACTIVE_BOUNDS : fullBounds, frame);
+  const camera = view.mode === "manual" ? view : view.mode === "initial"
+    // Start centered horizontally with the top of the floor plan in view.
+    ? { zoom: initialZoom, x: width / 2, y: frame.height / (2 * fit * initialZoom) }
+    : { zoom: fitted.scale / fit, x: fitted.x, y: fitted.y };
+  const scale = fit * camera.zoom;
+  const visibleWidth = frame.width / scale;
+  const visibleHeight = frame.height / scale;
+  const centerX = view.mode !== "manual" ? camera.x : visibleWidth >= width ? width / 2 : clamp(camera.x, visibleWidth / 2, width - visibleWidth / 2);
+  const centerY = view.mode !== "manual" ? camera.y : visibleHeight >= height ? height / 2 : clamp(camera.y, visibleHeight / 2, height - visibleHeight / 2);
+  useLayoutEffect(() => {
+    const element = stage.current;
+    if (!element) return;
+    const measure = () => {
+      if (element.clientWidth && element.clientHeight) setFrame({ width: element.clientWidth, height: element.clientHeight });
+    };
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
+    const robot = robots.find((item) => item.robotId === selectedRobotId);
+    if (robot) {
+      setFocusMotion(true);
+      setView({ mode: "manual", zoom: Math.max(1.5, camera.zoom), x: robot.x, y: robot.y });
+    }
+  }, [selectedRobotId, robotFocusKey]);
+  function centerRobot() {
+    const robot = robots.find((item) => item.robotId === selectedRobotId) ?? robots[0];
+    if (!robot) return;
+    setFocusMotion(true);
+    if (selectedRobotId !== robot.robotId) onSelectRobot(robot.robotId);
+    setView({ mode: "manual", zoom: Math.max(1.5, camera.zoom), x: robot.x, y: robot.y });
+  }
+  function zoomBy(factor: number) {
+    setFocusMotion(false);
+    setView({ mode: "manual", zoom: clamp(camera.zoom * factor, 1, 4), x: centerX, y: centerY });
+  }
+  function beginPan(event: PointerEvent<HTMLDivElement>) {
+    if (event.button !== 0 || (event.target as Element).closest("button")) return;
+    setFocusMotion(false);
+    drag.current = { clientX: event.clientX, clientY: event.clientY, x: centerX, y: centerY };
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    setDragging(true);
+  }
+  function pan(event: PointerEvent<HTMLDivElement>) {
+    if (!drag.current) return;
+    const start = drag.current;
+    setView({
+      mode: "manual", zoom: camera.zoom, x: clamp(start.x - (event.clientX - start.clientX) / scale, 0, width),
+      y: clamp(start.y - (event.clientY - start.clientY) / scale, 0, height),
+    });
+  }
+  function endPan() { drag.current = null; setDragging(false); }
   return (
-    <div className={`facility-map-shell${variant === "operations" ? " is-operations" : ""}`}>
-      <div className="facility-map-stage">
-        {selectedZone ? (
-          <div className="facility-seat-detail" key={selectedZone.id}>
-            <header className="seat-detail-heading">
-              <div className="seat-detail-breadcrumb" aria-label="지도 탐색 경로">
-                <button type="button" onClick={onBackToZones}>18층 전체</button>
-                <span aria-hidden="true">/</span>
-                <strong>{selectedZone.label}</strong>
-              </div>
-              <div>
-                <span className="seat-detail-kicker">SEAT MAP</span>
-                <h3>{selectedZone.label} 좌석 선택</h3>
-                <p>좌석을 선택하면 해당 좌석을 Mission 대상으로 지정합니다.</p>
-              </div>
-              <button className="seat-detail-back" type="button" onClick={onBackToZones}>
-                <span aria-hidden="true">←</span> 구역 다시 선택
-              </button>
-            </header>
-
-            <div className="facility-seat-workspace">
-              <div className="facility-seat-plan">
-                <div className="facility-seat-grid" aria-label={`${selectedZone.label} 좌석 선택`}>
-                  {SEAT_COLUMN_LABELS.map((label, index) => (
-                    <span
-                      className="facility-seat-column"
-                      key={label}
-                      style={{ gridColumn: DISPLAY_GRID_COLUMNS[index], gridRow: 1 }}
-                    >
-                      {label}
-                    </span>
-                  ))}
-                  {seats.map((seat) => {
-                    const selected = seat.seat_id === selectedSeatId;
-                    const occupied = seat.occupancy === "OCCUPIED";
-                    const position = seatPosition(seat);
-                    const availability = occupied ? `${seat.occupant_name} 사용 중` : "비어 있음";
-                    return (
-                      <button
-                        aria-label={`${seat.label}번 좌석 · ${availability}${selected ? " · 선택됨" : ""}`}
-                        aria-pressed={selected}
-                        className={`facility-seat${occupied ? " is-occupied" : ""}${selected ? " is-selected" : ""}`}
-                        key={seat.seat_id}
-                        onClick={() => onSelectSeat(seat.seat_id)}
-                        style={{ gridColumn: position.column, gridRow: position.gridRow }}
-                        type="button"
-                      >
-                        <strong>{seat.label}</strong>
-                      </button>
-                    );
-                  })}
-                </div>
-                <span className="facility-seat-door door-left" aria-label="왼쪽 출입문" role="img" />
-                <span className="facility-seat-door door-right" aria-label="오른쪽 출입문" role="img" />
-              </div>
-
-              {variant === "selector" ? <aside className="facility-seat-summary" aria-live="polite">
-                <span className="seat-summary-label">선택한 좌석</span>
-                {selectedSeat ? (
-                  <>
-                    <strong>{selectedSeat.label}번</strong>
-                    <p>{selectedSeat.occupancy === "OCCUPIED"
-                      ? `${selectedSeat.occupant_name} 사용 중`
-                      : "현재 비어 있음"}</p>
-                    <button type="button" onClick={() => onSelectSeat(selectedSeat.seat_id)}>
-                      선택 해제
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <strong>미선택</strong>
-                    <p>배치도에서 작업할 좌석 하나를 선택하세요.</p>
-                  </>
-                )}
-                <div className="seat-detail-legend">
-                  <span><i className="available" />선택 가능</span>
-                  <span><i className="occupied" />사용 중</span>
-                  <span><i className="selected" />선택됨</span>
-                </div>
-              </aside> : null}
-            </div>
+    <div className="facility-map-shell">
+      <div className={"facility-map-stage" + (dragging ? " is-panning" : "")} ref={stage}
+        onPointerDown={beginPan} onPointerMove={pan} onPointerUp={endPan} onPointerCancel={endPan}>
+        <div className={"facility-plan-canvas" + (focusMotion ? " is-focusing" : "")}
+          onTransitionEnd={(event) => { if (event.target === event.currentTarget && event.propertyName === "transform") setFocusMotion(false); }} style={{
+          width, height, "--map-scale": scale,
+          transform: "translate(" + (frame.width / 2 - centerX * scale) + "px, " + (frame.height / 2 - centerY * scale) + "px) scale(" + scale + ")",
+        } as CSSProperties}>
+          <FacilityPlanArtwork />
+          <div className="facility-seat-overlay" aria-label="D-HUB 좌석">
+            {seats.map((seat) => {
+              const point = seatMapPosition(seat);
+              if (!point) return null;
+              const selected = selectedSeatId === seat.seat_id;
+              return <button type="button" key={seat.seat_id} data-seat-id={seat.seat_id}
+                className={"facility-map-seat" + (selected ? " is-selected" : "")}
+                aria-label={seat.label + "번 좌석 · " + (seat.occupancy === "OCCUPIED" ? "사용 중" : "비어 있음")}
+                aria-pressed={selected} disabled={seatSelectionDisabled}
+                data-occupancy={seat.occupancy} data-row={seat.row}
+                style={{ left: point.x, top: point.y, width: D_HUB_DESK_WIDTH, height: D_HUB_DESK_HEIGHT, borderRadius: 2 }}
+                onClick={() => onSelectSeat(seat.seat_id)}>
+                <svg className="facility-workstation" viewBox={`0 0 ${D_HUB_DESK_WIDTH} ${D_HUB_DESK_HEIGHT}`} aria-hidden="true">
+                  <text x={D_HUB_DESK_WIDTH / 2} y={D_HUB_DESK_HEIGHT / 2}
+                    textAnchor="middle" dominantBaseline="central"
+                    fontSize={Math.max(13, 12 / scale)} fontWeight={selected ? 600 : 500}
+                    fill="currentColor">{seat.label}</text>
+                </svg>
+              </button>;
+            })}
           </div>
-        ) : (
-          <div className="facility-map-board" key="zone-overview">
-            <div className="facility-plan-canvas">
-            <FacilityPlanArtwork />
-
-            <svg
-              aria-hidden="true"
-              className="facility-route-overlay"
-              preserveAspectRatio="none"
-              viewBox={FACILITY_18F.viewBox}
-            >
-              {mapRobots.map((mapRobot) => mapRobot.route && mapRobot.route.length > 1 ? (
-                <g key={mapRobot.robotId}>
-                  <polyline
-                    className="facility-robot-route"
-                    points={mapRobot.route.map(({ x, y }) => `${x},${y}`).join(" ")}
-                  />
-                  <circle
-                    className="facility-route-destination"
-                    cx={mapRobot.route.at(-1)?.x}
-                    cy={mapRobot.route.at(-1)?.y}
-                    r="18"
-                  />
-                </g>
-              ) : null)}
-            </svg>
-
-            {mapRobots.map((mapRobot) => (
-              <button
-                aria-label={`${mapRobot.robotId} 로봇 · ${robotStateLabel[mapRobot.state]} · ${mapRobot.positionMode === "live" ? "실시간 위치" : "시나리오 위치"}`}
-                aria-pressed={mapRobot.robotId === selectedRobotId}
-                className={`facility-robot-html${mapRobot.robotId === selectedRobotId ? " is-selected" : ""}`}
-                data-state={mapRobot.state}
-                key={mapRobot.robotId}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onSelectRobot?.(mapRobot.robotId);
-                }}
-                style={{
-                  left: `${mapRobot.x / FACILITY_18F.imageWidth * 100}%`,
-                  top: `${mapRobot.y / FACILITY_18F.imageHeight * 100}%`,
-                }}
-                type="button"
-              >
-                <span className="facility-robot-face"><i /><i /></span>
-                {mapRobot.robotId === selectedRobotId ? (
-                  <span className="facility-robot-name" aria-hidden="true">{mapRobot.robotId}</span>
-                ) : null}
-              </button>
-            ))}
-            </div>
-
+          <div className="facility-robot-overlay" aria-label="로봇 예시 위치">
+            {robots.map((robot) => <button key={robot.robotId} type="button" data-state={robot.state}
+              className={"facility-map-robot" + (selectedRobotId === robot.robotId ? " is-selected" : "")}
+              aria-label={robot.robotId + " 로봇 · " + robotStateLabels[robot.state] + " · " + (robot.positionMode === "live" ? "실시간 위치" : "예시 위치")}
+              aria-pressed={selectedRobotId === robot.robotId} style={{ left: robot.x, top: robot.y }} onClick={() => onSelectRobot(robot.robotId)}>
+              <RobotIcon aria-hidden="true" /><span>{robot.robotId}</span>
+            </button>)}
           </div>
-        )}
+        </div>
+        <div className="facility-map-controls" aria-label="지도 조작">
+          <div className="facility-map-zoom-controls"><button type="button" aria-label="지도 확대" disabled={camera.zoom >= 4} onClick={() => zoomBy(1.25)}>+</button>
+            <button type="button" aria-label="지도 축소" disabled={camera.zoom <= 1} onClick={() => zoomBy(1 / 1.25)}>−</button>
+          </div>
+          <div className="facility-map-fit-controls">
+            <button type="button" aria-pressed={view.mode === "active"} onClick={() => setView({ mode: "active" })}>활성 구역</button>
+            <button type="button" aria-pressed={view.mode === "all"} onClick={() => setView({ mode: "all" })}>전체 보기</button>
+          </div>
+          <button type="button" disabled={!robots.length} onClick={centerRobot}><TargetIcon />로봇 중심</button>
+        </div>
       </div>
-
-      <div className="facility-map-note">
-        {selectedZone ? (
-          <>
-            <span><i className="map-note-swatch" />{selectedZone.label} 상세</span>
-            <span><i className="map-note-dot seat" />좌석을 선택해 Mission 요청</span>
-            <strong>{selectedSeat ? `${selectedSeat.label}번 좌석 선택됨` : "좌석을 선택하세요"}</strong>
-          </>
-        ) : (
-          <>
-            <span><i className="map-note-dot robot" />Robot 위치</span>
-            <span><i className="map-note-inactive" />회색 영역: 운영 대상 외</span>
-            {mapRobots.some(({ route }) => route && route.length > 1) ? <span><i className="map-note-route" />이동 경로</span> : null}
-          </>
-        )}
+      <div className="facility-map-legend" aria-label="지도 범례">
+        <span><i className="legend-working" />작업 중</span><span><i className="legend-idle" />대기</span><span><i className="legend-error" />확인 필요</span>
+        <span><i className="legend-seat" />좌석 선택</span><span><i className="legend-inactive" />운영 대상 외</span>
+        <output aria-label="지도 확대 비율">{Math.round(camera.zoom * 100)}%</output>
       </div>
     </div>
   );

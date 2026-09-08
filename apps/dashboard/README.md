@@ -1,69 +1,126 @@
-# Scenario Dashboard
+# Cleany Dashboard
 
-React와 TypeScript로 구현하고 Mock Backend와 연결해 관제 vertical slice를 검증하는
-Web UI다. Vite를 build/dev server로, React Router를 화면 이동에, TanStack Query를
-HTTP·SSE server state 관리에 사용한다.
+React·TypeScript와 Vite로 구현한 관제 UI다. React Router로 화면을 이동하고,
+TanStack Query로 HTTP 응답과 SSE 갱신을 관리한다. 현재 Backend는 Mock Dispatcher를
+사용한다.
 
-홈은 편집한 18층 가로형 도면 PNG를 고정 architectural base로 사용한다. 구역명과
-Google Material Symbols의 엘리베이터 픽토그램은 별도 SVG layer에 두어 선명도와
-좌표 편집 가능성을 유지한다. 그 위에 경로 layer와 HTML Robot marker를 겹친다.
-구역명은 현재 정보로만 표시하고 구역 click target은 렌더링하지 않는다. 좌석과
-Mission target 상호작용은 좌석 배치 좌표를 확정한 뒤 지도 위에 직접 추가한다.
-Home의 왼쪽 패널은 `/api/robots` 응답을 목록으로 표시하고 카드나 지도 marker를
-선택하면 해당 Robot 상세로 전환한다. 좌석을 선택하기 전에는 오른쪽 패널을 숨기고,
-선택 뒤에만 Mission 요청 drawer를 연다. pose, 경로와 battery는 아직 contract에 없으므로
-시나리오 위치 또는 연동 전 상태로 구분해 표시한다. 사진 안내도를 기준으로 복원한
-벽체 좌표는 CAD/BIM 원본을 확보하면 교체 검증해야 한다.
-이미지 좌표와 구역 ID는 `features/facility-map/`에서 관리한다. 실제 로봇 좌표계 및
-금지 구역과의 정합은 Robot Edge 연동 전에 별도로 확정해야 한다.
+## 홈 구성
 
-Dashboard shell은 기존 5개 운영 내비게이션을 유지한다. 홈은 왼쪽 Robot 목록 및
-상세, 중앙 시설 지도와 상단 alert popup으로 구성한다. 오른쪽 Mission drawer는 좌석을
-선택했을 때만 표시한다. 계약에 없는 telemetry와 제어를 실제 값처럼 표시하지 않는다.
+상단 메뉴, 상시 로봇 목록, 좌석 지도, 선택 시 열리는 요청 패널, 하단 업무 요약을
+`100dvh` CSS Grid로 배치한다. 왼쪽 목록은 260px, 요청 패널은 340px이며 지도는
+남은 너비를 사용한다. 상단은 64px, 하단은 104px이다. 최소 너비는 1280px이며
+더 좁은 창에서도 로봇 목록을 숨기지 않고 가로 스크롤을 허용한다. 목록과 폼은
+필요할 때 내부에서 스크롤하고, 요청 버튼은 패널 아래에 유지한다.
 
-좌측 내비게이션은 다음 화면을 제공한다.
+지도는 기존 18층 PNG와 정적 SVG(가구·구역명·엘리베이터), HTML 좌석·로봇 레이어를
+사용한다. 모든 레이어가 같은 좌표 변환을 공유한다. API의 `row`와 `grid_column`을
+`features/facility-map/seat-layout.ts`에서 D-HUB 48개 좌석에 대응한다.
+실제 로봇 좌표계 및 금지 구역과의 정합은 Robot Edge 연동 전에 별도로 확정해야 한다.
 
-- 홈: 시설 구역 선택, Mission 요청, 최근 Mission과 시나리오 제안
-- 미션: 단계·우선순위 필터와 전체 Mission 상태 및 취소
-- 모니터링: SSE 연결, Robot heartbeat, 좌석 사용률, 성공률과 최근 활동
-- 로봇: 등록 Robot의 연결 정보와 현재 할당 Mission
-- 설정: polling 주기, 실시간 표시, 기본 우선순위와 완료 알림
+D-HUB는 2번 시안의 독립 책상 형태를 사용한다. 개인 책상 중앙에 좌석 번호를 크게
+표시한다. 모니터·키보드는 표시하지 않고, 책상 바깥쪽에 작은 의자 윤곽을 표시한다. 책상 면이
+좌석 선택 영역이며 선택 시 청록색 배경과 흰색 번호로 강조한다.
 
-탭은 `/missions`, `/monitoring`, `/robots`, `/settings` URL로 유지한다. 설정값은 아직
-서버 설정 계약이 없으므로 브라우저 `localStorage`에만 저장하며, 기본 우선순위와
-SSE 오류 시 보조 polling 주기에 반영한다.
+- 좌석 클릭: 해당 좌석을 선택하고 우측 요청 패널을 연다.
+- 초기 화면: 전체 맞춤 대비 125%로 확대하고 도면 상단을 맞춰, 오른쪽 휴게 구역과 하단 일부까지 보인다.
+- 활성 구역 버튼: 흰색 작업 구역을 중심으로 화면 크기에 맞춰 확대한다.
+- 전체 보기: 회색 비운영 공간을 포함한 전체 도면을 맞춘다.
+- 확대/축소, 배경 드래그, 범위 전환: 선택된 좌석을 유지하며 지도만 조작한다.
+- 로봇 카드/마커, 로봇 중심: 해당 로봇의 예시 위치로 지도를 이동한다.
+- 카드의 화살표: 선택한 로봇의 별도 상세 페이지로 이동한다.
+- 요청 닫기 또는 패널 안에서 Escape: 폼을 닫고 좌석으로 포커스를 돌린다.
+- 19층: 지도 미연결 상태를 표시하고 좌석 요청을 제공하지 않는다.
 
-## 개발 환경
+## 요청과 요약의 데이터 경계
 
-Node.js와 pnpm 설치 및 pnpm 없이 기존 production build를 실행하는 방법은 루트
-[`README.md`](../../README.md)의 `pnpm이 없을 때`를 따른다.
+`POST /api/missions`에는 SEAT target, 우선순위, 요청자, idempotency key를 전송한다.
+로봇은 자동 할당, 명령은 책상 위 물체 확인 및 정리로 표시한다. 현재 계약에 없는
+로봇 지정과 메모는 입력받지 않는다. 같은 폼의 실패 후 재시도는 같은 idempotency key를
+사용하고, 좌석이나 우선순위가 바뀌면 새 요청으로 취급한다. 전송 중 중복 제출을 막고
+성공 후에는 생성된 Mission의 별도 페이지로 연결한다.
 
-Backend를 먼저 실행한다.
+배터리는 **미연동**, 지도 마커는 **예시 위치**다. 이동 경로와 배터리 수치를 만들지
+않는다. 로봇 상태는 `/api/robots`의 외부 상태를 표시한다. 홈의 알림과 요약은
+같은 판정 함수를 사용한다.
+
+| 홈 진입점 | 판정 | 이동 |
+| --- | --- | --- |
+| 즉시 조치 | Robot ERROR/OFFLINE | `/robots?filter=attention` |
+| 요청 현황 | QUEUED와 그 외 진행 중 phase | `/missions` |
+| 결과 검토 | terminal HUMAN_REVIEW_REQUIRED/PARTIAL_SUCCESS/BLOCKED/FAILED/INTERRUPTED | `/results?filter=review` |
+| 최근 완료 | terminal SUCCESS | `/results?filter=success` |
+
+결과 페이지는 작업 전·후 관측 참조를 표시한다. HTTP(S) 또는 같은 호스트의 상대
+URL만 링크로 제공하고, `mock://` 같은 식별자는 자료 참조 텍스트로 표시한다.
+결과 확인만으로 검토 대상 건수를 지우지 않는다. 완료 시각 계약이 없으므로
+최근 완료도 **요청 시각 최신순**이며, 시각 옆에 요청 시각임을 명시한다.
+
+상단 홈/작업/결과/로봇 메뉴에 더해 운영자 메뉴에서 기존 `/monitoring`과
+`/settings`로 이동한다. 단계·우선순위·결과·로봇 선택 필터는 URL에 반영한다.
+설정은 브라우저 `localStorage`에 저장하며 기본 우선순위와 SSE 오류 시 보조
+polling 주기에 반영한다.
+
+## 개발 및 검증
+
+Node.js와 pnpm 설치는 루트 [README](../../README.md)의 안내를 따른다.
 
 ```bash
 uv sync --project apps/backend --extra dev
 uv run --project apps/backend python apps/backend/run.py
 ```
 
-다른 터미널에서 Dashboard 개발 서버를 실행한다.
+별도 터미널에서 개발 서버를 실행한다.
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-Vite Dashboard는 [http://127.0.0.1:5173](http://127.0.0.1:5173)에서 실행되며
-`/api` 요청을 [http://127.0.0.1:8080](http://127.0.0.1:8080)으로 전달한다.
+개발 화면은 [127.0.0.1:5173](http://127.0.0.1:5173)이며 `/api`를 8080으로
+전달한다. 8080의 SPA는 마지막 `pnpm build` 결과를 제공하므로 개발 중에는
+5173에서 확인한다.
 
 ```bash
-pnpm typecheck
 pnpm test
+pnpm typecheck
+pnpm contracts:check
+uv run --project apps/backend --extra dev python -m pytest apps/backend/tests/test_contracts.py
 pnpm build
+pnpm test:e2e
 ```
 
-## Color tokens
+Vitest는 좌석 좌표/ID 정합, 요약 분류, 관측 링크, 지도 선택 유지, 요청 실패·재시도·
+중복 제출을 검사한다. Playwright 시나리오는 좌석 요청, 각 진입점, SPA 직접 접근과
+1920×1080 / 1366×768 배치를 검사한다.
 
-화면 색상은 `src/styles.css`의 Tailwind `@theme`와 compatibility CSS의 `:root`
-token을 사용한다. Background/Surface/Border, Primary, Text와 상태색을 컴포넌트에
-별도 하드코딩하지 않는다. 시설 artwork, SVG 선택 overlay와 대시보드 layout은 feature
-전용 component·CSS를 유지한다.
+2026-09-08 시각 및 동작 검증은 **네이티브 Firefox와 niri**로 수행했다. 실제 Mock
+Backend 요청과 별도 API fixture의 로딩·오류·빈 목록·재시도를 검증했으며, 당시
+실행한 항목과 캡처는 [홈 구현 검증 기록](../../docs/architecture/home-workspace.md)에
+남겼다. 이 검증을 Playwright 실행 결과로 간주하지 않는다.
+
+## 스타일
+
+상단 메뉴와 공통 페이지는 `src/app/workspace-shell.css`, 홈의 패널 배치는
+`src/pages/home-dashboard.css`, 지도 레이어는
+`src/features/facility-map/facility-map.css`에서 관리한다. 새로운 화면은 공통
+`--workspace-*` 토큰을 사용하며, 기존 모니터링·설정은 compatibility CSS를 유지한다.
+
+SPACE A1~A4와 M1~M3도 동일한 번호형 책상을 방별 4개 표시한다.
+방별 01~04는 시각적 배치 번호이며, 현재 API에 등록된 D-HUB 48석과 달리 작업 요청에는 연결되지 않는다.
+
+홈의 로봇 목록(이름·화살표) 또는 지도 로봇 아이콘을 클릭하면 지도 왼쪽에 로봇 상세 패널이 열린다.
+상태, 배터리 미연동, 마지막 확인, 현재 할당 작업, 위치 미연동을 표시하며 오른쪽 작업 요청 패널과 함께 사용할 수 있다.
+닫기 버튼 또는 패널 내부 Escape로 닫을 수 있으며, 로봇 상세와 작업 요청 패널은 모든 화면 크기에서 지도 위에 겹쳐 표시하며 지도의 크기를 바꾸지 않는다.
+
+브랜드 원본과 웹용 자산은 `src/assets/brand/`에 보관한다. 상단에는 글자 로고,
+로봇 목록·지도·탭에는 얼굴, 로봇 상세 패널·페이지에는 전신 캐릭터를 사용한다.
+제공된 원본에서 자르기·크기 조정으로 파생했으며 자세한 출처는 해당 폴더 README를 참고한다.
+
+홈 하단 업무 패널은 기본 150px/4열, 1500px 이하에서 최대 200px,
+1280px 이하에서 최대 300px/2×2로 표시한다. 화면 높이에 따라 확장을 제한하고,
+700px 이하 높이에서는 보조 목록을 숨겨 지도 조작 공간을 확보한다.
+홈의 최소 너비는 1024px이며, 실제 요청·검토 항목을 요약에 표시한다.
+
+하단 업무 패널 데모: `/?summaryDemo=1`. 즉시 조치 2건, 진행 1건, 대기 2건,
+검토 2건과 최근 완료를 화면용 fixture로 표시한다. 로봇 목록·지도·서버 데이터는
+변경하지 않으며 상단의 '실제 데이터로 돌아가기'로 해제한다.
