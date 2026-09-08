@@ -1,6 +1,7 @@
 import { Link, useSearchParams } from "react-router";
 import type { Mission } from "../api/types";
 import { ChevronIcon } from "../components/WorkspaceIcons";
+import { WorkspaceMessage } from "../components/WorkspaceMessage";
 import { byNewestRequest, isSuccessfulResult, needsResultReview, observationHref, outcomeLabels } from "../lib/home-summary";
 import { formatDateTime, missionTargetLabel } from "../lib/operations";
 import { useOperations } from "../operations/OperationsContext";
@@ -30,8 +31,8 @@ export function ResultsPage() {
     {selectedId && <p className="workspace-list-note">선택한 작업의 결과입니다. <Link to="/results">전체 결과 보기</Link></p>}
     {filter === "review" && <p className="workspace-list-note">검토 대상은 작업 결과에 따라 표시됩니다. 결과를 열어도 검토 대상에서 제외되지 않습니다.</p>}
     <div className="workspace-result-list" aria-busy={isLoading}>
-      {isLoading ? <p className="workspace-empty">작업 결과를 불러오는 중입니다.</p> : !filtered.length
-        ? <p className="workspace-empty">{error ? "작업 결과를 가져오지 못했습니다." : selectedId ? "종료된 작업 결과를 찾을 수 없습니다." : "조건에 맞는 작업 결과가 없습니다."}</p>
+      {isLoading ? <WorkspaceMessage kind="loading">작업 결과를 불러오는 중입니다.</WorkspaceMessage> : !filtered.length
+        ? <WorkspaceMessage kind={error ? "error" : "empty"}>{error ? "작업 결과를 가져오지 못했습니다." : selectedId ? "종료된 작업 결과를 찾을 수 없습니다." : "조건에 맞는 작업 결과가 없습니다."}</WorkspaceMessage>
         : filtered.map((mission) => <article className="workspace-result-card" key={mission.mission_id}>
           <header><div><h3>{missionTargetLabel(mission, seats)}</h3><small>요청 시각 {formatDateTime(mission.created_at)} · {mission.mission_id.slice(0, 8)}</small></div>
             <span className="workspace-state" data-tone={needsResultReview(mission) ? "review" : isSuccessfulResult(mission) ? "success" : "neutral"}>{mission.outcome ? outcomeLabels[mission.outcome] : "종료"}</span></header>

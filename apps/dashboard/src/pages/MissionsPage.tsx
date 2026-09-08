@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { MissionList } from "../components/MissionList";
+import { WorkspaceMessage } from "../components/WorkspaceMessage";
 import { useOperations } from "../operations/OperationsContext";
 
 type PhaseFilter = "ALL" | "ACTIVE" | "QUEUED" | "TERMINAL";
@@ -54,7 +55,7 @@ export function MissionsPage() {
         </div>
         {cancelError && <p role="alert" className="workspace-api-error">{cancelError}</p>}
         <div className="missions mission-catalog" aria-busy={isLoading}>
-          {isLoading ? <p className="workspace-empty">작업 요청을 불러오는 중입니다.</p> : <MissionList
+          {isLoading ? <WorkspaceMessage kind="loading">작업 요청을 불러오는 중입니다.</WorkspaceMessage> : <MissionList
             missions={filtered}
             seats={seats}
             emptyMessage={error ? "작업 요청을 가져오지 못했습니다." : "조건에 맞는 작업 요청이 없습니다."}

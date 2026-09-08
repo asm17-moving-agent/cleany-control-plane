@@ -2,7 +2,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useOutletContext, useSearchParams } from "react-router";
 import type { FacilityFloor, FacilitySelection } from "../app/AppShell";
 import { FacilityMap, type FacilityRobotMarker } from "../features/facility-map/FacilityMap";
-import { BatteryIcon, ChevronIcon } from "../components/WorkspaceIcons";
+import { ChevronIcon } from "../components/WorkspaceIcons";
+import { BatteryStatus } from "../components/BatteryStatus";
+import { WorkspaceMessage } from "../components/WorkspaceMessage";
+import { MapOverlayPanel } from "../components/MapOverlayPanel";
 import { RobotDetailPanel } from "../components/RobotDetailPanel";
 import { SeatMissionPanel } from "../components/SeatMissionPanel";
 import { needsRobotAttention } from "../lib/home-summary";
@@ -121,15 +124,15 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
         <aside className={"home-robot-panel" + (selectedRobot ? " is-hidden" : "")} aria-label="로봇 목록" inert={!!selectedRobot} aria-hidden={!!selectedRobot}>
           <div className="home-robot-heading"><h2>로봇 목록</h2><span>{robots.length}대</span></div>
           <div className="home-robot-list" aria-busy={isLoading}>
-            {isLoading && !robots.length ? <p className="workspace-empty">로봇 정보를 불러오는 중입니다.</p> : null}
-            {!isLoading && !robots.length && <p className="workspace-empty">{error ? "로봇 정보를 가져오지 못했습니다." : "등록된 로봇이 없습니다."}</p>}
+            {isLoading && !robots.length ? <WorkspaceMessage kind="loading">로봇 정보를 불러오는 중입니다.</WorkspaceMessage> : null}
+            {!isLoading && !robots.length && <WorkspaceMessage kind={error ? "error" : "empty"}>{error ? "로봇 정보를 가져오지 못했습니다." : "등록된 로봇이 없습니다."}</WorkspaceMessage>}
             {robots.map((robot) => {
               const active = missions.find((mission) => mission.mission_id === robot.active_mission_id);
               return <article key={robot.robot_id} aria-label={robot.robot_id} data-state={robot.state} className={"home-robot-row" + (robot.robot_id === selectedRobotId ? " is-selected" : "")}>
                 <button type="button" className="home-robot-select" aria-label={robot.robot_id + " 상세 열기"} aria-pressed={robot.robot_id === selectedRobotId} onClick={() => selectRobot(robot.robot_id)}>
                   <span className="home-robot-thumbnail"><img src="/models/cleany-exterior-poster.png" alt="" /></span>
                   <span className="home-robot-identity"><strong>{robot.robot_id}</strong><RobotStateBadge state={robot.state} />{active && <small>{missionTargetLabel(active, seats)}</small>}
-                    <span className="home-battery" aria-label="배터리 미연동"><BatteryIcon /><small>배터리 미연동</small></span>
+                    <BatteryStatus compact />
                   </span>
                   <span className="home-robot-chevron" aria-hidden="true"><ChevronIcon /></span>
                 </button>
@@ -137,17 +140,17 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
             })}
           </div>
         </aside>
-          <div className={"home-robot-drawer" + (selectedRobot ? " is-open" : "")} inert={!selectedRobot} aria-hidden={!selectedRobot}>
+          <MapOverlayPanel className="home-robot-drawer" open={!!selectedRobot}>
             {displayedRobot && <RobotDetailPanel robot={displayedRobot} mission={missions.find((mission) => mission.mission_id === displayedMissionId)} seats={seats} unavailable={!!error || isLoading} onClose={closeRobot} attentionCount={robots.filter(needsRobotAttention).length} />}
-          </div>
+          </MapOverlayPanel>
           {floor.mapAvailable ? <FacilityMap seats={displaySeats} robots={mapRobots} selectedSeatId={selectedSeatId}
             overlayInsetLeft={320}
             onSelectSeat={selectSeat} selectedRobotId={selectedRobotId}
             onSelectRobot={selectRobot} robotFocusKey={robotFocusKey} seatSelectionDisabled={isLoading || !!error || isCreatingMission}
           /> : <div className="floor-map-empty"><span>19F</span><h2>19층 지도 연결 전</h2><p>상단의 운영 층에서 18층을 선택하면 좌석 지도를 볼 수 있습니다.</p></div>}
-        <div className="home-request-drawer" inert={!selectedSeat} aria-hidden={!selectedSeat}>
+        <MapOverlayPanel className="home-request-drawer" open={!!selectedSeat}>
           {(selectedSeat || closingSeat) && floor.mapAvailable && <SeatMissionPanel key={(selectedSeat || closingSeat)!.seat_id} seat={(selectedSeat || closingSeat)!} unavailable={!!error || isLoading || summaryDemo} onClose={closeRequest} onSubmitted={mission => setPendingMissionId(mission.mission_id)} />}
-        </div>
+        </MapOverlayPanel>
           </div>
         </section>
 
