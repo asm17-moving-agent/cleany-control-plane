@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import type { RobotState, Seat } from "../../api/types";
-import { RobotIcon } from "../../components/Icons";
+import robotFaceClassic from "../../assets/brand/robot-face-classic.svg";
 import { robotStateLabels } from "../../lib/home-summary";
 import { FacilityPlanArtwork } from "./FacilityPlanArtwork";
 import { FACILITY_18F, FACILITY_ACTIVE_BOUNDS } from "./facility-18f";
@@ -19,6 +19,7 @@ interface FacilityMapProps {
   robotFocusKey?: number;
   seatSelectionDisabled?: boolean;
   highlightedSeatIds?: ReadonlySet<string>;
+  overlayInsetLeft?: number;
 }
 export interface FacilityRobotMarker {
   robotId: string;
@@ -33,7 +34,7 @@ type MapView = { mode: "initial" | "active" | "all" } | { mode: "manual"; zoom: 
 const initialView: MapView = { mode: "initial" };
 const initialZoom = 1.25;
 function clamp(value: number, min: number, max: number) { return Math.min(max, Math.max(min, value)); }
-export function FacilityMap({ seats, selectedSeatId, onSelectSeat, robots, selectedRobotId, onSelectRobot, robotFocusKey = 0, seatSelectionDisabled = false, highlightedSeatIds }: FacilityMapProps) {
+export function FacilityMap({ seats, selectedSeatId, onSelectSeat, robots, selectedRobotId, onSelectRobot, robotFocusKey = 0, seatSelectionDisabled = false, highlightedSeatIds, overlayInsetLeft = 0 }: FacilityMapProps) {
   const stage = useRef<HTMLDivElement>(null);
   const [frame, setFrame] = useState({ width: 900, height: 650 });
   const [view, setView] = useState<MapView>(initialView);
@@ -41,11 +42,15 @@ export function FacilityMap({ seats, selectedSeatId, onSelectSeat, robots, selec
   const [dragging, setDragging] = useState(false);
   const drag = useRef<{ clientX: number; clientY: number; x: number; y: number } | null>(null);
   const fit = fitMapBounds(fullBounds, frame).scale;
-  const fitted = fitMapBounds(view.mode === "active" ? FACILITY_ACTIVE_BOUNDS : fullBounds, frame);
+  const inset = Math.min(overlayInsetLeft, frame.width * .4);
+  const fitted = fitMapBounds(view.mode === "active" ? FACILITY_ACTIVE_BOUNDS : fullBounds, { ...frame, width: frame.width - inset });
+  const initialFit = fitMapBounds(FACILITY_ACTIVE_BOUNDS, { ...frame, width: frame.width - inset });
   const camera = view.mode === "manual" ? view : view.mode === "initial"
     // Start centered horizontally with the top of the floor plan in view.
-    ? { zoom: initialZoom, x: width / 2, y: frame.height / (2 * fit * initialZoom) }
-    : { zoom: fitted.scale / fit, x: fitted.x, y: fitted.y };
+    ? inset > 0
+      ? { zoom: initialFit.scale / fit, x: initialFit.x - inset / (2 * initialFit.scale), y: frame.height / (2 * initialFit.scale) - 16 / initialFit.scale + FACILITY_ACTIVE_BOUNDS.y }
+      : { zoom: initialZoom, x: width / 2, y: frame.height / (2 * fit * initialZoom) }
+    : { zoom: fitted.scale / fit, x: fitted.x - inset / (2 * fitted.scale), y: fitted.y };
   const scale = fit * camera.zoom;
   const visibleWidth = frame.width / scale;
   const visibleHeight = frame.height / scale;
@@ -129,7 +134,9 @@ export function FacilityMap({ seats, selectedSeatId, onSelectSeat, robots, selec
               className={"facility-map-robot" + (selectedRobotId === robot.robotId ? " is-selected" : "")}
               aria-label={robot.robotId + " 로봇 · " + robotStateLabels[robot.state] + " · " + (robot.positionMode === "live" ? "실시간 위치" : "예시 위치")}
               aria-pressed={selectedRobotId === robot.robotId} style={{ left: robot.x, top: robot.y }} onClick={() => onSelectRobot(robot.robotId)}>
-              <RobotIcon aria-hidden="true" /><span>{robot.robotId}</span>
+              <img src={robotFaceClassic} alt="" width="28" height="20" draggable={false} />
+              <span className="facility-map-robot-status" aria-hidden="true" />
+              <span className="facility-map-robot-label" aria-hidden="true">{robot.robotId} · {robotStateLabels[robot.state]}</span>
             </button>)}
           </div>
         </div>

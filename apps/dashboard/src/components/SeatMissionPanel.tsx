@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link } from "react-router";
-import type { Priority, Seat } from "../api/types";
+import type { Mission, Priority, Seat } from "../api/types";
 import { CloseIcon, ChevronIcon } from "./WorkspaceIcons";
 import { SendIcon } from "./Icons";
 import { useOperations } from "../operations/OperationsContext";
 import { useSettings } from "../settings/SettingsContext";
 import { seatZoneLabel, seatOccupancyLabel, seatDisplayLabel } from "../lib/operations";
 
-export function SeatMissionPanel({ seat, unavailable, onClose }: {
-  seat: Seat; unavailable: boolean; onClose: () => void;
+export function SeatMissionPanel({ seat, unavailable, onClose, onSubmitted }: {
+  seat: Seat; unavailable: boolean; onClose: () => void; onSubmitted?: (mission: Mission) => void;
 }) {
   const { createMission, isCreatingMission, robots } = useOperations();
   const { settings } = useSettings();
@@ -35,7 +35,8 @@ export function SeatMissionPanel({ seat, unavailable, onClose }: {
         priority, requested_by: "scenario-operator", idempotency_key: attempt.current.key,
       });
       setSubmittedId(mission.mission_id);
-      setMessage(label + "번 좌석 작업을 대기열에 등록했습니다.");
+      setMessage(label + "번 좌석 작업을 대기열에 등록했습니다." + (onSubmitted ? " 로봇이 배정되면 상세 패널이 열립니다." : ""));
+      onSubmitted?.(mission);
     } catch (error) {
       setFailed(true);
       setMessage(error instanceof Error ? error.message : "요청을 보내지 못했습니다. 다시 시도해 주세요.");

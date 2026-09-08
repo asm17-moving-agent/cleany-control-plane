@@ -76,12 +76,15 @@
 .facility-map-seat:disabled { opacity: .5; }
 .facility-workstation { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .facility-workstation text { stroke: none; }
-.facility-map-robot { position: absolute; display: grid; place-items: center; width: 36px; height: 36px; border: 2px solid currentColor; border-radius: 50%; padding: 4px; background: #fff; color: var(--workspace-teal); box-shadow: 0 3px 10px #173e561a; transform: translate(-50%, -50%); pointer-events: auto; }
-.facility-map-robot > svg { width: 25px; height: 25px; }
+.facility-map-robot { position: absolute; display: grid; place-items: center; width: 40px; height: 36px; border: 0; border-radius: 6px; padding: 0; background: transparent; color: var(--workspace-teal); transform: translate(-50%, -50%) scale(calc(1 / var(--map-scale))); pointer-events: auto; cursor: pointer; }
+.facility-map-robot > img { display: block; width: 28px; height: 20px; object-fit: contain; pointer-events: none; }
 .facility-map-robot[data-state="IDLE"] { color: var(--workspace-blue); }
 .facility-map-robot[data-state="ERROR"], .facility-map-robot[data-state="OFFLINE"] { color: var(--workspace-danger); }
-.facility-map-robot:hover, .facility-map-robot.is-selected { box-shadow: 0 0 0 5px #8baeb02b; }
-.facility-map-robot > span { position: absolute; top: calc(100% + 5px); left: 50%; transform: translateX(-50%); border: 1px solid currentColor; border-radius: 3px; padding: 1px 6px; background: #fff; color: inherit; font-size: max(10px, calc(10px / var(--map-scale))); white-space: nowrap; pointer-events: none; }
+.facility-map-robot:hover, .facility-map-robot:focus-visible, .facility-map-robot.is-selected { z-index: 1; }
+.facility-map-robot:focus-visible { outline: 2px solid currentColor; outline-offset: 1px; }
+.facility-map-robot-status { position: absolute; top: 4px; right: 2px; width: 8px; height: 8px; border: 1.5px solid #fff; border-radius: 50%; background: currentColor; pointer-events: none; }
+.facility-map-robot-label { position: absolute; top: calc(100% + 1px); left: 50%; display: none; transform: translateX(-50%); border: 1px solid currentColor; border-radius: 4px; padding: 3px 7px; background: #fff; color: inherit; font-size: 11px; font-weight: 550; line-height: 1.4; white-space: nowrap; pointer-events: none; }
+.facility-map-robot:hover .facility-map-robot-label, .facility-map-robot:focus-visible .facility-map-robot-label, .facility-map-robot.is-selected .facility-map-robot-label { display: block; }
 .facility-map-controls { position: absolute; z-index: 6; left: calc(20px + var(--facility-map-controls-offset, 0px)); bottom: 20px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; cursor: default; }
 .facility-map-zoom-controls { display: flex; flex-direction: column; border: 1px solid #ced9e1; border-radius: 4px; overflow: hidden; background: #fff; }
 .facility-map-controls button { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 34px; border: 1px solid #ced9e1; border-radius: 4px; padding: 6px 10px; background: #fff; color: #435663; box-shadow: 0 2px 6px #233a4e05; font-size: 12px; }
