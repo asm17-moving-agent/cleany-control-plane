@@ -11,7 +11,7 @@ import { AppShell } from "./AppShell";
 export function App() {
   return (
     <Routes>
-      <Route path="robot-model" element={<RobotModelPage />} />
+      {import.meta.env.DEV && <Route path="robot-model" element={<RobotModelPage />} />}
       <Route element={<AppShell />}>
         <Route index element={<HomePage />} />
         <Route path="missions" element={<MissionsPage />} />

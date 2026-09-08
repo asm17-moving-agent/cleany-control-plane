@@ -2,6 +2,10 @@ import { RobotModel } from "../components/RobotModel";
 import { useEffect } from "react";
 import { Link } from "react-router";
 export function RobotModelPage() {
-  useEffect(() => { document.title = "모델 둘러보기 · Cleany"; }, []);
-  return <main className="robot-model-page"><nav className="robot-model-page-nav"><Link to="/robots">← 로봇 관리</Link><span>CLEANY · MODEL STUDIO</span></nav><h2>Cleany 모델</h2><p>로봇의 구조를 살펴보는 3D 미리보기입니다. 실제 로봇의 현재 자세를 표시하지 않습니다.</p><RobotModel initiallyOpen /></main>;
+  useEffect(() => {
+    const title = document.title;
+    document.title = "로봇 프리뷰 · Cleany";
+    return () => { document.title = title; };
+  }, []);
+  return <main className="robot-model-page"><nav className="robot-model-page-nav"><Link to="/robots">← 로봇 관리</Link><span>개발용 미리보기</span></nav><h1>로봇 프리뷰</h1><p>마우스를 올려 가볍게 둘러보고,<br />드래그하여 원하는 방향에서 확인하세요.</p><RobotModel /></main>;
 }

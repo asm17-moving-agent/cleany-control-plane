@@ -3,8 +3,9 @@ import { Link, useOutletContext, useSearchParams } from "react-router";
 import type { FacilityFloor, FacilitySelection } from "../app/AppShell";
 import { FacilityMap, type FacilityRobotMarker } from "../features/facility-map/FacilityMap";
 import { BatteryIcon, CheckIcon, ChevronIcon, EyeIcon, ShieldIcon } from "../components/WorkspaceIcons";
-import { MissionIcon, RobotIcon } from "../components/Icons";
+import { MissionIcon } from "../components/Icons";
 import { RobotDetailPanel } from "../components/RobotDetailPanel";
+import { RobotModel } from "../components/RobotModel";
 import { SeatMissionPanel } from "../components/SeatMissionPanel";
 import { getHomeSummary, outcomeLabels, robotStateLabels } from "../lib/home-summary";
 import { formatDateTime, missionTargetLabel } from "../lib/operations";
@@ -77,13 +78,14 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
             {!isLoading && !robots.length && <p className="workspace-empty">{error ? "로봇 정보를 가져오지 못했습니다." : "등록된 로봇이 없습니다."}</p>}
             {robots.map((robot) => {
               const active = missions.find((mission) => mission.mission_id === robot.active_mission_id);
-              return <article key={robot.robot_id} data-state={robot.state} className={"home-robot-row" + (robot.robot_id === selectedRobotId ? " is-selected" : "")}>
+              return <article key={robot.robot_id} aria-label={robot.robot_id} data-state={robot.state} className={"home-robot-row" + (robot.robot_id === selectedRobotId ? " is-selected" : "")}>
                 <button type="button" className="home-robot-select" aria-label={robot.robot_id + " 상세 열기"} aria-pressed={robot.robot_id === selectedRobotId} onClick={() => selectRobot(robot.robot_id)}>
-                  <span className="home-robot-icon"><RobotIcon /></span>
-                  <span className="home-robot-identity"><strong>{robot.robot_id}</strong><span>{robotStateLabels[robot.state]}</span>{active && <small>{missionTargetLabel(active, seats)}</small>}</span>
-                  <span className="home-battery" aria-label="배터리 미연동"><BatteryIcon /><small>미연동</small></span>
+                  <span className="home-robot-identity"><strong>{robot.robot_id}</strong><span className="home-robot-state">{robotStateLabels[robot.state]}</span>{active && <small>{missionTargetLabel(active, seats)}</small>}
+                    <span className="home-battery" aria-label="배터리 미연동"><BatteryIcon /><small>미연동</small></span>
+                  </span>
                   <span className="home-robot-chevron" aria-hidden="true"><ChevronIcon /></span>
                 </button>
+                <RobotModel compact />
               </article>;
             })}
           </div>

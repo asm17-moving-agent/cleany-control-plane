@@ -1,5 +1,4 @@
 import { Link, useSearchParams } from "react-router";
-import { RobotLargeIcon } from "../components/Icons";
 import { RobotModel } from "../components/RobotModel";
 import { ChevronIcon } from "../components/WorkspaceIcons";
 import { needsRobotAttention, robotStateLabels } from "../lib/home-summary";
@@ -28,14 +27,14 @@ export function RobotsPage() {
           <strong>{robot.robot_id}</strong><span className="workspace-state" data-state={robot.state}>{robotStateLabels[robot.state]}</span>
         </Link>)}
       </nav>{selected ? <article className="workspace-robot-detail">
-        <header><RobotLargeIcon /><h3>{selected.robot_id}</h3><span className="workspace-state" data-state={selected.state}>{robotStateLabels[selected.state]}</span></header>
+        <header><h3>{selected.robot_id}</h3><span className="workspace-state" data-state={selected.state}>{robotStateLabels[selected.state]}</span></header>
+        <div className="workspace-robot-overview"><RobotModel key={selected.robot_id} />
         <dl><div><dt>현재 상태</dt><dd>{robotStateLabels[selected.state]}</dd></div><div><dt>마지막 확인</dt><dd>{formatDateTime(selected.last_seen_at)}</dd></div>
-          <div><dt>배터리</dt><dd>미연동</dd></div><div><dt>현재 위치</dt><dd>실시간 좌표 미연동</dd></div></dl>
+          <div><dt>배터리</dt><dd>미연동</dd></div><div><dt>현재 위치</dt><dd>실시간 좌표 미연동</dd></div></dl></div>
         {needsRobotAttention(selected) && <p className="workspace-api-error" style={{ marginTop: 24 }}>{selected.state === "OFFLINE" ? "로봇 연결이 끊겼습니다. 현장 상태와 네트워크를 확인해 주세요." : "로봇에 오류가 있습니다. 현장 상태를 확인해 주세요."}</p>}
         <section className="workspace-robot-assignment"><h4>현재 작업</h4>{active
           ? <><p><strong>{missionTargetLabel(active, seats)}</strong> · {active.phase}</p><p>{active.message}</p><Link to={"/missions?mission=" + encodeURIComponent(active.mission_id)}>요청 상세 보기 →</Link></>
           : <p>할당된 작업이 없습니다.</p>}</section>
-        <RobotModel key={selected.robot_id} />
       </article> : <p className="workspace-empty">선택한 로봇을 찾을 수 없습니다.</p>}</div>}
   </section>;
 }

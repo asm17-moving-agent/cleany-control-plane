@@ -15,11 +15,15 @@ it("opens robot details from the roster and map and closes without leaving home"
  expect(within(screen.getByRole("complementary", { name: "로봇 현황" })).queryByRole("link")).not.toBeInTheDocument();
  expect(screen.queryByRole("complementary", { name: "로봇 상세" })).not.toBeInTheDocument();
  expect(within(screen.getByRole("complementary", { name: "로봇 현황" })).getAllByRole("button")).toHaveLength(1);
+ const roster = within(screen.getByRole("complementary", { name: "로봇 현황" }));
+ fireEvent.click(roster.getByRole("figure", { name: "Cleany 외형 미리보기" }));
+ expect(screen.queryByRole("complementary", { name: "로봇 상세" })).not.toBeInTheDocument();
  fireEvent.click(screen.getByRole("button", { name: "cleany-01 상세 열기" }));
  fireEvent.click(screen.getByRole("button", { name: "cleany-01 상세 열기" }));
  expect(screen.queryByRole("complementary", { name: "로봇 상세" })).not.toBeInTheDocument();
  fireEvent.click(screen.getByRole("button", { name: "cleany-01 상세 열기" }));
  let panel = screen.getByRole("complementary", { name: "로봇 상세" });
+ expect(within(panel).queryByRole("figure", { name: "Cleany 외형 미리보기" })).not.toBeInTheDocument();
  expect(within(panel).getByText("미연동")).toBeInTheDocument();
  expect(within(panel).getByText("현재 할당된 작업이 없습니다.")).toBeInTheDocument();
  fireEvent.click(within(panel).getByRole("button", { name: "로봇 상세 닫기" }));
