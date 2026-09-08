@@ -33,7 +33,7 @@ const enterViewport = () => act(() => intersect([{ isIntersecting: true }]));
 describe("RobotModel", () => {
   it("keeps a poster until near the viewport, then loads without a click", async () => {
     render(<RobotModel />);
-    expect(screen.getByAltText("Cleany 로봇 외형")).toBeVisible();
+    expect(screen.getByAltText("Cleany 대기 자세와 외장 시안")).toBeVisible();
     expect(screen.queryByTestId("model-canvas")).not.toBeInTheDocument();
     enterViewport();
     expect(await screen.findByTestId("model-canvas")).toBeInTheDocument();
@@ -45,7 +45,7 @@ describe("RobotModel", () => {
     finePointer = false;
     render(<RobotModel />);
     enterViewport();
-    expect(screen.getByAltText("Cleany 로봇 외형")).toBeVisible();
+    expect(screen.getByAltText("Cleany 대기 자세와 외장 시안")).toBeVisible();
     expect(screen.queryByTestId("model-canvas")).not.toBeInTheDocument();
     expect(screen.queryByText("모델 준비 중…")).not.toBeInTheDocument();
   });
@@ -55,7 +55,7 @@ describe("RobotModel", () => {
     enterViewport();
     fireEvent.click(await screen.findByRole("button", { name: "Simulate WebGL failure" }));
     expect(screen.queryByTestId("model-canvas")).not.toBeInTheDocument();
-    expect(screen.getByAltText("Cleany 로봇 외형")).toBeVisible();
+    expect(screen.getByAltText("Cleany 대기 자세와 외장 시안")).toBeVisible();
     expect(release).toHaveBeenCalledTimes(1);
     fireEvent.click(screen.getByRole("button", { name: "3D 다시 시도" }));
     expect(await screen.findByTestId("model-canvas")).toBeInTheDocument();

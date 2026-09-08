@@ -6,13 +6,13 @@
   overflow: hidden;
   border: 1px solid var(--workspace-line, #dfe7e3);
   border-radius: 12px;
-  background: #f4f7f5;
+  background: #f3f3f0;
   color: var(--workspace-ink, #243d34);
 }
 .robot-model-stage {
   position: relative;
   height: 216px;
-  background: radial-gradient(ellipse at 50% 40%, #fff 5%, #f1f6f2 70%, #eaf1ec);
+  background: radial-gradient(ellipse at 50% 42%, #fff 5%, #f3f3f0 70%, #e7e9e7);
 }
 .robot-model-label {
   position: absolute;

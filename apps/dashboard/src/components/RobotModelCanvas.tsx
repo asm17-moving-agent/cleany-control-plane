@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { RobotModelMotion } from "./robot-model-motion";
+import { createRobotExterior } from "./RobotExterior";
 
 function disposeModel(model: THREE.Object3D) {
   const geometries = new Set<THREE.BufferGeometry>();
@@ -38,6 +39,7 @@ export default function RobotModelCanvas({ onReady, onError }: { onReady: () => 
     let frame = 0, rendered = 0, lastFrame: number | undefined;
     let drag: { id: number; x: number; y: number; moved: boolean } | null = null;
     let radius = 1, distance = 4;
+    let enclosure: ReturnType<typeof createRobotExterior> | undefined;
     const motion = new RobotModelMotion();
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     motion.setReducedMotion(reduced.matches);
@@ -47,14 +49,14 @@ export default function RobotModelCanvas({ onReady, onError }: { onReady: () => 
     renderer.setPixelRatio(1);
     renderer.setClearColor(0x000000, 0);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.25;
+    renderer.toneMappingExposure = 1.05;
     renderer.domElement.setAttribute("aria-hidden", "true");
     element.append(renderer.domElement);
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x83988d, 3));
-    const key = new THREE.DirectionalLight(0xfff5e7, 3.5);
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x8e9499, 1.8));
+    const key = new THREE.DirectionalLight(0xffffff, 2.6);
     key.position.set(3, 5, 2);
     scene.add(key);
-    const fill = new THREE.DirectionalLight(0xd9e7ff, 2);
+    const fill = new THREE.DirectionalLight(0xe7ebf2, 1.2);
     fill.position.set(-2, 2, -3);
     scene.add(fill);
 
@@ -64,8 +66,8 @@ export default function RobotModelCanvas({ onReady, onError }: { onReady: () => 
     const context = shadowCanvas.getContext("2d");
     if (context) {
       const gradient = context.createRadialGradient(64, 64, 8, 64, 64, 64);
-      gradient.addColorStop(0, "rgba(36,63,54,.22)");
-      gradient.addColorStop(1, "rgba(36,63,54,0)");
+      gradient.addColorStop(0, "rgba(24,30,34,.22)");
+      gradient.addColorStop(1, "rgba(24,30,34,0)");
       context.fillStyle = gradient;
       context.fillRect(0, 0, 128, 128);
     }
@@ -110,9 +112,9 @@ export default function RobotModelCanvas({ onReady, onError }: { onReady: () => 
       const { width, height } = element.getBoundingClientRect();
       if (!width || !height) return;
       camera.aspect = width / height;
-      // Frame this static CAD with room for its extended arms throughout a turn.
+      // Fit the CAD and concept layers inside the card throughout a turn.
       const halfFov = Math.atan(Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * Math.min(1, camera.aspect));
-      distance = radius / Math.sin(halfFov) * .88;
+      distance = radius / Math.sin(halfFov) * 1.02;
       camera.far = distance + radius * 4;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
@@ -225,15 +227,22 @@ export default function RobotModelCanvas({ onReady, onError }: { onReady: () => 
     intersection.observe(element);
     reset.current = resetView;
 
-    new GLTFLoader().load("/models/cleany-e718ac57-web.glb", gltf => {
+    new GLTFLoader().load("/models/cleany-e718ac57-standby.glb", gltf => {
       if (disposed || failed) { disposeModel(gltf.scene); return; }
       scene.add(gltf.scene);
-      const box = new THREE.Box3().setFromObject(gltf.scene, true);
+      enclosure = createRobotExterior(invalidate, gltf.scene);
+      scene.add(enclosure.group);
+      const box = new THREE.Box3().setFromObject(gltf.scene, true)
+        .union(new THREE.Box3().setFromObject(enclosure.group, true));
       box.getCenter(center);
       radius = box.getBoundingSphere(new THREE.Sphere()).radius;
       shadow.position.set(center.x, box.min.y - .004, center.z);
       loaded = true;
       element.dataset.loaded = "true";
+      if (diagnostics) {
+        element.dataset.model = "standby";
+        element.dataset.exterior = "true";
+      }
       motion.setHovered(element.matches(":hover"));
       resize();
     }, undefined, () => { if (!disposed) fail(); });
@@ -256,6 +265,7 @@ export default function RobotModelCanvas({ onReady, onError }: { onReady: () => 
       element.removeEventListener("lostpointercapture", pointerCancel);
       element.removeEventListener("keydown", keyDown);
       renderer.domElement.removeEventListener("webglcontextlost", contextLost);
+      enclosure?.stopLoading();
       disposeModel(scene);
       renderer.dispose();
       renderer.forceContextLoss();

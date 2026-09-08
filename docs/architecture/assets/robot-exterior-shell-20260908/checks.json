@@ -1,0 +1,828 @@
+{
+  "cameraHoodParts": 0,
+  "mastParts": 4,
+  "postCoverParts": 0,
+  "shellBounds": {
+    "isBox3": true,
+    "min": {
+      "x": -0.23000000417232513,
+      "y": 0.4039999999525026,
+      "z": -0.2750000059604645
+    },
+    "max": {
+      "x": 0.23000000417232513,
+      "y": 0.7915000009536743,
+      "z": 0.2750000059604645
+    }
+  },
+  "inletProbes": [
+    {
+      "x": -0.135,
+      "z": -0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.135,
+      "z": 0,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.135,
+      "z": 0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.08,
+      "z": -0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.08,
+      "z": 0,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.08,
+      "z": 0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.025,
+      "z": -0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.025,
+      "z": 0,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.025,
+      "z": 0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    }
+  ],
+  "profileProbes": [
+    {
+      "x": -0.2,
+      "y": 0.407,
+      "z": -0.25,
+      "view": [
+        -1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.407,
+      "z": -0.25,
+      "view": [
+        0,
+        0,
+        -1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.407,
+      "z": -0.25,
+      "view": [
+        -0.7071067811865475,
+        0,
+        -0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.43,
+      "z": -0.25,
+      "view": [
+        -1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.43,
+      "z": -0.25,
+      "view": [
+        0,
+        0,
+        -1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.43,
+      "z": -0.25,
+      "view": [
+        -0.7071067811865475,
+        0,
+        -0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.6,
+      "z": -0.25,
+      "view": [
+        -1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.6,
+      "z": -0.25,
+      "view": [
+        0,
+        0,
+        -1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.6,
+      "z": -0.25,
+      "view": [
+        -0.7071067811865475,
+        0,
+        -0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.76,
+      "z": -0.25,
+      "view": [
+        -1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.76,
+      "z": -0.25,
+      "view": [
+        0,
+        0,
+        -1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.76,
+      "z": -0.25,
+      "view": [
+        -0.7071067811865475,
+        0,
+        -0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.787,
+      "z": -0.25,
+      "view": [
+        -1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.787,
+      "z": -0.25,
+      "view": [
+        0,
+        0,
+        -1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.787,
+      "z": -0.25,
+      "view": [
+        -0.7071067811865475,
+        0,
+        -0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.407,
+      "z": 0.25,
+      "view": [
+        -1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.407,
+      "z": 0.25,
+      "view": [
+        0,
+        0,
+        1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.407,
+      "z": 0.25,
+      "view": [
+        -0.7071067811865475,
+        0,
+        0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.43,
+      "z": 0.25,
+      "view": [
+        -1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.43,
+      "z": 0.25,
+      "view": [
+        0,
+        0,
+        1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.43,
+      "z": 0.25,
+      "view": [
+        -0.7071067811865475,
+        0,
+        0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.6,
+      "z": 0.25,
+      "view": [
+        -1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.6,
+      "z": 0.25,
+      "view": [
+        0,
+        0,
+        1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.6,
+      "z": 0.25,
+      "view": [
+        -0.7071067811865475,
+        0,
+        0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.76,
+      "z": 0.25,
+      "view": [
+        -1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.76,
+      "z": 0.25,
+      "view": [
+        0,
+        0,
+        1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.76,
+      "z": 0.25,
+      "view": [
+        -0.7071067811865475,
+        0,
+        0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.787,
+      "z": 0.25,
+      "view": [
+        -1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.787,
+      "z": 0.25,
+      "view": [
+        0,
+        0,
+        1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": -0.2,
+      "y": 0.787,
+      "z": 0.25,
+      "view": [
+        -0.7071067811865475,
+        0,
+        0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.407,
+      "z": -0.25,
+      "view": [
+        1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.407,
+      "z": -0.25,
+      "view": [
+        0,
+        0,
+        -1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.407,
+      "z": -0.25,
+      "view": [
+        0.7071067811865475,
+        0,
+        -0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.43,
+      "z": -0.25,
+      "view": [
+        1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.43,
+      "z": -0.25,
+      "view": [
+        0,
+        0,
+        -1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.43,
+      "z": -0.25,
+      "view": [
+        0.7071067811865475,
+        0,
+        -0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.6,
+      "z": -0.25,
+      "view": [
+        1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.6,
+      "z": -0.25,
+      "view": [
+        0,
+        0,
+        -1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.6,
+      "z": -0.25,
+      "view": [
+        0.7071067811865475,
+        0,
+        -0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.76,
+      "z": -0.25,
+      "view": [
+        1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.76,
+      "z": -0.25,
+      "view": [
+        0,
+        0,
+        -1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.76,
+      "z": -0.25,
+      "view": [
+        0.7071067811865475,
+        0,
+        -0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.787,
+      "z": -0.25,
+      "view": [
+        1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.787,
+      "z": -0.25,
+      "view": [
+        0,
+        0,
+        -1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.787,
+      "z": -0.25,
+      "view": [
+        0.7071067811865475,
+        0,
+        -0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.407,
+      "z": 0.25,
+      "view": [
+        1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.407,
+      "z": 0.25,
+      "view": [
+        0,
+        0,
+        1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.407,
+      "z": 0.25,
+      "view": [
+        0.7071067811865475,
+        0,
+        0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.43,
+      "z": 0.25,
+      "view": [
+        1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.43,
+      "z": 0.25,
+      "view": [
+        0,
+        0,
+        1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.43,
+      "z": 0.25,
+      "view": [
+        0.7071067811865475,
+        0,
+        0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.6,
+      "z": 0.25,
+      "view": [
+        1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.6,
+      "z": 0.25,
+      "view": [
+        0,
+        0,
+        1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.6,
+      "z": 0.25,
+      "view": [
+        0.7071067811865475,
+        0,
+        0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.76,
+      "z": 0.25,
+      "view": [
+        1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.76,
+      "z": 0.25,
+      "view": [
+        0,
+        0,
+        1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.76,
+      "z": 0.25,
+      "view": [
+        0.7071067811865475,
+        0,
+        0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.787,
+      "z": 0.25,
+      "view": [
+        1,
+        0,
+        0
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.787,
+      "z": 0.25,
+      "view": [
+        0,
+        0,
+        1
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    },
+    {
+      "x": 0.2,
+      "y": 0.787,
+      "z": 0.25,
+      "view": [
+        0.7071067811865475,
+        0,
+        0.7071067811865475
+      ],
+      "firstHit": "collection-bin-outer-shell",
+      "covered": true
+    }
+  ],
+  "withExterior": {
+    "diagnostics": "false",
+    "loaded": "true",
+    "exterior": "true",
+    "frames": "5",
+    "drawCalls": "158",
+    "triangles": "292039"
+  },
+  "idleFrames": [
+    "5",
+    "5"
+  ],
+  "withoutExterior": {
+    "diagnostics": "false",
+    "loaded": "true",
+    "exterior": "false",
+    "frames": "10",
+    "drawCalls": "129",
+    "triangles": "269381"
+  },
+  "posterAndReopen": {
+    "closed": {
+      "canvasCount": 0,
+      "posterWidth": 630,
+      "posterHeight": 630
+    },
+    "reopened": {
+      "diagnostics": "false",
+      "loaded": "true",
+      "exterior": "true"
+    }
+  }
+}

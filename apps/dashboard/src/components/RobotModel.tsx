@@ -42,11 +42,11 @@ export function RobotModel({ compact = false }: { compact?: boolean }) {
   }, [interactive, entered, attempt]);
 
   return <figure ref={container} className={"robot-model-card" + (compact ? " robot-model-inline" : "")}
-    aria-label="Cleany 외형 미리보기" title={compact ? "로봇 외형 · 실제 로봇 자세와 연동되지 않습니다" : undefined} data-state={status}>
+    aria-label="Cleany 외형 미리보기" title={compact ? "대기 자세·외장 시안 · 실시간 자세 미연동" : undefined} data-state={status}>
     <div className="robot-model-stage">
-      {!compact && <span className="robot-model-label" aria-hidden="true">CLEANY</span>}
-      <img className="robot-model-poster" src="/models/cleany-poster.webp" width="360" height="360"
-        alt={status === "ready" ? "" : "Cleany 로봇 외형"} aria-hidden={status === "ready"} loading="lazy" />
+      {!compact && <span className="robot-model-label">외장 시안</span>}
+      <img className="robot-model-poster" src="/models/cleany-exterior-poster.png" width="360" height="360"
+        alt={status === "ready" ? "" : "Cleany 대기 자세와 외장 시안"} aria-hidden={status === "ready"} loading="lazy" />
       {interactive && entered && status !== "error" && <ModelBoundary key={attempt} onError={onError}>
         <Suspense fallback={null}><RobotModelCanvas onReady={onReady} onError={onError} /></Suspense>
       </ModelBoundary>}

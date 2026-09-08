@@ -1,0 +1,128 @@
+{
+  "cameraHoodParts": 0,
+  "mastParts": 4,
+  "binParts": 8,
+  "inletProbes": [
+    {
+      "x": -0.135,
+      "z": -0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.135,
+      "z": 0,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.135,
+      "z": 0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.08,
+      "z": -0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.08,
+      "z": 0,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.08,
+      "z": 0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.025,
+      "z": -0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.025,
+      "z": 0,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.025,
+      "z": 0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    }
+  ],
+  "cadProbes": [
+    {
+      "x": -0.135,
+      "z": -0.145,
+      "cadObstructionsAboveBinFloor": 0
+    },
+    {
+      "x": -0.135,
+      "z": 0,
+      "cadObstructionsAboveBinFloor": 0
+    },
+    {
+      "x": -0.135,
+      "z": 0.145,
+      "cadObstructionsAboveBinFloor": 0
+    },
+    {
+      "x": -0.08,
+      "z": -0.145,
+      "cadObstructionsAboveBinFloor": 0
+    },
+    {
+      "x": -0.08,
+      "z": 0,
+      "cadObstructionsAboveBinFloor": 0
+    },
+    {
+      "x": -0.08,
+      "z": 0.145,
+      "cadObstructionsAboveBinFloor": 0
+    },
+    {
+      "x": -0.025,
+      "z": -0.145,
+      "cadObstructionsAboveBinFloor": 0
+    },
+    {
+      "x": -0.025,
+      "z": 0,
+      "cadObstructionsAboveBinFloor": 0
+    },
+    {
+      "x": -0.025,
+      "z": 0.145,
+      "cadObstructionsAboveBinFloor": 0
+    }
+  ],
+  "idleFrames": [
+    "8",
+    "8"
+  ],
+  "withExterior": {
+    "diagnostics": "false",
+    "loaded": "true",
+    "exterior": "true",
+    "frames": "8",
+    "drawCalls": "159",
+    "triangles": "292351"
+  },
+  "withoutExterior": {
+    "diagnostics": "false",
+    "loaded": "true",
+    "exterior": "false",
+    "frames": "9",
+    "drawCalls": "129",
+    "triangles": "269381"
+  }
+}
