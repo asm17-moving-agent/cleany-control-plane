@@ -149,7 +149,7 @@ Firefox 화면을 niri로 캡처한 뒤 모델 영역만 잘라 생성했다. �
 실제 로봇 또는 네이티브 GPU 성능 검증이 아니다. 실행 방법:
 
 ```bash
-pnpm --filter @cleany/dashboard test src/components/RobotModel.test.tsx src/components/robot-model-motion.test.ts
+pnpm --filter @cleany/dashboard test src/components/RobotModel.test.tsx src/components/robot-model-motion.test.ts src/components/RobotSensorOpenings.test.ts
 pnpm --filter @cleany/dashboard test:robot-model
 ```
 
@@ -202,7 +202,13 @@ uv run --with mujoco==3.12.0 --with trimesh --with numpy python \
 기존 카메라는 노출한다. 로봇의 실시간 상태나 검증된 제작 사양으로 표시하지 않는다.
 기본 포스터는 같은 시안의 `cleany-exterior-poster.png`다.
 
-프리뷰는 호버·드래그·키보드 회전만 제공한다. 외장 토글과 투입구·구동부·팔 확대
+전면 절단선 아래에 라이다용 가로 개구부 1개와 초음파용 가로 개구부 2개를 표시한다.
+`RobotSensorOpenings.ts`가 속이 빈 하부 외장의 양쪽 면을 관통하는 구멍과 내부 테두리를 만든다.
+표시용 라이다 높이 360mm는 원본 MJCF 기준점 460mm와 다르며, 초음파 개구부는
+60×24mm다. 센서 본체·원본 장착 좌표를 바꾸지 않은 디자인 제안이다.
+로고 위의 장식선은 제거했고 포스터에도 같은 변경을 반영했다.
+
+프리뷰는 호버·드래그·키보드 회전만 제공한다. 외장 토글과 투입구·구동부·팔·센서 확대
 버튼은 `feat/robot-model-standby`의 별도 비교 뷰어에 남아 있다.
 형상 치수, 디자인 반복과 과거 검증 범위는
 [외장 시안 문서](../../docs/architecture/robot-exterior-concept.md)에 기록한다.

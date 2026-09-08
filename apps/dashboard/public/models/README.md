@@ -30,6 +30,7 @@ the dashboard README documents its inputs and invocation.
 
 `cleany-standby-poster.png` shows that folded CAD model. The current preview uses
 `cleany-exterior-poster.png`, captured from the same pose with the additional
-display-only enclosure, arm covers, couplers and wordmark. These concept shapes
-are generated separately by `RobotExterior.ts` and `RobotArmCovers.ts`; they do
+display-only enclosure, arm covers, couplers, wordmark and front sensor openings.
+These concept shapes are generated separately by `RobotExterior.ts`,
+`RobotArmCovers.ts` and `RobotSensorOpenings.ts`; they do
 not alter the pinned CAD or claim confirmed manufacturing specifications.
