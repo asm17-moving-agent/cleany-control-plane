@@ -153,28 +153,13 @@ test("a lost WebGL context falls back cleanly and supports a fresh renderer", as
   await expect(page.locator(".robot-model-card")).toHaveAttribute("data-state", "ready");
 });
 
-test("home roster ignores hover while both models keep independent drag rotation", async ({ page }) => {
+test("home roster stays static while the detail model supports dragging and teardown", async ({ page }) => {
   await fixtureApi(page);
   await page.goto("/?renderStats=1");
-  const roster = page.getByRole("complementary", { name: "로봇 현황", exact: true });
-  await expect(roster.locator(".robot-model-card")).toHaveAttribute("data-state", "ready");
-  const canvas = roster.getByRole("group", { name: "Cleany 모델 회전" });
-  const home = await yaw(canvas);
-  await canvas.hover();
-  await expectIdle(page, canvas);
-  expect(await yaw(canvas)).toBeCloseTo(home, 4);
-  await canvas.click();
-  await expectIdle(page, canvas);
-  expect(await yaw(canvas)).toBeCloseTo(home, 4);
-  await expect(page.getByRole("complementary", { name: "로봇 상세", exact: true })).toHaveCount(0);
-  const bounds = (await canvas.boundingBox())!;
-  await page.mouse.down();
-  await page.mouse.move(bounds.x + bounds.width / 2 + 45, bounds.y + bounds.height / 2 + 8, { steps: 8 });
-  await page.mouse.up();
+  const roster = page.getByRole("complementary", { name: "로봇 목록", exact: true });
+  await roster.locator(".home-robot-thumbnail").hover();
   await page.mouse.move(0, 0);
-  await expectIdle(page, canvas);
-  const chosen = await yaw(canvas);
-  expect(chosen).toBeLessThan(home - .2);
+  await expect(roster.locator(".robot-model-card, canvas")).toHaveCount(0);
   await expect(page.getByRole("complementary", { name: "로봇 상세", exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "cleany-01 상세 열기" }).click();
   const panel = page.getByRole("complementary", { name: "로봇 상세", exact: true });
@@ -199,18 +184,16 @@ test("home roster ignores hover while both models keep independent drag rotation
   await expectIdle(page, detailCanvas);
   expect(await yaw(detailCanvas)).toBeLessThan(detailStart - .2);
   await expect(panel).toBeVisible();
-  expect(await yaw(canvas)).toBeCloseTo(chosen, 4);
-  await panel.getByRole("button", { name: "로봇 상세 닫기" }).click();
+  await panel.getByRole("button", { name: "로봇 목록", exact: true }).click();
   await expect(panel).toHaveCount(0);
-  await expect(page.locator(".robot-model-card")).toHaveCount(1);
-  expect(await yaw(canvas)).toBeCloseTo(chosen, 4);
+  await expect(page.locator(".robot-model-card")).toHaveCount(0);
   await page.setViewportSize({ width: 1100, height: 768 });
   expect(await roster.locator(".home-robot-identity strong").evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
   await page.getByRole("navigation", { name: "주요 메뉴" }).getByRole("link", { name: "작업", exact: true }).click();
   await expect(page.locator(".robot-model-card, .robot-model-canvas canvas")).toHaveCount(0);
 });
 
-test("robot detail guides repeat with matching arrows, then yield to manual dragging", async ({ page }) => {
+test("robot detail guides turn both ways around a ground circle, then yield to manual dragging", async ({ page }) => {
   test.setTimeout(45000);
   await fixtureApi(page);
   await page.goto("/robots?renderStats=1");
@@ -221,8 +204,10 @@ test("robot detail guides repeat with matching arrows, then yield to manual drag
   for (let cycle = 0; cycle < 2; cycle++) {
     await expect(canvas).toHaveAttribute("data-guide-direction", "left", { timeout: 10000 });
     await expect.poll(() => yaw(canvas), { intervals: [50, 100, 200] }).toBeGreaterThan(home + .15);
-    await expect(card.locator(".robot-model-rotation-guide")).toHaveCSS("opacity", "0.85");
+    await expect(canvas).toHaveAttribute("data-guide-geometry", "ground-circle");
     await expect(canvas).toHaveAttribute("data-guide-direction", "right");
+    await expect.poll(() => yaw(canvas), { intervals: [50, 100, 200] }).toBeLessThan(home - .15);
+    await expect(canvas).toHaveAttribute("data-guide-direction", "left");
     await expect(canvas).toHaveAttribute("data-guide-direction", "none");
     await expectIdle(page, canvas);
     expect(await yaw(canvas)).toBeCloseTo(home, 4);
@@ -264,20 +249,27 @@ test("reduced motion suppresses the detail guide and keeps keyboard rotation", a
   await expect.poll(() => yaw(canvas)).toBeLessThan(home - .2);
 });
 
-test("home loads nearby roster models and pauses a model scrolled out of view", async ({ page }) => {
-  await fixtureApi(page, 6);
+test("home detail pauses its guide when the model is scrolled out of view", async ({ page }) => {
+  await page.setViewportSize({ width: 1366, height: 480 });
+  await fixtureApi(page);
   await page.goto("/?renderStats=1");
-  const cards = page.getByRole("complementary", { name: "로봇 현황", exact: true }).locator(".robot-model-card");
-  await expect(cards.first()).toHaveAttribute("data-state", "ready");
-  await expect(cards.last()).toHaveAttribute("data-state", "poster");
-  const canvas = cards.first().getByRole("group", { name: "Cleany 모델 회전" });
-  await canvas.hover();
-  await page.mouse.wheel(0, 1000);
+  await page.getByRole("button", { name: "cleany-01 상세 열기" }).click();
+  const panel = page.getByRole("complementary", { name: "로봇 상세", exact: true });
+  const card = panel.locator(".robot-model-card");
+  await card.scrollIntoViewIfNeeded();
+  await expect(card).toHaveAttribute("data-state", "ready");
+  const canvas = card.getByRole("group", { name: "Cleany 모델 회전" });
+  await page.mouse.move(0, 0);
+  await expect(canvas).toHaveAttribute("data-guide-direction", "left");
+  await panel.locator(".robot-detail-content").evaluate(element => { element.scrollTop = 0; });
   await expect.poll(() => canvas.evaluate(element =>
-    element.getBoundingClientRect().bottom <= element.closest(".home-robot-list")!.getBoundingClientRect().top,
+    element.getBoundingClientRect().top >= element.closest(".robot-detail-content")!.getBoundingClientRect().bottom,
   )).toBe(true);
   await expectIdle(page, canvas);
-  await expect(cards.last()).toHaveAttribute("data-state", "ready");
+  await expect(canvas).toHaveAttribute("data-guide-direction", "none");
+  const frames = await canvas.getAttribute("data-frames");
+  await page.waitForTimeout(ROTATION_GUIDE.firstDelayMs + ROTATION_GUIDE.durationSeconds * 1000);
+  expect(await canvas.getAttribute("data-frames")).toBe(frames);
 });
 
 test("leaving home during download does not resurrect its canvas", async ({ page }) => {
@@ -289,6 +281,8 @@ test("leaving home during download does not resurrect its canvas", async ({ page
   await page.route("**/models/*.glb", async route => { await delayed; await route.continue(); });
   const requested = page.waitForRequest(request => request.url().endsWith(".glb"));
   await page.goto("/");
+  await page.getByRole("button", { name: "cleany-01 상세 열기" }).click();
+  await page.locator(".robot-model-card").scrollIntoViewIfNeeded();
   await requested;
   await expect(page.locator(".robot-model-card")).toHaveAttribute("data-state", "loading");
   await page.getByRole("navigation", { name: "주요 메뉴" }).getByRole("link", { name: "작업", exact: true }).click();

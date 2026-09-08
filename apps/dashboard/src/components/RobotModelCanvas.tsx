@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { RobotModelMotion, ROTATION_GUIDE } from "./robot-model-motion";
 import { createRobotExterior } from "./RobotExterior";
+import { createRobotRotationGuide } from "./RobotRotationGuide";
 
 function disposeModel(model: THREE.Object3D) {
   const geometries = new Set<THREE.BufferGeometry>();
@@ -25,8 +26,11 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
   onReady: () => void; onError: () => void; hoverEnabled?: boolean; rotationGuide?: boolean;
 }) {
   const host = useRef<HTMLDivElement>(null);
+  const guide = useRef<SVGSVGElement>(null);
+  const guidePath = useRef<SVGPathElement>(null);
   const reset = useRef<(() => void) | null>(null);
   const instructions = useId();
+  const arrowhead = useId();
   const [adjusted, setAdjusted] = useState(false);
 
   useEffect(() => {
@@ -43,7 +47,9 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
     let guideDismissed = false, guideHasPlayed = false;
     let drag: { id: number; x: number; y: number; moved: boolean } | null = null;
     let radius = 1, distance = 4;
+    let canvasWidth = 1, canvasHeight = 1;
     let enclosure: ReturnType<typeof createRobotExterior> | undefined;
+    let orbitGuide: ReturnType<typeof createRobotRotationGuide> | undefined;
     const motion = new RobotModelMotion();
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     motion.setReducedMotion(reduced.matches);
@@ -103,6 +109,7 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
       if (dismiss) guideDismissed = true;
       motion.cancelGuide();
       element.dataset.guideDirection = "none";
+      if (guide.current) guide.current.style.opacity = "0";
     }
 
     function invalidate() {
@@ -124,6 +131,13 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
         ).add(center);
         camera.lookAt(center);
         renderer.render(scene, camera);
+        if (orbitGuide && guide.current && guidePath.current) {
+          const amount = motion.guideAmount;
+          // Hide very short arcs so the opposing arrowheads never overlap.
+          guide.current.style.opacity = String(Math.min(1, Math.max(0, (amount - .1) / .15)));
+          if (motion.guiding) guidePath.current.setAttribute("d", orbitGuide(camera, yaw, amount, canvasWidth, canvasHeight));
+          if (diagnostics) element.dataset.guideAmount = String(amount);
+        }
         if (diagnostics) {
           element.dataset.frames = String(++rendered);
           element.dataset.drawCalls = String(renderer.info.render.calls);
@@ -141,6 +155,9 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
     function resize() {
       const { width, height } = element.getBoundingClientRect();
       if (!width || !height) return;
+      canvasWidth = width;
+      canvasHeight = height;
+      guide.current?.setAttribute("viewBox", `0 0 ${width} ${height}`);
       camera.aspect = width / height;
       // Fit the CAD and concept layers inside the card throughout a turn.
       const halfFov = Math.atan(Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * Math.min(1, camera.aspect));
@@ -277,6 +294,10 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
         .union(new THREE.Box3().setFromObject(enclosure.group, true));
       box.getCenter(center);
       radius = box.getBoundingSphere(new THREE.Sphere()).radius;
+      if (rotationGuide) {
+        orbitGuide = createRobotRotationGuide(box);
+        element.dataset.guideGeometry = "ground-arc";
+      }
       shadow.position.set(center.x, box.min.y - .004, center.z);
       loaded = true;
       element.dataset.loaded = "true";
@@ -322,8 +343,14 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
   return <>
     <div className="robot-model-canvas" ref={host} tabIndex={0} role="group"
       aria-label="Cleany 모델 회전" aria-describedby={instructions} />
-    {rotationGuide && <svg className="robot-model-rotation-guide" viewBox="0 0 132 44" aria-hidden="true">
-      <path d="M111 12C135 39 13 44 18 15M10 22l8-7 8 7" />
+    {rotationGuide && <svg ref={guide} className="robot-model-rotation-guide" aria-hidden="true">
+      <defs>
+        <marker id={arrowhead} viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5"
+          orient="auto-start-reverse" markerUnits="strokeWidth">
+          <path d="M3 1L7 5L3 9" />
+        </marker>
+      </defs>
+      <path ref={guidePath} markerStart={`url(#${arrowhead})`} markerEnd={`url(#${arrowhead})`} />
     </svg>}
     <span id={instructions} className="sr-only">마우스로 드래그하거나 방향키로 회전합니다. Home 키로 처음 각도로 돌아갑니다.</span>
     <button className="robot-model-reset" type="button" disabled={!adjusted}

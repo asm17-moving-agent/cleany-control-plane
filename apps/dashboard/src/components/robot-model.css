@@ -36,6 +36,21 @@
 .robot-model-canvas:focus-visible { outline: 2px solid var(--workspace-teal, #167d70); outline-offset: -3px; }
 .robot-model-canvas canvas { display: block; width: 100%; height: 100%; }
 .robot-model-card:not([data-state=ready]) .robot-model-canvas { visibility: hidden; }
+.robot-model-rotation-guide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke: #6b9888;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  pointer-events: none;
+}
+.robot-model-rotation-guide marker path { stroke-width: 1.4; }
 .robot-model-reset {
   position: absolute;
   z-index: 2;
@@ -58,28 +73,6 @@
 .robot-model-reset:hover { background: #fff; border-color: #91ada0; }
 .robot-model-reset:focus-visible, .robot-model-retry:focus-visible { outline: 2px solid var(--workspace-teal, #167d70); outline-offset: 2px; }
 .robot-model-reset svg, .robot-model-retry svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-.robot-model-rotation-guide {
-  position: absolute;
-  z-index: 2;
-  bottom: 3px;
-  left: 50%;
-  width: 132px;
-  height: 44px;
-  color: #578776;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  filter: drop-shadow(0 1px 2px #fff);
-  opacity: 0;
-  transform: translateX(-50%);
-  transition: opacity 180ms ease;
-  pointer-events: none;
-}
-.robot-model-canvas[data-guide-direction=left] + .robot-model-rotation-guide,
-.robot-model-canvas[data-guide-direction=right] + .robot-model-rotation-guide { opacity: .85; }
-.robot-model-canvas[data-guide-direction=right] + .robot-model-rotation-guide { transform: translateX(-50%) scaleX(-1); }
 .robot-model-caption {
   display: flex;
   flex-wrap: wrap;

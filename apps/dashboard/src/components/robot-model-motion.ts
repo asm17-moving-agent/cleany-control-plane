@@ -32,8 +32,14 @@ export class RobotModelMotion {
   get adjusted() { return !samePose(this.rest, HOME_POSE); }
   get animating() { return this.guiding || !samePose(this.pose, this.target); }
   get guiding() { return this.guideElapsed !== null; }
+  get guideAmount() {
+    if (this.guideElapsed === null) return 0;
+    return (1 - Math.cos(this.guideElapsed / ROTATION_GUIDE.durationSeconds * Math.PI * 2)) / 2;
+  }
   get guideDirection() {
-    return this.guideElapsed === null ? null : this.guideElapsed < ROTATION_GUIDE.durationSeconds / 2 ? "left" : "right";
+    if (this.guideElapsed === null) return null;
+    const progress = this.guideElapsed / ROTATION_GUIDE.durationSeconds;
+    return progress < .5 ? "left" : "right";
   }
 
   startGuide() {
@@ -120,7 +126,8 @@ export class RobotModelMotion {
     if (this.guideElapsed !== null) {
       this.guideElapsed = Math.min(ROTATION_GUIDE.durationSeconds, this.guideElapsed + Math.max(0, seconds));
       const progress = this.guideElapsed / ROTATION_GUIDE.durationSeconds;
-      this.pose.yaw = this.rest.yaw + ROTATION_GUIDE.yawRadians * (1 - Math.cos(progress * Math.PI * 2)) / 2;
+      // One gentle outward turn and return, sharing the arrow's extension.
+      this.pose.yaw = this.rest.yaw + ROTATION_GUIDE.yawRadians * this.guideAmount;
       this.pose.elevation = this.rest.elevation;
       if (progress === 1) this.finish();
       return;

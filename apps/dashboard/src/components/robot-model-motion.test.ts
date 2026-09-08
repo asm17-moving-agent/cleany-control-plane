@@ -7,18 +7,27 @@ function settle(motion: RobotModelMotion, fps = 60) {
 }
 
 describe("robot model interaction", () => {
-  it("repeats the guide out and back without saving an angle or accumulating drift", () => {
+  it("extends its guide with one outward turn and retraces it without accumulating drift", () => {
     const motion = new RobotModelMotion();
     for (let cycle = 0; cycle < 3; cycle++) {
       expect(motion.startGuide()).toBe(true);
       expect(motion.guideDirection).toBe("left");
-      motion.step(ROTATION_GUIDE.durationSeconds / 2);
+      motion.step(ROTATION_GUIDE.durationSeconds / 4);
+      expect(motion.guideAmount).toBeCloseTo(.5);
+      expect(motion.pose.yaw).toBeCloseTo(HOME_POSE.yaw + ROTATION_GUIDE.yawRadians / 2);
+      motion.step(ROTATION_GUIDE.durationSeconds / 4);
       expect(motion.pose.yaw).toBeCloseTo(HOME_POSE.yaw + ROTATION_GUIDE.yawRadians);
       expect(motion.guideDirection).toBe("right");
       expect(motion.adjusted).toBe(false);
-      motion.step(ROTATION_GUIDE.durationSeconds / 2);
+      expect(motion.guideAmount).toBe(1);
+      expect(motion.guiding).toBe(true);
+      motion.step(ROTATION_GUIDE.durationSeconds / 4);
+      expect(motion.pose.yaw).toBeCloseTo(HOME_POSE.yaw + ROTATION_GUIDE.yawRadians / 2);
+      expect(motion.guideAmount).toBeCloseTo(.5);
+      motion.step(ROTATION_GUIDE.durationSeconds / 4);
       expect(motion.pose).toEqual(HOME_POSE);
       expect(motion.guideDirection).toBeNull();
+      expect(motion.guideAmount).toBe(0);
       expect(motion.animating).toBe(false);
     }
   });
