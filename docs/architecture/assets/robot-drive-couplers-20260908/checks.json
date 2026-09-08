@@ -1,0 +1,244 @@
+{
+  "sourceCommit": "e718ac57e861f3d34b6e0e10b0d18d87a348bf51",
+  "standbyGlbSha256": "ef8f031b27c28b6e12fc40d56803a104c0bb632474953622113fd270292f3bde",
+  "sourceVisibleGeometries": 128,
+  "webInstances": 128,
+  "standbyInstances": 128,
+  "missingFromWeb": [],
+  "missingFromStandby": [],
+  "axles": [
+    {
+      "name": "front-left",
+      "motorGeom": 24,
+      "wheelGeom": 123,
+      "axisX": 0.174975,
+      "axisY": 0.06350300000000003,
+      "side": -1,
+      "shaftEnd": -0.2635270165344914,
+      "hubInnerFace": -0.27642700047683716,
+      "originalGapMm": 12.899983942345761
+    },
+    {
+      "name": "front-right",
+      "motorGeom": 20,
+      "wheelGeom": 138,
+      "axisX": 0.174975,
+      "axisY": 0.06350300000000003,
+      "side": 1,
+      "shaftEnd": 0.26347301623879976,
+      "hubInnerFace": 0.27637300047683716,
+      "originalGapMm": 12.899984238037398
+    },
+    {
+      "name": "rear-left",
+      "motorGeom": 22,
+      "wheelGeom": 153,
+      "axisX": -0.175025,
+      "axisY": 0.06350300000000003,
+      "side": -1,
+      "shaftEnd": -0.2635270165344914,
+      "hubInnerFace": -0.27642700047683716,
+      "originalGapMm": 12.899983942345761
+    },
+    {
+      "name": "rear-right",
+      "motorGeom": 26,
+      "wheelGeom": 168,
+      "axisX": -0.175025,
+      "axisY": 0.06350300000000003,
+      "side": 1,
+      "shaftEnd": 0.26347301623879976,
+      "hubInnerFace": 0.27637300047683716,
+      "originalGapMm": 12.899984238037398
+    }
+  ],
+  "couplers": [
+    {
+      "name": "wheel-coupler-front-left",
+      "bounds": {
+        "isBox3": true,
+        "min": {
+          "x": 0.15697500077486037,
+          "y": 0.04550300077486044,
+          "z": -0.2784270039100647
+        },
+        "max": {
+          "x": 0.1929749992251396,
+          "y": 0.08150299922513968,
+          "z": -0.2530269911785126
+        }
+      },
+      "concept": true,
+      "shaftOverlapMm": 10.500025355978826,
+      "hubOverlapMm": 2.0000034332275374,
+      "axisOffset": 2.7755575615628914e-17,
+      "probes": [
+        {
+          "z": -0.2641720157316087,
+          "hit": "wheel-coupler-front-left"
+        },
+        {
+          "z": -0.26675201252007785,
+          "hit": "wheel-coupler-front-left"
+        },
+        {
+          "z": -0.2699770085056643,
+          "hit": "wheel-coupler-front-left"
+        },
+        {
+          "z": -0.2732020044912507,
+          "hit": "wheel-coupler-front-left"
+        },
+        {
+          "z": -0.27578200127971986,
+          "hit": "wheel-coupler-front-left"
+        }
+      ]
+    },
+    {
+      "name": "wheel-coupler-front-right",
+      "bounds": {
+        "isBox3": true,
+        "min": {
+          "x": 0.15697500077486037,
+          "y": 0.04550300077486044,
+          "z": 0.2529729911785126
+        },
+        "max": {
+          "x": 0.1929749992251396,
+          "y": 0.08150299922513968,
+          "z": 0.2783730039100647
+        }
+      },
+      "concept": true,
+      "shaftOverlapMm": 10.500025060287188,
+      "hubOverlapMm": 2.0000034332275374,
+      "axisOffset": 2.7755575615628914e-17,
+      "probes": [
+        {
+          "z": 0.2641180154507016,
+          "hit": "wheel-coupler-front-right"
+        },
+        {
+          "z": 0.26669801229830914,
+          "hit": "wheel-coupler-front-right"
+        },
+        {
+          "z": 0.26992300835781846,
+          "hit": "wheel-coupler-front-right"
+        },
+        {
+          "z": 0.2731480044173278,
+          "hit": "wheel-coupler-front-right"
+        },
+        {
+          "z": 0.2757280012649353,
+          "hit": "wheel-coupler-front-right"
+        }
+      ]
+    },
+    {
+      "name": "wheel-coupler-rear-left",
+      "bounds": {
+        "isBox3": true,
+        "min": {
+          "x": -0.1930249992251396,
+          "y": 0.04550300077486044,
+          "z": -0.2784270039100647
+        },
+        "max": {
+          "x": -0.15702500077486037,
+          "y": 0.08150299922513968,
+          "z": -0.2530269911785126
+        }
+      },
+      "concept": true,
+      "shaftOverlapMm": 10.500025355978826,
+      "hubOverlapMm": 2.0000034332275374,
+      "axisOffset": 2.7755575615628914e-17,
+      "probes": [
+        {
+          "z": -0.2641720157316087,
+          "hit": "wheel-coupler-rear-left"
+        },
+        {
+          "z": -0.26675201252007785,
+          "hit": "wheel-coupler-rear-left"
+        },
+        {
+          "z": -0.2699770085056643,
+          "hit": "wheel-coupler-rear-left"
+        },
+        {
+          "z": -0.2732020044912507,
+          "hit": "wheel-coupler-rear-left"
+        },
+        {
+          "z": -0.27578200127971986,
+          "hit": "wheel-coupler-rear-left"
+        }
+      ]
+    },
+    {
+      "name": "wheel-coupler-rear-right",
+      "bounds": {
+        "isBox3": true,
+        "min": {
+          "x": -0.1930249992251396,
+          "y": 0.04550300077486044,
+          "z": 0.2529729911785126
+        },
+        "max": {
+          "x": -0.15702500077486037,
+          "y": 0.08150299922513968,
+          "z": 0.2783730039100647
+        }
+      },
+      "concept": true,
+      "shaftOverlapMm": 10.500025060287188,
+      "hubOverlapMm": 2.0000034332275374,
+      "axisOffset": 2.7755575615628914e-17,
+      "probes": [
+        {
+          "z": 0.2641180154507016,
+          "hit": "wheel-coupler-rear-right"
+        },
+        {
+          "z": 0.26669801229830914,
+          "hit": "wheel-coupler-rear-right"
+        },
+        {
+          "z": 0.26992300835781846,
+          "hit": "wheel-coupler-rear-right"
+        },
+        {
+          "z": 0.2731480044173278,
+          "hit": "wheel-coupler-rear-right"
+        },
+        {
+          "z": 0.2757280012649353,
+          "hit": "wheel-coupler-rear-right"
+        }
+      ]
+    }
+  ],
+  "scope": "Static display-only inferred sleeves; manufactured coupler specifications and moving clearances are not validated.",
+  "runtime": {
+    "posterClosed": {
+      "canvasCount": 0,
+      "posterWidth": 630
+    },
+    "driveView": {
+      "diagnostics": "false",
+      "frames": "7",
+      "drawCalls": "99",
+      "triangles": "93220",
+      "loaded": "true",
+      "exterior": "true"
+    },
+    "idleFrames": [
+      "7",
+      "7"
+    ]
+  }
+}

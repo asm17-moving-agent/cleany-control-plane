@@ -1,0 +1,46 @@
+{
+  "geometry": {
+    "bounds": [
+      [
+        -0.23600000009499492,
+        0.13900000033527612,
+        -0.2800000011920929
+      ],
+      [
+        0.23499999940395355,
+        1.198000000026077,
+        0.2800000011920929
+      ]
+    ],
+    "staticWheelGapMetres": 0.01199700033527612,
+    "cameraApertureHits": [
+      0,
+      0,
+      0
+    ]
+  },
+  "with": {
+    "diagnostics": "true",
+    "frames": "4",
+    "drawCalls": "156",
+    "triangles": "289483",
+    "loaded": "true",
+    "exterior": "true"
+  },
+  "without": {
+    "diagnostics": "true",
+    "frames": "5",
+    "drawCalls": "129",
+    "triangles": "269381",
+    "loaded": "true",
+    "exterior": "false"
+  },
+  "again": {
+    "diagnostics": "true",
+    "frames": "6",
+    "drawCalls": "156",
+    "triangles": "289483",
+    "loaded": "true",
+    "exterior": "true"
+  }
+}
