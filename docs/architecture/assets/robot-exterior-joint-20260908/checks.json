@@ -1,0 +1,293 @@
+{
+  "jointProbes": [
+    {
+      "degrees": 0,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 0,
+      "normalDifference": 1.1102230246251565e-16,
+      "jointRecess": 0.0010000020265580334
+    },
+    {
+      "degrees": 15,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 0,
+      "normalDifference": 1.1102230246251565e-16,
+      "jointRecess": 0.0010352782784571746
+    },
+    {
+      "degrees": 30,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 0,
+      "normalDifference": 1.1102230246251565e-16,
+      "jointRecess": 0.0011547028784466562
+    },
+    {
+      "degrees": 45,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 0,
+      "normalDifference": 0,
+      "jointRecess": 0.0014142164283588166
+    },
+    {
+      "degrees": 60,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 0,
+      "normalDifference": 0,
+      "jointRecess": 0.0011547200848256445
+    },
+    {
+      "degrees": 75,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 1.1443916996305594e-16,
+      "normalDifference": 0,
+      "jointRecess": 0.0010352937052745537
+    },
+    {
+      "degrees": 90,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 0,
+      "normalDifference": 0,
+      "jointRecess": 0.0010000169277191162
+    },
+    {
+      "degrees": 105,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 1.1443916996305594e-16,
+      "normalDifference": 0,
+      "jointRecess": 0.0010352937052744426
+    },
+    {
+      "degrees": 120,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 1.2412670766236366e-16,
+      "normalDifference": 0,
+      "jointRecess": 0.0011547200848257555
+    },
+    {
+      "degrees": 135,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 0,
+      "normalDifference": 1.1102230246251565e-16,
+      "jointRecess": 0.0014142164283588166
+    },
+    {
+      "degrees": 150,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 1.2412670766236366e-16,
+      "normalDifference": 0,
+      "jointRecess": 0.0011547028784466562
+    },
+    {
+      "degrees": 165,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 0,
+      "normalDifference": 0,
+      "jointRecess": 0.0010352782784571746
+    },
+    {
+      "degrees": 180,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 0,
+      "normalDifference": 0,
+      "jointRecess": 0.0010000020265579224
+    },
+    {
+      "degrees": 195,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 1.1443916996305594e-16,
+      "normalDifference": 0,
+      "jointRecess": 0.0010352782784571746
+    },
+    {
+      "degrees": 210,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 0,
+      "normalDifference": 0,
+      "jointRecess": 0.0011547028784466562
+    },
+    {
+      "degrees": 225,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 0,
+      "normalDifference": 1.1102230246251565e-16,
+      "jointRecess": 0.0014142164283587055
+    },
+    {
+      "degrees": 240,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 1.2412670766236366e-16,
+      "normalDifference": 0,
+      "jointRecess": 0.0011547200848256445
+    },
+    {
+      "degrees": 255,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 1.1443916996305594e-16,
+      "normalDifference": 0,
+      "jointRecess": 0.0010352937052745537
+    },
+    {
+      "degrees": 270,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 0,
+      "normalDifference": 0,
+      "jointRecess": 0.0010000169277191162
+    },
+    {
+      "degrees": 285,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 0,
+      "normalDifference": 0,
+      "jointRecess": 0.0010352937052744426
+    },
+    {
+      "degrees": 300,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 0,
+      "normalDifference": 0,
+      "jointRecess": 0.0011547200848257555
+    },
+    {
+      "degrees": 315,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 2.3551386880256624e-16,
+      "normalDifference": 1.1102230246251565e-16,
+      "jointRecess": 0.0014142164283585945
+    },
+    {
+      "degrees": 330,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 0,
+      "normalDifference": 1.1102230246251565e-16,
+      "jointRecess": 0.0011547028784467672
+    },
+    {
+      "degrees": 345,
+      "lower": "lower-body",
+      "joint": "body-joint-backing",
+      "upper": "collection-bin-outer-shell",
+      "profileOffset": 0,
+      "normalDifference": 1.1102230246251565e-16,
+      "jointRecess": 0.0010352782784569525
+    }
+  ],
+  "inletProbes": [
+    {
+      "x": -0.135,
+      "z": -0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.135,
+      "z": 0,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.135,
+      "z": 0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.08,
+      "z": -0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.08,
+      "z": 0,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.08,
+      "z": 0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.025,
+      "z": -0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.025,
+      "z": 0,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.025,
+      "z": 0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    }
+  ],
+  "removedLidParts": [],
+  "cameraHoodParts": 0,
+  "mastParts": 4,
+  "posterAndReopen": {
+    "closed": {
+      "canvasCount": 0,
+      "posterWidth": 630
+    },
+    "reopened": {
+      "diagnostics": "false",
+      "frames": "5",
+      "drawCalls": "157",
+      "triangles": "291131",
+      "loaded": "true",
+      "exterior": "true"
+    }
+  }
+}

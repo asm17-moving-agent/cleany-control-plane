@@ -32,6 +32,10 @@ export const FACILITY_18F = {
   orientation: "landscape",
 } as const;
 
+// Workspace rooms and their shared access corridor, before the gray areas at
+// x=976 (relax zones) and y=454 (lifts, restrooms and storage) in the artwork.
+export const FACILITY_ACTIVE_BOUNDS = { x: 8, y: 8, width: 968, height: 446 } as const;
+
 type PortraitFacilityZone = Omit<FacilityZone, "points" | "center"> & {
   points: FacilityPoint[];
   center: FacilityPoint;

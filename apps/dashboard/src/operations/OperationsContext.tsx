@@ -59,6 +59,7 @@ export function OperationsProvider({ children }: PropsWithChildren) {
 
   const refresh = useCallback(async () => {
     await Promise.all([
+      queryClient.invalidateQueries({ queryKey: queryKeys.seats }),
       queryClient.invalidateQueries({ queryKey: queryKeys.missions }),
       queryClient.invalidateQueries({ queryKey: queryKeys.robots }),
     ]);

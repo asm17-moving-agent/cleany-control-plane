@@ -9,7 +9,8 @@
     "contracts:types": "openapi-typescript ../../packages/contracts/openapi.json -o src/api/generated/openapi.ts",
     "typecheck": "tsc -b --pretty false",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:robot-model": "playwright test -c playwright.robot-model.config.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "latest",
@@ -20,6 +21,7 @@
     "react-hook-form": "latest",
     "react-router": "latest",
     "tailwind-merge": "latest",
+    "three": "0.180.0",
     "zod": "latest"
   },
   "devDependencies": {
@@ -29,6 +31,7 @@
     "@testing-library/react": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "@types/three": "0.180.0",
     "@vitejs/plugin-react": "latest",
     "jsdom": "latest",
     "openapi-typescript": "^7.13.0",
