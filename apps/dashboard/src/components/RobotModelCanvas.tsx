@@ -4,7 +4,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { createRobotExterior } from "./RobotExterior";
 
-type View = "home" | "front" | "side" | "rear" | "top" | "intake" | "drive" | "arms";
+type View = "home" | "front" | "side" | "rear" | "top" | "intake" | "drive" | "arms" | "sensors";
 type Commands = { view: (view: View) => void; wire: (enabled: boolean) => void; quality: (high: boolean) => void; exterior: (enabled: boolean) => void };
 
 export default function RobotModelCanvas() {
@@ -64,9 +64,9 @@ export default function RobotModelCanvas() {
       // Stop a previous drag's inertia before applying an explicit inspection view.
       const damping = controls.enableDamping;
       controls.enableDamping = false; controls.update(); controls.enableDamping = damping;
-      const angles: Record<View, [number, number, number]> = { home: [1.4, .65, 1.2], front: [1.9, .05, 0], side: [0, .05, 1.9], rear: [-1.9, .2, 0], top: [.001, 1.9, 0], intake: [-1.4, 1.2, 1.2], drive: [1.9, .25, .6], arms: [1.4, .6, 1.2] };
-      const target = name === "intake" ? new THREE.Vector3(-.055, .84, 0) : name === "drive" ? new THREE.Vector3(.13, .068, 0) : name === "arms" ? new THREE.Vector3(.10, .945, 0) : center;
-      const distance = name === "intake" ? .55 : name === "drive" ? .3 : name === "arms" ? .32 : 1;
+      const angles: Record<View, [number, number, number]> = { home: [1.4, .65, 1.2], front: [1.9, .05, 0], side: [0, .05, 1.9], rear: [-1.9, .2, 0], top: [.001, 1.9, 0], intake: [-1.4, 1.2, 1.2], drive: [1.9, .25, .6], arms: [1.4, .6, 1.2], sensors: [1.9, .12, .5] };
+      const target = name === "intake" ? new THREE.Vector3(-.055, .84, 0) : name === "drive" ? new THREE.Vector3(.13, .068, 0) : name === "arms" ? new THREE.Vector3(.10, .945, 0) : name === "sensors" ? new THREE.Vector3(.215, .345, 0) : center;
+      const distance = name === "intake" ? .55 : name === "drive" ? .3 : name === "arms" ? .32 : name === "sensors" ? .36 : 1;
       controls.target.copy(target); camera.position.copy(target).add(new THREE.Vector3(...angles[name]).multiplyScalar(radius * distance)); controls.update(); invalidate();
     }
     function resize() {
@@ -116,7 +116,7 @@ export default function RobotModelCanvas() {
     <div className="robot-model-scale">01 / CLEANY<br /><span>{exterior ? "외장 디자인 시안" : "원본 CAD · 대기 자세 예시"}</span></div>
     {error && <button className="robot-model-retry" onClick={() => { setError(false); setWire(false); setHigh(false); setExterior(true); setView("home"); setStatus("모델을 불러오는 중…"); setRetry(retry + 1); }}>다시 불러오기</button>}
     <fieldset className="robot-model-tools" aria-label="3D 보기 설정" disabled={!ready || error}>
-      <div>{([["home", "입체"], ["front", "정면"], ["side", "측면"], ["rear", "후면"], ["top", "위에서"], ["intake", "투입구"], ["drive", "구동부"], ["arms", "팔"]] as const).map(([key, label]) => <button key={key} aria-pressed={view === key} onClick={() => { commands.current?.view(key); setView(key); }}>{label}</button>)}</div>
+      <div>{([["home", "입체"], ["front", "정면"], ["side", "측면"], ["rear", "후면"], ["top", "위에서"], ["intake", "투입구"], ["drive", "구동부"], ["arms", "팔"], ["sensors", "센서"]] as const).map(([key, label]) => <button key={key} aria-pressed={view === key} onClick={() => { commands.current?.view(key); setView(key); }}>{label}</button>)}</div>
       <div><button aria-pressed={exterior} onClick={() => { commands.current?.exterior(!exterior); setExterior(!exterior); }}>외장 시안</button><button aria-pressed={wire} onClick={() => { commands.current?.wire(!wire); setWire(!wire); }}>윤곽</button><button aria-pressed={high} onClick={() => { commands.current?.quality(!high); setHigh(!high); }}>{high ? "고화질" : "절전"}</button></div>
     </fieldset>
     <p className="robot-model-hint">드래그하여 회전 · 스크롤하여 확대 · 오른쪽 드래그로 이동</p>

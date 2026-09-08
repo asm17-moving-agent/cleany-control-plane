@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { createRobotArmCovers } from "./RobotArmCovers";
+import { FRONT_SENSOR_OPENINGS, openFrontSensorPorts } from "./RobotSensorOpenings";
 import wordmarkUrl from "../assets/brand/wordmark.png";
 
 /** Display-only enclosure for the e718ac57 CAD, in metres: +X front, +Y up. */
@@ -11,7 +12,6 @@ export function createRobotExterior(invalidate: () => void, model: THREE.Object3
   const porcelain = new THREE.MeshStandardMaterial({ color: 0xe4e3df, metalness: .12, roughness: .44 });
   const graphite = new THREE.MeshStandardMaterial({ color: 0x303639, metalness: .16, roughness: .56 });
   const rubber = new THREE.MeshStandardMaterial({ color: 0x202528, roughness: .86 });
-  const accent = new THREE.MeshStandardMaterial({ color: 0xb6a17d, metalness: .5, roughness: .42 });
   const recess = new THREE.MeshStandardMaterial({ color: 0x373d40, roughness: .82 });
   const binPolymer = new THREE.MeshStandardMaterial({ color: 0x50595b, metalness: .02, roughness: .78 });
   const trim = new THREE.MeshStandardMaterial({ color: 0x899193, metalness: .55, roughness: .4 });
@@ -70,13 +70,14 @@ export function createRobotExterior(invalidate: () => void, model: THREE.Object3
   const bodyWidth = .458, bodyDepth = .548, bodyRadius = .035;
   // Wheel geometry reaches Y=.127003; the enclosure starts at .139 (~12 mm gap).
   box("lower-bumper", [.470, .030, .560], [0, .154, 0], rubber, .014);
-  extrudePlate("lower-body", roundedOutline(bodyWidth, bodyDepth, bodyRadius), .2425, .160, porcelain);
+  const lowerBody = openPlate("lower-body", bodyWidth, bodyDepth, .2425, .160,
+    porcelain, .432, .522, 0, 0, bodyRadius, .022);
+  group.add(openFrontSensorPorts(lowerBody,
+    [...FRONT_SENSOR_OPENINGS.lidar, ...FRONT_SENSOR_OPENINGS.ultrasonic], graphite));
   // The bevels leave a 0.5 mm joint at Y=.4035–.404. A matching recessed
   // backing closes it without the previous stacked lid and raised belt.
   extrudePlate("body-joint-backing", roundedOutline(bodyWidth - .002, bodyDepth - .002, bodyRadius - .001),
     .006, .401, porcelain);
-  // A restrained brand accent; this is not a live status indicator.
-  box("front-accent", [.003, .003, .078], [.231, .678, 0], accent, .0014);
 
   // Recessed rear service panel and an understated finger pull.
   box("service-panel-reveal", [.003, .161, .378], [-.229, .270, 0], seam, .0014);

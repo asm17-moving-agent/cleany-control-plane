@@ -184,11 +184,16 @@ uv run --with mujoco==3.12.0 --with trimesh --with numpy python \
 `팔` 보기에서는 위팔·아래팔 바깥면과 어깨 앞쪽의 부분 커버 6개를 확인할 수 있다.
 커버는 기존 대기 자세의 링크에 맞춰 생성하며 안쪽과 양 끝을 열어 둔다.
 관절의 전체 가동 범위와 실물 제작 사양은 검증하지 않았다.
+`센서` 보기에서는 전면 절단선 아래의 라이다용 가로 개구부와 초음파용 가로 개구부 두 개를
+확대한다. 외장 양쪽 면을 관통하고 안쪽으로 이어지는 표시용 형상이다.
+라이다 높이는 사용자 요청에 따라 360mm로 표시하며 원본 MJCF 기준점(460mm)과 다르다.
+초음파 개구부는 높이 24mm를 유지하고 가로 폭을 60mm로 넓힌다. 센서 본체는 GLB에 없으며,
+초음파 위치·구멍 치수와 라이다 전체 시야는 실물 검증 전의 디자인 제안이다.
 현재 기본 미리보기는 `cleany-exterior-poster.png`를 사용한다.
 치수, 반복 보완과 검증 범위는
 [외장 시안 문서](../../docs/architecture/robot-exterior-concept.md)에 기록한다.
 
-검증: `pnpm --filter @cleany/dashboard exec vitest run src/components/RobotModel.test.tsx`,
+검증: `pnpm --filter @cleany/dashboard exec vitest run src/components/RobotModel.test.tsx src/components/RobotSensorOpenings.test.ts`,
 `pnpm contracts:check`, `pnpm build`. 실제 렌더링은 Firefox에서 `/robot-model`을
 열어 niri 캡처로 확인한다. 개발 모드에서 `?renderStats=1`을 붙이면 렌더링
 진단을 확인할 수 있다.
