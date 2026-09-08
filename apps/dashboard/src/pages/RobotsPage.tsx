@@ -28,7 +28,7 @@ export function RobotsPage() {
         </Link>)}
       </nav>{selected ? <article className="workspace-robot-detail">
         <header><h3>{selected.robot_id}</h3><span className="workspace-state" data-state={selected.state}>{robotStateLabels[selected.state]}</span></header>
-        <div className="workspace-robot-overview"><RobotModel key={selected.robot_id} />
+        <div className="workspace-robot-overview"><RobotModel key={selected.robot_id} rotationGuide />
         <dl><div><dt>현재 상태</dt><dd>{robotStateLabels[selected.state]}</dd></div><div><dt>마지막 확인</dt><dd>{formatDateTime(selected.last_seen_at)}</dd></div>
           <div><dt>배터리</dt><dd>미연동</dd></div><div><dt>현재 위치</dt><dd>실시간 좌표 미연동</dd></div></dl></div>
         {needsRobotAttention(selected) && <p className="workspace-api-error" style={{ marginTop: 24 }}>{selected.state === "OFFLINE" ? "로봇 연결이 끊겼습니다. 현장 상태와 네트워크를 확인해 주세요." : "로봇에 오류가 있습니다. 현장 상태를 확인해 주세요."}</p>}

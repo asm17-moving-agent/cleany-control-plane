@@ -229,13 +229,19 @@ export interface components {
              * Occupancy
              * @enum {string}
              */
-            occupancy: "AVAILABLE" | "OCCUPIED";
+            occupancy: "AVAILABLE" | "OCCUPIED" | "UNKNOWN";
             /** Occupant Name */
             occupant_name: string | null;
             /** Row */
             row: number;
             /** Seat Id */
             seat_id: string;
+            /**
+             * Zone Id
+             * @default d-hub
+             * @enum {string}
+             */
+            zone_id: "d-hub" | "space-a1" | "space-a2" | "space-a3" | "space-a4" | "space-m1" | "space-m2" | "space-m3";
         };
         /**
          * TargetKind

@@ -12,18 +12,17 @@ vi.mock("../settings/SettingsContext", () => ({ useSettings: () => ({ settings: 
 afterEach(cleanup);
 it("opens robot details from the roster and map and closes without leaving home", () => {
  render(<MemoryRouter><Routes><Route element={<Outlet context={{ floor: { id: "BUSAN_SOMA_18F", label: "18층", mapAvailable: true } }} />}><Route index element={<HomePage />} /></Route></Routes></MemoryRouter>);
- expect(within(screen.getByRole("complementary", { name: "로봇 현황" })).queryByRole("link")).not.toBeInTheDocument();
+ expect(within(screen.getByRole("complementary", { name: "로봇 목록" })).queryByRole("link")).not.toBeInTheDocument();
  expect(screen.queryByRole("complementary", { name: "로봇 상세" })).not.toBeInTheDocument();
- expect(within(screen.getByRole("complementary", { name: "로봇 현황" })).getAllByRole("button")).toHaveLength(1);
- const roster = within(screen.getByRole("complementary", { name: "로봇 현황" }));
- fireEvent.click(roster.getByRole("figure", { name: "Cleany 외형 미리보기" }));
- expect(screen.queryByRole("complementary", { name: "로봇 상세" })).not.toBeInTheDocument();
- fireEvent.click(screen.getByRole("button", { name: "cleany-01 상세 열기" }));
+ expect(within(screen.getByRole("complementary", { name: "로봇 목록" })).getAllByRole("button")).toHaveLength(1);
+ const roster = screen.getByRole("complementary", { name: "로봇 목록" });
+ fireEvent.click(roster.querySelector("img")!);
+ expect(screen.getByRole("complementary", { name: "로봇 상세" })).toBeInTheDocument();
  fireEvent.click(screen.getByRole("button", { name: "cleany-01 상세 열기" }));
  expect(screen.queryByRole("complementary", { name: "로봇 상세" })).not.toBeInTheDocument();
  fireEvent.click(screen.getByRole("button", { name: "cleany-01 상세 열기" }));
  let panel = screen.getByRole("complementary", { name: "로봇 상세" });
- expect(within(panel).queryByRole("figure", { name: "Cleany 외형 미리보기" })).not.toBeInTheDocument();
+ expect(within(panel).getByRole("figure", { name: "Cleany 외형 미리보기" })).toBeInTheDocument();
  expect(within(panel).getByText("미연동")).toBeInTheDocument();
  expect(within(panel).getByText("현재 할당된 작업이 없습니다.")).toBeInTheDocument();
  fireEvent.click(within(panel).getByRole("button", { name: "로봇 상세 닫기" }));
@@ -46,4 +45,40 @@ it("toggles the same seat panel and can reopen it during the closing animation",
  expect(screen.queryByRole("button", { name: "요청 보내기" })).not.toBeInTheDocument();
  fireEvent.click(seat);
  expect(screen.getByRole("button", { name: "요청 보내기" })).toBeVisible();
+});
+
+it("keeps seat and robot panels mutually exclusive from both robot entry points", () => {
+ render(<MemoryRouter><Routes><Route element={<Outlet context={{ floor: { id: "BUSAN_SOMA_18F", label: "18층", mapAvailable: true } }} />}><Route index element={<HomePage />} /></Route></Routes></MemoryRouter>);
+ const seat = screen.getByRole("button", { name: "12번 좌석 · 비어 있음" });
+ for (const name of ["cleany-01 상세 열기", "cleany-01 로봇 · 대기 · 예시 위치"]) {
+  fireEvent.click(seat);
+  expect(screen.getByRole("button", { name: "요청 보내기" })).toBeVisible();
+  expect(screen.queryByRole("complementary", { name: "로봇 상세" })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name }));
+  expect(document.querySelector(".home-request-drawer .seat-mission-panel")).not.toBeNull();
+  expect(screen.getByRole("complementary", { name: "로봇 상세" })).toBeVisible();
+  expect(document.querySelector(".home-request-drawer")).toHaveAttribute("inert");
+  expect(screen.queryByRole("button", { name: "요청 보내기" })).not.toBeInTheDocument();
+  expect(seat).toHaveAttribute("aria-pressed", "false");
+ }
+ fireEvent.click(seat);
+ expect(document.querySelector(".home-robot-drawer .home-robot-detail-panel")).not.toBeNull();
+ expect(document.querySelector(".home-robot-drawer")).toHaveAttribute("inert");
+ expect(screen.queryByRole("complementary", { name: "로봇 상세" })).not.toBeInTheDocument();
+ expect(screen.getByRole("button", { name: "요청 보내기" })).toBeVisible();
+});
+
+it("shows occupancy without mission counts or seat search", () => {
+ render(<MemoryRouter><Routes><Route element={<Outlet context={{ floor: { id: "BUSAN_SOMA_18F", label: "18층", mapAvailable: true } }} />}><Route index element={<HomePage />} /></Route></Routes></MemoryRouter>);
+ expect(screen.getByRole("heading", { name: "18층 좌석 지도" })).toBeVisible();
+ expect(screen.queryByRole("navigation", { name: "작업 요청 현황" })).not.toBeInTheDocument();
+ expect(screen.queryByRole("search")).not.toBeInTheDocument();
+ expect(screen.getByRole("group", { name: "좌석 점유 현황" })).toBeVisible();
+ expect(screen.queryByRole("region", { name: "좌석 이용 및 정리 현황" })).not.toBeInTheDocument();
+});
+it("keeps demo visible and prevents real mission submission", () => {
+ render(<MemoryRouter initialEntries={["/?summaryDemo=1"]}><Routes><Route element={<Outlet context={{ floor: { id: "BUSAN_SOMA_18F", label: "18층", mapAvailable: true } }} />}><Route index element={<HomePage />} /></Route></Routes></MemoryRouter>);
+ expect(screen.getByRole("button", { name: "데모 · 해제" })).toBeVisible();
+ fireEvent.click(screen.getByRole("button", { name: "12번 좌석 · 비어 있음" }));
+ expect(screen.getByRole("button", { name: "요청 보내기" })).toBeDisabled();
 });

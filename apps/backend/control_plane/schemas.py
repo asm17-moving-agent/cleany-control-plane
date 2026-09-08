@@ -84,11 +84,14 @@ class RobotListResponse(BaseModel):
 
 
 class SeatResponse(BaseModel):
-    seat_id: str = Field(pattern=r"^seat-[0-9]{2}$")
-    label: str = Field(pattern=r"^[0-9]{2}$")
+    seat_id: str = Field(pattern=r"^seat-(?:[0-9]{2}|(?:a[1-4]|m[1-3])-0[1-6])$")
+    label: str = Field(pattern=r"^(?:[0-9]{2}|(?:A[1-4]|M[1-3])-0[1-6])$")
+    zone_id: Literal[
+        "d-hub", "space-a1", "space-a2", "space-a3", "space-a4", "space-m1", "space-m2", "space-m3"
+    ] = "d-hub"
     row: int = Field(ge=1, le=6)
     grid_column: Literal[1, 2, 3, 5, 6, 8, 9, 10]
-    occupancy: Literal["AVAILABLE", "OCCUPIED"]
+    occupancy: Literal["AVAILABLE", "OCCUPIED", "UNKNOWN"]
     occupant_name: str | None
 
 

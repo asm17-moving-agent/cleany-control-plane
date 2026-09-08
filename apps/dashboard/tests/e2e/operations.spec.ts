@@ -4,7 +4,7 @@ test("operator can select a seat on the map and send a supported request", async
   await page.goto("/");
   const fleet = page.getByRole("complementary", { name: "로봇 현황" });
   await expect(fleet).toBeVisible();
-  await expect(page.locator("button.facility-map-seat")).toHaveCount(48);
+  await expect(page.locator("button.facility-map-seat")).toHaveCount(82);
   await expect(page.getByRole("complementary", { name: "작업 요청 패널" })).toHaveCount(0);
   await page.getByRole("button", { name: "12번 좌석 · 비어 있음" }).click();
   const panel = page.getByRole("complementary", { name: "작업 요청 패널" });
@@ -32,7 +32,7 @@ test("home entry points and unavailable floors remain accessible", async ({ page
   await expect(page.getByRole("heading", { name: "19층 지도 연결 전" })).toBeVisible();
   await expect(page.locator("button.facility-map-seat")).toHaveCount(0);
   await floorSelect.selectOption("BUSAN_SOMA_18F");
-  await expect(page.locator("button.facility-map-seat")).toHaveCount(48);
+  await expect(page.locator("button.facility-map-seat")).toHaveCount(82);
   await expect(page.locator(".facility-plan-label", { hasText: "SPACE A1" })).toBeVisible();
   await expect(page.locator(".facility-zone-overlay, .facility-route-overlay")).toHaveCount(0);
 
@@ -66,7 +66,7 @@ for (const viewport of [{ width: 1920, height: 1080 }, { width: 1366, height: 76
     await page.setViewportSize(viewport);
     await page.goto("/");
     await page.getByRole("button", { name: "12번 좌석 · 비어 있음" }).click();
-    for (const selector of [".workspace-header", ".home-robot-panel", ".home-map-panel", ".seat-mission-panel", ".home-summary-strip"]) {
+    for (const selector of [".workspace-header", ".home-robot-panel", ".home-map-panel", ".seat-mission-panel", ".facility-map-legend"]) {
       const bounds = await page.locator(selector).boundingBox();
       expect(bounds).not.toBeNull();
       expect(bounds!.x).toBeGreaterThanOrEqual(0);

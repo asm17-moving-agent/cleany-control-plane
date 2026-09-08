@@ -4,6 +4,7 @@ import { missionProgress, missionTone, seatLocation, seatPosition } from "./oper
 
 function seat(label: string): Seat {
   return {
+    zone_id: "d-hub",
     seat_id: `seat-${label}`,
     label,
     row: Math.floor((Number(label) - 1) / 8) + 1,

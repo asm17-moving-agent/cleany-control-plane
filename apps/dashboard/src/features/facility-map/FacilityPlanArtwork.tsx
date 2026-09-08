@@ -1,7 +1,7 @@
 import facilityFloorplan from "../../assets/facility-18f-floorplan.png";
 import elevatorIcon from "../../assets/icons/material-symbols-elevator-outlined.svg";
 import { rotatePortraitPoint } from "./facility-18f";
-import { D_HUB_TABLES, D_HUB_SEATS, D_HUB_DESK_WIDTH, D_HUB_DESK_HEIGHT } from "./seat-layout";
+import { D_HUB_TABLES, D_HUB_SEATS, D_HUB_DESK_WIDTH, D_HUB_DESK_HEIGHT, ROOM_TABLES, ROOM_DESK_SCALE, roomDeskPositions } from "./seat-layout";
 
 interface PortraitPosition {
   x: number;
@@ -22,9 +22,9 @@ interface PlanLabel {
 const PLAN_LABELS: PlanLabel[] = [
   { id: "storage-top-left", lines: ["창고"], x: 41, y: 48 },
   { id: "space-a4", lines: ["SPACE A4"], size: 10, x: 150.85, y: 116 },
-  { id: "space-m1", lines: ["SPACE M1"], size: 10, x: 279.85, y: 116 },
-  { id: "space-m2", lines: ["SPACE M2"], size: 10, x: 408.85, y: 116 },
-  { id: "space-m3", lines: ["SPACE M3"], size: 10, x: 536.85, y: 116 },
+  { id: "space-m1", lines: ["SPACE M1"], size: 10, x: 262.85, y: 116 },
+  { id: "space-m2", lines: ["SPACE M2"], size: 10, x: 391.85, y: 116 },
+  { id: "space-m3", lines: ["SPACE M3"], size: 10, x: 519.85, y: 116 },
   { id: "relax-zone-m", lines: ["RELAX ZONE", "(M)"], size: 13, x: 1065, y: 107 },
   { id: "space-a3", lines: ["SPACE A3"], size: 10, x: 68, y: 130 },
   { id: "space-a2", lines: ["SPACE A2"], size: 10, x: 68, y: 225 },
@@ -67,16 +67,6 @@ function UprightPlanLabel({ id, lines, size = 14, x, y }: PlanLabel) {
   );
 }
 
-const ROOM_TABLES = [
-  { id: "space-a4", x: 150.85, y: 75 },
-  { id: "space-m1", x: 279.85, y: 75 },
-  { id: "space-m2", x: 408.85, y: 75 },
-  { id: "space-m3", x: 536.85, y: 75 },
-  { id: "space-a3", x: 68, y: 173, vertical: true },
-  { id: "space-a2", x: 68, y: 268, vertical: true },
-  { id: "space-a1", x: 68, y: 368, vertical: true },
-];
-
 function DeskChair({ x, y, rotation = 0 }: { x: number; y: number; rotation?: number }) {
   return (
     <g className="facility-desk-chair" transform={`translate(${x} ${y}) rotate(${rotation})`}>
@@ -89,24 +79,24 @@ function DeskChair({ x, y, rotation = 0 }: { x: number; y: number; rotation?: nu
 function RoomFurniture() {
   return (
     <g className="facility-room-furniture">
-      {ROOM_TABLES.map((table) => (
-        <g key={table.id} data-room-furniture={table.id} transform={`translate(${table.x} ${table.y}) rotate(${table.vertical ? 90 : 0}) scale(0.85)`}>
-          <rect className="facility-dhub-table" width={40 + D_HUB_DESK_WIDTH} height="2" x={-(40 + D_HUB_DESK_WIDTH) / 2} y="-1" rx="0.5" />
-          {[[-1, -16], [1, -16], [-1, 16], [1, 16]].map(([side, y]) => [side * 20, y]).map(([x, y], index) => (
+      {ROOM_TABLES.map((table) => {
+        const columns = table.columns;
+        const width = (columns - 1) * 40 + D_HUB_DESK_WIDTH;
+        const desks = roomDeskPositions(columns);
+        return (
+        <g key={table.id} data-room-furniture={table.id} transform={`translate(${table.x} ${table.y}) rotate(${table.vertical ? 90 : 0}) scale(${ROOM_DESK_SCALE})`}>
+          <rect className="facility-dhub-table" width={width} height="2" x={-width / 2} y="-1" rx="0.5" />
+          {desks.map(({ x, y }, index) => (
             <g key={index} data-room-desk={`${table.id}-${index + 1}`}>
               <DeskChair x={x} y={y} rotation={y < 0 ? 0 : 180} />
               <rect className="facility-desk-surface" x={x - D_HUB_DESK_WIDTH / 2}
                 y={y - D_HUB_DESK_HEIGHT / 2} width={D_HUB_DESK_WIDTH}
                 height={D_HUB_DESK_HEIGHT} rx="2" />
-              <text className="facility-room-desk-number" x={x} y={y}
-                transform={table.vertical ? `rotate(-90 ${x} ${y})` : undefined}
-                textAnchor="middle" dominantBaseline="central" fontSize="13" fontWeight="500">
-                {String(index + 1).padStart(2, "0")}
-              </text>
             </g>
           ))}
         </g>
-      ))}
+        );
+      })}
     </g>
   );
 }

@@ -32,16 +32,12 @@
 .workspace-location { display: flex; align-items: center; gap: 8px; border: 1px solid var(--workspace-line); border-radius: 4px; padding: 0 10px; }
 .workspace-location svg { width: 19px; }
 .workspace-location select { width: 192px; height: 36px; border: 0; border-radius: 0; padding: 0 2px; background: transparent; color: var(--workspace-ink); font-weight: 500; }
-.workspace-connection { display: flex; align-items: center; gap: 8px; color: #52616a; white-space: nowrap; font-size: 13px; }
-.workspace-connection i { width: 7px; height: 7px; border-radius: 50%; background: #b69452; }
-.workspace-connection[data-state="connected"] i { background: #25a480; }
-.workspace-connection[data-state="error"] i { background: var(--workspace-danger); }
 .workspace-menu { position: relative; }
 .workspace-menu summary { display: flex; align-items: center; justify-content: center; gap: 7px; min-width: 34px; height: 38px; cursor: pointer; list-style: none; border-radius: 4px; }
 .workspace-menu summary::-webkit-details-marker { display: none; }
 .workspace-menu summary:hover, .workspace-menu[open] summary { background: var(--workspace-soft); }
 .workspace-menu summary > svg:last-child:not(:first-child) { width: 14px; transform: rotate(90deg); }
-.workspace-avatar { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #e8f0ed; color: #48645c; font-size: 12px; font-weight: 700; }
+.workspace-avatar { display: grid; place-items: center; min-width: 34px; height: 34px; padding-inline: 10px; border-radius: 17px; background: #e8f0ed; color: #48645c; font-size: 12px; font-weight: 700; white-space: nowrap; }
 .notification-dot { position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: var(--workspace-danger); }
 .workspace-popover { position: absolute; right: 0; top: calc(100% + 12px); width: 250px; padding: 8px; border: 1px solid var(--workspace-line); border-radius: 8px; background: #fff; box-shadow: 0 10px 35px #24333d1a; }
 .workspace-popover > strong { display: block; padding: 10px 12px; color: var(--workspace-muted); font-size: 12px; font-weight: 500; }
@@ -49,7 +45,7 @@
 .workspace-popover a:hover { background: var(--workspace-soft); }
 .workspace-popover a b { margin-left: auto; color: var(--workspace-teal); }
 .control-main { min-height: 0; overflow: auto; padding: 30px 36px; background: var(--workspace-soft); }
-.control-main.is-home { padding: 0; overflow: hidden; background: #fff; }
+.control-main.is-home { padding: 0; overflow: hidden; background: #eef2f5; }
 .workspace-icon-button { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--workspace-muted); }
 .workspace-icon-button:hover { background: #eaf0f3; color: var(--workspace-ink); }
 .workspace-primary-button { display: flex; align-items: center; justify-content: center; gap: 9px; min-height: 46px; border: 1px solid var(--workspace-teal); border-radius: 4px; padding: 10px 16px; background: var(--workspace-teal); color: #fff; font-weight: 650; }
@@ -124,4 +120,14 @@
   .control-app:has(.home-workspace) .workspace-navigation a { padding-inline: 12px; gap: 7px; }
   .control-app:has(.home-workspace) .workspace-header-actions { gap: 12px; padding-inline: 14px; }
   .control-app:has(.home-workspace) .workspace-location select { width: 170px; }
+}
+
+.header-alert-count { color: #7d8c95; font-size: 11px; white-space: nowrap; padding: 4px 5px; border-radius: 4px; }
+.header-alert-count.attention.has-items { color: #bd4c37; background: #fff1eb; }
+.header-alert-count.review.has-items { color: #a5681c; background: #fff6e8; }
+@media (max-width: 1450px) {
+  .control-app:has(.home-workspace) .workspace-header-actions { gap: 10px; padding-inline: 14px; }
+  .control-app:has(.home-workspace) .workspace-brand { flex-basis: 220px; }
+  .control-app:has(.home-workspace) .workspace-navigation a { min-width: 60px; padding-inline: 12px; }
+  .control-app:has(.home-workspace) .workspace-location select { width: 175px; }
 }

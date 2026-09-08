@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { Locator, Page } from "@playwright/test";
+import { ROTATION_GUIDE } from "../../src/components/robot-model-motion";
 
 async function fixtureApi(page: Page, robotCount = 1) {
   await page.route(url => url.pathname.startsWith("/api/"), route => {
@@ -112,14 +113,14 @@ test("reduced motion disables hover and easing while keeping deliberate rotation
   await expect.poll(() => yaw(canvas)).toBe(home);
 });
 
-test("touch-only devices use the poster and do not fetch the GLB", async ({ browser }) => {
-  const context = await browser.newContext({ viewport: { width: 375, height: 667 }, hasTouch: true, isMobile: true });
+test("touch-only devices use the poster and do not fetch the GLB", async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ baseURL, viewport: { width: 375, height: 667 }, hasTouch: true, isMobile: true });
   try {
     const page = await context.newPage();
     const downloads: string[] = [];
     page.on("request", request => { if (request.url().endsWith(".glb")) downloads.push(request.url()); });
     await fixtureApi(page);
-    await page.goto("http://127.0.0.1:5176/robot-model");
+    await page.goto("/robot-model");
     await expect(page.getByAltText("Cleany 대기 자세와 외장 시안")).toBeVisible();
     await expect(page.locator(".robot-model-card")).toHaveAttribute("data-state", "poster");
     await expect(page.locator("canvas")).toHaveCount(0);
@@ -152,14 +153,19 @@ test("a lost WebGL context falls back cleanly and supports a fresh renderer", as
   await expect(page.locator(".robot-model-card")).toHaveAttribute("data-state", "ready");
 });
 
-test("home model rotation is separate from opening details and survives closing the drawer", async ({ page }) => {
+test("home roster ignores hover while both models keep independent drag rotation", async ({ page }) => {
   await fixtureApi(page);
   await page.goto("/?renderStats=1");
   const roster = page.getByRole("complementary", { name: "로봇 현황", exact: true });
   await expect(roster.locator(".robot-model-card")).toHaveAttribute("data-state", "ready");
   const canvas = roster.getByRole("group", { name: "Cleany 모델 회전" });
   const home = await yaw(canvas);
+  await canvas.hover();
+  await expectIdle(page, canvas);
+  expect(await yaw(canvas)).toBeCloseTo(home, 4);
   await canvas.click();
+  await expectIdle(page, canvas);
+  expect(await yaw(canvas)).toBeCloseTo(home, 4);
   await expect(page.getByRole("complementary", { name: "로봇 상세", exact: true })).toHaveCount(0);
   const bounds = (await canvas.boundingBox())!;
   await page.mouse.down();
@@ -172,19 +178,90 @@ test("home model rotation is separate from opening details and survives closing 
   await expect(page.getByRole("complementary", { name: "로봇 상세", exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "cleany-01 상세 열기" }).click();
   const panel = page.getByRole("complementary", { name: "로봇 상세", exact: true });
-  await expect(panel.locator(".robot-model-card")).toHaveCount(0);
+  await expect(panel.locator(".robot-model-card")).toHaveCount(1);
   await expect(panel.getByText("미연동", { exact: true })).toBeVisible();
   await expect(panel.getByText("현재 할당된 작업이 없습니다.")).toBeVisible();
   expect(await panel.locator(".robot-detail-metrics").evaluate(element =>
     element.getBoundingClientRect().bottom <= element.closest(".robot-detail-content")!.getBoundingClientRect().bottom,
   )).toBe(true);
+  const detailModel = panel.locator(".robot-model-card");
+  await detailModel.scrollIntoViewIfNeeded();
+  await expect(detailModel).toHaveAttribute("data-state", "ready");
+  const detailCanvas = detailModel.getByRole("group", { name: "Cleany 모델 회전" });
+  await detailCanvas.hover();
+  await expectIdle(page, detailCanvas);
+  const detailStart = await yaw(detailCanvas);
+  const detailBounds = (await detailCanvas.boundingBox())!;
+  await page.mouse.down();
+  await page.mouse.move(detailBounds.x + detailBounds.width / 2 + 65, detailBounds.y + detailBounds.height / 2 + 12, { steps: 8 });
+  await page.mouse.up();
+  await page.mouse.move(0, 0);
+  await expectIdle(page, detailCanvas);
+  expect(await yaw(detailCanvas)).toBeLessThan(detailStart - .2);
+  await expect(panel).toBeVisible();
+  expect(await yaw(canvas)).toBeCloseTo(chosen, 4);
   await panel.getByRole("button", { name: "로봇 상세 닫기" }).click();
   await expect(panel).toHaveCount(0);
+  await expect(page.locator(".robot-model-card")).toHaveCount(1);
   expect(await yaw(canvas)).toBeCloseTo(chosen, 4);
   await page.setViewportSize({ width: 1100, height: 768 });
   expect(await roster.locator(".home-robot-identity strong").evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
   await page.getByRole("navigation", { name: "주요 메뉴" }).getByRole("link", { name: "작업", exact: true }).click();
   await expect(page.locator(".robot-model-card, .robot-model-canvas canvas")).toHaveCount(0);
+});
+
+test("robot detail guides repeat with matching arrows, then yield to manual dragging", async ({ page }) => {
+  test.setTimeout(45000);
+  await fixtureApi(page);
+  await page.goto("/robots?renderStats=1");
+  const card = page.locator(".workspace-robot-overview .robot-model-card");
+  await expect(card).toHaveAttribute("data-state", "ready");
+  const canvas = card.getByRole("group", { name: "Cleany 모델 회전" });
+  const home = await yaw(canvas);
+  for (let cycle = 0; cycle < 2; cycle++) {
+    await expect(canvas).toHaveAttribute("data-guide-direction", "left", { timeout: 10000 });
+    await expect.poll(() => yaw(canvas), { intervals: [50, 100, 200] }).toBeGreaterThan(home + .15);
+    await expect(card.locator(".robot-model-rotation-guide")).toHaveCSS("opacity", "0.85");
+    await expect(canvas).toHaveAttribute("data-guide-direction", "right");
+    await expect(canvas).toHaveAttribute("data-guide-direction", "none");
+    await expectIdle(page, canvas);
+    expect(await yaw(canvas)).toBeCloseTo(home, 4);
+  }
+  await canvas.hover();
+  await expectIdle(page, canvas);
+  const bounds = (await canvas.boundingBox())!;
+  await page.mouse.down();
+  await page.mouse.move(bounds.x + bounds.width / 2 + 55, bounds.y + bounds.height / 2, { steps: 8 });
+  await page.mouse.up();
+  await page.mouse.move(0, 0);
+  await canvas.evaluate(element => (element as HTMLElement).blur());
+  await expectIdle(page, canvas);
+  const chosen = await yaw(canvas);
+  const frames = await canvas.getAttribute("data-frames");
+  await page.waitForTimeout(ROTATION_GUIDE.repeatDelayMs + 500);
+  expect(await yaw(canvas)).toBeCloseTo(chosen, 4);
+  expect(await canvas.getAttribute("data-frames")).toBe(frames);
+  await expect(canvas).toHaveAttribute("data-guide-direction", "none");
+  await expect(card.locator(".robot-model-caption")).toHaveCSS("border-top-width", "0px");
+  await expect(card.locator(".robot-model-caption")).toHaveCSS("justify-content", "flex-end");
+  await expect(card.locator(".robot-model-hint")).toHaveText("드래그하여 회전");
+  await expect(card.locator(".robot-model-label")).toHaveCount(0);
+});
+
+test("reduced motion suppresses the detail guide and keeps keyboard rotation", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await fixtureApi(page);
+  await page.goto("/robots?renderStats=1");
+  const card = page.locator(".workspace-robot-overview .robot-model-card");
+  await expect(card).toHaveAttribute("data-state", "ready");
+  const canvas = card.getByRole("group", { name: "Cleany 모델 회전" });
+  const home = await yaw(canvas);
+  await page.waitForTimeout(ROTATION_GUIDE.firstDelayMs + ROTATION_GUIDE.durationSeconds * 1000 + 300);
+  await expect(canvas).toHaveAttribute("data-guide-direction", "none");
+  await expectIdle(page, canvas);
+  expect(await yaw(canvas)).toBeCloseTo(home, 4);
+  await canvas.press("ArrowRight");
+  await expect.poll(() => yaw(canvas)).toBeLessThan(home - .2);
 });
 
 test("home loads nearby roster models and pauses a model scrolled out of view", async ({ page }) => {

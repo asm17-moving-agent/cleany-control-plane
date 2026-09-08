@@ -5,6 +5,7 @@ import { BellIcon, HomeIcon, MapPinIcon, MissionIcon, MonitoringIcon, RobotIcon,
 import { ChevronIcon, EyeIcon, ShieldIcon } from "../components/WorkspaceIcons";
 import { getHomeSummary } from "../lib/home-summary";
 import { useOperations } from "../operations/OperationsContext";
+import { homeSummaryDemo } from "../lib/home-summary-demo";
 import "./workspace-shell.css";
 
 export const facilityFloors = [
@@ -27,8 +28,10 @@ const titles: Record<string, string> = {
 export function AppShell() {
   const location = useLocation();
   const [floor, setFloor] = useState<FacilityFloor>(facilityFloors[0]);
-  const { robots, missions, connectionState, error } = useOperations();
-  const summary = getHomeSummary(robots, missions);
+  const { robots, missions, error, isLoading } = useOperations();
+  const demo = location.pathname === "/" && new URLSearchParams(location.search).get("summaryDemo") === "1";
+  const summary = demo ? getHomeSummary(homeSummaryDemo.robots, homeSummaryDemo.missions) : getHomeSummary(robots, missions);
+  const alertsReady = demo || (!isLoading && !error);
   const menuRef = useRef<HTMLDetailsElement>(null);
   const alertsRef = useRef<HTMLDetailsElement>(null);
   const isHome = location.pathname === "/";
@@ -54,19 +57,16 @@ export function AppShell() {
               {facilityFloors.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
             </select>
           </label>
-          <span className="workspace-connection" data-state={error ? "error" : connectionState} role="status">
-            <i />{error ? "연결 오류" : connectionState === "connected" ? "연결됨" : connectionState === "error" ? "실시간 연결 끊김" : "연결 확인 중"}
-          </span>
           <details className="workspace-menu" ref={alertsRef}>
-            <summary aria-label="알림"><BellIcon aria-hidden="true" />{summary.attention.length + summary.review.length > 0 && <i className="notification-dot" />}</summary>
+            <summary aria-label="알림"><BellIcon aria-hidden="true" /><span className={"header-alert-count attention" + (summary.attention.length ? " has-items" : "")}>조치 {alertsReady ? summary.attention.length : "—"}</span><span className={"header-alert-count review" + (summary.review.length ? " has-items" : "")}>검토 {alertsReady ? summary.review.length : "—"}</span></summary>
             <div className="workspace-popover">
-              <strong>확인할 일</strong>
-              <Link to="/robots?filter=attention"><ShieldIcon />즉시 조치 <b>{summary.attention.length}</b></Link>
-              <Link to="/results?filter=review"><EyeIcon />결과 검토 <b>{summary.review.length}</b></Link>
+              <strong>확인할 일{demo ? " · 예시 데이터" : ""}</strong>
+              <Link to="/robots?filter=attention"><ShieldIcon />즉시 조치 <b>{alertsReady ? summary.attention.length : "—"}</b></Link>
+              <Link to="/results?filter=review"><EyeIcon />결과 검토 <b>{alertsReady ? summary.review.length : "—"}</b></Link>
             </div>
           </details>
           <details className="workspace-menu" ref={menuRef}>
-            <summary aria-label="운영 메뉴"><span className="workspace-avatar">OP</span><ChevronIcon /></summary>
+            <summary aria-label="운영 메뉴"><span className="workspace-avatar">운영자</span><ChevronIcon /></summary>
             <div className="workspace-popover">
               <strong>운영자</strong>
               <Link to="/monitoring"><MonitoringIcon />모니터링</Link>

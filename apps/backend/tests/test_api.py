@@ -43,9 +43,30 @@ def zone_mission_request() -> dict[str, object]:
 async def test_health_and_fixture_endpoints() -> None:
     async for client in make_client():
         assert (await client.get("/api/health")).json() == {"status": "ok"}
-        assert len((await client.get("/api/seats")).json()["items"]) == 48
+        assert len((await client.get("/api/seats")).json()["items"]) == 82
         robots = (await client.get("/api/robots")).json()["items"]
         assert robots[0]["robot_id"] == "cleany-01"
+
+
+@pytest.mark.anyio
+async def test_room_seats_can_be_requested_without_losing_their_zone_identity() -> None:
+    async for client in make_client():
+        seats = (await client.get("/api/seats")).json()["items"]
+        for seat_id in ("seat-a1-01", "seat-m1-06"):
+            seat = next(seat for seat in seats if seat["seat_id"] == seat_id)
+            assert seat["occupancy"] == "UNKNOWN"
+            target = {"kind": "SEAT", "reference_id": seat_id, "label": seat["label"]}
+            request = {
+                "target": target, "priority": "NORMAL",
+                "requested_by": "test-operator", "idempotency_key": seat_id,
+            }
+            created = await client.post("/api/missions", json=request)
+            assert created.status_code == 201
+            assert created.json()["target"] == target
+            assert created.json()["seat_id"] == seat_id
+            repeated = await client.post("/api/missions", json=request)
+            assert repeated.status_code == 200
+            assert repeated.json()["mission_id"] == created.json()["mission_id"]
 
 
 @pytest.mark.anyio

@@ -5,12 +5,14 @@ import { CloseIcon, ChevronIcon } from "./WorkspaceIcons";
 import { SendIcon } from "./Icons";
 import { useOperations } from "../operations/OperationsContext";
 import { useSettings } from "../settings/SettingsContext";
+import { seatZoneLabel, seatOccupancyLabel, seatDisplayLabel } from "../lib/operations";
 
 export function SeatMissionPanel({ seat, unavailable, onClose }: {
   seat: Seat; unavailable: boolean; onClose: () => void;
 }) {
   const { createMission, isCreatingMission, robots } = useOperations();
   const { settings } = useSettings();
+  const label = seatDisplayLabel(seat);
   const [priority, setPriority] = useState<Priority>(settings.defaultPriority);
   const [message, setMessage] = useState("");
   const [failed, setFailed] = useState(false);
@@ -29,11 +31,11 @@ export function SeatMissionPanel({ seat, unavailable, onClose }: {
     submitting.current = true; setPending(true); setFailed(false); setMessage("");
     try {
       const mission = await createMission({
-        target: { kind: "SEAT", reference_id: seat.seat_id, label: "D-HUB · " + seat.label + "번 좌석" },
+        target: { kind: "SEAT", reference_id: seat.seat_id, label: seatZoneLabel(seat) + " · " + label + "번 좌석" },
         priority, requested_by: "scenario-operator", idempotency_key: attempt.current.key,
       });
       setSubmittedId(mission.mission_id);
-      setMessage(seat.label + "번 좌석 작업을 대기열에 등록했습니다.");
+      setMessage(label + "번 좌석 작업을 대기열에 등록했습니다.");
     } catch (error) {
       setFailed(true);
       setMessage(error instanceof Error ? error.message : "요청을 보내지 못했습니다. 다시 시도해 주세요.");
@@ -47,8 +49,8 @@ export function SeatMissionPanel({ seat, unavailable, onClose }: {
       <form onSubmit={(event) => void submit(event)}>
         <div className="seat-mission-fields">
           <section className="seat-mission-target" aria-label="선택된 좌석">
-            <span className="field-caption">선택된 좌석</span><strong>{seat.label}<small>번</small></strong>
-            <p>D-HUB <span>·</span> {seat.occupancy === "OCCUPIED" ? "사용 중" : "비어 있음"}</p>
+            <span className="field-caption">선택된 좌석</span><strong className={label.length > 2 ? "is-room-seat" : undefined}>{label}<small>번</small></strong>
+            <p>{seatZoneLabel(seat)} <span>·</span> {seatOccupancyLabel(seat)}</p>
           </section>
           <div className="mission-readonly-field"><span className="field-caption" id="dispatch-label">로봇</span>
             <output aria-labelledby="dispatch-label"><span>자동 할당</span><small>등록 {robots.length}대</small></output>

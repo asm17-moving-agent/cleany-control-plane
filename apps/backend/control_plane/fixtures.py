@@ -35,10 +35,28 @@ SEATS = [
     {
         "seat_id": f"seat-{number:02d}",
         "label": f"{number:02d}",
+        "zone_id": "d-hub",
         "row": (number - 1) // 8 + 1,
         "grid_column": GRID_COLUMNS[(number - 1) % 8],
         "occupancy": "OCCUPIED" if number in OCCUPANTS else "AVAILABLE",
         "occupant_name": OCCUPANTS.get(number),
     }
     for number in range(1, 49)
+]
+
+# Room inventory is known; occupancy has no connected source yet.
+SEATS += [
+    {
+        "seat_id": f"seat-{room.lower()}-{number:02d}",
+        "label": f"{room}-{number:02d}",
+        "zone_id": f"space-{room.lower()}",
+        "row": (number - 1) // columns + 1,
+        "grid_column": (number - 1) % columns + 1,
+        "occupancy": "UNKNOWN",
+        "occupant_name": None,
+    }
+    for room, columns in [
+        ("A1", 2), ("A2", 2), ("A3", 2), ("A4", 2), ("M1", 3), ("M2", 3), ("M3", 3)
+    ]
+    for number in range(1, columns * 2 + 1)
 ]

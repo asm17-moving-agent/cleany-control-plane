@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { HOME_POSE, RobotModelMotion } from "./robot-model-motion";
+import { HOME_POSE, RobotModelMotion, ROTATION_GUIDE } from "./robot-model-motion";
 
 function settle(motion: RobotModelMotion, fps = 60) {
   for (let frame = 0; frame < fps * 3 && motion.animating; frame++) motion.step(1 / fps);
@@ -7,6 +7,55 @@ function settle(motion: RobotModelMotion, fps = 60) {
 }
 
 describe("robot model interaction", () => {
+  it("repeats the guide out and back without saving an angle or accumulating drift", () => {
+    const motion = new RobotModelMotion();
+    for (let cycle = 0; cycle < 3; cycle++) {
+      expect(motion.startGuide()).toBe(true);
+      expect(motion.guideDirection).toBe("left");
+      motion.step(ROTATION_GUIDE.durationSeconds / 2);
+      expect(motion.pose.yaw).toBeCloseTo(HOME_POSE.yaw + ROTATION_GUIDE.yawRadians);
+      expect(motion.guideDirection).toBe("right");
+      expect(motion.adjusted).toBe(false);
+      motion.step(ROTATION_GUIDE.durationSeconds / 2);
+      expect(motion.pose).toEqual(HOME_POSE);
+      expect(motion.guideDirection).toBeNull();
+      expect(motion.animating).toBe(false);
+    }
+  });
+
+  it("hands an unfinished guide to dragging at the displayed angle", () => {
+    const motion = new RobotModelMotion();
+    motion.startGuide();
+    motion.step(.8);
+    const displayed = { ...motion.pose };
+    motion.beginDrag();
+    expect(motion.guiding).toBe(false);
+    expect(motion.pose).toEqual(displayed);
+    expect(motion.startGuide()).toBe(false);
+    motion.dragBy(-.4, .1);
+    motion.endDrag();
+    settle(motion);
+    expect(motion.pose.yaw).toBeCloseTo(displayed.yaw - .4);
+    expect(motion.startGuide()).toBe(false);
+  });
+
+  it("cancels guidance for reduced motion and a paused view", () => {
+    const motion = new RobotModelMotion();
+    motion.startGuide();
+    motion.step(.8);
+    motion.setReducedMotion(true);
+    expect(motion.pose).toEqual(HOME_POSE);
+    expect(motion.startGuide()).toBe(false);
+    expect(motion.animating).toBe(false);
+    motion.setReducedMotion(false);
+    expect(motion.startGuide()).toBe(true);
+    motion.step(.8);
+    motion.cancelGuide();
+    motion.finish();
+    expect(motion.pose).toEqual(HOME_POSE);
+    expect(motion.guiding).toBe(false);
+  });
+
   it("makes a small hover turn, settles, and returns without changing the chosen angle", () => {
     const motion = new RobotModelMotion();
     motion.setHovered(true);

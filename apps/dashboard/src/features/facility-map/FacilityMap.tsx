@@ -1,12 +1,12 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import type { RobotState, Seat } from "../../api/types";
 import { RobotIcon } from "../../components/Icons";
-import { TargetIcon } from "../../components/WorkspaceIcons";
 import { robotStateLabels } from "../../lib/home-summary";
 import { FacilityPlanArtwork } from "./FacilityPlanArtwork";
 import { FACILITY_18F, FACILITY_ACTIVE_BOUNDS } from "./facility-18f";
 import { fitMapBounds } from "./map-viewport";
-import { D_HUB_DESK_WIDTH, D_HUB_DESK_HEIGHT, seatMapPosition } from "./seat-layout";
+import { seatMapSize, seatMapPosition } from "./seat-layout";
+import { seatOccupancyLabel, seatDisplayLabel } from "../../lib/operations";
 import "./facility-map.css";
 
 interface FacilityMapProps {
@@ -18,6 +18,7 @@ interface FacilityMapProps {
   onSelectRobot: (robotId: string) => void;
   robotFocusKey?: number;
   seatSelectionDisabled?: boolean;
+  highlightedSeatIds?: ReadonlySet<string>;
 }
 export interface FacilityRobotMarker {
   robotId: string;
@@ -32,7 +33,7 @@ type MapView = { mode: "initial" | "active" | "all" } | { mode: "manual"; zoom: 
 const initialView: MapView = { mode: "initial" };
 const initialZoom = 1.25;
 function clamp(value: number, min: number, max: number) { return Math.min(max, Math.max(min, value)); }
-export function FacilityMap({ seats, selectedSeatId, onSelectSeat, robots, selectedRobotId, onSelectRobot, robotFocusKey = 0, seatSelectionDisabled = false }: FacilityMapProps) {
+export function FacilityMap({ seats, selectedSeatId, onSelectSeat, robots, selectedRobotId, onSelectRobot, robotFocusKey = 0, seatSelectionDisabled = false, highlightedSeatIds }: FacilityMapProps) {
   const stage = useRef<HTMLDivElement>(null);
   const [frame, setFrame] = useState({ width: 900, height: 650 });
   const [view, setView] = useState<MapView>(initialView);
@@ -69,13 +70,6 @@ export function FacilityMap({ seats, selectedSeatId, onSelectSeat, robots, selec
       setView({ mode: "manual", zoom: Math.max(1.5, camera.zoom), x: robot.x, y: robot.y });
     }
   }, [selectedRobotId, robotFocusKey]);
-  function centerRobot() {
-    const robot = robots.find((item) => item.robotId === selectedRobotId) ?? robots[0];
-    if (!robot) return;
-    setFocusMotion(true);
-    if (selectedRobotId !== robot.robotId) onSelectRobot(robot.robotId);
-    setView({ mode: "manual", zoom: Math.max(1.5, camera.zoom), x: robot.x, y: robot.y });
-  }
   function zoomBy(factor: number) {
     setFocusMotion(false);
     setView({ mode: "manual", zoom: clamp(camera.zoom * factor, 1, 4), x: centerX, y: centerY });
@@ -106,23 +100,26 @@ export function FacilityMap({ seats, selectedSeatId, onSelectSeat, robots, selec
           transform: "translate(" + (frame.width / 2 - centerX * scale) + "px, " + (frame.height / 2 - centerY * scale) + "px) scale(" + scale + ")",
         } as CSSProperties}>
           <FacilityPlanArtwork />
-          <div className="facility-seat-overlay" aria-label="D-HUB 좌석">
+          <div className="facility-seat-overlay" aria-label="18층 좌석">
             {seats.map((seat) => {
               const point = seatMapPosition(seat);
               if (!point) return null;
+              const size = seatMapSize(seat);
+              const label = seatDisplayLabel(seat);
+              const isRoomSeat = !!seat.zone_id && seat.zone_id !== "d-hub";
               const selected = selectedSeatId === seat.seat_id;
               return <button type="button" key={seat.seat_id} data-seat-id={seat.seat_id}
-                className={"facility-map-seat" + (selected ? " is-selected" : "")}
-                aria-label={seat.label + "번 좌석 · " + (seat.occupancy === "OCCUPIED" ? "사용 중" : "비어 있음")}
+                className={"facility-map-seat" + (selected ? " is-selected" : "") + (highlightedSeatIds ? highlightedSeatIds.has(seat.seat_id) ? " is-filter-match" : " is-filter-muted" : "")}
+                aria-label={label + "번 좌석 · " + seatOccupancyLabel(seat)}
                 aria-pressed={selected} disabled={seatSelectionDisabled}
                 data-occupancy={seat.occupancy} data-row={seat.row}
-                style={{ left: point.x, top: point.y, width: D_HUB_DESK_WIDTH, height: D_HUB_DESK_HEIGHT, borderRadius: 2 }}
+                style={{ left: point.x, top: point.y, ...size, borderRadius: 2 }}
                 onClick={() => onSelectSeat(seat.seat_id)}>
-                <svg className="facility-workstation" viewBox={`0 0 ${D_HUB_DESK_WIDTH} ${D_HUB_DESK_HEIGHT}`} aria-hidden="true">
-                  <text x={D_HUB_DESK_WIDTH / 2} y={D_HUB_DESK_HEIGHT / 2}
+                <svg className="facility-workstation" viewBox={`0 0 ${size.width} ${size.height}`} aria-hidden="true">
+                  <text x={size.width / 2} y={size.height / 2}
                     textAnchor="middle" dominantBaseline="central"
-                    fontSize={Math.max(13, 12 / scale)} fontWeight={selected ? 600 : 500}
-                    fill="currentColor">{seat.label}</text>
+                    fontSize={isRoomSeat ? Math.min(10, size.width / 3) : Math.max(13, 12 / scale)} fontWeight={selected ? 600 : 500}
+                    fill="currentColor">{label}</text>
                 </svg>
               </button>;
             })}
@@ -144,7 +141,6 @@ export function FacilityMap({ seats, selectedSeatId, onSelectSeat, robots, selec
             <button type="button" aria-pressed={view.mode === "active"} onClick={() => setView({ mode: "active" })}>활성 구역</button>
             <button type="button" aria-pressed={view.mode === "all"} onClick={() => setView({ mode: "all" })}>전체 보기</button>
           </div>
-          <button type="button" disabled={!robots.length} onClick={centerRobot}><TargetIcon />로봇 중심</button>
         </div>
       </div>
       <div className="facility-map-legend" aria-label="지도 범례">

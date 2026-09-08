@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { RobotModelMotion } from "./robot-model-motion";
+import { RobotModelMotion, ROTATION_GUIDE } from "./robot-model-motion";
 import { createRobotExterior } from "./RobotExterior";
 
 function disposeModel(model: THREE.Object3D) {
@@ -21,7 +21,9 @@ function disposeModel(model: THREE.Object3D) {
   geometries.forEach(geometry => geometry.dispose());
 }
 
-export default function RobotModelCanvas({ onReady, onError }: { onReady: () => void; onError: () => void }) {
+export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true, rotationGuide = false }: {
+  onReady: () => void; onError: () => void; hoverEnabled?: boolean; rotationGuide?: boolean;
+}) {
   const host = useRef<HTMLDivElement>(null);
   const reset = useRef<(() => void) | null>(null);
   const instructions = useId();
@@ -37,6 +39,8 @@ export default function RobotModelCanvas({ onReady, onError }: { onReady: () => 
 
     let disposed = false, failed = false, visible = false, loaded = false, notified = false;
     let frame = 0, rendered = 0, lastFrame: number | undefined;
+    let guideTimer: number | undefined;
+    let guideDismissed = false, guideHasPlayed = false;
     let drag: { id: number; x: number; y: number; moved: boolean } | null = null;
     let radius = 1, distance = 4;
     let enclosure: ReturnType<typeof createRobotExterior> | undefined;
@@ -78,13 +82,39 @@ export default function RobotModelCanvas({ onReady, onError }: { onReady: () => 
     shadow.rotation.x = -Math.PI / 2;
     scene.add(shadow);
 
+    function scheduleGuide() {
+      window.clearTimeout(guideTimer);
+      guideTimer = undefined;
+      if (!rotationGuide || guideDismissed || disposed || failed || !loaded || !visible
+        || document.hidden || reduced.matches || motion.guiding) return;
+      guideTimer = window.setTimeout(() => {
+        guideTimer = undefined;
+        if (!document.hasFocus() || element.matches(":hover") || element.contains(document.activeElement)) return;
+        if (motion.startGuide()) {
+          guideHasPlayed = true;
+          invalidate();
+        } else scheduleGuide();
+      }, guideHasPlayed ? ROTATION_GUIDE.repeatDelayMs : ROTATION_GUIDE.firstDelayMs);
+    }
+
+    function stopGuide(dismiss = false) {
+      window.clearTimeout(guideTimer);
+      guideTimer = undefined;
+      if (dismiss) guideDismissed = true;
+      motion.cancelGuide();
+      element.dataset.guideDirection = "none";
+    }
+
     function invalidate() {
       if (disposed || failed || frame || !loaded || !visible || document.hidden) return;
       frame = requestAnimationFrame(time => {
         frame = 0;
         // Exponential easing stays stable across long frames. Capping elapsed time
         // would stretch a short hover into seconds on a throttled native window.
+        const wasGuiding = motion.guiding;
         motion.step(lastFrame === undefined ? 1 / 60 : (time - lastFrame) / 1000);
+        element.dataset.guideDirection = motion.guideDirection ?? "none";
+        if (wasGuiding && !motion.guiding) scheduleGuide();
         lastFrame = time;
         const { yaw, elevation } = motion.pose;
         camera.position.set(
@@ -126,13 +156,14 @@ export default function RobotModelCanvas({ onReady, onError }: { onReady: () => 
       const id = drag.id;
       drag = null;
       element.dataset.dragging = "false";
-      motion.setHovered(hovered);
+      motion.setHovered(hoverEnabled && hovered);
       motion.endDrag();
       if (element.hasPointerCapture(id)) element.releasePointerCapture(id);
       invalidate();
     }
 
     function pause() {
+      stopGuide();
       endPointer(false);
       motion.setHovered(false);
       motion.finish();
@@ -144,16 +175,19 @@ export default function RobotModelCanvas({ onReady, onError }: { onReady: () => 
 
     function pointerEnter(event: PointerEvent) {
       if (event.pointerType !== "mouse") return;
-      motion.setHovered(true);
+      stopGuide();
+      if (hoverEnabled) motion.setHovered(true);
       invalidate();
     }
     function pointerLeave() {
-      motion.setHovered(false);
+      if (hoverEnabled) motion.setHovered(false);
+      scheduleGuide();
       invalidate();
     }
     function pointerDown(event: PointerEvent) {
       if (!loaded || event.button !== 0 || event.pointerType === "touch" || drag) return;
       event.preventDefault();
+      stopGuide(true);
       element.focus({ preventScroll: true });
       element.setPointerCapture(event.pointerId);
       drag = { id: event.pointerId, x: event.clientX, y: event.clientY, moved: false };
@@ -180,6 +214,7 @@ export default function RobotModelCanvas({ onReady, onError }: { onReady: () => 
       if (drag?.id === event.pointerId) endPointer(false);
     }
     function resetView() {
+      stopGuide(true);
       endPointer(false);
       motion.reset();
       setAdjusted(false);
@@ -195,13 +230,16 @@ export default function RobotModelCanvas({ onReady, onError }: { onReady: () => 
       if (event.key === "Home") { event.preventDefault(); resetView(); return; }
       if (!turns[event.key]) return;
       event.preventDefault();
+      stopGuide(true);
       endPointer(false);
       motion.rotateBy(...turns[event.key]);
       setAdjusted(motion.adjusted);
       invalidate();
     }
-    function preferenceChanged() { motion.setReducedMotion(reduced.matches); invalidate(); }
-    function visibilityChanged() { if (document.hidden) pause(); else invalidate(); }
+    function preferenceChanged() { stopGuide(); motion.setReducedMotion(reduced.matches); scheduleGuide(); invalidate(); }
+    function resume() { scheduleGuide(); invalidate(); }
+    function focusIn() { stopGuide(); invalidate(); }
+    function visibilityChanged() { if (document.hidden) pause(); else resume(); }
     function blur() { pause(); invalidate(); }
     function fail() { failed = true; pause(); onError(); }
     function contextLost(event: Event) { event.preventDefault(); fail(); }
@@ -214,15 +252,18 @@ export default function RobotModelCanvas({ onReady, onError }: { onReady: () => 
     element.addEventListener("pointercancel", pointerCancel);
     element.addEventListener("lostpointercapture", pointerCancel);
     element.addEventListener("keydown", keyDown);
+    element.addEventListener("focusin", focusIn);
+    element.addEventListener("focusout", scheduleGuide);
     renderer.domElement.addEventListener("webglcontextlost", contextLost);
     document.addEventListener("visibilitychange", visibilityChanged);
     window.addEventListener("blur", blur);
+    window.addEventListener("focus", resume);
     reduced.addEventListener("change", preferenceChanged);
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(element);
     const intersection = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
-      if (visible) invalidate(); else pause();
+      if (visible) resume(); else pause();
     });
     intersection.observe(element);
     reset.current = resetView;
@@ -243,8 +284,9 @@ export default function RobotModelCanvas({ onReady, onError }: { onReady: () => 
         element.dataset.model = "standby";
         element.dataset.exterior = "true";
       }
-      motion.setHovered(element.matches(":hover"));
+      motion.setHovered(hoverEnabled && element.matches(":hover"));
       resize();
+      scheduleGuide();
     }, undefined, () => { if (!disposed) fail(); });
     resize();
 
@@ -256,6 +298,7 @@ export default function RobotModelCanvas({ onReady, onError }: { onReady: () => 
       reduced.removeEventListener("change", preferenceChanged);
       document.removeEventListener("visibilitychange", visibilityChanged);
       window.removeEventListener("blur", blur);
+      window.removeEventListener("focus", resume);
       element.removeEventListener("pointerenter", pointerEnter);
       element.removeEventListener("pointerleave", pointerLeave);
       element.removeEventListener("pointerdown", pointerDown);
@@ -264,6 +307,8 @@ export default function RobotModelCanvas({ onReady, onError }: { onReady: () => 
       element.removeEventListener("pointercancel", pointerCancel);
       element.removeEventListener("lostpointercapture", pointerCancel);
       element.removeEventListener("keydown", keyDown);
+      element.removeEventListener("focusin", focusIn);
+      element.removeEventListener("focusout", scheduleGuide);
       renderer.domElement.removeEventListener("webglcontextlost", contextLost);
       enclosure?.stopLoading();
       disposeModel(scene);
@@ -272,15 +317,18 @@ export default function RobotModelCanvas({ onReady, onError }: { onReady: () => 
       renderer.domElement.remove();
       reset.current = null;
     };
-  }, [onReady, onError]);
+  }, [onReady, onError, hoverEnabled, rotationGuide]);
 
   return <>
     <div className="robot-model-canvas" ref={host} tabIndex={0} role="group"
       aria-label="Cleany 모델 회전" aria-describedby={instructions} />
+    {rotationGuide && <svg className="robot-model-rotation-guide" viewBox="0 0 132 44" aria-hidden="true">
+      <path d="M111 12C135 39 13 44 18 15M10 22l8-7 8 7" />
+    </svg>}
     <span id={instructions} className="sr-only">마우스로 드래그하거나 방향키로 회전합니다. Home 키로 처음 각도로 돌아갑니다.</span>
     <button className="robot-model-reset" type="button" disabled={!adjusted}
       onClick={() => reset.current?.()} aria-label="모델을 처음 각도로 되돌리기">
-      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 7a7 7 0 1 1-1 6M4 2v5h5" /></svg><span>처음 각도</span>
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 7a7 7 0 1 1-1 6M4 2v5h5" /></svg>
     </button>
   </>;
 }
