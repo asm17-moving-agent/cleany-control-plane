@@ -119,7 +119,7 @@ SPACE A1~A4와 M1~M3도 동일한 번호형 책상을 방별 4개 표시한다.
 ## 로봇 3D 모델
 
 로봇 상세 패널과 로봇 관리 페이지의 `3D 모델 살펴보기`에서 선택적으로 로드한다.
-기본 상태는 WebP 포스터이며, Three.js와 GLB는 클릭 후 불러온다. `/robot-model`은
+기본 상태는 이미지 포스터이며, Three.js와 GLB는 클릭 후 불러온다. `/robot-model`은
 작은 창에서도 사용할 수 있는 독립 미리보기다. 기존 운영 화면의 최소 폭은 변경하지 않는다.
 
 - 모델: Cleany `e718ac57` MJCF 기본 자세의 웹용 파생 GLB. 실시간 관절·센서 상태가 아니다.
@@ -142,3 +142,53 @@ Firefox 화면을 niri로 캡처한 뒤 모델 영역만 잘라 생성했다. �
 하단 업무 패널 데모: `/?summaryDemo=1`. 즉시 조치 2건, 진행 1건, 대기 2건,
 검토 2건과 최근 완료를 화면용 fixture로 표시한다. 로봇 목록·지도·서버 데이터는
 변경하지 않으며 상단의 '실제 데이터로 돌아가기'로 해제한다.
+
+### 표시용 대기 자세 모델
+
+`/robot-model`은 `cleany-e718ac57-standby.glb`를 사용한다. 원본
+`cleany-e718ac57-web.glb`의 경량 형상을 유지하면서 팔 관절의 표시 자세와
+부품별 PBR 재질만 변경했다. 양쪽 어깨 yaw를 각각 -90도/+90도로 돌려
+위팔과 아래팔이 거의 포개지도록 접고, 손목을 보정해 그리퍼가 머리 카메라와
+같은 정면을 향하게 했다. 어깨 pitch 2.9rad, 팔꿈치 3.05rad, 손목 pitch -0.15rad를 사용한다.
+MuJoCo forward kinematics로 만든 정적 예시이며,
+실시간 자세나 충돌·안전 검증을 마친 하드웨어 대기 명령이 아니다.
+각도와 재질 매핑은 같은 이름의 JSON에 기록한다.
+
+다음 명령은 저장소 루트에서 실행한다. `CLEANY_SOURCE`는 Cleany의
+`e718ac57e861f3d34b6e0e10b0d18d87a348bf51` 체크아웃 경로다.
+출력은 기존 파일과 다른 경로로 지정한다.
+
+```bash
+uv run --with mujoco==3.12.0 --with trimesh --with numpy python \
+  tools/prepare_robot_standby.py \
+  "$CLEANY_SOURCE/ros2_ws/src/cleany_description/mjcf/cleany.xml" \
+  apps/dashboard/public/models/cleany-e718ac57-web.glb \
+  /tmp/cleany-standby-new.glb
+```
+
+스크립트는 입력 GLB 해시, MJCF와 기존 노드 변환 일치, 관절 제한,
+128개 형상 배치 보존, 삼각형 수 보존, GLB 재로드 경계를 검증한다.
+팔꿈치는 어깨 뒤로, 손목은 앞으로 접히는지, 두 그리퍼의 로컬 -Y 축이
+머리 카메라의 정면 축과 일치하는지도 확인한다.
+재질은 표시를 위한 구분이며 실물의 측정된 광학 특성이 아니다.
+`cleany-standby-poster.png`는 같은 모델을 Firefox 뷰어에서 렌더링한 미리보기다.
+
+외장 디자인은 `RobotExterior.ts`가 생성하는 별도 표시 레이어다. `외장 시안`
+버튼으로 같은 구도에서 원본과 비교할 수 있다. 가운데는 수거함이며, 팔 뒤쪽의
+열린 입구를 `투입구` 보기에서 확인할 수 있다. 카메라는 추가 커버 없이 노출하고
+지지대는 유지한다. 수거함 외장은 네 알루미늄 기둥 바깥을 연속해서 감싸고,
+하부 본체와 같은 밝은 회색으로 마감한다. 상하부는 단면과 모서리 곡률을 맞추고
+중간 돌출 띠 없이 얇은 이음선으로 연결한다. `후면` 보기에서는 정비 패널을 확인할 수 있다.
+`구동부` 보기에서는 네 바퀴에 보완한 표시용 커플러를 확인할 수 있다. 원본 MJCF에
+없는 형상을 웹 표시 레이어에 추가했으며, 실물 커플러의 규격은 미확인이다.
+`팔` 보기에서는 위팔·아래팔 바깥면과 어깨 앞쪽의 부분 커버 6개를 확인할 수 있다.
+커버는 기존 대기 자세의 링크에 맞춰 생성하며 안쪽과 양 끝을 열어 둔다.
+관절의 전체 가동 범위와 실물 제작 사양은 검증하지 않았다.
+현재 기본 미리보기는 `cleany-exterior-poster.png`를 사용한다.
+치수, 반복 보완과 검증 범위는
+[외장 시안 문서](../../docs/architecture/robot-exterior-concept.md)에 기록한다.
+
+검증: `pnpm --filter @cleany/dashboard exec vitest run src/components/RobotModel.test.tsx`,
+`pnpm contracts:check`, `pnpm build`. 실제 렌더링은 Firefox에서 `/robot-model`을
+열어 niri 캡처로 확인한다. 개발 모드에서 `?renderStats=1`을 붙이면 렌더링
+진단을 확인할 수 있다.
