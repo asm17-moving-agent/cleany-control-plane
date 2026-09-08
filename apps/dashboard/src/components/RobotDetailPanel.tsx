@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Link } from "react-router";
 import type { Mission, Robot, Seat } from "../api/types";
 import { RobotLargeIcon } from "./Icons";
+import { RobotModel } from "./RobotModel";
 import { CloseIcon, ChevronIcon } from "./WorkspaceIcons";
 import { needsRobotAttention, robotStateLabels } from "../lib/home-summary";
 import { formatDateTime, missionTargetLabel } from "../lib/operations";
@@ -22,6 +23,7 @@ export function RobotDetailPanel({ robot, mission, seats, unavailable, onClose }
       <dl className="robot-detail-metrics"><div><dt>배터리</dt><dd>미연동</dd></div><div><dt>마지막 확인</dt><dd>{formatDateTime(robot.last_seen_at)}</dd></div></dl>
       <section><h3>현재 작업</h3>{mission ? <div className="robot-detail-assignment"><strong>{missionTargetLabel(mission, seats)}</strong><p>{mission.phase}</p>{mission.message && <p>{mission.message}</p>}<Link to={"/missions?mission=" + encodeURIComponent(mission.mission_id)}>작업 상세 보기 <ChevronIcon /></Link></div> : <p className="robot-detail-empty">{robot.active_mission_id ? "할당된 작업 정보를 불러오지 못했습니다." : "현재 할당된 작업이 없습니다."}</p>}</section>
       <section><h3>현재 위치</h3><p>실시간 좌표 미연동</p><small>지도 아이콘은 예시 위치입니다.</small></section>
+      <RobotModel key={robot.robot_id} />
     </div>
     <footer><Link to={"/robots?robot=" + encodeURIComponent(robot.robot_id)}>로봇 상세 페이지 보기 <ChevronIcon /></Link></footer>
   </aside>;

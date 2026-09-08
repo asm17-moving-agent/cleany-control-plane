@@ -1,5 +1,6 @@
 import { Link, useSearchParams } from "react-router";
 import { RobotLargeIcon } from "../components/Icons";
+import { RobotModel } from "../components/RobotModel";
 import { ChevronIcon } from "../components/WorkspaceIcons";
 import { needsRobotAttention, robotStateLabels } from "../lib/home-summary";
 import { formatDateTime, missionTargetLabel } from "../lib/operations";
@@ -34,6 +35,7 @@ export function RobotsPage() {
         <section className="workspace-robot-assignment"><h4>현재 작업</h4>{active
           ? <><p><strong>{missionTargetLabel(active, seats)}</strong> · {active.phase}</p><p>{active.message}</p><Link to={"/missions?mission=" + encodeURIComponent(active.mission_id)}>요청 상세 보기 →</Link></>
           : <p>할당된 작업이 없습니다.</p>}</section>
+        <RobotModel key={selected.robot_id} />
       </article> : <p className="workspace-empty">선택한 로봇을 찾을 수 없습니다.</p>}</div>}
   </section>;
 }

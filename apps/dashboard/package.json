@@ -20,6 +20,7 @@
     "react-hook-form": "latest",
     "react-router": "latest",
     "tailwind-merge": "latest",
+    "three": "0.180.0",
     "zod": "latest"
   },
   "devDependencies": {
@@ -29,6 +30,7 @@
     "@testing-library/react": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "@types/three": "0.180.0",
     "@vitejs/plugin-react": "latest",
     "jsdom": "latest",
     "openapi-typescript": "^7.13.0",

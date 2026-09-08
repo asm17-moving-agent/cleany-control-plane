@@ -3,6 +3,7 @@ import { HomePage } from "../pages/HomePage";
 import { MissionsPage } from "../pages/MissionsPage";
 import { MonitoringPage } from "../pages/MonitoringPage";
 import { RobotsPage } from "../pages/RobotsPage";
+import { RobotModelPage } from "../pages/RobotModelPage";
 import { ResultsPage } from "../pages/ResultsPage";
 import { SettingsPage } from "../pages/SettingsPage";
 import { AppShell } from "./AppShell";
@@ -10,6 +11,7 @@ import { AppShell } from "./AppShell";
 export function App() {
   return (
     <Routes>
+      <Route path="robot-model" element={<RobotModelPage />} />
       <Route element={<AppShell />}>
         <Route index element={<HomePage />} />
         <Route path="missions" element={<MissionsPage />} />

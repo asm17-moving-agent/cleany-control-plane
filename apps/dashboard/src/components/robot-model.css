@@ -1,0 +1,41 @@
+.robot-model-card { border: 1px solid #dfe7e3; border-radius: 16px; overflow: hidden; background: #fff; margin: 20px 0; color: #243d34; }
+.robot-model-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 24px 26px 20px; }
+.robot-model-eyebrow { font-size: 10px; letter-spacing: .16em; color: #71877d; font-weight: 650; }
+.robot-model-heading h3 { margin: 7px 0 0 !important; font-size: 22px !important; letter-spacing: -.04em; }
+.robot-model-static { white-space: nowrap; border: 1px solid #d7e3dc; border-radius: 20px; padding: 5px 9px; font-size: 11px; color: #627b6c; }
+.robot-model-viewer { position: relative; background: radial-gradient(ellipse at 50% 45%, #fff 0, #f0f5f0 55%, #e5eee8 100%); }
+.robot-model-stage { width: 100%; height: clamp(340px, 52vh, 580px); touch-action: none; }
+.robot-model-stage canvas { display: block; max-width: 100%; }
+.robot-model-status { position: absolute; top: 20px; left: 22px; display: flex; align-items: center; gap: 7px; font-size: 11px; color: #627b6c; pointer-events: none; }
+.robot-model-status i { width: 5px; height: 5px; border-radius: 50%; background: #568369; }
+.robot-model-scale { position: absolute; bottom: 85px; left: 24px; font-size: 10px; letter-spacing: .12em; line-height: 1.9; pointer-events: none; color: #506a5d; }
+.robot-model-scale span { font-size: 8px; color: #85958c; }
+.robot-model-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; padding: 0 12px 8px; margin: 0; border: 0; min-width: 0; }
+.robot-model-tools:disabled { opacity: .5; }
+.robot-model-stage[data-diagnostics=true]::after { content: "frames " attr(data-frames) " · calls " attr(data-draw-calls) " · tris " attr(data-triangles); position: absolute; right: 15px; top: 45px; font: 10px monospace; color: #506a5d; }
+.robot-model-tools > div { display: flex; padding: 4px; background: #ffffffde; border: 1px solid #dde6dd; border-radius: 10px; }
+.robot-model-tools button { border: 0; background: transparent; border-radius: 6px; color: #5a7163; padding: 8px 13px; font: inherit; font-size: 12px; cursor: pointer; }
+.robot-model-tools button[aria-pressed=true] { background: #284f3d; color: #fff; }
+.robot-model-tools button:hover { box-shadow: inset 0 0 0 1px #96b09f; }
+.robot-model-hint { text-align: center; font-size: 10px !important; color: #7a8e81; margin: 0 !important; padding: 4px 12px 18px; }
+.robot-model-caption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 5px 14px; padding: 14px 22px; border-top: 1px solid #e6ece7; font-size: 10px; line-height: 1.7; color: #7c8c82; }
+.robot-model-close { display: block; width: 100%; border: 0; border-top: 1px solid #e6ece7; padding: 11px; background: #fafcf9; font: inherit; font-size: 11px; color: #708175; cursor: pointer; }
+.robot-model-poster { width: 100%; display: flex; align-items: center; justify-content: center; gap: 25px; border: 0; padding: 30px 22px; background: #f0f5f0; color: #284f3d; cursor: pointer; text-align: left; }
+.robot-model-poster > img { width: 140px; height: 140px; object-fit: contain; border-radius: 12px; }
+.robot-model-poster strong { display: block; font-size: 15px; }
+.robot-model-poster small { display: block; margin-top: 9px; font-size: 11px; color: #7a8b80; }
+.robot-model-placeholder { padding: 80px 20px; text-align: center; background: #f0f5f0; }
+.robot-model-retry { position: absolute; top: 42%; left: 50%; transform: translateX(-50%); padding: 12px 20px; border: 1px solid #a4b9a8; border-radius: 8px; background: white; cursor: pointer; }
+.robot-model-page { width: 100%; max-width: 1100px; margin: auto; padding: 28px; color: #243d34; }
+.robot-model-page-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 34px; font-size: 12px; color: #71877d; }
+.robot-model-page-nav a { color: #375f49; text-decoration: none; }
+.robot-model-page-nav span { font-size: 10px; letter-spacing: .15em; }
+.robot-model-caption a { color: #375f49; text-decoration: none; }
+.robot-model-page > h2 { margin: 0; font-size: 26px; }
+.robot-model-page > p { color: #74847a; font-size: 13px; }
+.home-robot-detail-panel .robot-model-heading { padding: 16px; }
+.home-robot-detail-panel .robot-model-heading h3 { font-size: 16px !important; }
+.home-robot-detail-panel .robot-model-poster { flex-direction: column; gap: 8px; text-align: center; }
+.home-robot-detail-panel .robot-model-stage { height: 300px; }
+.home-robot-detail-panel .robot-model-tools button { padding: 7px 9px; }
+@media(max-width: 600px) { .robot-model-heading { padding: 20px; } .robot-model-scale { display: none; } .robot-model-page { padding: 12px; } .robot-model-stage { height: 370px; } }
