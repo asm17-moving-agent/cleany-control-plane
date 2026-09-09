@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import type { RobotState, Seat } from "../../api/types";
-import robotFaceClassic from "../../assets/brand/robot-face-classic.svg";
+import robotFaceSoft from "../../assets/brand/robot-face-soft.svg";
 import { robotStateLabels } from "../../lib/home-summary";
 import { FacilityPlanArtwork } from "./FacilityPlanArtwork";
 import { FACILITY_18F, FACILITY_ACTIVE_BOUNDS } from "./facility-18f";
@@ -134,9 +134,8 @@ export function FacilityMap({ seats, selectedSeatId, onSelectSeat, robots, selec
               className={"facility-map-robot" + (selectedRobotId === robot.robotId ? " is-selected" : "")}
               aria-label={robot.robotId + " 로봇 · " + robotStateLabels[robot.state] + " · " + (robot.positionMode === "live" ? "실시간 위치" : "예시 위치")}
               aria-pressed={selectedRobotId === robot.robotId} style={{ left: robot.x, top: robot.y }} onClick={() => onSelectRobot(robot.robotId)}>
-              <img src={robotFaceClassic} alt="" width="28" height="20" draggable={false} />
-              <span className="facility-map-robot-status" aria-hidden="true" />
-              <span className="facility-map-robot-label" aria-hidden="true">{robot.robotId} · {robotStateLabels[robot.state]}</span>
+              <img src={robotFaceSoft} alt="" width="28" height="24" draggable={false} />
+              <span className="facility-map-robot-label" aria-hidden="true">{robot.robotId}</span>
             </button>)}
           </div>
         </div>

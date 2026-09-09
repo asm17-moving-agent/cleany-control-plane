@@ -13,7 +13,7 @@ Originals are preserved. The following raster assets use deterministic ImageMagi
 
 Wordmark appears in the app header and on the 3D enclosure. Navigation uses the original face artwork. The Home robot roster and robot management page use the standby model with its concept exterior; the detail drawer shows operational information.
 
-`robot-face-classic.svg` is the map-specific vector implementation of the user's selected [01 Classic icon concept](../../../../../docs/architecture/assets/robot-face-icon-variants-20260909-v1/01-classic-face.png), generated with built-in imagegen on 2026-09-09. The navy outline, warm-white face and yellow side casing are drawn as SVG primitives for a clear 28px-wide marker. It has no outer circular badge. A separate status dot uses the robot's existing state; hover, keyboard focus and selection reveal the name/state label. The SVG is maintained directly rather than cropped from the generated design board.
+`robot-face-soft.svg` is the map-specific vector implementation of the user's selected [02 Soft icon concept](../../../../../docs/architecture/assets/robot-face-icon-variants-20260909-v1/02-soft-face.png), generated with built-in imagegen on 2026-09-09. The rounded navy housing integrates the yellow side panel and warm-white face into one compact silhouette, displayed at 28px wide. There is no outer circular badge or status dot. Hover, keyboard focus and selection reveal only the robot name; state remains in the accessible button label and detail panel. The SVG is maintained directly rather than cropped from the generated design board. `robot-face-classic.svg` preserves the earlier classic implementation as an alternative.
 
 Reproduce the alternative illustrated decal from the repository root:
 
