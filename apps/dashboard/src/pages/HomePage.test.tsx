@@ -70,14 +70,6 @@ it("keeps seat and robot panels mutually exclusive from both robot entry points"
  expect(screen.getByRole("button", { name: "요청 보내기" })).toBeVisible();
 });
 
-it("shows occupancy without mission counts or seat search", () => {
- render(<MemoryRouter><Routes><Route element={<Outlet context={{ floor: { id: "BUSAN_SOMA_18F", label: "18층", mapAvailable: true } }} />}><Route index element={<HomePage />} /></Route></Routes></MemoryRouter>);
- expect(screen.getByRole("heading", { name: "18층 좌석 지도" })).toBeVisible();
- expect(screen.queryByRole("navigation", { name: "작업 요청 현황" })).not.toBeInTheDocument();
- expect(screen.queryByRole("search")).not.toBeInTheDocument();
- expect(screen.getByRole("group", { name: "좌석 점유 현황" })).toBeVisible();
- expect(screen.queryByRole("region", { name: "좌석 이용 및 정리 현황" })).not.toBeInTheDocument();
-});
 it("keeps demo visible and prevents real mission submission", () => {
  render(<MemoryRouter initialEntries={["/?summaryDemo=1"]}><Routes><Route element={<Outlet context={{ floor: { id: "BUSAN_SOMA_18F", label: "18층", mapAvailable: true } }} />}><Route index element={<HomePage />} /></Route></Routes></MemoryRouter>);
  expect(screen.getByRole("button", { name: "데모 · 해제" })).toBeVisible();

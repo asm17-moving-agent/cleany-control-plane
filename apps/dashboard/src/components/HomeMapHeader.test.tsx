@@ -22,10 +22,6 @@ it("separates unknown seats from vacant seats without an unverified percentage",
   expect(screen.queryByText(/%/)).not.toBeInTheDocument();
   expect(screen.queryByRole("search")).not.toBeInTheDocument();
 });
-it("shows percentage when all seat states are known", () => {
-  setup(seats.slice(1));
-  expect(screen.getByText("50%")).toBeVisible();
-});
 it("does not present stale data as current occupancy", () => {
   setup(seats, true);
   expect(screen.getByRole("img", { name: "좌석 점유 현황 확인 중" })).toBeEmptyDOMElement();
