@@ -77,9 +77,8 @@
 .workspace-result-card h3 { margin: 0 0 4px; font-size: 18px; }
 .workspace-result-card header small { color: var(--workspace-muted); }
 .workspace-state { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 4px; background: #edf0f3; color: #657581; font-size: 13px; }
-.workspace-state[data-tone="success"], .workspace-state[data-state="BUSY"] { background: var(--workspace-teal-soft); color: var(--workspace-teal); }
-.workspace-state[data-state="IDLE"] { background: #edf2fb; color: #4777b8; }
-.workspace-state[data-tone="review"], .workspace-state[data-state="ERROR"], .workspace-state[data-state="OFFLINE"] { background: var(--workspace-danger-soft); color: var(--workspace-danger); }
+.workspace-state[data-tone="success"] { background: var(--workspace-teal-soft); color: var(--workspace-teal); }
+.workspace-state[data-tone="review"] { background: var(--workspace-danger-soft); color: var(--workspace-danger); }
 .workspace-observations { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .workspace-observations > div { min-width: 0; padding: 16px; border: 1px solid var(--workspace-line); border-radius: 5px; background: var(--workspace-soft); }
 .workspace-observations span { display: block; margin-bottom: 9px; color: var(--workspace-muted); font-size: 13px; }

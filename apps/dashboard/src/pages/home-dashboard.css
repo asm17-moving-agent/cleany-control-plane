@@ -1,13 +1,12 @@
 .home-workspace { height: 100%; min-height: 0; display: grid; grid-template-rows: minmax(0, 1fr); }
 .home-workspace-body { position: relative; display: grid; width: 100%; max-width: 2040px; margin-inline: auto; grid-template-columns: minmax(0, 1fr); min-height: 0; align-items: stretch; background: #fff; }
 .home-workspace-body::after { content: ""; position: absolute; inset: 0; border: 1px solid #b8c4ce; pointer-events: none; z-index: 10; }
-.home-robot-panel { position: absolute; top: 16px; left: 16px; z-index: 7; width: min(280px, calc(100% - 32px)); max-height: calc(100% - 110px); display: flex; flex-direction: column; gap: 16px; min-height: 0; border: 1px solid #d5dfe7; border-radius: 14px; padding: 18px 12px 12px; background: #fff; box-shadow: 0 6px 22px #173e5614; transition: opacity 160ms ease, transform 200ms ease; }
+.home-robot-panel { position: absolute; top: 16px; left: 16px; z-index: 7; width: min(280px, calc(100% - 32px)); max-height: calc(100% - 110px); display: flex; flex-direction: column; gap: 16px; min-height: 0; border: 1px solid #d5dfe7; border-radius: 14px; padding: 18px 12px 12px; background: #fff; box-shadow: 0 6px 22px #173e5614; transition: opacity var(--panel-transition-duration) ease, transform var(--panel-transition-duration) ease; }
 .home-robot-panel.is-hidden { opacity: 0; transform: translateY(-8px); pointer-events: none; }
 .home-robot-list .home-robot-row:last-child { margin-bottom: 0; }
 .home-robot-heading { display: flex; align-items: center; gap: 9px; padding: 0 6px; }
 .home-robot-heading h2 { margin: 0; font-size: 17px; }
 .home-robot-heading > span { color: var(--workspace-muted); font-size: 12px; }
-.home-robot-caption { margin: 6px 6px 22px; color: var(--workspace-muted); font-size: 12px; }
 .home-robot-list { min-height: 0; overflow-y: auto; }
 .home-robot-row { position: relative; margin-bottom: 10px; border: 1px solid #d5dfe7; border-radius: 12px; background: #fff; overflow: hidden; transition: border-color 160ms ease, background 160ms ease; }
 .home-robot-row.is-selected { border-color: #91abbc; background: #fff; }
@@ -16,24 +15,19 @@
 .home-robot-select:focus-visible { outline: 2px solid var(--workspace-teal); outline-offset: -3px; }
 .home-robot-thumbnail { display: flex; align-items: center; justify-content: center; height: 82px; overflow: hidden; border-radius: 8px; background: #eef0ee; }
 .home-robot-thumbnail img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.home-robot-chevron { display: flex; color: #7c8c9c; }
-.home-robot-chevron svg { width: 12px; height: 18px; }
+.home-robot-chevron { display: grid; flex: 0 0 16px; place-items: center; color: var(--workspace-muted); }
+.home-robot-chevron svg { width: 16px; height: 16px; }
 .home-robot-select:hover { background: #f8fafc; }
 .home-robot-identity { display: grid; min-width: 0; gap: 2px; flex: 1; }
 .home-robot-identity strong { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #05243f; font-size: 15px; font-weight: 750; letter-spacing: -.3px; }
 .home-robot-identity .robot-state-badge { margin-top: 4px; }
 .home-robot-identity small { color: var(--workspace-muted); font-size: 11px; }
 .home-robot-identity .battery-status { margin-top: 8px; padding-top: 8px; border-top: 1px solid #e4eaf0; }
-.home-robot-footer { margin-top: auto; padding: 20px 6px 0; }
-.home-robot-footer p { color: var(--workspace-muted); font-size: 11px; line-height: 1.7; }
-.home-robot-footer a { display: flex; align-items: center; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--workspace-line); font-size: 13px; }
-.home-robot-footer a:hover { color: var(--workspace-teal); }
-.home-robot-footer svg { width: 16px; }
 .home-map-panel { display: flex; flex-direction: column; min-width: 0; min-height: 0; background: #f8fafb; }
-.home-map-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 72px; padding: 15px 24px; border-bottom: 1px solid #e6ebef; background: #fff; }
-.home-map-header h2 { margin: 0; font-size: 16px; }
+.home-map-header { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; gap: 24px; min-height: 96px; padding: 18px 24px; border-bottom: 1px solid #e6ebef; background: #fff; }
+.home-map-header h2 { margin: 0; font-size: 20px; white-space: nowrap; }
 .home-map-header p { margin: 0; color: var(--workspace-muted); font-size: 12px; }
-.home-data-error { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 20px; background: var(--workspace-danger-soft); color: var(--workspace-danger); font-size: 13px; }
+.home-data-error { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 20px; background: var(--workspace-danger-soft); color: var(--workspace-danger); font-size: 13px; }
 .home-data-error button { flex-shrink: 0; border: 1px solid #dcb7a6; border-radius: 4px; padding: 5px 10px; background: #fff; color: inherit; }
 .floor-map-empty { display: flex; flex: 1; align-items: center; justify-content: center; flex-direction: column; color: var(--workspace-muted); }
 .floor-map-empty > span { margin-bottom: 16px; color: #c4cfd5; font-size: 64px; font-weight: 600; }
@@ -73,7 +67,6 @@
   .mission-readonly-field output, .mission-priority label { min-height: 42px; padding-block: 8px; }
   .mission-queue-note { font-size: 11px; line-height: 1.65; }
   .seat-mission-submit { padding-block: 12px 18px; }
-  .home-map-header { min-height: 60px; padding-block: 10px; }
 }
 @media (max-width: 1450px) {
   .home-map-header { padding-inline: 18px; }
@@ -95,8 +88,7 @@
 .robot-detail-preview > .robot-model-card { margin: 0; }
 .robot-detail-preview .robot-model-stage { height: clamp(216px, 26dvh, 300px); }
 .robot-detail-identity { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 0 10px; }
-.robot-detail-identity h3 { min-width: 0; margin: 0; font-size: 20px; overflow-wrap: anywhere; }
-.robot-detail-identity .workspace-state { flex-shrink: 0; }
+.robot-detail-identity h3 { min-width: 0; margin: 0; font-size: 18px; overflow-wrap: anywhere; }
 .robot-detail-metrics { display: grid; gap: 12px; margin: 0; padding: 10px 0; border-block: 1px solid var(--workspace-line); }
 .robot-detail-metrics > div { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; }
 .robot-detail-metrics dt, .robot-detail-content small { color: var(--workspace-muted); }
@@ -115,37 +107,22 @@
 .home-robot-drawer.is-open { box-shadow: 6px 0 18px #173e5614; }
 .home-robot-drawer.is-open + .facility-map-shell { --facility-map-controls-offset: var(--home-robot-drawer-width); }
 .home-robot-drawer > .home-robot-detail-panel { width: 100%; height: 100%; }
-@media (max-width: 1100px) {
-  .has-request .home-robot-drawer.is-open + .facility-map-shell .facility-map-fit-controls { flex-direction: column; }
-}
-
-.home-robot-chevron { display: grid; flex: 0 0 16px; place-items: center; color: var(--workspace-muted); }
-.home-robot-chevron svg { width: 16px; height: 16px; }
-
 .home-request-drawer { inset: 0 0 0 auto; width: min(340px, 100%); z-index: 6; transform: translateX(16px); }
 .home-request-drawer.is-open { box-shadow: -6px 0 18px #173e5614; }
 .home-request-drawer > .seat-mission-panel { width: 100%; height: 100%; }
 .facility-map-seat { transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease; }
 @media (prefers-reduced-motion: reduce) {
-  .home-workspace-body, .home-robot-panel, .home-request-drawer, .home-robot-drawer, .facility-map-seat { transition: none; }
+  .home-robot-panel, .facility-map-seat { transition: none; }
 }
-
-.robot-detail-character { flex: 0 0 84px; width: 84px; height: 84px; }
-.robot-detail-character svg { display: block; width: 100%; height: 100%; }
-.robot-detail-identity > div { min-width: 0; }
-.robot-detail-identity h3 { font-size: 18px; }
 
 @media (max-width: 1280px) {
   .home-robot-select { grid-template-columns: 52px minmax(0, 1fr) 10px; gap: 7px; padding-inline: 8px; }
   .home-robot-thumbnail { height: 80px; }
 }
-.home-map-header, .home-data-error { flex-shrink: 0; }
 
 
 .summary-demo-exit { border: 1px solid #e5c493; border-radius: 5px; padding: 6px 9px; background: #fff8ed; color: #8b5b1e; font-size: 11px !important; cursor: pointer; }
 
-.home-map-header { min-height: 96px; padding-block: 18px; gap: 24px; }
-.home-map-header h2 { font-size: 20px; white-space: nowrap; }
 .home-map-intro { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
 .home-map-header-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .home-occupancy { width: 300px; display: grid; gap: 6px; font-variant-numeric: tabular-nums; }

@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
+import { useHomePanelState } from "./useHomePanelState";
+import { panelMotionStyle } from "../components/panel-motion";
 import { useOutletContext, useSearchParams } from "react-router";
 import type { FacilityFloor, FacilitySelection } from "../app/AppShell";
 import { FacilityMap, type FacilityRobotMarker } from "../features/facility-map/FacilityMap";
@@ -24,50 +26,11 @@ export function HomePage() {
 }
 function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
   const { robots, missions, seats, events = [], isLoading, error, refresh, isCreatingMission } = useOperations();
-  const [closingSeat, setClosingSeat] = useState<null | (typeof seats)[number]>(null);
-  useEffect(() => {
-    if (!closingSeat) return;
-    const timer = window.setTimeout(() => setClosingSeat(null), 220);
-    return () => window.clearTimeout(timer);
-  }, [closingSeat]);
-  const [selectedSeatId, setSelectedSeatId] = useState<string | null>(null);
-  const [selectedRobotId, setSelectedRobotId] = useState<string | null>(null);
-  const [pendingMissionId, setPendingMissionId] = useState<string | null>(null);
-  const [followedMission, setFollowedMission] = useState<{ robotId: string; missionId: string } | null>(null);
-  const [closingRobot, setClosingRobot] = useState<null | (typeof robots)[number]>(null);
-  useEffect(() => {
-    if (!closingRobot) return;
-    const timer = window.setTimeout(() => setClosingRobot(null), 220);
-    return () => window.clearTimeout(timer);
-  }, [closingRobot]);
-  const [robotFocusKey, setRobotFocusKey] = useState(0);
-  const robotTrigger = useRef<HTMLElement | null>(null);
-  const selectedRobot = robots.find((robot) => robot.robot_id === selectedRobotId);
-  const displayedRobot = selectedRobot || closingRobot;
-  const selectedSeat = seats.find((seat) => seat.seat_id === selectedSeatId) ?? null;
-  // Follow only a confirmed assignment, including one completed between list refreshes.
-  const assignmentEvent = pendingMissionId ? events.find(event => event.event_type === "robot.state_changed"
-    && event.payload.active_mission_id === pendingMissionId) : undefined;
-  const assignedRobot = pendingMissionId ? robots.find(robot => robot.active_mission_id === pendingMissionId)
-    ?? robots.find(robot => robot.robot_id === assignmentEvent?.robot_id) : undefined;
-  useEffect(() => {
-    if (!pendingMissionId || !assignedRobot || !selectedSeat) return;
-    robotTrigger.current = document.querySelector<HTMLButtonElement>(".facility-map-seat.is-selected");
-    setClosingSeat(selectedSeat);
-    setSelectedSeatId(null);
-    setClosingRobot(null);
-    setSelectedRobotId(assignedRobot.robot_id);
-    setFollowedMission({ robotId: assignedRobot.robot_id, missionId: pendingMissionId });
-    setRobotFocusKey(key => key + 1);
-    setPendingMissionId(null);
-  }, [pendingMissionId, assignedRobot, selectedSeat]);
-  useEffect(() => {
-    if (selectedRobot?.active_mission_id) {
-      setFollowedMission({ robotId: selectedRobot.robot_id, missionId: selectedRobot.active_mission_id });
-    }
-  }, [selectedRobot?.robot_id, selectedRobot?.active_mission_id]);
-  const displayedMissionId = displayedRobot?.active_mission_id
-    ?? (followedMission?.robotId === displayedRobot?.robot_id ? followedMission?.missionId : null);
+  const { selectedSeatId, selectedRobotId, selectedSeat, selectedRobot, closingSeat,
+    displayedRobot, displayedMissionId, robotFocusKey, selectSeat, selectRobot,
+    closeRequest, closeRobot, onMissionSubmitted } = useHomePanelState({
+      robots, seats, events, isCreatingMission, unavailable: isLoading || !!error,
+    });
   const [searchParams, setSearchParams] = useSearchParams();
   const summaryDemo = searchParams.get("summaryDemo") === "1";
   const snapshots = useMemo(() => seatSnapshots(seats, summaryDemo), [seats, summaryDemo]);
@@ -75,43 +38,8 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
   const mapRobots = useMemo<FacilityRobotMarker[]>(() => robots.map((robot, index) => ({
     robotId: robot.robot_id, state: robot.state, ...examplePositions[index % examplePositions.length], positionMode: "scenario",
   })), [robots]);
-  function selectRobot(id: string) {
-    if (isCreatingMission) return;
-    setPendingMissionId(null);
-    setFollowedMission(null);
-    if (document.activeElement instanceof HTMLElement && !document.activeElement.closest(".home-robot-detail-panel")) robotTrigger.current = document.activeElement;
-    if (selectedRobotId === id) { closeRobot(); return; }
-    if (selectedSeat) setClosingSeat(selectedSeat);
-    setSelectedSeatId(null);
-    setClosingRobot(null);
-    setSelectedRobotId(id); setRobotFocusKey((key) => key + 1);
-  }
-  function closeRobot() {
-    setClosingRobot(selectedRobot ?? null);
-    setSelectedRobotId(null);
-    requestAnimationFrame(() => robotTrigger.current?.focus({ preventScroll: true }));
-  }
-  function closeRequest() {
-    if (isCreatingMission) return;
-    setPendingMissionId(null);
-    setClosingSeat(selectedSeat);
-    const seatButton = document.querySelector<HTMLButtonElement>(".facility-map-seat.is-selected");
-    setSelectedSeatId(null);
-    requestAnimationFrame(() => seatButton?.focus({ preventScroll: true }));
-  }
-  function selectSeat(id: string) {
-    if (isCreatingMission || isLoading || error) return;
-    setPendingMissionId(null);
-    if (selectedSeatId === id) closeRequest();
-    else {
-      if (selectedRobot) setClosingRobot(selectedRobot);
-      setSelectedRobotId(null);
-      setClosingSeat(null);
-      setSelectedSeatId(id);
-    }
-  }
   return (
-    <section className="home-workspace" aria-label="로봇 관제 홈">
+    <section className="home-workspace" aria-label="로봇 관제 홈" style={panelMotionStyle}>
       <h1 className="sr-only">{floor.label}</h1>
       <div className={"home-workspace-body" + (selectedSeat ? " has-request" : "")}>
         <section className="home-map-panel" aria-label="시설 지도">
@@ -149,7 +77,7 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
             onSelectRobot={selectRobot} robotFocusKey={robotFocusKey} seatSelectionDisabled={isLoading || !!error || isCreatingMission}
           /> : <div className="floor-map-empty"><span>19F</span><h2>19층 지도 연결 전</h2><p>상단의 운영 층에서 18층을 선택하면 좌석 지도를 볼 수 있습니다.</p></div>}
         <MapOverlayPanel className="home-request-drawer" open={!!selectedSeat}>
-          {(selectedSeat || closingSeat) && floor.mapAvailable && <SeatMissionPanel key={(selectedSeat || closingSeat)!.seat_id} seat={(selectedSeat || closingSeat)!} unavailable={!!error || isLoading || summaryDemo} onClose={closeRequest} onSubmitted={mission => setPendingMissionId(mission.mission_id)} />}
+          {(selectedSeat || closingSeat) && floor.mapAvailable && <SeatMissionPanel key={(selectedSeat || closingSeat)!.seat_id} seat={(selectedSeat || closingSeat)!} unavailable={!!error || isLoading || summaryDemo} onClose={closeRequest} onSubmitted={mission => onMissionSubmitted(mission.mission_id)} />}
         </MapOverlayPanel>
           </div>
         </section>
