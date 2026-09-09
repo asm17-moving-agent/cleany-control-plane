@@ -1,0 +1,50 @@
+{
+  "url": "http://127.0.0.1:5173/",
+  "viewport": {
+    "width": 1366,
+    "height": 768
+  },
+  "initial": {
+    "iconWidth": 28,
+    "iconHeight": 24,
+    "hitWidth": 40.0001220703125,
+    "hitHeight": 36,
+    "borderWidth": "0px",
+    "background": "rgba(0, 0, 0, 0)",
+    "boxShadow": "none"
+  },
+  "beforeZoom": {
+    "iconWidth": 28,
+    "iconHeight": 24,
+    "hitWidth": 40,
+    "hitHeight": 36,
+    "borderWidth": "0px",
+    "background": "rgba(0, 0, 0, 0)",
+    "boxShadow": "none"
+  },
+  "afterZoom": {
+    "iconWidth": 27.9998779296875,
+    "iconHeight": 24,
+    "hitWidth": 40.0001220703125,
+    "hitHeight": 36,
+    "borderWidth": "0px",
+    "background": "rgba(0, 0, 0, 0)",
+    "boxShadow": "none"
+  },
+  "checks": [
+    "no status dot",
+    "name-only label",
+    "compact SVG marker",
+    "transparent hit area",
+    "label hidden by default",
+    "hover label",
+    "keyboard focus and Enter",
+    "persistent selected label",
+    "constant icon width through zoom",
+    "pointer click opens details",
+    "no page errors"
+  ],
+  "screenshots": [
+    "/tmp/cleany-soft-marker-ky6ftjz3/soft-default-niri.png"
+  ]
+}

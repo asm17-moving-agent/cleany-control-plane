@@ -20,3 +20,19 @@ Built-in imagegen으로 각 시안을 개별 생성했다. 기존 Cleany 얼굴 
 - [생성 원본 경로, 실제 이미지 크기, SHA-256](generation.json)
 
 다섯 결과를 모두 시각적으로 확인했다. 원본은 생성 위치에 보존하고, 복사한 PNG의 바이트 일치를 확인했다. 이 작업은 시안 자산만 추가했으며 앱 코드와 계약은 변경하지 않았다.
+
+## 후속 선택과 적용
+
+사용자가 01 클래식 시안을 선택해 [지도용 SVG](../../../../apps/dashboard/src/assets/brand/robot-face-classic.svg)로 구현했다. 원형 배경 없이 28×20px 얼굴과 상태 점을 표시한다. 투명 클릭 영역은 40×36px이며 지도 확대율에 맞춰 역보정해 화면상 크기를 유지한다. 이름·상태는 호버, 키보드 포커스 또는 선택 상태에서 표시한다.
+
+- [실제 Firefox 화면의 niri 캡처](classic-implemented-niri.png)
+- [브라우저 동작 및 크기 측정 결과](classic-implementation-verification.json): 1366×768에서 기본/확대 후 얼굴 너비 약 28px, 마우스·키보드 선택, 이름표 표시, 상세 연결 확인. 페이지 예외 없음.
+- 지도·홈 단위 테스트 10개, 계약 검사, TypeScript 검사 통과. 네이티브 시각 확인은 Firefox/niri, 동작·크기 측정은 Chromium으로 진행했다.
+
+## 후속 변경 — 02 둥근형
+
+사용자가 선택을 02 둥근형으로 변경해 [robot-face-soft.svg](../../../../apps/dashboard/src/assets/brand/robot-face-soft.svg)를 적용했다. 노란 옆면을 둥근 본체 안에 통합하고, 지도 아이콘의 상태 점과 이름표의 상태 문구를 제거했다. 이름표는 기존 호버·포커스·선택 시 로봇 이름만 표시한다. 실제 상태는 접근성 레이블과 상세 패널에서 유지한다.
+
+- [적용 화면: Firefox/niri](soft-implemented-niri.png)
+- [브라우저 검증 결과](soft-implementation-verification.json): 상태 점 없음, 이름만 표시, 호버·키보드·클릭 상세 진입, 확대 전후 28px 너비 유지, 페이지 예외 없음.
+- 지도·홈 단위 테스트 10개, 계약 검사, TypeScript 검사 통과.
