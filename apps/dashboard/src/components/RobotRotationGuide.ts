@@ -20,6 +20,26 @@ export function createRobotRotationGuide(bounds: THREE.Box3) {
       ).project(camera);
       points.push(`${index === 0 ? "M" : "L"}${((point.x + 1) * width / 2).toFixed(2)},${((1 - point.y) * height / 2).toFixed(2)}`);
     }
-    return points.join(" ");
+    function arrowhead(angle: number, direction: number) {
+      const radialX = Math.sin(angle), radialZ = Math.cos(angle);
+      const tipX = center.x + radialX * radius, tipZ = center.z + radialZ * radius;
+      const length = radius * .09, halfWidth = radius * .045;
+      const baseX = tipX - radialZ * length * direction;
+      const baseZ = tipZ + radialX * length * direction;
+      function project(x: number, z: number) {
+        point.set(x, bounds.min.y + .002, z).project(camera);
+        return `${((point.x + 1) * width / 2).toFixed(2)},${((1 - point.y) * height / 2).toFixed(2)}`;
+      }
+      // Both wings lie on the same ground plane as the arc, including foreshortening.
+      return `M${project(baseX + radialX * halfWidth, baseZ + radialZ * halfWidth)}`
+        + `L${project(tipX, tipZ)}`
+        + `L${project(baseX - radialX * halfWidth, baseZ - radialZ * halfWidth)}`;
+    }
+    const start = yaw + Math.PI / 3;
+    return {
+      arc: points.join(" "),
+      startArrow: arrowhead(start, 1),
+      endArrow: arrowhead(start - Math.PI * 2 / 3 * amount, -1),
+    };
   };
 }

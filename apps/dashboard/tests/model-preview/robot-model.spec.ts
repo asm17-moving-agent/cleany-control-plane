@@ -193,22 +193,30 @@ test("home roster stays static while the detail model supports dragging and tear
   await expect(page.locator(".robot-model-card, .robot-model-canvas canvas")).toHaveCount(0);
 });
 
-test("robot detail guides turn both ways around a ground circle, then yield to manual dragging", async ({ page }) => {
+test("robot detail extends a two-headed arc with its outward turn and return, then yields to dragging", async ({ page }) => {
   test.setTimeout(45000);
   await fixtureApi(page);
   await page.goto("/robots?renderStats=1");
   const card = page.locator(".workspace-robot-overview .robot-model-card");
   await expect(card).toHaveAttribute("data-state", "ready");
   const canvas = card.getByRole("group", { name: "Cleany 모델 회전" });
+  const guide = card.locator(".robot-model-rotation-guide");
+  const arc = guide.locator(".robot-model-rotation-arc");
+  const arrowheads = guide.locator(".robot-model-arrowhead");
+  await expect(arrowheads).toHaveCount(2);
   const home = await yaw(canvas);
   for (let cycle = 0; cycle < 2; cycle++) {
     await expect(canvas).toHaveAttribute("data-guide-direction", "left", { timeout: 10000 });
     await expect.poll(() => yaw(canvas), { intervals: [50, 100, 200] }).toBeGreaterThan(home + .15);
-    await expect(canvas).toHaveAttribute("data-guide-geometry", "ground-circle");
+    await expect(canvas).toHaveAttribute("data-guide-geometry", "ground-arc");
+    await expect(guide).toHaveCSS("opacity", "1");
+    for (const arrowhead of await arrowheads.all()) await expect(arrowhead).toHaveAttribute("d", /^M.+L.+L.+$/);
+    const outwardPath = await arc.getAttribute("d");
     await expect(canvas).toHaveAttribute("data-guide-direction", "right");
-    await expect.poll(() => yaw(canvas), { intervals: [50, 100, 200] }).toBeLessThan(home - .15);
-    await expect(canvas).toHaveAttribute("data-guide-direction", "left");
+    await expect(arc).not.toHaveAttribute("d", outwardPath!);
+    await expect.poll(() => yaw(canvas), { intervals: [50, 100, 200] }).toBeLessThan(home + .15);
     await expect(canvas).toHaveAttribute("data-guide-direction", "none");
+    await expect(guide).toHaveCSS("opacity", "0");
     await expectIdle(page, canvas);
     expect(await yaw(canvas)).toBeCloseTo(home, 4);
   }

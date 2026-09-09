@@ -28,9 +28,10 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
   const host = useRef<HTMLDivElement>(null);
   const guide = useRef<SVGSVGElement>(null);
   const guidePath = useRef<SVGPathElement>(null);
+  const guideStartArrow = useRef<SVGPathElement>(null);
+  const guideEndArrow = useRef<SVGPathElement>(null);
   const reset = useRef<(() => void) | null>(null);
   const instructions = useId();
-  const arrowhead = useId();
   const [adjusted, setAdjusted] = useState(false);
 
   useEffect(() => {
@@ -135,7 +136,12 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
           const amount = motion.guideAmount;
           // Hide very short arcs so the opposing arrowheads never overlap.
           guide.current.style.opacity = String(Math.min(1, Math.max(0, (amount - .1) / .15)));
-          if (motion.guiding) guidePath.current.setAttribute("d", orbitGuide(camera, yaw, amount, canvasWidth, canvasHeight));
+          if (motion.guiding) {
+            const paths = orbitGuide(camera, yaw, amount, canvasWidth, canvasHeight);
+            guidePath.current.setAttribute("d", paths.arc);
+            guideStartArrow.current?.setAttribute("d", paths.startArrow);
+            guideEndArrow.current?.setAttribute("d", paths.endArrow);
+          }
           if (diagnostics) element.dataset.guideAmount = String(amount);
         }
         if (diagnostics) {
@@ -344,13 +350,9 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
     <div className="robot-model-canvas" ref={host} tabIndex={0} role="group"
       aria-label="Cleany 모델 회전" aria-describedby={instructions} />
     {rotationGuide && <svg ref={guide} className="robot-model-rotation-guide" aria-hidden="true">
-      <defs>
-        <marker id={arrowhead} viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5"
-          orient="auto-start-reverse" markerUnits="strokeWidth">
-          <path d="M3 1L7 5L3 9" />
-        </marker>
-      </defs>
-      <path ref={guidePath} markerStart={`url(#${arrowhead})`} markerEnd={`url(#${arrowhead})`} />
+      <path ref={guidePath} className="robot-model-rotation-arc" />
+      <path ref={guideStartArrow} className="robot-model-arrowhead" />
+      <path ref={guideEndArrow} className="robot-model-arrowhead" />
     </svg>}
     <span id={instructions} className="sr-only">마우스로 드래그하거나 방향키로 회전합니다. Home 키로 처음 각도로 돌아갑니다.</span>
     <button className="robot-model-reset" type="button" disabled={!adjusted}

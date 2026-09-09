@@ -50,7 +50,7 @@
   opacity: 0;
   pointer-events: none;
 }
-.robot-model-rotation-guide marker path { stroke-width: 1.4; }
+.robot-model-arrowhead { stroke-width: 1.5; }
 .robot-model-reset {
   position: absolute;
   z-index: 2;
