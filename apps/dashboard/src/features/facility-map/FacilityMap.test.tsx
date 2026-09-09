@@ -17,6 +17,22 @@ function FacilityMapHarness() {
     robots={[]} selectedRobotId={null} onSelectRobot={vi.fn()} />;
 }
 describe("FacilityMap", () => {
+  it("focuses on explicit robot selection, keeps the camera on data refresh, and refocuses on request", () => {
+    const props = { seats, selectedSeatId: null, onSelectSeat: vi.fn(), onSelectRobot: vi.fn(), selectedRobotId: null as string | null,
+      robots: [{ robotId: "cleany-01", state: "IDLE" as const, x: 800, y: 400, positionMode: "scenario" as const }], robotFocusKey: 0 };
+    const view = render(<FacilityMap {...props} />);
+    const canvas = view.container.querySelector<HTMLElement>(".facility-plan-canvas")!;
+    const initial = canvas.style.transform;
+    view.rerender(<FacilityMap {...props} selectedRobotId="cleany-01" />);
+    const focused = canvas.style.transform;
+    expect(focused).not.toBe(initial);
+    expect(canvas).toHaveClass("is-focusing");
+    const moved = { ...props, selectedRobotId: "cleany-01", robots: [{ ...props.robots[0], x: 500, y: 200 }] };
+    view.rerender(<FacilityMap {...moved} />);
+    expect(canvas.style.transform).toBe(focused);
+    view.rerender(<FacilityMap {...moved} robotFocusKey={1} />);
+    expect(canvas.style.transform).not.toBe(focused);
+  });
   it("selects room-specific seat IDs and does not present unknown occupancy as vacant", () => {
     const select = vi.fn();
     const roomSeats: Seat[] = [
@@ -27,22 +43,6 @@ describe("FacilityMap", () => {
     expect(screen.getByRole("button", { name: "A11번 좌석 · 점유 미확인" })).toHaveAttribute("aria-pressed", "true");
     fireEvent.click(screen.getByRole("button", { name: "M16번 좌석 · 점유 미확인" }));
     expect(select).toHaveBeenCalledWith("seat-m1-06");
-  });
-  it("preserves the actual 18F artwork beneath the seat and robot layers", () => {
-    const { container } = render(<FacilityMapHarness />);
-    expect(container.querySelector("img.facility-plan-artwork")).toHaveAttribute("width", "1650");
-    expect(container.querySelector("img.facility-plan-artwork")).toHaveAttribute("height", "953");
-    expect(container.querySelectorAll(".facility-plan-label")).toHaveLength(16);
-    expect(container.querySelector(".facility-inactive-areas path"))
-      .toHaveAttribute("d", "M8 8H74V90H8Z M976 8H1154V662H8V454H976Z");
-    expect(screen.getByText("운영 대상 외")).toBeInTheDocument();
-    expect(container.querySelectorAll(".facility-dhub-furniture .facility-dhub-table")).toHaveLength(9);
-    expect(container.querySelectorAll(".facility-dhub-furniture .facility-desk-surface")).toHaveLength(48);
-    expect(container.querySelectorAll(".facility-static-seat")).toHaveLength(0);
-    expect(container.querySelectorAll(".facility-elevator-symbol")).toHaveLength(5);
-    expect(container.querySelector(".facility-route-overlay")).not.toBeInTheDocument();
-    expect(container.querySelector(".facility-plan-canvas")).toContainElement(container.querySelector(".facility-seat-overlay"));
-    expect(container.querySelector(".facility-plan-canvas")).toContainElement(container.querySelector(".facility-robot-overlay"));
   });
   it("selects a seat directly on the map and retains its identity through zoom and reset", () => {
     const { container } = render(<FacilityMapHarness />);

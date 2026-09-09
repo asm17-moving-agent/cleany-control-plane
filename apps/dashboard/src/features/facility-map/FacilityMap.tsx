@@ -1,10 +1,10 @@
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
+import type { CSSProperties } from "react";
 import type { RobotState, Seat } from "../../api/types";
 import robotFaceSoft from "../../assets/brand/robot-face-soft.svg";
 import { robotStateLabels } from "../../lib/home-summary";
 import { FacilityPlanArtwork } from "./FacilityPlanArtwork";
 import { FACILITY_18F, FACILITY_ACTIVE_BOUNDS } from "./facility-18f";
-import { fitMapBounds } from "./map-viewport";
+import { useMapCamera } from "./useMapCamera";
 import { seatMapSize, seatMapPosition } from "./seat-layout";
 import { seatOccupancyLabel, seatDisplayLabel } from "../../lib/operations";
 import "./facility-map.css";
@@ -30,79 +30,19 @@ export interface FacilityRobotMarker {
 const width = FACILITY_18F.imageWidth;
 const height = FACILITY_18F.imageHeight;
 const fullBounds = { x: 0, y: 0, width, height };
-type MapView = { mode: "initial" | "active" | "all" } | { mode: "manual"; zoom: number; x: number; y: number };
-const initialView: MapView = { mode: "initial" };
-const initialZoom = 1.25;
-function clamp(value: number, min: number, max: number) { return Math.min(max, Math.max(min, value)); }
 export function FacilityMap({ seats, selectedSeatId, onSelectSeat, robots, selectedRobotId, onSelectRobot, robotFocusKey = 0, seatSelectionDisabled = false, highlightedSeatIds, overlayInsetLeft = 0 }: FacilityMapProps) {
-  const stage = useRef<HTMLDivElement>(null);
-  const [frame, setFrame] = useState({ width: 900, height: 650 });
-  const [view, setView] = useState<MapView>(initialView);
-  const [focusMotion, setFocusMotion] = useState(false);
-  const [dragging, setDragging] = useState(false);
-  const drag = useRef<{ clientX: number; clientY: number; x: number; y: number } | null>(null);
-  const fit = fitMapBounds(fullBounds, frame).scale;
-  const inset = Math.min(overlayInsetLeft, frame.width * .4);
-  const fitted = fitMapBounds(view.mode === "active" ? FACILITY_ACTIVE_BOUNDS : fullBounds, { ...frame, width: frame.width - inset });
-  const initialFit = fitMapBounds(FACILITY_ACTIVE_BOUNDS, { ...frame, width: frame.width - inset });
-  const camera = view.mode === "manual" ? view : view.mode === "initial"
-    // Start centered horizontally with the top of the floor plan in view.
-    ? inset > 0
-      ? { zoom: initialFit.scale / fit, x: initialFit.x - inset / (2 * initialFit.scale), y: frame.height / (2 * initialFit.scale) - 16 / initialFit.scale + FACILITY_ACTIVE_BOUNDS.y }
-      : { zoom: initialZoom, x: width / 2, y: frame.height / (2 * fit * initialZoom) }
-    : { zoom: fitted.scale / fit, x: fitted.x - inset / (2 * fitted.scale), y: fitted.y };
-  const scale = fit * camera.zoom;
-  const visibleWidth = frame.width / scale;
-  const visibleHeight = frame.height / scale;
-  const centerX = view.mode !== "manual" ? camera.x : visibleWidth >= width ? width / 2 : clamp(camera.x, visibleWidth / 2, width - visibleWidth / 2);
-  const centerY = view.mode !== "manual" ? camera.y : visibleHeight >= height ? height / 2 : clamp(camera.y, visibleHeight / 2, height - visibleHeight / 2);
-  useLayoutEffect(() => {
-    const element = stage.current;
-    if (!element) return;
-    const measure = () => {
-      if (element.clientWidth && element.clientHeight) setFrame({ width: element.clientWidth, height: element.clientHeight });
-    };
-    measure();
-    if (typeof ResizeObserver === "undefined") return;
-    const observer = new ResizeObserver(measure);
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, []);
-  useEffect(() => {
-    const robot = robots.find((item) => item.robotId === selectedRobotId);
-    if (robot) {
-      setFocusMotion(true);
-      setView({ mode: "manual", zoom: Math.max(1.5, camera.zoom), x: robot.x, y: robot.y });
-    }
-  }, [selectedRobotId, robotFocusKey]);
-  function zoomBy(factor: number) {
-    setFocusMotion(false);
-    setView({ mode: "manual", zoom: clamp(camera.zoom * factor, 1, 4), x: centerX, y: centerY });
-  }
-  function beginPan(event: PointerEvent<HTMLDivElement>) {
-    if (event.button !== 0 || (event.target as Element).closest("button")) return;
-    setFocusMotion(false);
-    drag.current = { clientX: event.clientX, clientY: event.clientY, x: centerX, y: centerY };
-    event.currentTarget.setPointerCapture?.(event.pointerId);
-    setDragging(true);
-  }
-  function pan(event: PointerEvent<HTMLDivElement>) {
-    if (!drag.current) return;
-    const start = drag.current;
-    setView({
-      mode: "manual", zoom: camera.zoom, x: clamp(start.x - (event.clientX - start.clientX) / scale, 0, width),
-      y: clamp(start.y - (event.clientY - start.clientY) / scale, 0, height),
-    });
-  }
-  function endPan() { drag.current = null; setDragging(false); }
+  const { stage, view, camera, dragging, focusMotion, zoomBy, fitView, canZoomIn, canZoomOut, panHandlers, endFocus } = useMapCamera({
+    robots, selectedRobotId, robotFocusKey, fullBounds, activeBounds: FACILITY_ACTIVE_BOUNDS, overlayInsetLeft,
+  });
+  const { scale } = camera;
   return (
     <div className="facility-map-shell">
       <div className={"facility-map-stage" + (dragging ? " is-panning" : "")} ref={stage}
-        onPointerDown={beginPan} onPointerMove={pan} onPointerUp={endPan} onPointerCancel={endPan}>
+        {...panHandlers}>
         <div className={"facility-plan-canvas" + (focusMotion ? " is-focusing" : "")}
-          onTransitionEnd={(event) => { if (event.target === event.currentTarget && event.propertyName === "transform") setFocusMotion(false); }} style={{
+          onTransitionEnd={endFocus} style={{
           width, height, "--map-scale": scale,
-          transform: "translate(" + (frame.width / 2 - centerX * scale) + "px, " + (frame.height / 2 - centerY * scale) + "px) scale(" + scale + ")",
+          transform: camera.transform,
         } as CSSProperties}>
           <FacilityPlanArtwork />
           <div className="facility-seat-overlay" aria-label="18층 좌석">
@@ -140,12 +80,12 @@ export function FacilityMap({ seats, selectedSeatId, onSelectSeat, robots, selec
           </div>
         </div>
         <div className="facility-map-controls" aria-label="지도 조작">
-          <div className="facility-map-zoom-controls"><button type="button" aria-label="지도 확대" disabled={camera.zoom >= 4} onClick={() => zoomBy(1.25)}>+</button>
-            <button type="button" aria-label="지도 축소" disabled={camera.zoom <= 1} onClick={() => zoomBy(1 / 1.25)}>−</button>
+          <div className="facility-map-zoom-controls"><button type="button" aria-label="지도 확대" disabled={!canZoomIn} onClick={() => zoomBy(1.25)}>+</button>
+            <button type="button" aria-label="지도 축소" disabled={!canZoomOut} onClick={() => zoomBy(1 / 1.25)}>−</button>
           </div>
           <div className="facility-map-fit-controls">
-            <button type="button" aria-pressed={view.mode === "active"} onClick={() => setView({ mode: "active" })}>활성 구역</button>
-            <button type="button" aria-pressed={view.mode === "all"} onClick={() => setView({ mode: "all" })}>전체 보기</button>
+            <button type="button" aria-pressed={view.mode === "active"} onClick={() => fitView("active")}>활성 구역</button>
+            <button type="button" aria-pressed={view.mode === "all"} onClick={() => fitView("all")}>전체 보기</button>
           </div>
         </div>
       </div>
