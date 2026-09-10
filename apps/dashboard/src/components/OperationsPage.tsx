@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 import type { Mission } from "../api/types";
-import { outcomeLabels } from "../lib/home-summary";
+import { needsResultReview, outcomeLabels } from "../lib/home-summary";
 import { missionTone } from "../lib/operations";
 import { panelMotionStyle } from "./panel-motion";
 import "./operations-page.css";
@@ -26,7 +26,9 @@ export function OperationsTabs({ label, tabs }: {
 
 const phaseLabels = { QUEUED: "대기", OFFERED: "배정 확인 중", ACCEPTED: "작업 준비", NAVIGATING: "이동 중", WORKING: "작업 중", RETURNING: "복귀 중", TERMINAL: "종료" };
 export function MissionStatusBadge({ mission }: { mission: Mission }) {
-  return <span className="ops-status" data-tone={missionTone(mission)}>
+  const tone = mission.phase === "TERMINAL" ? mission.outcome === "SUCCESS" ? "success" : needsResultReview(mission) ? missionTone(mission) : "neutral"
+    : ["QUEUED", "OFFERED", "ACCEPTED"].includes(mission.phase) ? "waiting" : "info";
+  return <span className="ops-status" data-tone={tone}>
     {mission.phase === "TERMINAL" && mission.outcome ? outcomeLabels[mission.outcome] : mission.cancel_requested ? "취소 요청 중" : phaseLabels[mission.phase]}
   </span>;
 }
