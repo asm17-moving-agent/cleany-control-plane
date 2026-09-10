@@ -197,7 +197,7 @@ test("robot detail extends a two-headed arc with its outward turn and return, th
   test.setTimeout(45000);
   await fixtureApi(page);
   await page.goto("/robots?renderStats=1");
-  const card = page.locator(".workspace-robot-overview .robot-model-card");
+  const card = page.locator(".fleet-preview .robot-model-card");
   await expect(card).toHaveAttribute("data-state", "ready");
   const canvas = card.getByRole("group", { name: "Cleany 모델 회전" });
   const guide = card.locator(".robot-model-rotation-guide");
@@ -245,7 +245,7 @@ test("reduced motion suppresses the detail guide and keeps keyboard rotation", a
   await page.emulateMedia({ reducedMotion: "reduce" });
   await fixtureApi(page);
   await page.goto("/robots?renderStats=1");
-  const card = page.locator(".workspace-robot-overview .robot-model-card");
+  const card = page.locator(".fleet-preview .robot-model-card");
   await expect(card).toHaveAttribute("data-state", "ready");
   const canvas = card.getByRole("group", { name: "Cleany 모델 회전" });
   const home = await yaw(canvas);
