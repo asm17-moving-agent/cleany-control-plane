@@ -22,7 +22,7 @@ test("operator can select a seat on the map and send a supported request", async
   await expect(panel.getByRole("button", { name: "대기열 등록 완료" })).toBeDisabled();
   await panel.getByRole("link", { name: "요청 현황 보기" }).click();
   await expect(page).toHaveURL(/\/missions\?mission=/);
-  await expect(page.locator(".mission")).toContainText("12번 좌석");
+  await expect(page.getByRole("complementary", { name: "작업 요청 상세" })).toContainText("12번 좌석");
 });
 
 test("home entry points and unavailable floors remain accessible", async ({ page }) => {
@@ -50,7 +50,7 @@ test("home entry points and unavailable floors remain accessible", async ({ page
 
 test("production SPA routes and URL filters work on direct access", async ({ page }) => {
   await page.goto("/missions?phase=QUEUED");
-  await expect(page.getByLabel("단계", { exact: true })).toHaveValue("QUEUED");
+  await expect(page.getByRole("navigation", { name: "작업 필터" }).getByRole("link", { name: /^대기/ })).toHaveAttribute("aria-current", "page");
   await page.goto("/results?filter=success");
   await expect(page.getByRole("heading", { level: 2, name: "작업 결과" })).toBeVisible();
   await expect(page.getByRole("navigation", { name: "결과 필터" }).getByRole("link", { name: /완료/ })).toHaveAttribute("aria-current", "page");
