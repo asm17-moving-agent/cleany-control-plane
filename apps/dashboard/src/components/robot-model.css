@@ -108,9 +108,6 @@
 .robot-model-inline .robot-model-retry { pointer-events: auto; }
 .robot-model-inline .robot-model-reset { top: 0; right: 0; padding: 4px; border-color: transparent; background: #ffffffd9; }
 .robot-model-inline .robot-model-canvas[data-diagnostics=true]::after { display: none; }
-.workspace-robot-overview { display: grid; grid-template-columns: minmax(200px, 280px) minmax(160px, 1fr); gap: 24px; align-items: center; margin-bottom: 24px; }
-.workspace-robot-overview > .robot-model-card { margin: 0; }
-.workspace-robot-detail .workspace-robot-overview > dl { border-top: 0; padding-top: 0; }
 .robot-model-page { width: 100%; max-width: 460px; margin: 0 auto; padding: 28px 20px; color: #243d34; }
 .robot-model-page-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; color: #71877d; font-size: 11px; }
 .robot-model-page-nav a { color: #375f49; text-decoration: none; }

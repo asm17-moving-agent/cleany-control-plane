@@ -22,7 +22,7 @@ const navigation = [
   { path: "/robots", label: "로봇", Icon: RobotIcon },
 ];
 const titles: Record<string, string> = {
-  "/": "운영 홈", "/missions": "미션 관리", "/results": "작업 결과",
+  "/": "운영 홈", "/missions": "작업 요청", "/results": "작업 결과",
   "/robots": "로봇 관리", "/monitoring": "운영 모니터링", "/settings": "관제 설정",
 };
 export function AppShell() {
@@ -35,6 +35,7 @@ export function AppShell() {
   const menuRef = useRef<HTMLDetailsElement>(null);
   const alertsRef = useRef<HTMLDetailsElement>(null);
   const isHome = location.pathname === "/";
+  const hasPageError = ["/missions", "/results", "/robots"].includes(location.pathname);
   useEffect(() => {
     document.title = (titles[location.pathname] ?? "Cleany") + " · Cleany";
     if (menuRef.current) menuRef.current.open = false;
@@ -77,7 +78,7 @@ export function AppShell() {
       </header>
       <main className={"control-main" + (isHome ? " is-home" : "")}>
         {!isHome && <h1 className="sr-only">{titles[location.pathname]}</h1>}
-        {!isHome && error && <div className="workspace-api-error" role="alert">데이터를 갱신하지 못했습니다. {error.message}</div>}
+        {!isHome && !hasPageError && error && <div className="workspace-api-error" role="alert">데이터를 갱신하지 못했습니다. {error.message}</div>}
         <Outlet context={{ floor } satisfies FacilitySelection} />
       </main>
     </div>
