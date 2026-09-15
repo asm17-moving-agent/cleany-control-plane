@@ -7,15 +7,17 @@ import { WorkspaceMessage } from "../components/WorkspaceMessage";
 import { byNewestRequest, isSuccessfulResult, needsResultReview, observationHref } from "../lib/home-summary";
 import { formatDateTime, missionTargetLabel } from "../lib/operations";
 import { useOperations } from "../operations/OperationsContext";
+import { useDemoMode } from "../operations/DemoModeContext";
 import "./results-page.css";
 
 function Observation({ label, reference }: { label: string; reference: string | null }) {
+  const { isDemo } = useDemoMode();
   const href = observationHref(reference);
   const [failed, setFailed] = useState(false);
   const image = href && /\.(png|jpe?g|webp|gif|avif)(?:[?#]|$)/i.test(href);
   return <section className="result-observation" aria-label={label}>
     <header><h4>{label}</h4>{href && <a href={href} target="_blank" rel="noreferrer">원본 열기 <ChevronIcon /></a>}</header>
-    {image && !failed ? <a className="result-observation-image" href={href} target="_blank" rel="noreferrer"><img src={href} alt={`${label} 관측 사진`} onError={() => setFailed(true)} /></a>
+    {image && !failed ? <a className="result-observation-image" href={href} target="_blank" rel="noreferrer"><img src={href} alt={`${label} ${isDemo ? "AI 생성 예시" : "관측"} 사진`} onError={() => setFailed(true)} />{isDemo && <span className="result-photo-label">AI 생성 · 예시</span>}</a>
       : <div className="result-observation-empty"><EyeIcon aria-hidden="true" /><strong>{failed ? "미리보기를 불러오지 못했습니다" : href ? "관측 자료가 연결되어 있습니다" : "연결된 관측 자료가 없습니다"}</strong><span>{href ? "원본 열기에서 자료를 확인하세요." : "관측 자료가 연결되면 여기에 표시됩니다."}</span></div>}
     {!href && reference && <details className="result-reference"><summary>자료 참조 확인</summary><code>{reference}</code></details>}
   </section>;

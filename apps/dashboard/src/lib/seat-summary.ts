@@ -6,6 +6,17 @@ export const cleaningLabels: Record<CleaningState, string> = {
   ready: "정리 완료", waiting: "정리 대기", working: "작업 중", review: "확인 필요", unknown: "미확인",
 };
 export interface SeatSnapshot { seat: Seat; cleaning: CleaningState | null; }
+export type SeatCleaningStates = Readonly<Partial<Record<string, CleaningState>>>;
+export type SeatMapStatus = "occupied" | CleaningState;
+export const seatMapStatusLabels: Record<SeatMapStatus, string> = {
+  occupied: "점유 중", ready: "청소 완료", waiting: "청소 예정",
+  working: "청소 진행 중", review: "청소 결과 확인 필요", unknown: "상태 미확인",
+};
+export function seatMapStatus(seat: Seat, cleaning?: CleaningState | null): SeatMapStatus {
+  if (seat.occupancy === "OCCUPIED") return "occupied";
+  if (seat.occupancy !== "AVAILABLE") return "unknown";
+  return cleaning ?? "unknown";
+}
 // Demo uses only real mapped seat IDs. Never infer current cleanliness from mission history.
 export function seatSnapshots(seats: Seat[], demo: boolean): SeatSnapshot[] {
   const sorted = [...seats].sort((a, b) => a.row - b.row || a.grid_column - b.grid_column);

@@ -43,6 +43,8 @@
 .workspace-popover > strong { display: block; padding: 10px 12px; color: var(--workspace-muted); font-size: 12px; font-weight: 500; }
 .workspace-popover a { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 4px; }
 .workspace-popover a:hover { background: var(--workspace-soft); }
+.workspace-popover > button { display: block; width: 100%; border: 0; border-radius: 4px; padding: 10px 12px; background: transparent; color: var(--workspace-ink); text-align: left; }
+.workspace-popover > button:hover { background: var(--workspace-soft); }
 .workspace-popover a b { margin-left: auto; color: var(--workspace-teal); }
 .control-main { min-height: 0; overflow: auto; padding: 30px 36px; background: var(--workspace-soft); }
 .control-main.is-home { padding: 0; overflow: hidden; background: #eef2f5; }
@@ -53,6 +55,11 @@
 .workspace-primary-button:disabled { opacity: .5; }
 .workspace-empty { padding: 28px 20px; color: var(--workspace-muted); font-size: 14px; line-height: 1.7; text-align: center; }
 .workspace-api-error { margin-bottom: 20px; border: 1px solid #efd3c4; border-radius: 5px; padding: 12px 16px; background: var(--workspace-danger-soft); color: var(--workspace-danger); }
+.control-app.is-demo { grid-template-rows: 64px auto minmax(0, 1fr); }
+.workspace-demo-banner { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 24px; border-bottom: 1px solid #eedec2; background: #fff8eb; color: #815e2e; font-size: 12px; }
+.workspace-demo-banner strong { margin-right: 10px; color: #8d5b17; }
+.workspace-demo-banner button { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; border: 0; padding: 0; background: transparent; color: inherit; font-size: 12px; }
+.workspace-demo-banner button svg { width: 14px; height: 14px; }
 .control-main .section-view { max-width: 1520px; margin-inline: auto; }
 .control-main .view-intro h2 { color: var(--workspace-ink); font-size: 25px; }
 .control-main .view-intro > p:not(.eyebrow) { color: var(--workspace-muted); font-size: 14px; }

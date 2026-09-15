@@ -13,8 +13,9 @@
 .result-observation h4 { margin: 0; font-size: 13px; font-weight: 600; }
 .result-observation header a { display: inline-flex; align-items: center; gap: 3px; color: var(--workspace-teal); font-size: 11px; }
 .result-observation header svg { width: 13px; height: 13px; }
-.result-observation-image { display: flex; align-items: center; justify-content: center; height: clamp(170px, 22dvh, 240px); background: #f5f7f8; }
+.result-observation-image { position: relative; display: flex; align-items: center; justify-content: center; height: clamp(170px, 22dvh, 240px); background: #f5f7f8; }
 .result-observation-image img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.result-photo-label { position: absolute; left: 10px; top: 10px; border-radius: 4px; padding: 3px 7px; background: #233541d9; color: #fff; font-size: 10px; pointer-events: none; }
 .result-observation-empty { display: flex; height: clamp(170px, 22dvh, 240px); flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px 16px; background: #f8fafb; text-align: center; color: #8fa0ac; }
 .result-observation-empty > svg { width: 28px; height: 28px; }
 .result-observation-empty strong { font-size: 12px; font-weight: 500; color: #667c8c; }

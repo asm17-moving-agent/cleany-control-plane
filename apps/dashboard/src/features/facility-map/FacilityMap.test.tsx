@@ -17,6 +17,21 @@ function FacilityMapHarness() {
     robots={[]} selectedRobotId={null} onSelectRobot={vi.fn()} />;
 }
 describe("FacilityMap", () => {
+  it("keeps cleaning states visible when selected and counts the same statuses as the seat markers", () => {
+    const props = { seats: [...seats, { ...seats[0], seat_id: "seat-03", label: "03", grid_column: 3 as const }],
+      seatCleaning: { "seat-01": "ready" as const, "seat-12": "ready" as const, "seat-03": "waiting" as const },
+      selectedSeatId: null as string | null, onSelectSeat: vi.fn(), robots: [], selectedRobotId: null, onSelectRobot: vi.fn() };
+    const view = render(<FacilityMap {...props} />);
+    expect(screen.getByRole("button", { name: "01번 좌석 · 비어 있음 · 청소 완료" })).toHaveAttribute("data-seat-status", "ready");
+    expect(screen.getByRole("button", { name: "12번 좌석 · 사용 중" })).toHaveAttribute("data-seat-status", "occupied");
+    const scheduled = screen.getByRole("button", { name: "03번 좌석 · 비어 있음 · 청소 예정" });
+    fireEvent.click(scheduled);
+    expect(props.onSelectSeat).toHaveBeenCalledWith("seat-03");
+    view.rerender(<FacilityMap {...props} selectedSeatId="seat-03" />);
+    expect(scheduled).toHaveAttribute("aria-pressed", "true");
+    expect(scheduled).toHaveAttribute("data-seat-status", "waiting");
+    expect(screen.getByLabelText("지도 범례")).toHaveTextContent("점유 중 1청소 완료 1청소 예정 1");
+  });
   it("focuses on explicit robot selection, keeps the camera on data refresh, and refocuses on request", () => {
     const props = { seats, selectedSeatId: null, onSelectSeat: vi.fn(), onSelectRobot: vi.fn(), selectedRobotId: null as string | null,
       robots: [{ robotId: "cleany-01", state: "IDLE" as const, x: 800, y: 400, positionMode: "scenario" as const }], robotFocusKey: 0 };

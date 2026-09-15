@@ -4,6 +4,7 @@ import type { Mission, Priority, Seat } from "../api/types";
 import { CloseIcon, ChevronIcon } from "./WorkspaceIcons";
 import { SendIcon } from "./Icons";
 import { useOperations } from "../operations/OperationsContext";
+import { useDemoMode } from "../operations/DemoModeContext";
 import { useSettings } from "../settings/SettingsContext";
 import { seatZoneLabel, seatOccupancyLabel, seatDisplayLabel } from "../lib/operations";
 
@@ -11,6 +12,7 @@ export function SeatMissionPanel({ seat, unavailable, onClose, onSubmitted }: {
   seat: Seat; unavailable: boolean; onClose: () => void; onSubmitted?: (mission: Mission) => void;
 }) {
   const { createMission, isCreatingMission, robots } = useOperations();
+  const { isDemo } = useDemoMode();
   const { settings } = useSettings();
   const label = seatDisplayLabel(seat);
   const [priority, setPriority] = useState<Priority>(settings.defaultPriority);
@@ -25,7 +27,7 @@ export function SeatMissionPanel({ seat, unavailable, onClose, onSubmitted }: {
   useEffect(() => { heading.current?.focus({ preventScroll: true }); }, []);
   async function submit(event: FormEvent) {
     event.preventDefault();
-    if (submitting.current || busy || unavailable || submittedId) return;
+    if (isDemo || submitting.current || busy || unavailable || submittedId) return;
     const signature = JSON.stringify([seat.seat_id, priority]);
     if (attempt.current?.signature !== signature) attempt.current = { signature, key: crypto.randomUUID() };
     submitting.current = true; setPending(true); setFailed(false); setMessage("");
@@ -71,7 +73,7 @@ export function SeatMissionPanel({ seat, unavailable, onClose, onSubmitted }: {
         <div className="seat-mission-submit">
           {message && <p role={failed ? "alert" : "status"} className={failed ? "request-feedback is-error" : "request-feedback"}>{message}</p>}
           {unavailable && <p className="request-feedback is-error">데이터 연결을 확인한 뒤 요청해 주세요.</p>}
-          <button type="submit" className="workspace-primary-button" disabled={busy || unavailable || !!submittedId}>
+          <button type="submit" className="workspace-primary-button" disabled={isDemo || busy || unavailable || !!submittedId}>
             <SendIcon />{busy ? "요청 중…" : submittedId ? "대기열 등록 완료" : failed ? "다시 요청" : "요청 보내기"}
           </button>
           {submittedId && <Link to={"/missions?mission=" + encodeURIComponent(submittedId)} className="mission-success-link">요청 현황 보기 <ChevronIcon /></Link>}
