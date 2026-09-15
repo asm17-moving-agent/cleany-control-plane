@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("operator can select a seat on the map and send a supported request", async ({ page }) => {
   await page.goto("/");
-  const fleet = page.getByRole("complementary", { name: "로봇 현황" });
+  const fleet = page.getByRole("complementary", { name: "로봇 목록", exact: true });
   await expect(fleet).toBeVisible();
   await expect(page.locator("button.facility-map-seat")).toHaveCount(82);
   await expect(page.getByRole("complementary", { name: "작업 요청 패널" })).toHaveCount(0);
@@ -13,15 +13,22 @@ test("operator can select a seat on the map and send a supported request", async
   await page.getByRole("button", { name: "지도 확대", exact: true }).click();
   await panel.getByRole("radio", { name: "높음" }).check();
   const requestPromise = page.waitForRequest((request) => request.url().endsWith("/api/missions") && request.method() === "POST");
+  const responsePromise = page.waitForResponse((response) => response.url().endsWith("/api/missions") && response.request().method() === "POST");
   await panel.getByRole("button", { name: "요청 보내기" }).click();
   const payload = (await requestPromise).postDataJSON();
   expect(payload).toEqual({
     target: { kind: "SEAT", reference_id: "seat-12", label: "D-HUB · 12번 좌석" },
     priority: "HIGH", requested_by: "scenario-operator", idempotency_key: expect.any(String),
   });
-  await expect(panel.getByRole("button", { name: "대기열 등록 완료" })).toBeDisabled();
-  await panel.getByRole("link", { name: "요청 현황 보기" }).click();
-  await expect(page).toHaveURL(/\/missions\?mission=/);
+  const response = await responsePromise;
+  expect(response.status()).toBe(201);
+  const mission = await response.json();
+  const robot = page.getByRole("complementary", { name: "로봇 상세", exact: true });
+  await expect(robot).toBeVisible();
+  const detail = robot.getByRole("link", { name: "작업 상세 보기" });
+  await expect(detail).toHaveAttribute("href", "/missions?mission=" + mission.mission_id);
+  await detail.click();
+  await expect(page).toHaveURL(new RegExp("/missions\\?mission=" + mission.mission_id + "$"));
   await expect(page.getByRole("complementary", { name: "작업 요청 상세" })).toContainText("12번 좌석");
 });
 
@@ -36,11 +43,13 @@ test("home entry points and unavailable floors remain accessible", async ({ page
   await expect(page.locator(".facility-plan-label", { hasText: "SPACE A1" })).toBeVisible();
   await expect(page.locator(".facility-zone-overlay, .facility-route-overlay")).toHaveCount(0);
 
-  await page.getByRole("navigation", { name: "업무 요약" }).getByRole("link", { name: /결과 검토/ }).click();
+  await page.getByLabel("알림", { exact: true }).click();
+  await page.getByRole("link", { name: /결과 검토/ }).click();
   await expect(page).toHaveURL(/\/results\?filter=review$/);
   await expect(page.getByRole("link", { name: /검토 대상/ })).toHaveAttribute("aria-current", "page");
   await page.getByRole("navigation", { name: "주요 메뉴" }).getByRole("link", { name: "홈", exact: true }).click();
-  await page.getByRole("navigation", { name: "업무 요약" }).getByRole("link", { name: /즉시 조치/ }).click();
+  await page.getByLabel("알림", { exact: true }).click();
+  await page.getByRole("link", { name: /즉시 조치/ }).click();
   await expect(page).toHaveURL(/\/robots\?filter=attention$/);
 
   await page.getByLabel("운영 메뉴", { exact: true }).click();
@@ -67,11 +76,15 @@ for (const viewport of [{ width: 1920, height: 1080 }, { width: 1366, height: 76
     await page.goto("/");
     await page.getByRole("button", { name: "12번 좌석 · 비어 있음" }).click();
     for (const selector of [".workspace-header", ".home-robot-panel", ".home-map-panel", ".seat-mission-panel", ".facility-map-legend"]) {
-      const bounds = await page.locator(selector).boundingBox();
-      expect(bounds).not.toBeNull();
-      expect(bounds!.x).toBeGreaterThanOrEqual(0);
-      expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(viewport.height + 1);
-      expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(viewport.width + 1);
+      // Opening panels animate into place; assert their settled geometry.
+      await expect(async () => {
+        const bounds = await page.locator(selector).boundingBox();
+        expect(bounds, selector).not.toBeNull();
+        expect(bounds!.x, selector).toBeGreaterThanOrEqual(0);
+        expect(bounds!.y, selector).toBeGreaterThanOrEqual(0);
+        expect(bounds!.y + bounds!.height, selector).toBeLessThanOrEqual(viewport.height + 1);
+        expect(bounds!.x + bounds!.width, selector).toBeLessThanOrEqual(viewport.width + 1);
+      }).toPass({ timeout: 5_000 });
     }
   });
 }
