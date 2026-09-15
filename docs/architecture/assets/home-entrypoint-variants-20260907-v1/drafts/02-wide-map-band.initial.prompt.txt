@@ -23,4 +23,3 @@ Band two is the largest single area: an almost full-width map panel titled "현�
 Band three: three equal cards, "검토 사항" at left, "요청 현황" in the middle, "최근 완료 결과" at right. They show respectively "1건", "07번 좌석 · 미처리 물체 확인", "검토하기"; "진행 1건 · 대기 2건", "다음 18번 좌석", "요청 내역"; "03번 좌석 · 완료 · 14:20", "결과 보기". Use brief text and visible links.
 
 Use a calm white and pale mint palette, navy type, a thin mint accent on the current home nav, understated amber solely on review. Panels use fine lines, 6px radii, disciplined tight spacing, professional Korean type. The spatial map band gives this design a visibly different composition from a map-left/card-right dashboard. Show all six body section labels fully within the image.
-

@@ -23,4 +23,3 @@ CENTER COLUMN (about 51% width): the visual anchor, a large tall white "현재 �
 RIGHT CONTENT COLUMN (about 25% width): three small stacked summary sections. "검토 사항": amber "1건", "07번 좌석 · 미처리 물체 확인", "검토하기". "요청 현황": "진행 1건 · 대기 2건", tiny "다음 18번 좌석", "요청 내역". "최근 완료 결과": "03번 좌석 · 완료 · 14:20", "결과 보기". Each compact section has a distinct small arrow or link affordance, no expanded content.
 
 Clear visual difference from other variants comes from simultaneous left operational gateways, central location, and right follow-up gateways in one three-column row. Use light neutral surfaces with navy and restrained mint, thin dividers, modest 8px radii, Korean sans-serif type, and subtle amber review emphasis. Keep the full six-section overview comfortably above the fold without full forms, process steppers, photos or long lists.
-

@@ -23,4 +23,3 @@ Right upper panel: title "작업 요청", short descriptor "책상 위 물체 �
 The lower content row contains three equal-width summary cards, aligned from left to right: "검토 사항" with restrained amber "1건", "07번 좌석 · 미처리 물체 확인", "검토하기"; "요청 현황" with "진행 1건 · 대기 2건", tiny "다음 18번 좌석", "요청 내역"; "최근 완료 결과" with "03번 좌석 · 완료 · 14:20" and "결과 보기". These are compact gateways, never expanded detail sections.
 
 Palette: very light cool gray workspace, white panels, dark navy headings and primary action, restrained pale mint for the active nav and working badge. Deliberate 24px gutters, clear typography, thin borders and subtle 8px radii. No decorative extra panels, giant numeric counters, or illustrations.
-
