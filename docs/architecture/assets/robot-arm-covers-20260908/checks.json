@@ -1,0 +1,454 @@
+{
+  "coverCount": 6,
+  "bounds": [
+    {
+      "name": "arm-cover-left-upper",
+      "bounds": {
+        "isBox3": true,
+        "min": {
+          "x": -0.006854231370225894,
+          "y": 0.9187215024205039,
+          "z": -0.2096175124510339
+        },
+        "max": {
+          "x": 0.1262965819351102,
+          "y": 0.9742071857021182,
+          "z": -0.1604173834073307
+        }
+      },
+      "normalsFinite": true
+    },
+    {
+      "name": "arm-cover-left-lower",
+      "bounds": {
+        "isBox3": true,
+        "min": {
+          "x": 0.016721426969935685,
+          "y": 0.9665235588578857,
+          "z": -0.2072176319745883
+        },
+        "max": {
+          "x": 0.1480691169419917,
+          "y": 1.0104817886393282,
+          "z": -0.15801752357457982
+        }
+      },
+      "normalsFinite": true
+    },
+    {
+      "name": "arm-cover-left-shoulder",
+      "bounds": {
+        "isBox3": true,
+        "min": {
+          "x": 0.15690236134536165,
+          "y": 0.8371969626818545,
+          "z": -0.22157653820963635
+        },
+        "max": {
+          "x": 0.17771836059249538,
+          "y": 0.9063969606135733,
+          "z": -0.14837653589697614
+        }
+      },
+      "normalsFinite": true
+    },
+    {
+      "name": "arm-cover-right-upper",
+      "bounds": {
+        "isBox3": true,
+        "min": {
+          "x": -0.007053231420240627,
+          "y": 0.918721501685861,
+          "z": 0.16056338384116
+        },
+        "max": {
+          "x": 0.12609758200858442,
+          "y": 0.9742071849674753,
+          "z": 0.2097635126760132
+        }
+      },
+      "normalsFinite": true
+    },
+    {
+      "name": "arm-cover-right-lower",
+      "bounds": {
+        "isBox3": true,
+        "min": {
+          "x": 0.01652242688660717,
+          "y": 0.9665235404918616,
+          "z": 0.16296352355903704
+        },
+        "max": {
+          "x": 0.14787011698215197,
+          "y": 1.0104817702733042,
+          "z": 0.21216363174294017
+        }
+      },
+      "normalsFinite": true
+    },
+    {
+      "name": "arm-cover-right-shoulder",
+      "bounds": {
+        "isBox3": true,
+        "min": {
+          "x": 0.15670336139877675,
+          "y": 0.8371969688430849,
+          "z": 0.14860398128311367
+        },
+        "max": {
+          "x": 0.17751936064591048,
+          "y": 0.9063969667748037,
+          "z": 0.22180398359577388
+        }
+      },
+      "normalsFinite": true
+    }
+  ],
+  "protectedPartCount": 14,
+  "protectedIntersections": [],
+  "outerProbes": [
+    {
+      "cover": "arm-cover-left-upper",
+      "z": -0.045,
+      "hit": "arm-cover-left-upper"
+    },
+    {
+      "cover": "arm-cover-left-upper",
+      "z": 0,
+      "hit": "arm-cover-left-upper"
+    },
+    {
+      "cover": "arm-cover-left-upper",
+      "z": 0.045,
+      "hit": "arm-cover-left-upper"
+    },
+    {
+      "cover": "arm-cover-left-lower",
+      "z": -0.045,
+      "hit": "arm-cover-left-lower"
+    },
+    {
+      "cover": "arm-cover-left-lower",
+      "z": 0,
+      "hit": "arm-cover-left-lower"
+    },
+    {
+      "cover": "arm-cover-left-lower",
+      "z": 0.045,
+      "hit": "arm-cover-left-lower"
+    },
+    {
+      "cover": "arm-cover-right-upper",
+      "z": -0.045,
+      "hit": "arm-cover-right-upper"
+    },
+    {
+      "cover": "arm-cover-right-upper",
+      "z": 0,
+      "hit": "arm-cover-right-upper"
+    },
+    {
+      "cover": "arm-cover-right-upper",
+      "z": 0.045,
+      "hit": "arm-cover-right-upper"
+    },
+    {
+      "cover": "arm-cover-right-lower",
+      "z": -0.045,
+      "hit": "arm-cover-right-lower"
+    },
+    {
+      "cover": "arm-cover-right-lower",
+      "z": 0,
+      "hit": "arm-cover-right-lower"
+    },
+    {
+      "cover": "arm-cover-right-lower",
+      "z": 0.045,
+      "hit": "arm-cover-right-lower"
+    }
+  ],
+  "openFoldFaces": [
+    {
+      "cover": "arm-cover-left-upper",
+      "open": true
+    },
+    {
+      "cover": "arm-cover-left-lower",
+      "open": true
+    },
+    {
+      "cover": "arm-cover-right-upper",
+      "open": true
+    },
+    {
+      "cover": "arm-cover-right-lower",
+      "open": true
+    }
+  ],
+  "foldGaps": [
+    {
+      "side": "left",
+      "x": 0.03,
+      "z": -0.20281751279593557,
+      "gapMm": 41.079328510319144
+    },
+    {
+      "side": "left",
+      "x": 0.03,
+      "z": -0.18381751279593558,
+      "gapMm": 65.21609361204194
+    },
+    {
+      "side": "left",
+      "x": 0.03,
+      "z": -0.1648175127959356,
+      "gapMm": 62.45903020955579
+    },
+    {
+      "side": "left",
+      "x": 0.05,
+      "z": -0.20281751279593557,
+      "gapMm": 66.40443793193751
+    },
+    {
+      "side": "left",
+      "x": 0.05,
+      "z": -0.18381751279593558,
+      "gapMm": 68.50197473502872
+    },
+    {
+      "side": "left",
+      "x": 0.05,
+      "z": -0.1648175127959356,
+      "gapMm": 66.37562556311383
+    },
+    {
+      "side": "left",
+      "x": 0.07,
+      "z": -0.20281751279593557,
+      "gapMm": 68.31321887427544
+    },
+    {
+      "side": "left",
+      "x": 0.07,
+      "z": -0.18381751279593558,
+      "gapMm": 70.40899269926581
+    },
+    {
+      "side": "left",
+      "x": 0.07,
+      "z": -0.1648175127959356,
+      "gapMm": 68.28299859906639
+    },
+    {
+      "side": "left",
+      "x": 0.09,
+      "z": -0.20281751279593557,
+      "gapMm": 70.218394240818
+    },
+    {
+      "side": "left",
+      "x": 0.09,
+      "z": -0.18381751279593558,
+      "gapMm": 72.31423226166378
+    },
+    {
+      "side": "left",
+      "x": 0.09,
+      "z": -0.1648175127959356,
+      "gapMm": 70.18808900216533
+    },
+    {
+      "side": "left",
+      "x": 0.11,
+      "z": -0.20281751279593557,
+      "gapMm": 70.33904106391753
+    },
+    {
+      "side": "left",
+      "x": 0.11,
+      "z": -0.18381751279593558,
+      "gapMm": 72.95130830430895
+    },
+    {
+      "side": "left",
+      "x": 0.11,
+      "z": -0.1648175127959356,
+      "gapMm": 48.03584059288257
+    },
+    {
+      "side": "right",
+      "x": 0.03,
+      "z": 0.1673635128991157,
+      "gapMm": 41.08627813318244
+    },
+    {
+      "side": "right",
+      "x": 0.03,
+      "z": 0.18636351289911568,
+      "gapMm": 65.25626247633787
+    },
+    {
+      "side": "right",
+      "x": 0.03,
+      "z": 0.20536351289911567,
+      "gapMm": 62.51639554913346
+    },
+    {
+      "side": "right",
+      "x": 0.05,
+      "z": 0.1673635128991157,
+      "gapMm": 66.4234032150518
+    },
+    {
+      "side": "right",
+      "x": 0.05,
+      "z": 0.18636351289911568,
+      "gapMm": 68.52105614425008
+    },
+    {
+      "side": "right",
+      "x": 0.05,
+      "z": 0.20536351289911567,
+      "gapMm": 66.39451926969164
+    },
+    {
+      "side": "right",
+      "x": 0.07,
+      "z": 0.1673635128991157,
+      "gapMm": 68.33192567594703
+    },
+    {
+      "side": "right",
+      "x": 0.07,
+      "z": 0.18636351289911568,
+      "gapMm": 70.4279522400918
+    },
+    {
+      "side": "right",
+      "x": 0.07,
+      "z": 0.20536351289911567,
+      "gapMm": 68.30168941909709
+    },
+    {
+      "side": "right",
+      "x": 0.09,
+      "z": 0.1673635128991157,
+      "gapMm": 70.23709974671478
+    },
+    {
+      "side": "right",
+      "x": 0.09,
+      "z": 0.18636351289911568,
+      "gapMm": 72.33316037406345
+    },
+    {
+      "side": "right",
+      "x": 0.09,
+      "z": 0.20536351289911567,
+      "gapMm": 70.2066505479978
+    },
+    {
+      "side": "right",
+      "x": 0.11,
+      "z": 0.1673635128991157,
+      "gapMm": 70.31854678424688
+    },
+    {
+      "side": "right",
+      "x": 0.11,
+      "z": 0.18636351289911568,
+      "gapMm": 72.94831859905948
+    },
+    {
+      "side": "right",
+      "x": 0.11,
+      "z": 0.20536351289911567,
+      "gapMm": 48.06699930206149
+    }
+  ],
+  "inletProbes": [
+    {
+      "x": -0.135,
+      "z": -0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.135,
+      "z": 0,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.135,
+      "z": 0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.08,
+      "z": -0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.08,
+      "z": 0,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.08,
+      "z": 0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.025,
+      "z": -0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.025,
+      "z": 0,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    },
+    {
+      "x": -0.025,
+      "z": 0.145,
+      "firstHit": "collection-bin-bottom",
+      "height": 0.41599999988824116
+    }
+  ],
+  "standbyGlbSha256": "ef8f031b27c28b6e12fc40d56803a104c0bb632474953622113fd270292f3bde",
+  "originalGlbUnchanged": true,
+  "sourceInstances": 128,
+  "scope": "Static standby pose; sampled clearances and protected-part bounding boxes, not validation of motion or camera fields of view.",
+  "runtime": {
+    "narrowPanel": {
+      "width": 300,
+      "contentWidth": 300,
+      "buttons": 11
+    },
+    "posterClosed": {
+      "canvasCount": 0,
+      "posterWidth": 630
+    },
+    "armsView": {
+      "diagnostics": "false",
+      "frames": "7",
+      "drawCalls": "82",
+      "triangles": "231997",
+      "loaded": "true",
+      "exterior": "true"
+    },
+    "idleFrames": [
+      "7",
+      "7"
+    ]
+  }
+}

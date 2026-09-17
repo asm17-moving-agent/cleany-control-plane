@@ -1,0 +1,43 @@
+{
+  "mode": "built-in image_gen",
+  "use_case": "ui-mockup",
+  "source": "/home/ehdrms/.codex/generated_images/01a07b90-cccb-7943-aee5-982948d3bf6c/exec-14636e1c-05cf-4b3f-b8b3-04900f00fc2b.png",
+  "output": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-map-first-variants-20260907-v1/05-dense-request-home.png",
+  "reference_image": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/reference/original-home.png",
+  "dimensions": {
+    "width": 1672,
+    "height": 941
+  },
+  "target_dimensions": {
+    "width": 2048,
+    "height": 1152
+  },
+  "sha256": "78032a2232b3a6553f2e015b59bef0bbc7ff89a108b39115000156470dfbe2b9",
+  "source_sha256": "78032a2232b3a6553f2e015b59bef0bbc7ff89a108b39115000156470dfbe2b9",
+  "copied_without_bitmap_editing": true,
+  "prompt_file": "05-dense-request-home.prompt.txt",
+  "generation_attempts": 1,
+  "qa": {
+    "fleet_visible": true,
+    "fleet_batteries": [
+      "82%",
+      "67%",
+      "24%"
+    ],
+    "selected_seat_matches_drawer": "18",
+    "robot_input": true,
+    "command_input": true,
+    "priority_input": true,
+    "request_button": true,
+    "demo_and_connection_badges": true,
+    "request_rows": [
+      "21 진행 중",
+      "24 대기",
+      "26 대기"
+    ],
+    "recent_complete": "03 14:20",
+    "residual_issues": [
+      "Bottom area uses four compact bordered boxes instead of strict two list columns plus tiny result link. Sidebar about 299px at 1672px canvas, wider than requested proportion."
+    ]
+  }
+}

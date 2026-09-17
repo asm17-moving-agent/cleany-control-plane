@@ -1,0 +1,45 @@
+{
+  "variant": "03-three-column",
+  "title_ko": "3열형: 왼쪽 요청과 로봇, 중앙 지도, 오른쪽 후속 진입점 3개",
+  "generator": {
+    "mode": "built-in",
+    "tool": "image_gen.imagegen"
+  },
+  "source_path": "/home/ehdrms/.codex/generated_images/01a07b79-37fd-7102-972e-2a9b0c47377f/exec-fbfc3ea3-d162-433e-b38d-fd97be2a176e.png",
+  "saved_path": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/03-three-column.png",
+  "prompt_path": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/03-three-column.prompt.txt",
+  "reference_image_paths": [
+    "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/reference/original-home.png",
+    "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/reference/top-navigation-reference.png"
+  ],
+  "dimensions": {
+    "width": 1672,
+    "height": 941
+  },
+  "sha256": "81973ff938dcf8351342487639e7ac34660b794a55bf7a0c21f225306fdd2cd6",
+  "prompt_sha256": "60f7016bcf291c4eefc520334231a4a7e015338045b311a91b0c2d7338d7e039",
+  "generation_attempts": 1,
+  "original_preserved": true,
+  "source_copy_identical": true,
+  "qa": {
+    "method": "Built-in generated result and saved PNG inspected using view_image.",
+    "checks": {
+      "six_entrypoint_labels_visible": true,
+      "horizontal_top_navigation": true,
+      "no_vertical_global_navigation": true,
+      "battery_82_visible": true,
+      "cleany_01_working_on_seat_12": true,
+      "demo_badge_and_connection_status_visible": true,
+      "location_map_with_example_marker_and_freshness": true,
+      "review_seat_07_count_1": true,
+      "request_summary_active_1_queued_2": true,
+      "completed_seat_03_at_1420": true,
+      "summary_level_without_stepper_or_expanded_photos": true
+    },
+    "notes": [
+      "제목 앞에 1~6 번호가 추가로 렌더링됨. 모든 진입점 이름은 명확히 표시되며 단계표는 없음.",
+      "지도는 참고 도면의 구역 배치를 따른 개략도이며 좌석 수와 가구 기하의 정밀 일치는 검증하지 않음.",
+      "생성된 데모 UI 이미지이며 앱 코드와 실제 동작을 변경하거나 검증하지 않음."
+    ]
+  }
+}

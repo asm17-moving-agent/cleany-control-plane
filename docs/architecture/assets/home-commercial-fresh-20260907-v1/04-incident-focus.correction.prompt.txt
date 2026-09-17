@@ -1,0 +1,6 @@
+Use case: ui-mockup. Edit the attached newly generated Cleany screenshot with ONLY these state-consistency corrections. Preserve its overall commercial design, full left robot list, floor layout, top navigation, incident strip, and all panel proportions.
+1. The orange immediate-action summary MUST read '즉시 조치 1' (currently it incorrectly says 0) because 클리니03 is blocked.
+2. There is NO seat selected in this incident-focused default home. Remove the blue A-12 selection outline and '선택됨' pill; render A-12 as an ordinary neutral seat matching adjacent A-11. Keep no request drawer open.
+3. Add a small clearly legible '데모' badge in the top header alongside the connection indicator.
+4. In recent completion retain only the B-03 14:20 row; remove the extra invented A-01 floor-cleaning row.
+Everything else unchanged. One full application screenshot, landscape, exact readable Korean.

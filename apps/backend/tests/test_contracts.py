@@ -16,6 +16,9 @@ def test_mission_request_model_matches_canonical_contract() -> None:
 
     assert set(model["required"]) == set(contract["required"])
     assert model["$defs"]["Priority"]["enum"] == contract["properties"]["priority"]["enum"]
+    assert model["$defs"]["TargetKind"]["enum"] == contract["properties"]["target"][
+        "properties"
+    ]["kind"]["enum"]
 
 
 def test_seat_model_preserves_canonical_shape() -> None:
@@ -27,3 +30,8 @@ def test_seat_model_preserves_canonical_shape() -> None:
         "enum"
     ]
     assert model["properties"]["occupancy"]["enum"] == contract["properties"]["occupancy"]["enum"]
+    assert model["properties"]["zone_id"]["enum"] == contract["properties"]["zone_id"]["enum"]
+    for field in ("seat_id", "label"):
+        assert model["properties"][field]["pattern"] == contract["properties"][field]["pattern"]
+    for example in contract["examples"]:
+        assert SeatResponse.model_validate(example).model_dump() == example

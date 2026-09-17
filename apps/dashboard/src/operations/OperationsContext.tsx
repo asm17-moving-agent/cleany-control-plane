@@ -12,12 +12,18 @@ import { api } from "../api/client";
 import { queryKeys } from "../api/queryKeys";
 import type { Mission, MissionRequest, OperationsEvent, Robot, Seat } from "../api/types";
 import { useSettings } from "../settings/SettingsContext";
+import { useDemoMode } from "./DemoModeContext";
+import { operationsDemo } from "./operations-demo";
+import type { SeatCleaningStates } from "../lib/seat-summary";
 
 type ConnectionState = "connecting" | "connected" | "error";
 
 interface OperationsContextValue {
   seats: Seat[];
+  // Absent for live data until the API supplies a current cleaning snapshot.
+  seatCleaning?: SeatCleaningStates;
   missions: Mission[];
+  robots: Robot[];
   robot: Robot | null;
   events: OperationsEvent[];
   connectionState: ConnectionState;
@@ -32,6 +38,25 @@ interface OperationsContextValue {
 const OperationsContext = createContext<OperationsContextValue | null>(null);
 
 export function OperationsProvider({ children }: PropsWithChildren) {
+  const { isDemo } = useDemoMode();
+  return isDemo ? <DemoOperationsProvider>{children}</DemoOperationsProvider>
+    : <LiveOperationsProvider>{children}</LiveOperationsProvider>;
+}
+
+async function rejectDemoCommand(): Promise<Mission> {
+  throw new Error("예시 모드에서는 작업 요청과 취소를 전송하지 않습니다.");
+}
+const demoValue: OperationsContextValue = {
+  ...operationsDemo, robot: operationsDemo.robots[0], events: [],
+  connectionState: "connected", isLoading: false, error: null,
+  refresh: async () => {}, createMission: rejectDemoCommand, cancelMission: rejectDemoCommand,
+  isCreatingMission: false,
+};
+function DemoOperationsProvider({ children }: PropsWithChildren) {
+  return <OperationsContext.Provider value={demoValue}>{children}</OperationsContext.Provider>;
+}
+
+function LiveOperationsProvider({ children }: PropsWithChildren) {
   const queryClient = useQueryClient();
   const { settings } = useSettings();
   const [connectionState, setConnectionState] = useState<ConnectionState>("connecting");
@@ -58,6 +83,7 @@ export function OperationsProvider({ children }: PropsWithChildren) {
 
   const refresh = useCallback(async () => {
     await Promise.all([
+      queryClient.invalidateQueries({ queryKey: queryKeys.seats }),
       queryClient.invalidateQueries({ queryKey: queryKeys.missions }),
       queryClient.invalidateQueries({ queryKey: queryKeys.robots }),
     ]);
@@ -89,10 +115,12 @@ export function OperationsProvider({ children }: PropsWithChildren) {
   });
 
   const errors = [seatsQuery.error, missionsQuery.error, robotsQuery.error].filter(Boolean);
+  const robots = useMemo(() => robotsQuery.data?.items ?? [], [robotsQuery.data?.items]);
   const value = useMemo<OperationsContextValue>(() => ({
     seats: seatsQuery.data?.items ?? [],
     missions: missionsQuery.data?.items ?? [],
-    robot: robotsQuery.data?.items[0] ?? null,
+    robots,
+    robot: robots[0] ?? null,
     events,
     connectionState,
     isLoading: seatsQuery.isLoading || missionsQuery.isLoading || robotsQuery.isLoading,
@@ -111,7 +139,7 @@ export function OperationsProvider({ children }: PropsWithChildren) {
     missionsQuery.data,
     missionsQuery.isLoading,
     refresh,
-    robotsQuery.data,
+    robots,
     robotsQuery.isLoading,
     seatsQuery.data,
     seatsQuery.isLoading,

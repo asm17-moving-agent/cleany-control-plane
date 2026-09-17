@@ -1,0 +1,160 @@
+{
+  "source_sha256": "2ef3f79e7d3fbb0cd8f43ea53afe44b8b5a377af250f7171ae23f5165c7131de",
+  "source_commit": "e718ac57e861f3d34b6e0e10b0d18d87a348bf51",
+  "pose": "Display-only fully folded standby with forward-facing grippers; no simulation stepping or hardware safety validation",
+  "head_camera_forward_ros": [
+    0.9999999999999999,
+    -3.5897930183992344e-09,
+    -0.0
+  ],
+  "joints_radians": {
+    "left_shoulder_yaw_joint": -1.5707963267948966,
+    "left_shoulder_pitch_joint": 2.9,
+    "left_elbow_pitch_joint": 3.05,
+    "left_wrist_pitch_joint": -0.15,
+    "left_wrist_roll_joint": 0,
+    "left_gripper_joint": 0.15,
+    "right_shoulder_yaw_joint": 1.5707963267948966,
+    "right_shoulder_pitch_joint": 2.9,
+    "right_elbow_pitch_joint": 3.05,
+    "right_wrist_pitch_joint": -0.15,
+    "right_wrist_roll_joint": 0,
+    "right_gripper_joint": 0.15,
+    "head_pan_joint": 0,
+    "head_tilt_joint": 0
+  },
+  "finishes": {
+    "matte-aluminum": [
+      [
+        166,
+        177,
+        184,
+        255
+      ],
+      0.55,
+      0.48
+    ],
+    "rubber": [
+      [
+        32,
+        37,
+        41,
+        255
+      ],
+      0,
+      0.92
+    ],
+    "motor-polymer": [
+      [
+        42,
+        50,
+        59,
+        255
+      ],
+      0.05,
+      0.67
+    ],
+    "carbon": [
+      [
+        30,
+        37,
+        42,
+        255
+      ],
+      0.15,
+      0.63
+    ],
+    "wheel-metal": [
+      [
+        118,
+        131,
+        141,
+        255
+      ],
+      0.6,
+      0.42
+    ],
+    "slate-housing": [
+      [
+        47,
+        66,
+        79,
+        255
+      ],
+      0.08,
+      0.62
+    ],
+    "arm-polymer": [
+      [
+        157,
+        167,
+        175,
+        255
+      ],
+      0.03,
+      0.64
+    ]
+  },
+  "geometry_finishes": {
+    "geometry_0": "matte-aluminum",
+    "geometry_1": "arm-polymer",
+    "geometry_2": "matte-aluminum",
+    "geometry_3": "matte-aluminum",
+    "geometry_4": "matte-aluminum",
+    "geometry_5": "matte-aluminum",
+    "geometry_6": "matte-aluminum",
+    "geometry_7": "matte-aluminum",
+    "geometry_8": "matte-aluminum",
+    "geometry_9": "matte-aluminum",
+    "geometry_10": "matte-aluminum",
+    "geometry_11": "matte-aluminum",
+    "geometry_12": "matte-aluminum",
+    "geometry_13": "matte-aluminum",
+    "geometry_14": "matte-aluminum",
+    "geometry_15": "matte-aluminum",
+    "geometry_16": "matte-aluminum",
+    "geometry_17": "matte-aluminum",
+    "geometry_18": "matte-aluminum",
+    "geometry_19": "motor-polymer",
+    "geometry_20": "slate-housing",
+    "geometry_21": "arm-polymer",
+    "geometry_22": "motor-polymer",
+    "geometry_23": "arm-polymer",
+    "geometry_24": "motor-polymer",
+    "geometry_25": "arm-polymer",
+    "geometry_26": "carbon",
+    "geometry_27": "motor-polymer",
+    "geometry_28": "arm-polymer",
+    "geometry_29": "carbon",
+    "geometry_30": "motor-polymer",
+    "geometry_31": "arm-polymer",
+    "geometry_32": "motor-polymer",
+    "geometry_33": "arm-polymer",
+    "geometry_34": "motor-polymer",
+    "geometry_35": "arm-polymer",
+    "geometry_36": "arm-polymer",
+    "geometry_37": "motor-polymer",
+    "geometry_38": "arm-polymer",
+    "geometry_39": "motor-polymer",
+    "geometry_40": "arm-polymer",
+    "geometry_41": "motor-polymer",
+    "geometry_42": "arm-polymer",
+    "geometry_43": "motor-polymer",
+    "geometry_44": "wheel-metal",
+    "geometry_45": "wheel-metal",
+    "geometry_46": "rubber"
+  },
+  "dimensions_before_m": [
+    0.4770000007599592,
+    1.1899455315712175,
+    1.4604423391845305
+  ],
+  "dimensions_after_m": [
+    0.5833250730377276,
+    1.1899455315712175,
+    0.6548000001899899
+  ],
+  "instances": 128,
+  "triangles_unique": 159586,
+  "bytes": 2928036
+}

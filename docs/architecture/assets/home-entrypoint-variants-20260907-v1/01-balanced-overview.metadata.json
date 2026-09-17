@@ -1,0 +1,44 @@
+{
+  "variant": "01-balanced-overview",
+  "title_ko": "균형형: 지도 왼쪽, 요청과 로봇 오른쪽, 아래 후속 진입점 3개",
+  "generator": {
+    "mode": "built-in",
+    "tool": "image_gen.imagegen"
+  },
+  "source_path": "/home/ehdrms/.codex/generated_images/01a07b79-37fd-7102-972e-2a9b0c47377f/exec-9ae8bb9b-7c15-4008-b1e7-dc080db01f37.png",
+  "saved_path": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/01-balanced-overview.png",
+  "prompt_path": "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/01-balanced-overview.prompt.txt",
+  "reference_image_paths": [
+    "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/reference/original-home.png",
+    "/home/ehdrms/workspace/cleany-control-plane/feat-facility-dashboard/docs/architecture/assets/home-entrypoint-variants-20260907-v1/reference/top-navigation-reference.png"
+  ],
+  "dimensions": {
+    "width": 1672,
+    "height": 941
+  },
+  "sha256": "9ab6103957d2a265b666859f49e7bf50338418af3ddc7a936746337eec5445fd",
+  "prompt_sha256": "6fd4ba3c343aa881c659d248bb6410c209a5ac8d839f0fa85a7a391c892dbe35",
+  "generation_attempts": 1,
+  "original_preserved": true,
+  "source_copy_identical": true,
+  "qa": {
+    "method": "Built-in generated result and saved PNG inspected using view_image.",
+    "checks": {
+      "six_entrypoint_labels_visible": true,
+      "horizontal_top_navigation": true,
+      "no_vertical_global_navigation": true,
+      "battery_82_visible": true,
+      "cleany_01_working_on_seat_12": true,
+      "demo_badge_and_connection_status_visible": true,
+      "location_map_with_example_marker_and_freshness": true,
+      "review_seat_07_count_1": true,
+      "request_summary_active_1_queued_2": true,
+      "completed_seat_03_at_1420": true,
+      "summary_level_without_stepper_or_expanded_photos": true
+    },
+    "notes": [
+      "지도는 참고 도면의 구역 배치를 따른 개략도이며 좌석 수와 가구 기하의 정밀 일치는 검증하지 않음.",
+      "생성된 데모 UI 이미지이며 앱 코드와 실제 동작을 변경하거나 검증하지 않음."
+    ]
+  }
+}

@@ -148,7 +148,8 @@ export interface components {
             /** Requested By */
             requested_by: string;
             /** Seat Id */
-            seat_id: string;
+            seat_id?: string | null;
+            target?: components["schemas"]["MissionTargetModel"] | null;
         };
         /** MissionResponse */
         MissionResponse: {
@@ -172,9 +173,18 @@ export interface components {
             /** Requested By */
             requested_by: string;
             /** Seat Id */
-            seat_id: string;
+            seat_id: string | null;
             /** Sequence */
             sequence: number;
+            target: components["schemas"]["MissionTargetModel"];
+        };
+        /** MissionTargetModel */
+        MissionTargetModel: {
+            kind: components["schemas"]["TargetKind"];
+            /** Label */
+            label?: string | null;
+            /** Reference Id */
+            reference_id: string;
         };
         /**
          * Priority
@@ -219,14 +229,25 @@ export interface components {
              * Occupancy
              * @enum {string}
              */
-            occupancy: "AVAILABLE" | "OCCUPIED";
+            occupancy: "AVAILABLE" | "OCCUPIED" | "UNKNOWN";
             /** Occupant Name */
             occupant_name: string | null;
             /** Row */
             row: number;
             /** Seat Id */
             seat_id: string;
+            /**
+             * Zone Id
+             * @default d-hub
+             * @enum {string}
+             */
+            zone_id: "d-hub" | "space-a1" | "space-a2" | "space-a3" | "space-a4" | "space-m1" | "space-m2" | "space-m3";
         };
+        /**
+         * TargetKind
+         * @enum {string}
+         */
+        TargetKind: "SEAT" | "ZONE" | "POINT";
         /** ValidationError */
         ValidationError: {
             /** Context */

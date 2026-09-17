@@ -4,7 +4,19 @@ export const DISPLAY_GRID_COLUMNS = [1, 2, 3, 5, 6, 8, 9, 10] as const;
 export const DISPLAY_GRID_ROWS = [2, 3, 5, 6, 8, 9] as const;
 export const SEAT_COLUMN_LABELS = ["A", "B", "C", "D", "E", "F", "G", "H"] as const;
 
+export function seatDisplayLabel(seat: Seat) {
+  return seat.label.replace(/^([AM][1-4])-0([1-6])$/, "$1$2");
+}
+
+export function seatZoneLabel(seat: Seat) {
+  return !seat.zone_id || seat.zone_id === "d-hub" ? "D-HUB" : seat.zone_id.replace("space-", "SPACE ").toUpperCase();
+}
+export function seatOccupancyLabel(seat: Seat) {
+  return seat.occupancy === "OCCUPIED" ? "사용 중" : seat.occupancy === "AVAILABLE" ? "비어 있음" : "점유 미확인";
+}
+
 export function seatPosition(seat: Seat) {
+  if (seat.zone_id && seat.zone_id !== "d-hub") return { column: seat.grid_column, row: seat.row, gridRow: seat.row };
   const index = Number.parseInt(seat.label, 10) - 1;
   return {
     column: DISPLAY_GRID_COLUMNS[index % DISPLAY_GRID_COLUMNS.length],
@@ -14,13 +26,21 @@ export function seatPosition(seat: Seat) {
 }
 
 export function seatLocation(seat: Seat) {
+  if (seat.zone_id && seat.zone_id !== "d-hub") return seatDisplayLabel(seat);
   const index = Number.parseInt(seat.label, 10) - 1;
   return `${SEAT_COLUMN_LABELS[index % SEAT_COLUMN_LABELS.length]}-${seatPosition(seat).row}`;
 }
 
-export function seatLabel(seats: Seat[], seatId: string) {
+export function seatLabel(seats: Seat[], seatId: string | null | undefined) {
+  if (!seatId) return "대상 미지정";
   const seat = seats.find((item) => item.seat_id === seatId);
-  return seat ? `${seat.label}번 좌석` : seatId;
+  return seat ? `${seatDisplayLabel(seat)}번 좌석` : seatId;
+}
+
+export function missionTargetLabel(mission: Mission, seats: Seat[]) {
+  if (mission.target.label) return mission.target.label;
+  if (mission.target.kind === "SEAT") return seatLabel(seats, mission.target.reference_id);
+  return mission.target.reference_id;
 }
 
 export function formatDateTime(value?: string | null) {

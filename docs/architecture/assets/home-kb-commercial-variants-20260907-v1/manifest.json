@@ -1,0 +1,55 @@
+{
+  "date": "2026-09-07",
+  "generator": "built-in imagegen",
+  "purpose": "Cleany home UI design concepts; demo data",
+  "reference": "reference/original-home.png",
+  "final_variants": [
+    {
+      "file": "01-balanced-operations-v2.png",
+      "label": "균형 운영형",
+      "width": 1672,
+      "height": 941,
+      "bytes": 1349343,
+      "sha256": "d6785e4819d12c18f6c4d062dcb83d6543eb571649733376652f45f9ee6176f1",
+      "generated_source": "/home/ehdrms/.codex/generated_images/01a07aec-564c-7773-9786-fa7ed294c435/exec-ef487d09-bca6-4977-aa6e-839d416802f3.png"
+    },
+    {
+      "file": "02-mission-workspace.png",
+      "label": "미션 중심형",
+      "width": 1672,
+      "height": 941,
+      "bytes": 1285127,
+      "sha256": "c865968d8f4b4af5a630d83bcf1a4e14887a3e6487bfb5e7a0025198a158b2be",
+      "generated_source": "/home/ehdrms/.codex/generated_images/01a07aec-c362-7d00-bc14-1360256c4677/exec-b94b43eb-5b88-4857-b3eb-222340fe63dc.png"
+    },
+    {
+      "file": "03-results-review-v2.png",
+      "label": "결과 검토형",
+      "width": 1672,
+      "height": 941,
+      "bytes": 1045479,
+      "sha256": "60a276c0f6c8e737f22dd6b24f8e69c725750ebde706a1bb1a6e3b0ed2a1a056",
+      "generated_source": "/home/ehdrms/.codex/generated_images/01a07aed-32fd-7532-b52e-7e7143391d2f/exec-2e538f5f-d52d-4200-967d-b8d472a7fcc0.png"
+    },
+    {
+      "file": "04-seat-request-v3.png",
+      "label": "좌석 요청형",
+      "width": 1672,
+      "height": 941,
+      "bytes": 1346223,
+      "sha256": "122b49e6a00923cc2741e609e6977bf377aa9a7d4550a4857adfae674afbb22d",
+      "generated_source": "/home/ehdrms/.codex/generated_images/01a07ae2-e259-7993-bb14-357d787953ae/exec-5b4fbad1-77db-4481-afcd-ad7d6149f598.png"
+    },
+    {
+      "file": "05-operations-ledger-v2.png",
+      "label": "대기열 및 업무 목록형",
+      "width": 1672,
+      "height": 941,
+      "bytes": 1114194,
+      "sha256": "fcc9310dbe3cf204ae2247f56ea0425dc773ae7966f295f2cbe919c23a3a3ec9",
+      "generated_source": "/home/ehdrms/.codex/generated_images/01a07ae2-e259-7993-bb14-357d787953ae/exec-38c79eed-7c87-4468-ad75-2a5f38b336d1.png"
+    }
+  ],
+  "post_processing": "none; original bytes copied",
+  "draft_directory": "drafts/"
+}

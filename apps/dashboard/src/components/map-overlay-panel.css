@@ -1,0 +1,5 @@
+.map-overlay-panel { position: absolute; pointer-events: none; min-width: 0; overflow: hidden; opacity: 0; transition: opacity var(--panel-transition-duration) ease, transform var(--panel-transition-duration) ease; }
+.map-overlay-panel.is-open { pointer-events: auto; opacity: 1; transform: translate(0, 0); }
+@media (prefers-reduced-motion: reduce) {
+  .map-overlay-panel { transition: none; }
+}

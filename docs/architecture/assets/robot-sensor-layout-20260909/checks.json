@@ -1,0 +1,181 @@
+{
+  "displayLidarOriginWebM": [
+    0.18,
+    0.36,
+    0
+  ],
+  "sourceMjcfLidarHeightM": 0.46,
+  "jointBottomY": 0.4035,
+  "lidarTopY": 0.3784000004082918,
+  "frontAccentRemoved": true,
+  "lidar": [
+    {
+      "y": 0.351,
+      "z": -0.06,
+      "hits": []
+    },
+    {
+      "y": 0.351,
+      "z": 0,
+      "hits": []
+    },
+    {
+      "y": 0.351,
+      "z": 0.06,
+      "hits": []
+    },
+    {
+      "y": 0.36,
+      "z": -0.06,
+      "hits": []
+    },
+    {
+      "y": 0.36,
+      "z": 0,
+      "hits": []
+    },
+    {
+      "y": 0.36,
+      "z": 0.06,
+      "hits": []
+    },
+    {
+      "y": 0.369,
+      "z": -0.06,
+      "hits": []
+    },
+    {
+      "y": 0.369,
+      "z": 0,
+      "hits": []
+    },
+    {
+      "y": 0.369,
+      "z": 0.06,
+      "hits": []
+    }
+  ],
+  "ultrasonic": [
+    {
+      "y": 0.295,
+      "z": -0.165,
+      "hits": []
+    },
+    {
+      "y": 0.289,
+      "z": -0.165,
+      "hits": []
+    },
+    {
+      "y": 0.301,
+      "z": -0.165,
+      "hits": []
+    },
+    {
+      "y": 0.295,
+      "z": -0.185,
+      "hits": []
+    },
+    {
+      "y": 0.295,
+      "z": -0.14500000000000002,
+      "hits": []
+    },
+    {
+      "y": 0.295,
+      "z": 0.165,
+      "hits": []
+    },
+    {
+      "y": 0.289,
+      "z": 0.165,
+      "hits": []
+    },
+    {
+      "y": 0.301,
+      "z": 0.165,
+      "hits": []
+    },
+    {
+      "y": 0.295,
+      "z": 0.14500000000000002,
+      "hits": []
+    },
+    {
+      "y": 0.295,
+      "z": 0.185,
+      "hits": []
+    }
+  ],
+  "oldUpperOpening": {
+    "name": "collection-bin-outer-shell",
+    "point": [
+      0.23000000417232513,
+      0.46,
+      0
+    ],
+    "distance": 0.06999999582767485
+  },
+  "recesses": [
+    {
+      "name": "ultrasonic-left-recess-back",
+      "point": [
+        0.1757,
+        0.295,
+        -0.165
+      ],
+      "distance": 0.1243
+    },
+    {
+      "name": "ultrasonic-right-recess-back",
+      "point": [
+        0.1757,
+        0.295,
+        0.165
+      ],
+      "distance": 0.1243
+    }
+  ],
+  "normalsFinite": true,
+  "originalMeshes": 128,
+  "sourceGlbSha256": "ef8f031b27c28b6e12fc40d56803a104c0bb632474953622113fd270292f3bde",
+  "sourceGlbUnchanged": true,
+  "scope": "Display layout below the joint overrides the source MJCF marker height. Production enclosure plus 128 reconstructed GLB mesh buffers/world transforms. Static opening checks only; physical mounts and full optical/acoustic fields are unverified.",
+  "browser": {
+    "state": {
+      "diagnostics": "false",
+      "frames": "84",
+      "drawCalls": "65",
+      "triangles": "91754",
+      "loaded": "true",
+      "exterior": "true"
+    },
+    "posterBytes": 144699,
+    "captures": [
+      "01-exterior.png",
+      "02-front.png",
+      "03-sensors.png"
+    ]
+  },
+  "formerEdges": [
+    {
+      "name": "lower-body",
+      "point": [
+        0.23000000417232513,
+        0.36,
+        -0.09
+      ],
+      "distance": 0.06999999582767485
+    },
+    {
+      "name": "lower-body",
+      "point": [
+        0.23000000417232513,
+        0.36,
+        0.09
+      ],
+      "distance": 0.06999999582767485
+    }
+  ],
+  "lidarWidthM": 0.15333333333333335
+}

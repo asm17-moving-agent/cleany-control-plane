@@ -1,0 +1,13 @@
+Use case: ui-mockup edit. Generate one final Cleany SEAT REQUEST workspace screenshot.
+Input image 1 is the edit target: preserve the entire commercial UI, right request inspector for21, lower current mission/queue/review/result cards, typography and green styling.
+Input image 2 is ONLY the original facility-map geometry reference; do not copy its browser chrome or old sidebar.
+Requested output: LANDSCAPE 16:9, 1672x941 or 2048x1152, front-facing application filling the canvas. Reflow the same UI proportionally into this wider frame with a compact bottom information dock, no cropping of action buttons. Keep top site selector, demo badge and backend badge unchanged.
+
+Make a focused correction to the map:
+- Restore the missing SPACE M2 room so the top row is SPACE A4, SPACE M1, SPACE M2, SPACE M3 as in image2. Preserve left SPACE A3/A2/A1, THE GROND, right RELAX and gray bottom service area.
+- In D-HUB use exactly nine shared TABLES in a 3x3 arrangement. Each row has 6 chairs around left table, 4 around narrower middle table, 6 around right table (48 total). Draw actual small outlined chairs like the original map, not disconnected numbered squares.
+- At this overview zoom, REMOVE ALL tiny seat numbers from ALL rooms except these FIVE unique IDs in D-HUB: "12" navy working, "18" orange queued, "24" orange queued, "07" coral review, "21" green outlined selected. Each appears exactly once. Other chairs have NO numerals. There must not be any23 status highlight. Keep floating label "21번 좌석 · 선택됨" attached to21 and keep inspector21. Use a small robot marker with label "예시 위치".
+- Map legend text: "작업 중", "대기", "확인 필요", "선택됨", "요청 대상", "운영 대상 외". Do not claim known occupancy.
+- Keep the rest of the page's existing workflow and counts: current cleany-01 D-HUB12 책상작업, waiting18/24 TWO requests,07 needsreview,03complete,21 is not yet submitted. Right primary button "대기열에 요청". The user's pending selection21 does not become an extra queued mission.
+- Keep matching before/after tabletop demo photos with the cup removed and notebook left in place; all demo indications remain.
+No other visual or content changes. No marketing text, charts, real battery percentages, pause/resume, or new actions. All Korean text crisp and correctly written.

@@ -1,4 +1,6 @@
 import type { SVGProps } from "react";
+import robotFace from "../assets/brand/robot-face.png";
+import robotCharacter from "../assets/brand/robot-character.webp";
 
 type IconProps = SVGProps<SVGSVGElement>;
 
@@ -15,7 +17,7 @@ export function MonitoringIcon(props: IconProps) {
 }
 
 export function RobotIcon(props: IconProps) {
-  return <svg viewBox="0 0 24 24" {...props}><rect x="5" y="8" width="14" height="11" rx="5" /><path d="M12 4v4M9 13h.01M15 13h.01M8 19v2h8v-2" /></svg>;
+  return <svg viewBox="0 0 192 128" aria-hidden="true" {...props}><image href={robotFace} width="192" height="128" /></svg>;
 }
 
 export function SettingsIcon(props: IconProps) {
@@ -34,10 +36,14 @@ export function BellIcon(props: IconProps) {
   return <svg viewBox="0 0 24 24" {...props}><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" /></svg>;
 }
 
+export function MapPinIcon(props: IconProps) {
+  return <svg viewBox="0 0 24 24" {...props}><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2.5" /></svg>;
+}
+
 export function SendIcon(props: IconProps) {
   return <svg viewBox="0 0 24 24" {...props}><path d="m21 3-8 18-3-7-7-3zM10 14l4-4" /></svg>;
 }
 
 export function RobotLargeIcon(props: IconProps) {
-  return <svg viewBox="0 0 32 32" {...props}><rect x="5" y="9" width="22" height="16" rx="7" /><path d="M16 5v4M11 17h.01M21 17h.01M9 25v2h14v-2" /></svg>;
+  return <svg viewBox="0 0 320 320" aria-hidden="true" {...props}><image href={robotCharacter} width="320" height="320" /></svg>;
 }

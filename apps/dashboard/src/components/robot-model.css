@@ -1,0 +1,117 @@
+.robot-model-card {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  margin: 0 0 20px;
+  overflow: hidden;
+  border: 1px solid var(--workspace-line, #dfe7e3);
+  border-radius: 12px;
+  background: radial-gradient(ellipse at 50% 38%, #fff 5%, #f3f3f0 70%, #e7e9e7);
+  color: var(--workspace-ink, #243d34);
+}
+.robot-model-stage {
+  position: relative;
+  height: 216px;
+}
+.robot-model-poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+.robot-model-card[data-state=ready] .robot-model-poster { visibility: hidden; }
+.robot-model-canvas {
+  position: absolute;
+  inset: 0;
+  border-radius: 11px 11px 0 0;
+  cursor: grab;
+  touch-action: auto;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.robot-model-canvas[data-dragging=true] { cursor: grabbing; }
+.robot-model-canvas:focus-visible { outline: 2px solid var(--workspace-teal, #167d70); outline-offset: -3px; }
+.robot-model-canvas canvas { display: block; width: 100%; height: 100%; }
+.robot-model-card:not([data-state=ready]) .robot-model-canvas { visibility: hidden; }
+.robot-model-rotation-guide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke: #6b9888;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  pointer-events: none;
+}
+.robot-model-arrowhead { stroke-width: 1.5; }
+.robot-model-reset {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 8px;
+  border: 1px solid #dce5de;
+  border-radius: 7px;
+  background: #fffffff0;
+  color: #506f5f;
+  font: inherit;
+  font-size: 10px;
+  cursor: pointer;
+}
+.robot-model-reset:disabled { visibility: hidden; }
+.robot-model-card .robot-model-reset, .robot-model-card .robot-model-retry { font-size: 10px; }
+.robot-model-reset:hover { background: #fff; border-color: #91ada0; }
+.robot-model-reset:focus-visible, .robot-model-retry:focus-visible { outline: 2px solid var(--workspace-teal, #167d70); outline-offset: 2px; }
+.robot-model-reset svg, .robot-model-retry svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.robot-model-caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px 12px;
+  min-height: 36px;
+  padding: 9px 12px;
+  color: #7c8d82;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.robot-model-hint { color: #526f60; }
+.robot-model-retry { display: flex; padding: 4px; border: 0; background: none; color: #356f57; cursor: pointer; }
+.robot-model-canvas[data-diagnostics=true]::after {
+  content: "frames " attr(data-frames) " · calls " attr(data-draw-calls) " · tris " attr(data-triangles);
+  position: absolute;
+  left: 12px;
+  bottom: 8px;
+  color: #637d6d;
+  font: 9px monospace;
+  pointer-events: none;
+}
+.robot-model-inline { margin: 0; border: 0; border-radius: 5px; background: transparent; }
+.robot-model-inline .robot-model-stage { height: 108px; background: transparent; }
+.robot-model-inline .robot-model-poster { padding: 2px; }
+.robot-model-inline .robot-model-canvas { border-radius: 5px; }
+.robot-model-inline .robot-model-caption { position: absolute; inset: auto 0 0; justify-content: center; gap: 0; min-height: 0; padding: 0; border: 0; background: transparent; font-size: 9px; pointer-events: none; }
+.robot-model-inline .robot-model-hint { opacity: 0; transition: opacity 120ms ease; }
+.robot-model-inline:hover .robot-model-hint, .robot-model-inline:focus-within .robot-model-hint,
+.robot-model-inline[data-state=loading] .robot-model-hint { opacity: 1; }
+.robot-model-inline[data-state=error] .robot-model-hint { display: none; }
+.robot-model-inline .robot-model-retry { pointer-events: auto; }
+.robot-model-inline .robot-model-reset { top: 0; right: 0; padding: 4px; border-color: transparent; background: #ffffffd9; }
+.robot-model-inline .robot-model-canvas[data-diagnostics=true]::after { display: none; }
+.robot-model-page { width: 100%; max-width: 460px; margin: 0 auto; padding: 28px 20px; color: #243d34; }
+.robot-model-page-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; color: #71877d; font-size: 11px; }
+.robot-model-page-nav a { color: #375f49; text-decoration: none; }
+.robot-model-page > h1 { margin: 0 0 12px; font-size: 22px; letter-spacing: -.04em; }
+.robot-model-page > p { margin: 0 0 24px; color: #74847a; font-size: 13px; line-height: 1.8; }
+.robot-model-page .robot-model-stage { height: 260px; }
+@media (prefers-reduced-motion: reduce) { .robot-model-card *, .robot-model-card *::after { transition: none; } }

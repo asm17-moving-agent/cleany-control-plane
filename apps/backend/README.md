@@ -8,7 +8,8 @@ domain 및 Mock dispatcher를 분리해 core logic을 독립적으로 검증한�
 - `HIGH`, `NORMAL` priority Queue
 - 단일 Mock Robot과 하나의 활성 Mission
 - Mission 생성, 조회와 checkpoint 취소
-- 48석 배치와 Mock 좌석 사용 상태 조회
+- `SEAT`, `ZONE`, `POINT` Mission target
+- D-HUB 48석과 SPACE 34석 배치 조회 (D-HUB는 Mock 점유, SPACE는 점유 미확인)
 - SSE 상태 event
 - idempotency key 기반 중복 생성 방지
 

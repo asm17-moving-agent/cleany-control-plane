@@ -1,0 +1,45 @@
+{
+  "generator": "Built-in imagegen",
+  "files": [
+    {
+      "filename": "01-classic-face.png",
+      "source": "/home/ehdrms/.codex/generated_images/01a08103-b47c-70f3-a8b4-636ee38a808d/exec-6d20266e-21dc-4e90-a4cd-977d1e514c1c.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 774393,
+      "sha256": "ccdabe7049dee30ce8b8936cc95ef4ebe818fbc0f91954403716375dd55c5cd0"
+    },
+    {
+      "filename": "02-soft-face.png",
+      "source": "/home/ehdrms/.codex/generated_images/01a08103-b47c-70f3-a8b4-636ee38a808d/exec-0b3ef0c8-7d89-48c8-83d2-5b1983fd8962.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 846675,
+      "sha256": "0fee34407562e75885626b3ea117456f1ec744cd979a7227f0e5951aeed368a1"
+    },
+    {
+      "filename": "03-wide-face.png",
+      "source": "/home/ehdrms/.codex/generated_images/01a08103-b47c-70f3-a8b4-636ee38a808d/exec-2400d8c5-7e74-4656-a92b-03f24d29daf6.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 873876,
+      "sha256": "0ec9c9258a03e7d3d5eaa07c3c0ca89c7a2fbc580c4e36e1afd73b866f140bdd"
+    },
+    {
+      "filename": "04-chamfer-face.png",
+      "source": "/home/ehdrms/.codex/generated_images/01a08103-b47c-70f3-a8b4-636ee38a808d/exec-01531e1f-d31f-4ef5-90b7-75e7b5966857.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 888525,
+      "sha256": "add9e9fbacd7ea1ed4645653673f5985b939697b089da6ad7d981b82e6a74638"
+    },
+    {
+      "filename": "05-dark-face.png",
+      "source": "/home/ehdrms/.codex/generated_images/01a08103-b47c-70f3-a8b4-636ee38a808d/exec-72140cbb-fed0-4256-bd28-d80be240c8e0.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 884364,
+      "sha256": "10820523261e3b846df658187859354e8bf4a00c80d163d90dd3c009a6530c0c"
+    }
+  ]
+}

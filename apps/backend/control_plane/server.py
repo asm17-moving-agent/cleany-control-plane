@@ -134,7 +134,7 @@ def create_app(
     async def create_mission(request: MissionRequest, response: Response) -> MissionResponse:
         try:
             mission, created = control_plane.store.create_mission(
-                seat_id=request.seat_id,
+                target=request.to_domain_target(),
                 priority=request.priority.value,
                 requested_by=request.requested_by,
                 idempotency_key=request.idempotency_key,

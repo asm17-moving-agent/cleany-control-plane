@@ -1,0 +1,20 @@
+Use case: precise-object-edit.
+Asset type: high fidelity Korean Cleany enterprise dashboard UI mockup, existing image correction.
+Edit target: the attached generated Cleany dashboard image (1672 by 941 pixels). This is a precise localized correction of ONLY the chairs and seat numbers inside its D-HUB room.
+Primary request: Correct the nine D-HUB desk tables so that they have exactly 48 distinct, correctly numbered seats in a three-row, three-column arrangement. Preserve everything outside D-HUB unchanged: image dimensions and crop, full dashboard layout, sidebar, panels, all Korean text, all typography, mint color palette, exact white and gray backgrounds, lines, icons, cards, task state, thumbnails, top bar, borders, geometry of every other room. Preserve D-HUB room boundaries, title, table positions, and the navy robot marker plus its "예시 위치" label. Do not redesign, redraw, or reposition the overall dashboard.
+
+Localized edit area: the D-HUB seating interior, approximately x1100–1500 and y250–570 in this 1672×941 image. The room itself and surrounding floor plan stay fixed.
+D-HUB desk arrangement: 3 rows × 3 tables. EACH row has 6 seats at the left table, 4 seats at the middle table, and 6 seats at the right table. Each 6-seat table has three chairs on top and three on bottom. Each 4-seat middle table has exactly two chairs on top and two on bottom. Remove the extra middle-table chairs from the original. Keep each table a simple pale-gray horizontal rectangle with the existing elegant fine line furniture style.
+Exact two-digit numbers at each chair, all 01 through 48 once and only once:
+Top row, left table: upper chairs 01 02 03; lower chairs 04 05 06.
+Top row, middle table: upper chairs 07 08; lower chairs 09 10.
+Top row, right table: upper chairs 11 12 13; lower chairs 14 15 16.
+Middle row, left table: upper chairs 17 18 19; lower chairs 20 21 22.
+Middle row, middle table: upper chairs 23 24; lower chairs 25 26.
+Middle row, right table: upper chairs 27 28 29; lower chairs 30 31 32.
+Bottom row, left table: upper chairs 33 34 35; lower chairs 36 37 38.
+Bottom row, middle table: upper chairs 39 40; lower chairs 41 42.
+Bottom row, right table: upper chairs 43 44 45; lower chairs 46 47 48.
+
+Color and state markers: ONLY seat 12 mint green with the existing small "작업 중" label; ONLY seats 18 and 24 light blue with small "대기" labels; ONLY seat 07 amber with a tiny "확인" label if space allows. Every other seat neutral white/gray. These colors must follow the correct new seat number positions, so remove outdated highlights from the old positions. Keep the robot marker and "예시 위치" near the top-row aisle as in the original. Chair numbers must be sharp and legible at original resolution, with no duplicate numbers, no missing numbers, and no numbers over 48.
+Hard invariants: ONE complete standalone image, same 1672×941 canvas, no crop, no border additions, no browser chrome. Do not alter any panel text, photos, mission data, result data, room labels, navigation, branding, or anything else outside this chair-number correction. The goal is the same beautiful dashboard with precisely corrected D-HUB seating only.

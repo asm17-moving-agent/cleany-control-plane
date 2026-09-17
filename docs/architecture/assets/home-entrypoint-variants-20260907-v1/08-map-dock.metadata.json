@@ -1,0 +1,71 @@
+{
+  "variant": "08-map-dock",
+  "generated_on": "2026-09-07",
+  "artifact_file": "08-map-dock.png",
+  "generator": "built-in tools.image_gen__imagegen",
+  "generation_mode": "reference-guided ui-mockup; separate built-in call per variant",
+  "prompt_file": "08-map-dock.prompt.txt",
+  "common_brief_file": "BRIEF.txt",
+  "common_brief_included_verbatim_as_prompt_prefix": true,
+  "reference_images": [
+    {
+      "file": "reference/original-home.png",
+      "role": "facility geography and Cleany identity",
+      "view_image_inspected": true
+    },
+    {
+      "file": "reference/top-navigation-reference.png",
+      "role": "horizontal top navigation and commercial tone only",
+      "view_image_inspected": true
+    }
+  ],
+  "source_generated_path": "/home/ehdrms/.codex/generated_images/01a07b7a-43a0-7ff2-a401-780cdf286e4b/exec-6697520b-a6b6-4ca7-a34e-bf57c767921e.png",
+  "dimensions": {
+    "width": 1672,
+    "height": 941,
+    "unit": "px"
+  },
+  "format": "PNG",
+  "size_bytes": 996579,
+  "sha256": "f27f96af00b96d18e22a0e92898555523deaa281790fa06d294a777c40c4e8dc",
+  "source_preserved": true,
+  "source_bytes_copied_without_editing": true,
+  "rendered_inline_with_generatedImage": true,
+  "composition": "큰 중앙 지도와 오른쪽 로봇/검토 요약. 지도 밖 아래 도크에 작업 요청/요청 현황/최근 완료 결과.",
+  "qa": {
+    "method": "visual inspection of generated output and saved workspace file with view_image",
+    "six_body_entry_labels_visible": [
+      "작업 요청",
+      "로봇 현황",
+      "현재 위치",
+      "검토 사항",
+      "요청 현황",
+      "최근 완료 결과"
+    ],
+    "horizontal_top_navigation": true,
+    "vertical_global_navigation": false,
+    "robot_name": "cleany-01",
+    "robot_status": "작업 중",
+    "battery_visible": "82%",
+    "current_assignment": "12번 좌석 작업 중",
+    "review_summary": "07번 좌석 · 미처리 물체 확인 / 1건",
+    "request_summary": "진행 1건 · 대기 2건",
+    "completed_result": "03번 좌석 · 완료 · 14:20",
+    "demo_badge_visible": true,
+    "connection_status_distinct_from_demo": true,
+    "one_robot_map_marker": true,
+    "example_position_label_visible": true,
+    "map_freshness_visible": "2초 전 갱신",
+    "open_request_form": false,
+    "workflow_stepper": false,
+    "expanded_before_after_photos": false,
+    "long_queue_or_history_table": false,
+    "material_omission_found": false,
+    "correction_calls": 0,
+    "notes": [
+      "도크는 지도 아래의 별도 영역이며 도면과 중요 정보를 가리지 않는다.",
+      "원본 도면의 구역 배치는 인식 가능하나 테이블, 벽, 서비스 설비 세부는 생성형 도식으로 단순화되었다."
+    ],
+    "runtime_functionality": "not applicable; illustrative raster mockup"
+  }
+}

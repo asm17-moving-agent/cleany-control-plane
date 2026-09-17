@@ -1,0 +1,25 @@
+{
+  "variant": 3,
+  "title": "작업 요청형",
+  "generator": "built-in imagegen",
+  "source_path": "/home/ehdrms/.codex/generated_images/01a07b74-9e48-7b53-9f3a-b7f17bd30c91/exec-507695c8-8015-4d29-810c-650c81ea77ab.png",
+  "file": "03-seat-request.png",
+  "width": 1672,
+  "height": 941,
+  "sha256": "07be1a1f7a84f7c1a782169dfd3da288c8ba61d169d9bd1ec31daf9eb09d47bd",
+  "prompt_file": "03-seat-request.prompt.txt",
+  "qa": {
+    "persistent_fleet": true,
+    "battery_values_visible": true,
+    "selected_seat_12_matches_drawer": true,
+    "robot_command_priority_controls": true,
+    "followup_entries_visible": true,
+    "demo_indicated": true
+  },
+  "notes": [
+    "지도는 개략적인 생성 이미지다.",
+    "예시 위치 개별 문구는 생략되었으나 상단 데모 데이터 표시는 있다.",
+    "충전 상태 점이 주황색으로 생성되었다."
+  ],
+  "post_processing": "none; byte-identical original copy"
+}
