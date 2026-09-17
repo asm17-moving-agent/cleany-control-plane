@@ -11,6 +11,7 @@ domain 및 Mock dispatcher를 분리해 core logic을 독립적으로 검증한�
 - `SEAT`, `ZONE`, `POINT` Mission target
 - D-HUB 48석과 SPACE 34석 배치 조회 (D-HUB는 Mock 점유, SPACE는 점유 미확인)
 - SSE 상태 event
+- Robot Edge pose WebSocket (`/api/robots/cleany-01/pose/ws`), latest snapshot and stale events
 - idempotency key 기반 중복 생성 방지
 
 ## 개발 환경
@@ -31,6 +32,15 @@ SPA fallback을 함께 제공한다. Dashboard 개발 서버는 `/api`를 `8080`
 | --- | --- | --- |
 | `CLEANY_HOST` | `127.0.0.1` | API bind host |
 | `CLEANY_PORT` | `8080` | API bind port |
+| `CLEANY_POSE_RECEIVE_TIMEOUT_SECONDS` | `1.5` | Monotonic receive silence before producer disconnect/stale |
+
+Robot Edge sends exactly `{"x": number, "y": number}` (finite values, no extra fields) at
+5Hz to `ws(s)://<host>/api/robots/cleany-01/pose/ws`. Only one producer is accepted;
+duplicates receive WebSocket close code 1008. `GET /api/robots/cleany-01/pose` always
+returns `{pose: {x, y, received_at} | null, stale}` and retains the last stale pose for
+reload. Browser updates use `/api/events/stream`: `robot.pose` and `robot.pose.stale`
+payloads use the same snapshot envelope. This endpoint is intended for the trusted robot
+network; authentication and authorization are not yet implemented.
 
 ## 검증
 

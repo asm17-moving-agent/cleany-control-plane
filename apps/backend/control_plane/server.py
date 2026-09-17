@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, Response, status
+from fastapi import FastAPI, HTTPException, Response, WebSocket, WebSocketDisconnect, status
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -18,7 +18,10 @@ from control_plane.schemas import (
     MissionListResponse,
     MissionRequest,
     MissionResponse,
+    PoseInput,
+    PoseSnapshot,
     RobotListResponse,
+    RobotPose,
     SeatListResponse,
 )
 from control_plane.settings import Settings
@@ -113,6 +116,7 @@ def create_app(
         lifespan=lifespan,
     )
     app.state.control_plane = control_plane
+    app.state.pose_timeout = Settings().pose_receive_timeout_seconds
 
     @app.get("/api/health", response_model=HealthResponse)
     async def health() -> HealthResponse:
@@ -125,6 +129,46 @@ def create_app(
     @app.get("/api/robots", response_model=RobotListResponse)
     async def list_robots() -> RobotListResponse:
         return RobotListResponse(items=[control_plane.store.robot])
+
+    @app.get("/api/robots/cleany-01/pose", response_model=PoseSnapshot)
+    async def latest_pose() -> PoseSnapshot:
+        pose, stale = control_plane.store.latest_pose(app.state.pose_timeout)
+        if stale and pose is not None:
+            control_plane.store.publish_pose_stale()
+        return PoseSnapshot(
+            pose=RobotPose(x=pose.x, y=pose.y, received_at=pose.received_at) if pose else None,
+            stale=stale,
+        )
+
+    @app.websocket("/api/robots/cleany-01/pose/ws")
+    async def robot_pose(websocket: WebSocket) -> None:
+        if not control_plane.store.claim_pose_producer():
+            await websocket.close(code=1008, reason="pose producer already connected")
+            return
+        try:
+            await websocket.accept()
+            while True:
+                try:
+                    raw = await asyncio.wait_for(
+                        websocket.receive_json(), timeout=app.state.pose_timeout,
+                    )
+                except TimeoutError:
+                    control_plane.store.publish_pose_stale()
+                    await websocket.close(code=1001, reason="pose receive timeout")
+                    return
+                except (ValueError, TypeError, KeyError):
+                    await websocket.close(code=1003, reason="pose must be JSON {x,y}")
+                    return
+                try:
+                    pose = PoseInput.model_validate(raw)
+                except (TypeError, ValueError):
+                    await websocket.close(code=1003, reason="pose must be finite {x,y}")
+                    return
+                control_plane.store.update_pose(pose.x, pose.y)
+        except WebSocketDisconnect:
+            return
+        finally:
+            control_plane.store.release_pose_producer()
 
     @app.get("/api/missions", response_model=MissionListResponse)
     async def list_missions() -> MissionListResponse:

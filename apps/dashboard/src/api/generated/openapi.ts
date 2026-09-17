@@ -90,6 +90,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/robots/cleany-01/pose": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Latest Pose */
+        get: operations["latest_pose_api_robots_cleany_01_pose_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/seats": {
         parameters: {
             query?: never;
@@ -186,6 +203,12 @@ export interface components {
             /** Reference Id */
             reference_id: string;
         };
+        /** PoseSnapshot */
+        PoseSnapshot: {
+            pose: components["schemas"]["RobotPose"] | null;
+            /** Stale */
+            stale: boolean;
+        };
         /**
          * Priority
          * @enum {string}
@@ -195,6 +218,18 @@ export interface components {
         RobotListResponse: {
             /** Items */
             items: components["schemas"]["RobotResponse"][];
+        };
+        /**
+         * RobotPose
+         * @description Latest accepted position with a server-owned receive timestamp.
+         */
+        RobotPose: {
+            /** Received At */
+            received_at: string;
+            /** X */
+            x: number;
+            /** Y */
+            y: number;
         };
         /** RobotResponse */
         RobotResponse: {
@@ -410,6 +445,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RobotListResponse"];
+                };
+            };
+        };
+    };
+    latest_pose_api_robots_cleany_01_pose_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PoseSnapshot"];
                 };
             };
         };

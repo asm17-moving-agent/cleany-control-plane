@@ -7,6 +7,8 @@ Dashboard, Backend와 Robot Gateway 간 machine-readable contract의 Source of T
 - `mission-request.schema.json`
 - `mission-event.schema.json`
 - `seat.schema.json`
+- `robot-pose.schema.json` (Robot Edge WebSocket payload; finite `x`, `y` only)
+- `robot-pose-event.schema.json` (SSE envelope, HTTP snapshot과 같은 payload)
 - `openapi.json`
 
 schema는 MVP 사용자 흐름을 검증하는 최소 범위다. Robot transport와 영속 Backend를
@@ -29,3 +31,8 @@ FastAPI의 HTTP 계약은 `openapi.json` snapshot으로 검토하며 Dashboard T
 pnpm contracts
 pnpm contracts:check
 ```
+
+Robot Edge는 `ws(s)://<host>/api/robots/cleany-01/pose/ws`에 초당 5회
+`{"x": number, "y": number}`를 전송한다. 추가 필드와 비유한 값은 거부된다.
+브라우저 snapshot은 `GET /api/robots/cleany-01/pose`이며, 갱신과 stale 전환은
+기존 `/api/events/stream`의 `robot.pose`와 `robot.pose.stale` 이벤트다.

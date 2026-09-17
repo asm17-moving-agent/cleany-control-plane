@@ -17,8 +17,10 @@ export interface OperationsEvent {
   mission_id: string | null;
   sequence: number;
   occurred_at: string;
-  payload: Partial<Mission> & Partial<Robot>;
+  payload: Partial<Mission> & Partial<Robot> & Partial<RobotPoseSnapshot>;
 }
+export type RobotPose = components["schemas"]["RobotPose"];
+export type RobotPoseSnapshot = components["schemas"]["PoseSnapshot"];
 
 export interface ListResponse<T> {
   items: T[];

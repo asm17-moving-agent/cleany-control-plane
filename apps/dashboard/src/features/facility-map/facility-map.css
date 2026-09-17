@@ -87,6 +87,7 @@
 .facility-map-robot[data-state="IDLE"] { color: var(--workspace-blue); }
 .facility-map-robot[data-state="ERROR"], .facility-map-robot[data-state="OFFLINE"] { color: var(--workspace-danger); }
 .facility-map-robot:hover, .facility-map-robot:focus-visible, .facility-map-robot.is-selected { z-index: 1; }
+.facility-map-robot.is-stale { filter: grayscale(1); opacity: .65; }
 .facility-map-robot:focus-visible { outline: 2px solid currentColor; outline-offset: 1px; }
 .facility-map-robot-label { position: absolute; top: calc(100% + 1px); left: 50%; display: none; transform: translateX(-50%); border: 1px solid currentColor; border-radius: 4px; padding: 3px 7px; background: #fff; color: inherit; font-size: 11px; font-weight: 550; line-height: 1.4; white-space: nowrap; pointer-events: none; }
 .facility-map-robot:hover .facility-map-robot-label, .facility-map-robot:focus-visible .facility-map-robot-label, .facility-map-robot.is-selected .facility-map-robot-label { display: block; }

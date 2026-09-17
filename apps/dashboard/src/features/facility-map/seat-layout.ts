@@ -1,7 +1,7 @@
 import type { Seat } from "../../api/types";
 
 // Manually mirrored from cleany_gazebo_sim/config/study_cafe/study_cafe_layout.yaml.
-// The artwork's raster wall centers fix the map anchor; ROS is not connected.
+// The artwork's raster wall centers fix the map anchor for world-coordinate telemetry.
 export const D_HUB_UNITS_PER_METER = 400 / 12.26;
 export const D_HUB_ORIGIN = { x: 776, topY: 8, worldTopY: 10.94 / 2 };
 export function worldToMap(x: number, y: number) {

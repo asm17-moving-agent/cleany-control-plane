@@ -17,18 +17,15 @@ import { missionTargetLabel } from "../lib/operations";
 import { useOperations } from "../operations/OperationsContext";
 import { HomeMapHeader } from "../components/HomeMapHeader";
 import { seatSnapshots, type SeatCleaningStates } from "../lib/seat-summary";
+import { useRobotPose } from "../features/robot-pose/useRobotPose";
 import "./home-dashboard.css";
 
-// These are illustration coordinates only. RobotResponse has no pose or battery telemetry.
-// Scenario marker: Gazebo spawn (-1.865, -4.705), mapped with the D-HUB
-// origin (776, 8) and equal 400/12.26 XY scale. This is not telemetry.
-const examplePositions = [worldToMap(-1.865, -4.705), { x: 380, y: 280 }, { x: 1040, y: 210 }, { x: 530, y: 400 }];
 export function HomePage() {
   const { floor } = useOutletContext<FacilitySelection>();
   return <HomeWorkspace key={floor.id} floor={floor} />;
 }
 function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
-  const { robots, missions, seats, seatCleaning, events = [], isLoading, error, refresh, isCreatingMission } = useOperations();
+  const { robots, missions, seats, seatCleaning, events = [], isLoading, error, refresh, isCreatingMission, pose, poseStale, connectionState } = useOperations();
   const { selectedSeatId, selectedRobotId, selectedSeat, selectedRobot, closingSeat,
     displayedRobot, displayedMissionId, robotFocusKey, selectSeat, selectRobot,
     closeRequest, closeRobot, onMissionSubmitted } = useHomePanelState({
@@ -41,9 +38,13 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
   const displayCleaning = useMemo<SeatCleaningStates | undefined>(() => summaryDemo
     ? Object.fromEntries(snapshots.flatMap(row => row.cleaning ? [[row.seat.seat_id, row.cleaning]] : []))
     : seatCleaning, [snapshots, summaryDemo, seatCleaning]);
-  const mapRobots = useMemo<FacilityRobotMarker[]>(() => robots.map((robot, index) => ({
-    robotId: robot.robot_id, state: robot.state, ...examplePositions[index % examplePositions.length], positionMode: "scenario",
-  })), [robots]);
+  const livePose = useRobotPose(pose ?? null, poseStale ?? true, connectionState === "connected");
+  const mapRobots = useMemo<FacilityRobotMarker[]>(() => {
+    const robot = robots[0];
+    if (!robot || !livePose.pose) return [];
+    return [{ robotId: robot.robot_id, state: robot.state, ...worldToMap(livePose.pose.x, livePose.pose.y),
+      positionMode: "live", poseStale: livePose.stale }];
+  }, [livePose.pose, livePose.stale, robots]);
   return (
     <section className="home-workspace" aria-label="로봇 관제 홈" style={panelMotionStyle}>
       <h1 className="sr-only">{floor.label}</h1>
@@ -51,6 +52,9 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
         <section className="home-map-panel" aria-label="시설 지도">
           <HomeMapHeader seats={displaySeats} mapAvailable={floor.mapAvailable}
             unavailable={isLoading || !!error}>
+              <span className={"home-telemetry-status " + (livePose.connected ? "is-connected" : "is-disconnected")} role="status">
+                SSE {livePose.connected ? "연결됨" : "연결 끊김"} · 위치 {livePose.pose ? (livePose.stale ? "지연" : "최신") : "대기 중"}
+              </span>
               {summaryDemo && <button className="summary-demo-exit" type="button" title="화면용 예시 데이터입니다. 데모에서는 작업 요청이 전송되지 않습니다." onClick={() => setSearchParams(current => { const next = new URLSearchParams(current); next.delete("summaryDemo"); return next; })}>데모 · 해제</button>}
           </HomeMapHeader>
           {error && <div className="home-data-error" role="alert"><span>데이터를 갱신하지 못했습니다. {error.message}</span><button type="button" onClick={() => void refresh()}>새로고침</button></div>}

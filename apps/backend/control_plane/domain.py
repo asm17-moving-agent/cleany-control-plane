@@ -5,6 +5,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from enum import StrEnum
 from threading import RLock
+from time import monotonic
 from uuid import uuid4
 
 
@@ -103,6 +104,14 @@ class Robot:
         return result
 
 
+@dataclass(frozen=True)
+class RobotPose:
+    x: float
+    y: float
+    received_at: str
+    received_monotonic: float
+
+
 EventListener = Callable[[dict[str, object]], None]
 
 
@@ -113,6 +122,9 @@ class ControlPlaneStore:
         self._idempotency: dict[str, str] = {}
         self._listeners: list[EventListener] = []
         self.robot = Robot()
+        self._pose: RobotPose | None = None
+        self._pose_producer_active = False
+        self._pose_stale_published = False
 
     def subscribe(self, listener: EventListener) -> Callable[[], None]:
         with self._lock:
@@ -125,7 +137,12 @@ class ControlPlaneStore:
 
         return unsubscribe
 
-    def _publish(self, event_type: str, mission: Mission | None = None) -> None:
+    def _publish(
+        self,
+        event_type: str,
+        mission: Mission | None = None,
+        payload: dict[str, object] | None = None,
+    ) -> None:
         event: dict[str, object] = {
             "schema_version": 1,
             "event_id": str(uuid4()),
@@ -134,7 +151,10 @@ class ControlPlaneStore:
             "mission_id": mission.mission_id if mission else None,
             "sequence": mission.sequence if mission else 0,
             "occurred_at": utc_now(),
-            "payload": mission.to_dict() if mission else self.robot.to_dict(),
+            "payload": (
+                payload if payload is not None
+                else (mission.to_dict() if mission else self.robot.to_dict())
+            ),
         }
         for listener in list(self._listeners):
             listener(event)
@@ -267,3 +287,49 @@ class ControlPlaneStore:
             self.robot.active_mission_id = active_mission_id
             self.robot.last_seen_at = utc_now()
             self._publish("robot.state_changed")
+
+    def claim_pose_producer(self) -> bool:
+        with self._lock:
+            if self._pose_producer_active:
+                return False
+            self._pose_producer_active = True
+            return True
+
+    def release_pose_producer(self) -> None:
+        with self._lock:
+            self._pose_producer_active = False
+            self.publish_pose_stale()
+
+    def update_pose(self, x: float, y: float, *, received_at: str | None = None) -> RobotPose:
+        pose = RobotPose(x, y, received_at or utc_now(), monotonic())
+        with self._lock:
+            self._pose = pose
+            self._pose_stale_published = False
+            self._publish("robot.pose", payload={"pose": {
+                "x": pose.x, "y": pose.y, "received_at": pose.received_at,
+            }, "stale": False})
+            return pose
+
+    def latest_pose(self, timeout: float) -> tuple[RobotPose | None, bool]:
+        with self._lock:
+            pose = self._pose
+            stale = (
+                pose is None
+                or not self._pose_producer_active
+                or self._pose_stale_published
+                or monotonic() - pose.received_monotonic > timeout
+            )
+            return pose, stale
+
+    def publish_pose_stale(self) -> bool:
+        with self._lock:
+            if self._pose_stale_published:
+                return False
+            self._pose_stale_published = True
+            pose = self._pose
+            self._publish("robot.pose.stale", payload={
+                "pose": {"x": pose.x, "y": pose.y, "received_at": pose.received_at}
+                if pose else None,
+                "stale": True,
+            })
+            return True
