@@ -4,6 +4,7 @@ import { panelMotionStyle } from "../components/panel-motion";
 import { useOutletContext, useSearchParams } from "react-router";
 import type { FacilityFloor, FacilitySelection } from "../app/AppShell";
 import { FacilityMap, type FacilityRobotMarker } from "../features/facility-map/FacilityMap";
+import { worldToMap } from "../features/facility-map/seat-layout";
 import { ChevronIcon } from "../components/WorkspaceIcons";
 import { BatteryStatus } from "../components/BatteryStatus";
 import { WorkspaceMessage } from "../components/WorkspaceMessage";
@@ -19,7 +20,9 @@ import { seatSnapshots, type SeatCleaningStates } from "../lib/seat-summary";
 import "./home-dashboard.css";
 
 // These are illustration coordinates only. RobotResponse has no pose or battery telemetry.
-const examplePositions = [{ x: 805, y: 365 }, { x: 380, y: 280 }, { x: 1040, y: 210 }, { x: 530, y: 400 }];
+// Scenario marker: Gazebo spawn (-1.865, -4.705), mapped with the D-HUB
+// origin (776, 8) and equal 400/12.26 XY scale. This is not telemetry.
+const examplePositions = [worldToMap(-1.865, -4.705), { x: 380, y: 280 }, { x: 1040, y: 210 }, { x: 530, y: 400 }];
 export function HomePage() {
   const { floor } = useOutletContext<FacilitySelection>();
   return <HomeWorkspace key={floor.id} floor={floor} />;
