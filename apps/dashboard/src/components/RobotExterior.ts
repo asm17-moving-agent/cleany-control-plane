@@ -3,9 +3,12 @@ import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.j
 import { createRobotArmCovers } from "./RobotArmCovers";
 import { FRONT_SENSOR_OPENINGS, openFrontSensorPorts } from "./RobotSensorOpenings";
 import wordmarkUrl from "../assets/brand/wordmark.png";
+import { createRobotAcrylicCover } from "./RobotAcrylicCover";
 
 /** Display-only enclosure for the e718ac57 CAD, in metres: +X front, +Y up. */
-export function createRobotExterior(invalidate: () => void, model: THREE.Object3D) {
+export function createRobotExterior(invalidate: () => void, model: THREE.Object3D, {
+  exposedBin = false, transparentLowerBody = false, exposedMast = false,
+} = {}) {
   const group = new THREE.Group();
   group.name = "cleany-exterior-concept";
   group.userData = { concept: true, source: "e718ac57", units: "metres" };
@@ -158,6 +161,31 @@ export function createRobotExterior(invalidate: () => void, model: THREE.Object3
   logo.rotation.y = Math.PI / 2;
   logo.position.set(.231, .600, 0);
   group.add(logo);
+
+  // Presentation view: reveal the existing collection bin and CAD frame.
+  // Hide the wall-mounted details with their panels so nothing floats in space.
+  if (exposedBin) {
+    const panels = new Set([
+      "lower-body", "sensor-openings-lower-body", "body-joint-backing",
+      "service-panel-reveal", "service-panel", "service-panel-pull", "side-vent-insets",
+      "collection-bin-outer-shell", "collection-bin-door-reveal", "collection-bin-door",
+      "collection-bin-rear-grip", "cleany-wordmark",
+    ]);
+    group.children.forEach(part => { if (panels.has(part.name)) part.visible = false; });
+    group.userData.exposedBin = true;
+  }
+
+  if (transparentLowerBody) {
+    const lowerPanels = new Set([
+      "lower-body", "sensor-openings-lower-body", "service-panel-reveal",
+      "service-panel", "service-panel-pull", "side-vent-insets",
+    ]);
+    group.children.forEach(part => { if (lowerPanels.has(part.name)) part.visible = false; });
+    group.add(createRobotAcrylicCover());
+  }
+  if (exposedMast) {
+    group.children.forEach(part => { if (part.name.startsWith("mast-")) part.visible = false; });
+  }
 
   // The renderer owns and disposes the group's geometry, materials and textures.
   // Stop a late logo download from scheduling another frame after unmount.

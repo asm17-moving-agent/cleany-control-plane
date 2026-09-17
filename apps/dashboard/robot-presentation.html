@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cleany · 아크릴 외장 시안</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; background: #eef2f5; color: #203441; font: 15px system-ui, sans-serif; }
+      main { max-width: 1040px; margin: 24px auto; padding: 0 24px; }
+      header { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 16px; }
+      h1 { margin: 0 0 6px; font-size: 24px; }
+      p { margin: 0; color: #6b7d89; font-size: 13px; }
+      nav { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+      button { padding: 10px 14px; border: 1px solid #d0dce3; border-radius: 6px; background: white; color: #203441; cursor: pointer; white-space: nowrap; }
+      button.primary { background: #00636d; color: white; border-color: #00636d; }
+      button:disabled { opacity: .4; cursor: wait; }
+      #stage { position: relative; width: 100%; height: min(78vh, 850px); min-height: 440px; border: 1px solid #d3dfe6; border-radius: 12px; background: white; overflow: hidden; }
+      canvas { display: block; width: 100%; height: 100%; }
+      #status { margin-top: 12px; text-align: center; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header><div><h1>Cleany · 아크릴 외장 시안</h1><p>상부 플라스틱 · 하부 투명 아크릴 · 카메라 마운트 노출</p></div>
+        <nav><button id="reset" disabled>전체 보기</button><button id="lower" disabled>하부 확대</button><button id="wheel" disabled>메카넘휠</button><button id="white" disabled>흰 배경 PNG</button><button id="transparent" class="primary" disabled>투명 PNG</button></nav>
+      </header>
+      <div id="stage" aria-label="하부 아크릴 외장과 전장 장치가 보이는 Cleany 3D 모델"></div>
+      <p id="status" role="status">모델을 불러오는 중…</p>
+    </main>
+    <script type="module" src="/tools/robot-presentation.ts"></script>
+  </body>
+</html>
