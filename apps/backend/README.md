@@ -34,13 +34,15 @@ SPA fallback을 함께 제공한다. Dashboard 개발 서버는 `/api`를 `8080`
 | `CLEANY_PORT` | `8080` | API bind port |
 | `CLEANY_POSE_RECEIVE_TIMEOUT_SECONDS` | `1.5` | Monotonic receive silence before producer disconnect/stale |
 
-Robot Edge sends exactly `{"x": number, "y": number}` (finite values, no extra fields) at
+Robot Edge sends `{"x": number, "y": number, "yaw"?: number | null}` (finite values, no extra fields) at
 5Hz to `ws(s)://<host>/api/robots/cleany-01/pose/ws`. Only one producer is accepted;
 duplicates receive WebSocket close code 1008. `GET /api/robots/cleany-01/pose` always
-returns `{pose: {x, y, received_at} | null, stale}` and retains the last stale pose for
+returns `{pose: {x, y, yaw, received_at} | null, stale}` and retains the last stale pose for
 reload. Browser updates use `/api/events/stream`: `robot.pose` and `robot.pose.stale`
 payloads use the same snapshot envelope. This endpoint is intended for the trusted robot
 network; authentication and authorization are not yet implemented.
+`yaw` is optional for older producers: radians in the same world frame, +X=0,
+counterclockwise positive. Missing/null yaw means unknown orientation.
 
 ## 검증
 

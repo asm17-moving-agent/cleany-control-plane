@@ -29,6 +29,7 @@ export interface FacilityRobotMarker {
   x: number; y: number;
   positionMode: "live" | "scenario";
   poseStale?: boolean;
+  heading?: number;
 }
 const width = FACILITY_18F.imageWidth;
 const height = FACILITY_18F.imageHeight;
@@ -84,7 +85,13 @@ export function FacilityMap({ seats, seatCleaning, selectedSeatId, onSelectSeat,
               className={"facility-map-robot" + (selectedRobotId === robot.robotId ? " is-selected" : "") + (robot.poseStale ? " is-stale" : "")}
               aria-label={robot.robotId + " 로봇 · " + robotStateLabels[robot.state] + " · " + (robot.positionMode === "live" ? (robot.poseStale ? "위치 지연" : "실시간 위치") : "예시 위치")}
               aria-pressed={selectedRobotId === robot.robotId} style={{ left: robot.x, top: robot.y }} onClick={() => onSelectRobot(robot.robotId)}>
-              <img src={robotFaceSoft} alt="" width="28" height="24" draggable={false} />
+              <svg className="facility-robot-bearing" viewBox="0 0 100 100" aria-hidden="true">
+                <circle cx="50" cy="50" r="36" />
+                {robot.heading !== undefined && <g transform={`rotate(${robot.heading} 50 50)`}>
+                  <path d="M 97 50 L 84 43 L 84 57 Z" />
+                </g>}
+              </svg>
+              <img src={robotFaceSoft} alt="" width="42" height="36" draggable={false} />
               <span className="facility-map-robot-label" aria-hidden="true">{robot.robotId}</span>
             </button>)}
           </div>

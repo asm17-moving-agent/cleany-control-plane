@@ -313,6 +313,18 @@
           "y": {
             "title": "Y",
             "type": "number"
+          },
+          "yaw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "World heading in radians, +X=0, counterclockwise positive; null when unavailable",
+            "title": "Yaw"
           }
         },
         "required": [

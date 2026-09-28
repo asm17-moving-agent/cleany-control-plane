@@ -93,11 +93,24 @@ class RobotPose(BaseModel):
     y: float = Field(allow_inf_nan=False)
     received_at: str
 
+    yaw: float | None = Field(
+        default=None, allow_inf_nan=False,
+        description=(
+            "World heading in radians, +X=0, counterclockwise positive; null when unavailable"
+        ),
+    )
+
 
 class PoseInput(BaseModel):
     model_config = ConfigDict(extra="forbid")
     x: float
     y: float
+    yaw: float | None = Field(default=None, allow_inf_nan=False)
+
+    @field_validator("yaw", mode="before")
+    @classmethod
+    def finite_yaw(cls, value: object) -> float | None:
+        return None if value is None else cls.finite_number(value)
 
     @field_validator("x", "y", mode="before")
     @classmethod

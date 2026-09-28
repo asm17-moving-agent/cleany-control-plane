@@ -11,6 +11,13 @@ describe("robot pose contract", () => {
     expect(interpolatePose({ x: 0, y: 0 }, { x: 10, y: 20 }, 2)).toEqual({ x: 10, y: 20 });
     expect(poseDistance({ x: 0, y: 0 }, { x: 3, y: 4 })).toBe(5);
   });
+  it("interpolates yaw across the short arc and hides unavailable orientation", () => {
+    const result = interpolatePose({ x: 1, y: 2, yaw: 179 * Math.PI / 180 },
+      { x: 1, y: 2, yaw: -179 * Math.PI / 180 }, .5);
+    expect(result.yaw).toBeCloseTo(Math.PI);
+    expect(interpolatePose(result, { x: 1, y: 2, yaw: null }, .5).yaw).toBeUndefined();
+    expect(validPose({ x: 1, y: 2, yaw: Infinity, received_at: "2026-09-18T00:00:00Z" })).toBe(false);
+  });
   it("uses adjacent samples through a turn and holds endpoints", () => {
     const samples = [
       { pose: { x: 0, y: 0 }, received: 0 },

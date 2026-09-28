@@ -110,6 +110,7 @@ class RobotPose:
     y: float
     received_at: str
     received_monotonic: float
+    yaw: float | None = None
 
 
 EventListener = Callable[[dict[str, object]], None]
@@ -300,13 +301,15 @@ class ControlPlaneStore:
             self._pose_producer_active = False
             self.publish_pose_stale()
 
-    def update_pose(self, x: float, y: float, *, received_at: str | None = None) -> RobotPose:
-        pose = RobotPose(x, y, received_at or utc_now(), monotonic())
+    def update_pose(
+        self, x: float, y: float, *, received_at: str | None = None, yaw: float | None = None,
+    ) -> RobotPose:
+        pose = RobotPose(x, y, received_at or utc_now(), monotonic(), yaw)
         with self._lock:
             self._pose = pose
             self._pose_stale_published = False
             self._publish("robot.pose", payload={"pose": {
-                "x": pose.x, "y": pose.y, "received_at": pose.received_at,
+                "x": pose.x, "y": pose.y, "received_at": pose.received_at, "yaw": pose.yaw,
             }, "stale": False})
             return pose
 
@@ -328,7 +331,7 @@ class ControlPlaneStore:
             self._pose_stale_published = True
             pose = self._pose
             self._publish("robot.pose.stale", payload={
-                "pose": {"x": pose.x, "y": pose.y, "received_at": pose.received_at}
+                "pose": {"x": pose.x, "y": pose.y, "received_at": pose.received_at, "yaw": pose.yaw}
                 if pose else None,
                 "stale": True,
             })

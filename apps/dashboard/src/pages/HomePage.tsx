@@ -43,6 +43,7 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
     const robot = robots[0];
     if (!robot || !livePose.pose) return [];
     return [{ robotId: robot.robot_id, state: robot.state, ...worldToMap(livePose.pose.x, livePose.pose.y),
+      heading: livePose.pose.yaw == null ? undefined : -livePose.pose.yaw * 180 / Math.PI,
       positionMode: "live", poseStale: livePose.stale }];
   }, [livePose.pose, livePose.stale, robots]);
   return (

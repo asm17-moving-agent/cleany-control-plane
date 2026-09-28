@@ -100,7 +100,7 @@
 .robot-detail-empty, .robot-detail-assignment { background: #f6f8fa; border-radius: 6px; padding: 14px; }
 .robot-detail-assignment strong { font-size: 14px; }
 .robot-detail-assignment a, .home-robot-detail-panel footer a { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--workspace-teal); }
-.robot-detail-assignment svg, .home-robot-detail-panel footer svg { width: 16px; }
+.robot-detail-assignment > a > svg, .home-robot-detail-panel footer svg { width: 16px; }
 .home-robot-detail-panel footer { padding: 16px; border-top: 1px solid var(--workspace-line); }
 .robot-detail-notice { background: #fff4ed; padding: 12px; color: #a34e2c; font-size: 12px; line-height: 1.7; }
 .home-robot-drawer { inset: 16px auto 64px 16px; width: min(300px, calc(100% - 32px)); max-height: 780px; border: 1px solid #d5dfe7; border-radius: 14px; transform: translateY(8px); z-index: 7; }

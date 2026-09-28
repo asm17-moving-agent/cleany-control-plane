@@ -77,14 +77,19 @@ TERMINAL/SUCCESS에서만 모두 완료로 표시하고 취소·실패 등은 �
 배터리는 **미연동**이다. 지도 pose는 `/api/robots/cleany-01/pose` snapshot과
 `/api/events/stream`의 `robot.pose` SSE를 사용한다. 브라우저는 약 200ms 수신 버퍼로
 보간하고 큰 이동은 즉시 반영한다. snapshot과 SSE payload는
-`{pose: {x,y,received_at} | null, stale: boolean}`이다. 첫 샘플 전에는 마커를 표시하지
+`{pose: {x,y,yaw,received_at} | null, stale: boolean}`이다. 첫 샘플 전에는 마커를 표시하지
 않으며 timeout 이후에는 마지막 표시 위치에서 멈추고 지연 상태를 표시한다. 새로고침 시에는
 서버의 마지막 수신 위치와 stale 상태를 복원한다. SSE 재연결마다 snapshot을 다시 조회하며
 위치 이벤트로 미션 목록을 재조회하지 않는다. 보간·브라우저 수신 타임아웃은 로컬 monotonic
 시간을 사용하므로 서버 UTC 시각과 브라우저 시각이 달라도 동작한다.
 Robot Edge producer는 `ws(s)://<host>/api/robots/cleany-01/pose/ws`
-에 `{x:number,y:number}` finite-only JSON을 5Hz로 전송한다. 로봇 상태는 `/api/robots`의 외부 상태를 표시한다. 홈의 알림과 요약은
+에 `{x:number,y:number,yaw?:number|null}` finite-only JSON을 5Hz로 전송한다. 로봇 상태는 `/api/robots`의 외부 상태를 표시한다. 홈의 알림과 요약은
 같은 판정 함수를 사용한다.
+
+yaw는 world +X=0, 반시계 방향 양수인 rad 값이다. 지도 y축 반전을 반영해
+`-yaw * 180 / PI` 방향으로 옅은 빨간 삼각형을 표시한다. 로봇 이미지는 고정하고
+투명한 원 둘레의 삼각형만 최단 각도로 보간한다. 방향 값이 없으면 화살표는 숨긴다.
+이미지는 촬영 시안의 80% 크기·60% 채도와 반응형 크기를 사용한다.
 
 위치 표시 설정은 Vite 빌드 시 지정한다. 모두 양의 유한한 값이어야 하며 잘못된 값은
 기본값으로 대체한다.

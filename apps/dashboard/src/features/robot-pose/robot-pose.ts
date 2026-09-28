@@ -3,6 +3,7 @@ import type { RobotPose, RobotPoseSnapshot } from "../../api/types";
 export interface MapPose {
   x: number;
   y: number;
+  yaw?: number | null;
 }
 
 function positiveSetting(value: string | undefined, fallback: number) {
@@ -17,6 +18,7 @@ export function validPose(value: unknown): value is RobotPose {
   if (!value || typeof value !== "object") return false;
   const pose = value as Record<string, unknown>;
   return Number.isFinite(pose.x) && Number.isFinite(pose.y)
+    && (pose.yaw == null || Number.isFinite(pose.yaw))
     && typeof pose.received_at === "string" && Number.isFinite(Date.parse(pose.received_at));
 }
 
@@ -40,7 +42,12 @@ export function samplePose(samples: PoseSample[], time: number): MapPose | null 
 
 export function interpolatePose(from: MapPose, to: MapPose, amount: number): MapPose {
   const t = Math.max(0, Math.min(1, amount));
-  return { x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t };
+  const result: MapPose = { x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t };
+  if (to.yaw != null) {
+    const start = from.yaw ?? to.yaw;
+    result.yaw = start + Math.atan2(Math.sin(to.yaw - start), Math.cos(to.yaw - start)) * t;
+  }
+  return result;
 }
 
 export function poseDistance(from: MapPose, to: MapPose): number {

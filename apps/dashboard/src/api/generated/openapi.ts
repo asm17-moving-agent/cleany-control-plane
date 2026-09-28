@@ -230,6 +230,11 @@ export interface components {
             x: number;
             /** Y */
             y: number;
+            /**
+             * Yaw
+             * @description World heading in radians, +X=0, counterclockwise positive; null when unavailable
+             */
+            yaw?: number | null;
         };
         /** RobotResponse */
         RobotResponse: {

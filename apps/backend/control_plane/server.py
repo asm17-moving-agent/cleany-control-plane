@@ -136,7 +136,8 @@ def create_app(
         if stale and pose is not None:
             control_plane.store.publish_pose_stale()
         return PoseSnapshot(
-            pose=RobotPose(x=pose.x, y=pose.y, received_at=pose.received_at) if pose else None,
+            pose=(RobotPose(x=pose.x, y=pose.y, received_at=pose.received_at, yaw=pose.yaw)
+                  if pose else None),
             stale=stale,
         )
 
@@ -164,7 +165,7 @@ def create_app(
                 except (TypeError, ValueError):
                     await websocket.close(code=1003, reason="pose must be finite {x,y}")
                     return
-                control_plane.store.update_pose(pose.x, pose.y)
+                control_plane.store.update_pose(pose.x, pose.y, yaw=pose.yaw)
         except WebSocketDisconnect:
             return
         finally:

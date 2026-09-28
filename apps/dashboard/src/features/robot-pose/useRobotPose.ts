@@ -11,7 +11,7 @@ export function useRobotPose(pose: RobotPose | null, poseStale: boolean, connect
   const [current, setCurrent] = useState<MapPose | null>(null);
   useEffect(() => {
     if (!pose) return;
-    const next = { x: pose.x, y: pose.y };
+    const next = { x: pose.x, y: pose.y, yaw: pose.yaw };
     if (!rendered.current || poseStale || poseDistance(rendered.current, next) > POSE_SNAP_DISTANCE) {
       samples.current = [{ pose: next, received: performance.now() }];
       // A stale snapshot can initialize a reload, but cannot move an existing marker.
@@ -32,7 +32,7 @@ export function useRobotPose(pose: RobotPose | null, poseStale: boolean, connect
       }
       const now = performance.now() - POSE_INTERPOLATION_MS;
       const next = samplePose(samples.current, now);
-      if (next && (next.x !== rendered.current?.x || next.y !== rendered.current?.y)) {
+      if (next && (next.x !== rendered.current?.x || next.y !== rendered.current?.y || next.yaw !== rendered.current?.yaw)) {
         rendered.current = next;
         setCurrent(next);
       }

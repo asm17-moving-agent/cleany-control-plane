@@ -12,7 +12,9 @@ SNAPSHOT = "/api/robots/cleany-01/pose"
 
 @pytest.mark.parametrize("message", [
     '{"x":1,"y":2,"received_at":"attacker"}',
-    '{"x":1,"y":2,"yaw":0}',
+    '{"x":1,"y":2,"yaw":true}',
+    '{"x":1,"y":2,"yaw":NaN}',
+    '{"x":1,"y":2,"yaw":"1"}',
     '{"x":true,"y":2}',
     '{"x":"1","y":2}',
     '{"x":NaN,"y":2}',
@@ -77,11 +79,12 @@ def test_disconnect_and_reconnect_preserve_last_pose_but_not_freshness() -> None
     with TestClient(create_app(application)) as client:
         assert client.get(SNAPSHOT).json() == {"pose": None, "stale": True}
         with client.websocket_connect(WS) as socket:
-            socket.send_json({"x": -1.865, "y": -4.705})
+            socket.send_json({"x": -1.865, "y": -4.705, "yaw": 1.57})
             assert accepted.wait(1)
             fresh = client.get(SNAPSHOT).json()
             assert fresh["stale"] is False
             assert fresh["pose"]["x"] == -1.865
+            assert fresh["pose"]["yaw"] == 1.57
             assert events[-1]["payload"] == fresh
             socket.close()
             assert released.wait(1)
