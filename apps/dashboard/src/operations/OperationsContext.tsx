@@ -10,15 +10,21 @@ import {
 } from "react";
 import { api } from "../api/client";
 import { queryKeys } from "../api/queryKeys";
-import type { Mission, MissionRequest, OperationsEvent, Robot, Seat } from "../api/types";
+import type { Mission, MissionRequest, OperationsEvent, Robot, RobotPose, Seat } from "../api/types";
 import { useSettings } from "../settings/SettingsContext";
 import { useDemoMode } from "./DemoModeContext";
 import { operationsDemo } from "./operations-demo";
 import type { SeatCleaningStates } from "../lib/seat-summary";
+import { useRecordingOperations } from "./useRecordingOperations";
+import type { RecordingPath } from "./recording-route";
+import { POSE_STALE_TIMEOUT_MS, validPoseSnapshot } from "../features/robot-pose/robot-pose";
 
 type ConnectionState = "connecting" | "connected" | "error";
 
-interface OperationsContextValue {
+export interface OperationsContextValue {
+  recordingPosition?: { x: number; y: number };
+  recordingHeading?: number;
+  recordingPath?: RecordingPath;
   seats: Seat[];
   // Absent for live data until the API supplies a current cleaning snapshot.
   seatCleaning?: SeatCleaningStates;
@@ -33,14 +39,21 @@ interface OperationsContextValue {
   createMission: (request: MissionRequest) => Promise<Mission>;
   cancelMission: (missionId: string) => Promise<Mission>;
   isCreatingMission: boolean;
+  pose?: RobotPose | null;
+  poseStale?: boolean;
 }
 
 const OperationsContext = createContext<OperationsContextValue | null>(null);
 
 export function OperationsProvider({ children }: PropsWithChildren) {
-  const { isDemo } = useDemoMode();
-  return isDemo ? <DemoOperationsProvider>{children}</DemoOperationsProvider>
+  const { isDemo, isRecording } = useDemoMode();
+  return isRecording ? <RecordingOperationsProvider>{children}</RecordingOperationsProvider>
+    : isDemo ? <DemoOperationsProvider>{children}</DemoOperationsProvider>
     : <LiveOperationsProvider>{children}</LiveOperationsProvider>;
+}
+function RecordingOperationsProvider({ children }: PropsWithChildren) {
+  const value = useRecordingOperations();
+  return <OperationsContext.Provider value={value}>{children}</OperationsContext.Provider>;
 }
 
 async function rejectDemoCommand(): Promise<Mission> {
@@ -51,6 +64,7 @@ const demoValue: OperationsContextValue = {
   connectionState: "connected", isLoading: false, error: null,
   refresh: async () => {}, createMission: rejectDemoCommand, cancelMission: rejectDemoCommand,
   isCreatingMission: false,
+  pose: null, poseStale: true,
 };
 function DemoOperationsProvider({ children }: PropsWithChildren) {
   return <OperationsContext.Provider value={demoValue}>{children}</OperationsContext.Provider>;
@@ -61,6 +75,8 @@ function LiveOperationsProvider({ children }: PropsWithChildren) {
   const { settings } = useSettings();
   const [connectionState, setConnectionState] = useState<ConnectionState>("connecting");
   const [events, setEvents] = useState<OperationsEvent[]>([]);
+  const [pose, setPose] = useState<RobotPose | null>(null);
+  const [poseStale, setPoseStale] = useState(true);
   const pollingInterval = connectionState === "connected"
     ? false
     : Number(settings.refreshSeconds) * 1000;
@@ -91,18 +107,55 @@ function LiveOperationsProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     const source = new EventSource("/api/events/stream");
-    source.addEventListener("open", () => setConnectionState("connected"));
+    let disposed = false;
+    let revision = 0;
+    let newestTimestamp = -Infinity;
+    let lastReceipt = -Infinity;
+    const applySnapshot = (snapshot: unknown) => {
+      if (disposed || !validPoseSnapshot(snapshot)) return;
+      const timestamp = snapshot.pose ? Date.parse(snapshot.pose.received_at) : -Infinity;
+      if (timestamp < newestTimestamp) return;
+      newestTimestamp = timestamp;
+      setPose(snapshot.pose);
+      setPoseStale(snapshot.stale);
+      lastReceipt = performance.now();
+    };
+    const refreshPose = () => {
+      const requestedRevision = ++revision;
+      void fetch("/api/robots/cleany-01/pose").then(response => response.ok ? response.json() : null)
+        .then(snapshot => {
+          // A newer stream event always wins over an in-flight HTTP snapshot.
+          if (requestedRevision === revision) applySnapshot(snapshot);
+        }).catch(() => {
+          if (!disposed && requestedRevision === revision) setPoseStale(true);
+        });
+    };
+    source.addEventListener("open", () => { setConnectionState("connected"); refreshPose(); });
     source.addEventListener("update", (event) => {
       try {
         const operationEvent = JSON.parse(event.data) as OperationsEvent;
+        if (operationEvent.event_type === "robot.pose" || operationEvent.event_type === "robot.pose.stale") {
+          if (operationEvent.robot_id === "cleany-01" && validPoseSnapshot(operationEvent.payload)) {
+            revision++;
+            applySnapshot(operationEvent.payload);
+          }
+          return;
+        }
         setEvents((current) => [operationEvent, ...current].slice(0, 20));
       } catch {
         // Invalid event data is recovered by the state refresh below.
       }
       void refresh();
     });
-    source.addEventListener("error", () => setConnectionState("error"));
-    return () => source.close();
+    source.addEventListener("error", () => {
+      setConnectionState("error");
+      revision++;
+    });
+    // Wall time at this browser, never the remote machine's UTC clock.
+    const watchdog = window.setInterval(() => {
+      if (performance.now() - lastReceipt > POSE_STALE_TIMEOUT_MS) setPoseStale(true);
+    }, Math.min(250, POSE_STALE_TIMEOUT_MS));
+    return () => { disposed = true; source.close(); window.clearInterval(watchdog); };
   }, [refresh]);
 
   const createMutation = useMutation({
@@ -129,6 +182,7 @@ function LiveOperationsProvider({ children }: PropsWithChildren) {
     createMission: createMutation.mutateAsync,
     cancelMission: cancelMutation.mutateAsync,
     isCreatingMission: createMutation.isPending,
+    pose, poseStale,
   }), [
     cancelMutation.mutateAsync,
     connectionState,
@@ -143,6 +197,7 @@ function LiveOperationsProvider({ children }: PropsWithChildren) {
     robotsQuery.isLoading,
     seatsQuery.data,
     seatsQuery.isLoading,
+    pose, poseStale,
   ]);
 
   return <OperationsContext.Provider value={value}>{children}</OperationsContext.Provider>;

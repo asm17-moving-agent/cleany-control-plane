@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from math import isfinite
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from control_plane.domain import (
     MissionOutcome,
@@ -81,6 +82,54 @@ class RobotResponse(BaseModel):
 
 class RobotListResponse(BaseModel):
     items: list[RobotResponse]
+
+
+class RobotPose(BaseModel):
+    """Latest accepted position with a server-owned receive timestamp."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    x: float = Field(allow_inf_nan=False)
+    y: float = Field(allow_inf_nan=False)
+    received_at: str
+
+    yaw: float | None = Field(
+        default=None, allow_inf_nan=False,
+        description=(
+            "World heading in radians, +X=0, counterclockwise positive; null when unavailable"
+        ),
+    )
+
+
+class PoseInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    x: float
+    y: float
+    yaw: float | None = Field(default=None, allow_inf_nan=False)
+
+    @field_validator("yaw", mode="before")
+    @classmethod
+    def finite_yaw(cls, value: object) -> float | None:
+        return None if value is None else cls.finite_number(value)
+
+    @field_validator("x", "y", mode="before")
+    @classmethod
+    def finite_number(cls, value: object) -> float:
+        if isinstance(value, (bool, str)):
+            raise ValueError("pose coordinates must be finite numbers")
+        try:
+            result = float(value)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError("pose coordinates must be finite numbers") from exc
+        if not isfinite(result):
+            raise ValueError("pose coordinates must be finite numbers")
+        return result
+
+
+class PoseSnapshot(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    pose: RobotPose | None
+    stale: bool
 
 
 class SeatResponse(BaseModel):

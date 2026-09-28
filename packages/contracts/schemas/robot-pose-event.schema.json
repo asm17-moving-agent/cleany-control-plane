@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cleany.dev/contracts/robot-pose-event.schema.json",
+  "title": "RobotPoseEvent",
+  "description": "SSE event: update envelope. Pose freshness is independent of mock mission state.",
+  "allOf": [
+    {"$ref": "mission-event.schema.json"},
+    {
+      "type": "object",
+      "properties": {
+        "event_type": {"enum": ["robot.pose", "robot.pose.stale"]},
+        "robot_id": {"const": "cleany-01"},
+        "payload": {"$ref": "../openapi.json#/components/schemas/PoseSnapshot"}
+      }
+    }
+  ],
+  "examples": [{
+    "schema_version": 1,
+    "event_id": "759d4c4c-809e-4371-a6bf-fd7910e8b52a",
+    "event_type": "robot.pose",
+    "robot_id": "cleany-01",
+    "mission_id": null,
+    "sequence": 0,
+    "occurred_at": "2026-09-18T00:00:00Z",
+    "payload": {
+      "pose": {"x": -1.865, "y": -4.705, "yaw": 1.5707963267948966, "received_at": "2026-09-18T00:00:00Z"},
+      "stale": false
+    }
+  }]
+}

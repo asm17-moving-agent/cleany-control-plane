@@ -1,7 +1,7 @@
 import facilityFloorplan from "../../assets/facility-18f-floorplan.png";
 import elevatorIcon from "../../assets/icons/material-symbols-elevator-outlined.svg";
 import { rotatePortraitPoint } from "./facility-18f";
-import { D_HUB_TABLES, D_HUB_SEATS, D_HUB_DESK_WIDTH, D_HUB_DESK_HEIGHT, ROOM_TABLES, ROOM_DESK_SCALE, roomDeskPositions } from "./seat-layout";
+import { D_HUB_TABLES, D_HUB_SEATS, D_HUB_DESK_WIDTH, D_HUB_DESK_HEIGHT, D_HUB_CHAIR_OFFSET, D_HUB_UNITS_PER_METER, D_HUB_ROOM, ROOM_TABLES, ROOM_DESK_SCALE, ROOM_DESK_WIDTH, ROOM_DESK_HEIGHT, roomDeskPositions } from "./seat-layout";
 
 interface PortraitPosition {
   x: number;
@@ -75,13 +75,22 @@ function DeskChair({ x, y, rotation = 0 }: { x: number; y: number; rotation?: nu
     </g>
   );
 }
+function DHubChair({ x, y, rotation }: { x: number; y: number; rotation: number }) {
+  // Seat-only symbol, not the mesh/caster collision footprint.
+  const width = 0.52 * D_HUB_UNITS_PER_METER;
+  const height = 0.55 * D_HUB_UNITS_PER_METER;
+  return <g className="facility-desk-chair" transform={`translate(${x} ${y}) rotate(${rotation})`}>
+    <rect x={-width / 2} y={-height / 2} width={width} height={height} rx="3" />
+    <path d={`M${-width / 2 + 2} ${-height / 2 + 3}h${width - 4}`} fill="none" strokeLinecap="round" />
+  </g>;
+}
 
 function RoomFurniture() {
   return (
     <g className="facility-room-furniture">
       {ROOM_TABLES.map((table) => {
         const columns = table.columns;
-        const width = (columns - 1) * 40 + D_HUB_DESK_WIDTH;
+        const width = (columns - 1) * 40 + ROOM_DESK_WIDTH;
         const desks = roomDeskPositions(columns);
         return (
         <g key={table.id} data-room-furniture={table.id} transform={`translate(${table.x} ${table.y}) rotate(${table.vertical ? 90 : 0}) scale(${ROOM_DESK_SCALE})`}>
@@ -89,9 +98,9 @@ function RoomFurniture() {
           {desks.map(({ x, y }, index) => (
             <g key={index} data-room-desk={`${table.id}-${index + 1}`}>
               <DeskChair x={x} y={y} rotation={y < 0 ? 0 : 180} />
-              <rect className="facility-desk-surface" x={x - D_HUB_DESK_WIDTH / 2}
-                y={y - D_HUB_DESK_HEIGHT / 2} width={D_HUB_DESK_WIDTH}
-                height={D_HUB_DESK_HEIGHT} rx="2" />
+              <rect className="facility-desk-surface" x={x - ROOM_DESK_WIDTH / 2}
+                y={y - ROOM_DESK_HEIGHT / 2} width={ROOM_DESK_WIDTH}
+                height={ROOM_DESK_HEIGHT} rx="2" />
             </g>
           ))}
         </g>
@@ -106,6 +115,8 @@ function RoomFurniture() {
  * interactive or live state belong to separate SVG/HTML overlay layers.
  */
 export function FacilityPlanArtwork() {
+  const { left, right, bottom, cornerRadius } = D_HUB_ROOM;
+  const cornerTop = bottom - cornerRadius;
   return (
     <>
       <img
@@ -133,10 +144,17 @@ export function FacilityPlanArtwork() {
             </feComponentTransfer>
           </filter>
         </defs>
+        {/* Clear only the former lower wall/corner, including raster antialiasing.
+            Furniture is drawn afterward; the source PNG is unchanged. */}
+        <path className="facility-dhub-wall-mask"
+          d={`M${left - 3} ${cornerTop - 2}H${right + 3}V416H${left - 3}Z`} />
         <g className="facility-inactive-areas">
           {/* Keep only the workspace rooms and their shared access corridor active. */}
           <path d="M8 8H74V90H8Z M976 8H1154V662H8V454H976Z" />
         </g>
+        {/* Keep both door openings at their original X coordinates. */}
+        <path className="facility-dhub-wall"
+          d={`M${left} ${cornerTop - 2}V${bottom}H586 M618 ${bottom}H908 M936 ${bottom}H${right - cornerRadius}A${cornerRadius} ${cornerRadius} 0 0 0 ${right} ${cornerTop}V${cornerTop - 2}`} />
         <g className="facility-dhub-furniture">
           {D_HUB_TABLES.map((table) => (
             <rect
@@ -150,7 +168,13 @@ export function FacilityPlanArtwork() {
               y={table.y - 1}
             />
           ))}
-          {D_HUB_SEATS.map((seat) => <DeskChair key={`chair-${seat.id}`} {...seat} />)}
+          {D_HUB_SEATS.map((seat, index) => {
+            const row = Math.floor(index / 8);
+            // Each pair faces its partition; chairs lie on the opposite edge.
+            const outward = D_HUB_CHAIR_OFFSET;
+            return <DHubChair key={`chair-${seat.id}`} x={seat.x} rotation={seat.rotation}
+              y={seat.y + (row % 2 === 0 ? -outward : outward)} />;
+          })}
           {D_HUB_SEATS.map((seat) => (
             <rect className="facility-desk-surface" key={`desk-${seat.id}`} data-desk-id={seat.id}
               x={seat.x - D_HUB_DESK_WIDTH / 2} y={seat.y - D_HUB_DESK_HEIGHT / 2}

@@ -249,6 +249,31 @@
         "title": "MissionTargetModel",
         "type": "object"
       },
+      "PoseSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "pose": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RobotPose"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "stale": {
+            "title": "Stale",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "pose",
+          "stale"
+        ],
+        "title": "PoseSnapshot",
+        "type": "object"
+      },
       "Priority": {
         "enum": [
           "NORMAL",
@@ -271,6 +296,43 @@
           "items"
         ],
         "title": "RobotListResponse",
+        "type": "object"
+      },
+      "RobotPose": {
+        "additionalProperties": false,
+        "description": "Latest accepted position with a server-owned receive timestamp.",
+        "properties": {
+          "received_at": {
+            "title": "Received At",
+            "type": "string"
+          },
+          "x": {
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "title": "Y",
+            "type": "number"
+          },
+          "yaw": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "World heading in radians, +X=0, counterclockwise positive; null when unavailable",
+            "title": "Yaw"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "received_at"
+        ],
+        "title": "RobotPose",
         "type": "object"
       },
       "RobotResponse": {
@@ -612,6 +674,24 @@
           }
         },
         "summary": "List Robots"
+      }
+    },
+    "/api/robots/cleany-01/pose": {
+      "get": {
+        "operationId": "latest_pose_api_robots_cleany_01_pose_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PoseSnapshot"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Latest Pose"
       }
     },
     "/api/seats": {

@@ -6,7 +6,7 @@ import { needsRobotAttention } from "../lib/home-summary";
 import { RobotStateBadge } from "./RobotStateBadge";
 import { BatteryStatus } from "./BatteryStatus";
 import { InfoRow } from "./InfoRow";
-import { formatDateTime, missionTargetLabel } from "../lib/operations";
+import { formatDateTime, missionTargetLabel, missionMessage } from "../lib/operations";
 import { RobotModel } from "./RobotModel";
 import { MissionProgress } from "./MissionProgress";
 
@@ -24,7 +24,7 @@ export function RobotDetailPanel({ robot, mission, seats, unavailable, onClose, 
       {unavailable && <p role="alert" className="robot-detail-notice">정보를 갱신하지 못했습니다. 마지막으로 받은 정보를 표시합니다.</p>}
       {needsRobotAttention(robot) && <p className="robot-detail-notice">{robot.state === "OFFLINE" ? "연결이 끊겼습니다. 현장 상태와 네트워크를 확인해 주세요." : "오류가 발생했습니다. 현장 상태를 확인해 주세요."}</p>}
       <dl className="robot-detail-metrics"><InfoRow label="배터리"><BatteryStatus /></InfoRow><InfoRow label="마지막 확인">{formatDateTime(robot.last_seen_at)}</InfoRow></dl>
-      <section><h3>현재 작업</h3>{mission ? <div className="robot-detail-assignment"><strong>{missionTargetLabel(mission, seats)}</strong><MissionProgress mission={mission} />{mission.message && <p>{mission.message}</p>}<Link to={"/missions?mission=" + encodeURIComponent(mission.mission_id)}>작업 상세 보기 <ChevronIcon /></Link></div> : <p className="robot-detail-empty">{robot.active_mission_id ? "할당된 작업 정보를 불러오지 못했습니다." : "현재 할당된 작업이 없습니다."}</p>}</section>
+      <section><h3>현재 작업</h3>{mission ? <div className="robot-detail-assignment"><strong>{missionTargetLabel(mission, seats)}</strong><MissionProgress mission={mission} />{mission.message && <p>{missionMessage(mission.message)}</p>}<Link to={"/missions?mission=" + encodeURIComponent(mission.mission_id)}>작업 상세 보기 <ChevronIcon /></Link></div> : <p className="robot-detail-empty">{robot.active_mission_id ? "할당된 작업 정보를 불러오지 못했습니다." : "현재 할당된 작업이 없습니다."}</p>}</section>
       <div className="robot-detail-preview"><RobotModel key={robot.robot_id} rotationGuide /></div>
     </div>
     <footer><Link to={"/robots?robot=" + encodeURIComponent(robot.robot_id)}>로봇 상세 페이지 보기 <ChevronIcon /></Link></footer>
