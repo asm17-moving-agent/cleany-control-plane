@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cleany.dev/contracts/robot-pose.schema.json",
+  "title": "PoseInput",
+  "description": "Finite coordinates in meters in the Gazebo D-HUB world frame. Optional yaw in radians, +X=0, counterclockwise positive. No client timestamp.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["x", "y"],
+  "properties": {
+    "x": {"type": "number", "minimum": -1.7976931348623157e308, "maximum": 1.7976931348623157e308},
+    "y": {"type": "number", "minimum": -1.7976931348623157e308, "maximum": 1.7976931348623157e308},
+    "yaw": {"type": ["number", "null"], "minimum": -1.7976931348623157e308, "maximum": 1.7976931348623157e308, "default": null}
+  },
+  "examples": [{"x": -1.865, "y": -4.705, "yaw": null}, {"x": -1.865, "y": -4.705, "yaw": 1.5707963267948966}]
+}

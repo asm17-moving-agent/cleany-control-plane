@@ -5,6 +5,7 @@ import { MemoryRouter, Outlet, Route, Routes } from "react-router";
 import { afterEach, it, expect, vi } from "vitest";
 import { HomePage } from "./HomePage";
 vi.mock("../operations/OperationsContext", () => ({ useOperations: () => ({
+ pose: { x: -1.865, y: -4.705, received_at: "2026-09-18T00:00:00Z" }, poseStale: false, connectionState: "connected",
  robots: [{ robot_id: "cleany-01", state: "IDLE", active_mission_id: null, last_seen_at: "2026-09-08T01:00:00Z" }],
  seats: [{ seat_id: "seat-12", label: "12", row: 2, grid_column: 5, occupancy: "AVAILABLE", occupant_name: null }], missions: [], isLoading: false, error: null, isCreatingMission: false,
 }) }));
@@ -29,7 +30,7 @@ it("opens robot details from the roster and map and closes without leaving home"
  expect(within(panel).getByText("현재 할당된 작업이 없습니다.")).toBeInTheDocument();
  fireEvent.click(within(panel).getByRole("button", { name: "로봇 목록" }));
  expect(screen.queryByRole("complementary", { name: "로봇 상세" })).not.toBeInTheDocument();
- fireEvent.click(screen.getByRole("button", { name: "cleany-01 로봇 · 대기 · 예시 위치" }));
+ fireEvent.click(screen.getByRole("button", { name: "cleany-01 로봇 · 대기 · 실시간 위치" }));
  panel = screen.getByRole("complementary", { name: "로봇 상세" });
  expect(within(panel).getByRole("link", { name: "로봇 상세 페이지 보기" })).toHaveAttribute("href", "/robots?robot=cleany-01");
  fireEvent.keyDown(panel, { key: "Escape" });
@@ -52,7 +53,7 @@ it("toggles the same seat panel and can reopen it during the closing animation",
 it("keeps seat and robot panels mutually exclusive from both robot entry points", () => {
  render(<MemoryRouter><Routes><Route element={<Outlet context={{ floor: { id: "BUSAN_SOMA_18F", label: "18층", mapAvailable: true } }} />}><Route index element={<HomePage />} /></Route></Routes></MemoryRouter>);
  const seat = screen.getByRole("button", { name: "12번 좌석 · 비어 있음" });
- for (const name of ["cleany-01 상세 열기", "cleany-01 로봇 · 대기 · 예시 위치"]) {
+ for (const name of ["cleany-01 상세 열기", "cleany-01 로봇 · 대기 · 실시간 위치"]) {
   fireEvent.click(seat);
   expect(screen.getByRole("button", { name: "요청 보내기" })).toBeVisible();
   expect(screen.queryByRole("complementary", { name: "로봇 상세" })).not.toBeInTheDocument();

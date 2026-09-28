@@ -7,7 +7,7 @@ import { MissionProgress } from "../components/MissionProgress";
 import { MissionStatusBadge, OperationsEmpty, OperationsPage, OperationsTabs } from "../components/OperationsPage";
 import { WorkspaceMessage } from "../components/WorkspaceMessage";
 import { byNewestRequest } from "../lib/home-summary";
-import { formatDateTime, missionTargetLabel } from "../lib/operations";
+import { formatDateTime, missionTargetLabel, missionMessage } from "../lib/operations";
 import { useOperations } from "../operations/OperationsContext";
 import { useDemoMode } from "../operations/DemoModeContext";
 import "./missions-page.css";
@@ -65,7 +65,7 @@ export function MissionsPage() {
             <p className="ops-note">{selected.phase === "TERMINAL" ? "종료된 작업입니다. 작업 결과에서 관측 자료와 최종 상태를 확인하세요." : selected.cancel_requested ? "취소를 요청했습니다. 최종 종료 상태가 확인될 때까지 진행 상황을 표시합니다." : "취소 요청 후 로봇이 안전하게 작업을 마무리하고 종료 상태를 알립니다."}</p>
             {cancelError?.id === selected.mission_id && <p className="mission-cancel-error" role="alert">{cancelError.message}</p>}
             <div className="ops-detail-actions">{selected.phase === "TERMINAL" ? <Link className="ops-button" to={"/results?mission=" + encodeURIComponent(selected.mission_id)}>작업 결과 보기 <ChevronIcon /></Link> : <button className="ops-button is-danger" disabled={(isDemo && !isRecording) || !!cancelling || selected.cancel_requested} onClick={() => void cancel()}>{cancelling === selected.mission_id ? "취소 요청 중…" : selected.cancel_requested ? "취소 요청됨" : "작업 취소 요청"}</button>}</div>
-            <details className="mission-reference"><summary>요청 정보</summary><code>{selected.mission_id}</code>{selected.message && <p>{selected.message}</p>}</details>
+            <details className="mission-reference"><summary>요청 정보</summary><code>{selected.mission_id}</code>{selected.message && <p>{missionMessage(selected.message)}</p>}</details>
           </div> : <OperationsEmpty icon={<MissionIcon />} title={selectedId ? "선택한 요청을 찾을 수 없습니다" : "요청 상세가 여기에 표시됩니다"}>왼쪽 목록에서 작업을 선택하세요.</OperationsEmpty>}
         </aside>
       </div>}

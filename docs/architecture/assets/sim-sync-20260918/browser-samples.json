@@ -1,0 +1,1442 @@
+[
+  {
+    "time": 1789669697.5454948,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:17.452660+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669698.0512543,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:17.852886+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669698.556632,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:18.453810+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669699.0623636,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:19.053699+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669699.5648723,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:19.454016+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669700.0716016,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:20.054220+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669700.5756373,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:20.454468+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669701.0788183,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:21.054594+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669701.582072,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:21.454889+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669702.0845926,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:22.054998+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669702.5868,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:22.455222+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669703.0898361,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:23.055320+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669703.5932426,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:23.456146+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669704.0965345,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:24.056424+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669704.5992544,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:24.456548+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669705.1014946,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:25.056739+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669705.6080186,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:25.457158+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669706.1102118,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:26.057682+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669706.6123471,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:26.457636+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669707.1151357,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:27.058278+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669707.6175745,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:27.458446+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669708.1217167,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:28.059222+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669708.62442,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:28.458855+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669709.1268198,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:29.058982+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669709.6303205,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:29.459307+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669710.1329799,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:30.060100+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669710.6373882,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:30.459828+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669711.140982,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:31.059967+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669711.6491916,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:31.460947+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669712.1572108,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:32.060634+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669712.6600227,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:32.460779+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669713.1624398,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:33.062804+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669713.6662765,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:33.661608+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669714.169211,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:34.061603+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669714.672127,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:34.661927+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669715.1756644,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:35.062770+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669715.685084,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:35.663368+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669716.189672,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:36.063397+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669716.6919746,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:36.663676+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669717.2008154,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:37.064108+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669717.7036107,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:37.664326+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669718.2084873,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:38.064945+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669718.7116761,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:38.665899+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669719.2145362,
+    "snapshot": {
+      "pose": {
+        "x": -1.8649999999998625,
+        "y": -4.7049999999868595,
+        "received_at": "2026-09-17T18:28:39.065551+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 339.974,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669719.7175794,
+    "snapshot": {
+      "pose": {
+        "x": -1.8650002925497364,
+        "y": -4.648780038244723,
+        "received_at": "2026-09-17T18:28:39.665871+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 338.65,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669720.2212682,
+    "snapshot": {
+      "pose": {
+        "x": -1.8650004513571232,
+        "y": -4.605580040224568,
+        "received_at": "2026-09-17T18:28:40.066163+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 336.915,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669720.7235487,
+    "snapshot": {
+      "pose": {
+        "x": -1.8650006983725387,
+        "y": -4.538380043348627,
+        "received_at": "2026-09-17T18:28:40.666286+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 335.16,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669721.2259758,
+    "snapshot": {
+      "pose": {
+        "x": -1.865000857134118,
+        "y": -4.495180045357505,
+        "received_at": "2026-09-17T18:28:41.066523+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 333.359,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669721.7304614,
+    "snapshot": {
+      "pose": {
+        "x": -1.8650010864610387,
+        "y": -4.432780048259217,
+        "received_at": "2026-09-17T18:28:41.666678+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 331.6,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669722.2335207,
+    "snapshot": {
+      "pose": {
+        "x": -1.8650012540531746,
+        "y": -4.3871800503796985,
+        "received_at": "2026-09-17T18:28:42.066969+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 329.764,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669722.737015,
+    "snapshot": {
+      "pose": {
+        "x": -1.8650014833959967,
+        "y": -4.324780053281409,
+        "received_at": "2026-09-17T18:28:42.667268+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 328.017,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669723.240282,
+    "snapshot": {
+      "pose": {
+        "x": -1.8650016421769149,
+        "y": -4.281580055290287,
+        "received_at": "2026-09-17T18:28:43.067412+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 326.334,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669723.7432036,
+    "snapshot": {
+      "pose": {
+        "x": -1.8650018715356262,
+        "y": -4.219180058191994,
+        "received_at": "2026-09-17T18:28:43.667674+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 324.635,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669724.2464166,
+    "snapshot": {
+      "pose": {
+        "x": -1.8650020391473685,
+        "y": -4.173580060312478,
+        "received_at": "2026-09-17T18:28:44.067868+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.152,
+      "y": 322.728,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669724.7486572,
+    "snapshot": {
+      "pose": {
+        "x": -1.8650160943696477,
+        "y": -4.165120019871469,
+        "received_at": "2026-09-17T18:28:44.668090+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.151,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669725.250926,
+    "snapshot": {
+      "pose": {
+        "x": -1.8650262316601451,
+        "y": -4.165120017065743,
+        "received_at": "2026-09-17T18:28:45.068343+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.151,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669725.7532933,
+    "snapshot": {
+      "pose": {
+        "x": -1.8650404150927393,
+        "y": -4.165120013102538,
+        "received_at": "2026-09-17T18:28:45.668962+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.15,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669726.2562497,
+    "snapshot": {
+      "pose": {
+        "x": -1.8650495245754877,
+        "y": -4.165120010556672,
+        "received_at": "2026-09-17T18:28:46.069058+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.15,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669726.7631462,
+    "snapshot": {
+      "pose": {
+        "x": -1.865061667980051,
+        "y": -4.165120007162895,
+        "received_at": "2026-09-17T18:28:46.669399+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.15,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669727.2672067,
+    "snapshot": {
+      "pose": {
+        "x": -1.8650697838445431,
+        "y": -4.165120004894714,
+        "received_at": "2026-09-17T18:28:47.069536+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.149,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669727.7703383,
+    "snapshot": {
+      "pose": {
+        "x": -1.8650808824939902,
+        "y": -4.165120001792931,
+        "received_at": "2026-09-17T18:28:47.669942+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.149,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669728.275525,
+    "snapshot": {
+      "pose": {
+        "x": -1.8650899676580612,
+        "y": -4.165119999253859,
+        "received_at": "2026-09-17T18:28:48.270344+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.149,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669728.7775056,
+    "snapshot": {
+      "pose": {
+        "x": -1.8650970387894896,
+        "y": -4.165119997277661,
+        "received_at": "2026-09-17T18:28:48.670443+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.149,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669729.2807548,
+    "snapshot": {
+      "pose": {
+        "x": -1.8651060933165733,
+        "y": -4.165119994747154,
+        "received_at": "2026-09-17T18:28:49.270705+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.148,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669729.7831805,
+    "snapshot": {
+      "pose": {
+        "x": -1.865111134202673,
+        "y": -4.16511999333835,
+        "received_at": "2026-09-17T18:28:49.670805+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.148,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669730.2905924,
+    "snapshot": {
+      "pose": {
+        "x": -1.8651191923416492,
+        "y": -4.165119991086311,
+        "received_at": "2026-09-17T18:28:50.271158+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.148,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669730.792955,
+    "snapshot": {
+      "pose": {
+        "x": -1.8651232176369485,
+        "y": -4.165119989961333,
+        "received_at": "2026-09-17T18:28:50.671370+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.148,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669731.2971456,
+    "snapshot": {
+      "pose": {
+        "x": -1.8651302311160531,
+        "y": -4.165119988001242,
+        "received_at": "2026-09-17T18:28:51.271660+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.148,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669731.7995327,
+    "snapshot": {
+      "pose": {
+        "x": -1.8651342590276179,
+        "y": -4.165119986875555,
+        "received_at": "2026-09-17T18:28:51.671888+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.147,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669732.3017356,
+    "snapshot": {
+      "pose": {
+        "x": -1.865140283812145,
+        "y": -4.165119985191785,
+        "received_at": "2026-09-17T18:28:52.272292+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.147,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669732.804734,
+    "snapshot": {
+      "pose": {
+        "x": -1.8651433001467195,
+        "y": -4.165119984348796,
+        "received_at": "2026-09-17T18:28:52.672336+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.147,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669733.3068633,
+    "snapshot": {
+      "pose": {
+        "x": -1.8651493259070993,
+        "y": -4.165119982664758,
+        "received_at": "2026-09-17T18:28:53.272608+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.147,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669733.81009,
+    "snapshot": {
+      "pose": {
+        "x": -1.8651523342005003,
+        "y": -4.165119981824024,
+        "received_at": "2026-09-17T18:28:53.672775+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.147,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669734.3128762,
+    "snapshot": {
+      "pose": {
+        "x": -1.865156347702838,
+        "y": -4.165119980702357,
+        "received_at": "2026-09-17T18:28:54.273063+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.147,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669734.815119,
+    "snapshot": {
+      "pose": {
+        "x": -1.8651593545805105,
+        "y": -4.165119979862016,
+        "received_at": "2026-09-17T18:28:54.673153+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.147,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669735.3194377,
+    "snapshot": {
+      "pose": {
+        "x": -1.8651633689803955,
+        "y": -4.165119978740094,
+        "received_at": "2026-09-17T18:28:55.273441+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.146,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669735.8222237,
+    "snapshot": {
+      "pose": {
+        "x": -1.8651653751947803,
+        "y": -4.165119978179409,
+        "received_at": "2026-09-17T18:28:55.673837+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.146,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669736.3251102,
+    "snapshot": {
+      "pose": {
+        "x": -1.865168382121613,
+        "y": -4.165119977339042,
+        "received_at": "2026-09-17T18:28:56.274167+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.146,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669736.8275216,
+    "snapshot": {
+      "pose": {
+        "x": -1.8651703890018179,
+        "y": -4.165119976778161,
+        "received_at": "2026-09-17T18:28:56.674367+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.146,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  },
+  {
+    "time": 1789669737.330313,
+    "snapshot": {
+      "pose": {
+        "x": -1.8651733974627311,
+        "y": -4.165119975937378,
+        "received_at": "2026-09-17T18:28:57.274937+00:00"
+      },
+      "stale": false
+    },
+    "marker": {
+      "x": 715.146,
+      "y": 322.36,
+      "stale": false,
+      "label": "cleany-01 \ub85c\ubd07 \u00b7 \ub300\uae30 \u00b7 \uc2e4\uc2dc\uac04 \uc704\uce58",
+      "status": "SSE \uc5f0\uacb0\ub428 \u00b7 \uc704\uce58 \ucd5c\uc2e0"
+    }
+  }
+]

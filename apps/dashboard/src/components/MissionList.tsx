@@ -1,6 +1,6 @@
 import type { Mission, Seat } from "../api/types";
 import { Link } from "react-router";
-import { formatDateTime } from "../lib/operations";
+import { formatDateTime, missionMessage } from "../lib/operations";
 import { missionProgress, missionTargetLabel, missionTone } from "../lib/operations";
 
 interface MissionListProps {
@@ -30,7 +30,7 @@ export function MissionList({ missions, seats, emptyMessage, onCancel }: Mission
           </div>
         </div>
         <div className="progress"><i style={{ width: `${missionProgress(mission.phase)}%` }} /></div>
-        <p>{mission.message}</p>
+        <p>{missionMessage(mission.message)}</p>
         <div className="mission-footer">
           <small>요청 {formatDateTime(mission.created_at)}</small>
           {terminal && <Link to={"/results?mission=" + encodeURIComponent(mission.mission_id)}>결과 보기 →</Link>}

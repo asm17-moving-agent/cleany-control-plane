@@ -1,9 +1,9 @@
 import type { Seat } from "../api/types";
-import { ROOM_TABLES, seatMapPosition } from "../features/facility-map/seat-layout";
+import { ROOM_TABLES, seatMapPosition, worldToMap } from "../features/facility-map/seat-layout";
 
 export type RecordingPoint = { x: number; y: number };
 export type RecordingPath = { points: RecordingPoint[]; returning: boolean; progress: number };
-export const RECORDING_HOME = { x: 805, y: 365 };
+export const RECORDING_HOME = worldToMap(-1.865, -4.705);
 export const RECORDING_TIMING = { tick: 50, offered: 500, accepted: 1000, working: 4000, speed: 27.5, turnRate: 40 };
 
 // Hand-authored screen-space aisles for filming, not robot navigation coordinates.
@@ -11,9 +11,9 @@ function recordingWaypoints(seat: Seat, start: RecordingPoint): RecordingPoint[]
   const point = seatMapPosition(seat);
   if (!point) throw new Error("촬영 경로가 없는 좌석입니다.");
   if (seat.zone_id === "d-hub") {
-    const aisle = point.x < 750 ? 721 : 834;
+    const aisle = worldToMap(point.x < worldToMap(0, 0).x ? -1.865 : 1.865, 0).x;
     const approach = { x: point.x, y: point.y + (seat.row % 2 ? -30 : 30) };
-    return [start, { x: start.x, y: 365 }, { x: aisle, y: 365 }, { x: aisle, y: approach.y }, approach];
+    return [start, { x: start.x, y: RECORDING_HOME.y }, { x: aisle, y: RECORDING_HOME.y }, { x: aisle, y: approach.y }, approach];
   }
   const room = ROOM_TABLES.find(room => room.id === seat.zone_id)!;
   const common = [start, { x: start.x, y: 390 }, { x: 590, y: 390 }, { x: 590, y: 435 }, { x: 400, y: 435 }];

@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from control_plane.schemas import MissionRequest, SeatResponse
+from control_plane.schemas import MissionRequest, PoseInput, PoseSnapshot, SeatResponse
 
 CONTRACT_ROOT = Path(__file__).resolve().parents[3] / "packages" / "contracts" / "schemas"
 
@@ -35,3 +35,17 @@ def test_seat_model_preserves_canonical_shape() -> None:
         assert model["properties"][field]["pattern"] == contract["properties"][field]["pattern"]
     for example in contract["examples"]:
         assert SeatResponse.model_validate(example).model_dump() == example
+
+
+def test_pose_contract_and_sse_snapshot_examples_match_models() -> None:
+    contract = read_contract("robot-pose.schema.json")
+    model = PoseInput.model_json_schema()
+    assert set(model["required"]) == set(contract["required"]) == {"x", "y"}
+    assert model["additionalProperties"] is contract["additionalProperties"] is False
+    for field in ("x", "y"):
+        assert model["properties"][field]["type"] == contract["properties"][field]["type"]
+    for example in contract["examples"]:
+        assert PoseInput.model_validate(example).model_dump() == example
+    events = read_contract("robot-pose-event.schema.json")
+    for example in events["examples"]:
+        assert PoseSnapshot.model_validate(example["payload"]).model_dump() == example["payload"]

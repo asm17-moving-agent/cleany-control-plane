@@ -1,3 +1,5 @@
+import { D_HUB_ROOM, worldToMap } from "./seat-layout";
+
 export interface FacilityPoint {
   x: number;
   y: number;
@@ -119,8 +121,21 @@ const PORTRAIT_FACILITY_ZONES: PortraitFacilityZone[] = [
     label: "D-HUB",
     shortLabel: "D-HUB",
     category: "COMMON",
-    points: [{ x: 257, y: 569 }, { x: 666, y: 569 }, { x: 666, y: 969 }, { x: 312, y: 969 }, { x: 278, y: 958 }, { x: 257, y: 935 }],
-    center: { x: 462, y: 760 },
+    // Source zones are portrait and rotatePortraitPoint converts them to the
+    // landscape artwork. Keep this outline in the source coordinate system.
+    points: [
+      { x: D_HUB_ROOM.left, y: D_HUB_ROOM.top },
+      { x: D_HUB_ROOM.right, y: D_HUB_ROOM.top },
+      ...Array.from({ length: 7 }, (_, i) => {
+        const angle = i * Math.PI / 12;
+        return {
+          x: D_HUB_ROOM.right - D_HUB_ROOM.cornerRadius * (1 - Math.cos(angle)),
+          y: D_HUB_ROOM.bottom - D_HUB_ROOM.cornerRadius * (1 - Math.sin(angle)),
+        };
+      }),
+      { x: D_HUB_ROOM.left, y: D_HUB_ROOM.bottom },
+    ].map(({ x, y }) => ({ x: PORTRAIT_PLAN_WIDTH - y, y: x })),
+    center: { x: PORTRAIT_PLAN_WIDTH - worldToMap(0, 0).y, y: worldToMap(0, 0).x },
     selectable: true,
   },
   {

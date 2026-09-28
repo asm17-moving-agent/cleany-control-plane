@@ -67,6 +67,20 @@ export function missionTone(mission: Mission) {
     : "warning";
 }
 
+const missionMessages: Record<string, string> = {
+  "Mission completed successfully.": "작업이 정상적으로 완료되었습니다.",
+  "Mission offered to cleany-01.": "로봇에 작업을 요청했습니다.",
+  "Robot accepted the mission.": "로봇이 작업을 수락했습니다.",
+  "Navigating to the selected seat.": "선택한 좌석으로 이동하고 있습니다.",
+  "Observing and processing the tabletop scene.": "책상 위 물체를 확인하고 정리하고 있습니다.",
+  "Returning to the waiting position.": "대기 위치로 복귀하고 있습니다.",
+  "Mission cancelled at a safe checkpoint.": "안전한 지점에서 작업을 취소했습니다.",
+  "Cancellation requested; waiting for a safe checkpoint.": "취소를 요청했습니다. 안전하게 멈출 수 있는 지점을 기다리고 있습니다.",
+};
+export function missionMessage(message: string | null | undefined) {
+  return message ? missionMessages[message] ?? message : "";
+}
+
 export function missionProgress(phase: MissionPhase) {
   return {
     QUEUED: 8,
