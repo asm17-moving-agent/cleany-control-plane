@@ -9,6 +9,8 @@ import { seatMapSize, seatMapPosition } from "./seat-layout";
 import { seatOccupancyLabel, seatDisplayLabel } from "../../lib/operations";
 import { seatMapStatus, seatMapStatusLabels, type SeatCleaningStates, type SeatMapStatus } from "../../lib/seat-summary";
 import "./facility-map.css";
+import { RecordingNavigationOverlay } from "./RecordingNavigationOverlay";
+import type { RecordingPath } from "../../operations/recording-route";
 
 interface FacilityMapProps {
   seats: Seat[];
@@ -22,19 +24,22 @@ interface FacilityMapProps {
   seatSelectionDisabled?: boolean;
   highlightedSeatIds?: ReadonlySet<string>;
   overlayInsetLeft?: number;
+  focusRobotOnSelect?: boolean;
+  movementPath?: RecordingPath;
 }
 export interface FacilityRobotMarker {
   robotId: string;
   state: RobotState;
   x: number; y: number;
+  heading?: number;
   positionMode: "live" | "scenario";
 }
 const width = FACILITY_18F.imageWidth;
 const height = FACILITY_18F.imageHeight;
 const fullBounds = { x: 0, y: 0, width, height };
-export function FacilityMap({ seats, seatCleaning, selectedSeatId, onSelectSeat, robots, selectedRobotId, onSelectRobot, robotFocusKey = 0, seatSelectionDisabled = false, highlightedSeatIds, overlayInsetLeft = 0 }: FacilityMapProps) {
+export function FacilityMap({ seats, seatCleaning, selectedSeatId, onSelectSeat, robots, selectedRobotId, onSelectRobot, robotFocusKey = 0, seatSelectionDisabled = false, highlightedSeatIds, overlayInsetLeft = 0, focusRobotOnSelect = true, movementPath }: FacilityMapProps) {
   const { stage, view, camera, dragging, focusMotion, zoomBy, fitView, canZoomIn, canZoomOut, panHandlers, endFocus } = useMapCamera({
-    robots, selectedRobotId, robotFocusKey, fullBounds, activeBounds: FACILITY_ACTIVE_BOUNDS, overlayInsetLeft,
+    robots, selectedRobotId: focusRobotOnSelect ? selectedRobotId : null, robotFocusKey, fullBounds, activeBounds: FACILITY_ACTIVE_BOUNDS, overlayInsetLeft,
   });
   const { scale } = camera;
   const counts: Record<SeatMapStatus, number> = { occupied: 0, ready: 0, waiting: 0, working: 0, review: 0, unknown: 0 };
@@ -51,6 +56,7 @@ export function FacilityMap({ seats, seatCleaning, selectedSeatId, onSelectSeat,
           transform: camera.transform,
         } as CSSProperties}>
           <FacilityPlanArtwork />
+          {movementPath && <RecordingNavigationOverlay path={movementPath} scale={scale} />}
           <div className="facility-seat-overlay" aria-label="18층 좌석">
             {seats.map((seat) => {
               const point = seatMapPosition(seat);
@@ -83,7 +89,13 @@ export function FacilityMap({ seats, seatCleaning, selectedSeatId, onSelectSeat,
               className={"facility-map-robot" + (selectedRobotId === robot.robotId ? " is-selected" : "")}
               aria-label={robot.robotId + " 로봇 · " + robotStateLabels[robot.state] + " · " + (robot.positionMode === "live" ? "실시간 위치" : "예시 위치")}
               aria-pressed={selectedRobotId === robot.robotId} style={{ left: robot.x, top: robot.y }} onClick={() => onSelectRobot(robot.robotId)}>
-              <img src={robotFaceSoft} alt="" width="28" height="24" draggable={false} />
+              <svg className="facility-robot-bearing" viewBox="0 0 100 100" aria-hidden="true">
+                <circle cx="50" cy="50" r="36" />
+                {robot.heading !== undefined && <g transform={`rotate(${robot.heading} 50 50)`}>
+                  <path d="M 97 50 L 84 43 L 84 57 Z" />
+                </g>}
+              </svg>
+              <img src={robotFaceSoft} alt="" width="42" height="36" draggable={false} />
               <span className="facility-map-robot-label" aria-hidden="true">{robot.robotId}</span>
             </button>)}
           </div>

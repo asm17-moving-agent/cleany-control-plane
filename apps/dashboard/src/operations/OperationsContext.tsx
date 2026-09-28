@@ -15,10 +15,15 @@ import { useSettings } from "../settings/SettingsContext";
 import { useDemoMode } from "./DemoModeContext";
 import { operationsDemo } from "./operations-demo";
 import type { SeatCleaningStates } from "../lib/seat-summary";
+import { useRecordingOperations } from "./useRecordingOperations";
+import type { RecordingPath } from "./recording-route";
 
 type ConnectionState = "connecting" | "connected" | "error";
 
-interface OperationsContextValue {
+export interface OperationsContextValue {
+  recordingPosition?: { x: number; y: number };
+  recordingHeading?: number;
+  recordingPath?: RecordingPath;
   seats: Seat[];
   // Absent for live data until the API supplies a current cleaning snapshot.
   seatCleaning?: SeatCleaningStates;
@@ -38,9 +43,14 @@ interface OperationsContextValue {
 const OperationsContext = createContext<OperationsContextValue | null>(null);
 
 export function OperationsProvider({ children }: PropsWithChildren) {
-  const { isDemo } = useDemoMode();
-  return isDemo ? <DemoOperationsProvider>{children}</DemoOperationsProvider>
+  const { isDemo, isRecording } = useDemoMode();
+  return isRecording ? <RecordingOperationsProvider>{children}</RecordingOperationsProvider>
+    : isDemo ? <DemoOperationsProvider>{children}</DemoOperationsProvider>
     : <LiveOperationsProvider>{children}</LiveOperationsProvider>;
+}
+function RecordingOperationsProvider({ children }: PropsWithChildren) {
+  const value = useRecordingOperations();
+  return <OperationsContext.Provider value={value}>{children}</OperationsContext.Provider>;
 }
 
 async function rejectDemoCommand(): Promise<Mission> {

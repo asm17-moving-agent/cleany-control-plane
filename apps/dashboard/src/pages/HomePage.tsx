@@ -25,7 +25,7 @@ export function HomePage() {
   return <HomeWorkspace key={floor.id} floor={floor} />;
 }
 function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
-  const { robots, missions, seats, seatCleaning, events = [], isLoading, error, refresh, isCreatingMission } = useOperations();
+  const { robots, missions, seats, seatCleaning, recordingPosition, recordingHeading, recordingPath, events = [], isLoading, error, refresh, isCreatingMission } = useOperations();
   const { selectedSeatId, selectedRobotId, selectedSeat, selectedRobot, closingSeat,
     displayedRobot, displayedMissionId, robotFocusKey, selectSeat, selectRobot,
     closeRequest, closeRobot, onMissionSubmitted } = useHomePanelState({
@@ -39,8 +39,8 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
     ? Object.fromEntries(snapshots.flatMap(row => row.cleaning ? [[row.seat.seat_id, row.cleaning]] : []))
     : seatCleaning, [snapshots, summaryDemo, seatCleaning]);
   const mapRobots = useMemo<FacilityRobotMarker[]>(() => robots.map((robot, index) => ({
-    robotId: robot.robot_id, state: robot.state, ...examplePositions[index % examplePositions.length], positionMode: "scenario",
-  })), [robots]);
+    robotId: robot.robot_id, state: robot.state, ...(recordingPosition ?? examplePositions[index % examplePositions.length]), heading: recordingHeading, positionMode: "scenario",
+  })), [robots, recordingPosition, recordingHeading]);
   return (
     <section className="home-workspace" aria-label="로봇 관제 홈" style={panelMotionStyle}>
       <h1 className="sr-only">{floor.label}</h1>
@@ -75,6 +75,8 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
             {displayedRobot && <RobotDetailPanel robot={displayedRobot} mission={missions.find((mission) => mission.mission_id === displayedMissionId)} seats={seats} unavailable={!!error || isLoading} onClose={closeRobot} attentionCount={robots.filter(needsRobotAttention).length} />}
           </MapOverlayPanel>
           {floor.mapAvailable ? <FacilityMap seats={displaySeats} seatCleaning={displayCleaning} robots={mapRobots} selectedSeatId={selectedSeatId}
+            focusRobotOnSelect={!recordingPosition}
+            movementPath={recordingPath}
             overlayInsetLeft={320}
             onSelectSeat={selectSeat} selectedRobotId={selectedRobotId}
             onSelectRobot={selectRobot} robotFocusKey={robotFocusKey} seatSelectionDisabled={isLoading || !!error || isCreatingMission}

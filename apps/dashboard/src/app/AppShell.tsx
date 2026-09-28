@@ -30,7 +30,7 @@ export function AppShell() {
   const location = useLocation();
   const [floor, setFloor] = useState<FacilityFloor>(facilityFloors[0]);
   const { robots, missions, error, isLoading } = useOperations();
-  const { isDemo, setDemoMode } = useDemoMode();
+  const { isDemo, isRecording, setDemoMode } = useDemoMode();
   const demo = !isDemo && location.pathname === "/" && new URLSearchParams(location.search).get("summaryDemo") === "1";
   const summary = demo ? getHomeSummary(homeSummaryDemo.robots, homeSummaryDemo.missions) : getHomeSummary(robots, missions);
   const alertsReady = demo || (!isLoading && !error);
@@ -44,7 +44,7 @@ export function AppShell() {
     if (alertsRef.current) alertsRef.current.open = false;
   }, [location.pathname, location.search]);
   return (
-    <div className={"control-app" + (isDemo ? " is-demo" : "")}>
+    <div className={"control-app" + (isDemo ? " is-demo" : "") + (isRecording ? " is-recording" : "")}>
       <header className="workspace-header">
         <Link to="/" className="workspace-brand" aria-label="Cleany 홈"><img src={wordmark} alt="Cleany" width="120" height="34" /></Link>
         <nav className="workspace-navigation" aria-label="주요 메뉴">
@@ -75,11 +75,12 @@ export function AppShell() {
               <Link to="/monitoring"><MonitoringIcon />모니터링</Link>
               <Link to="/settings"><SettingsIcon />설정</Link>
               {!isDemo && <button type="button" onClick={() => setDemoMode(true)}>예시 데이터 보기</button>}
+              {!isRecording && <Link to="/?recording=1">촬영 모드</Link>}
             </div>
           </details>
         </div>
       </header>
-      {isDemo && <div className="workspace-demo-banner" role="status"><span><strong>예시 데이터</strong> 로봇 3대 · 요청 7건 · 결과 사진은 AI 생성 이미지입니다. 작업 요청·취소는 전송되지 않습니다.</span><button type="button" onClick={() => setDemoMode(false)}>실제 데이터로 돌아가기 <ChevronIcon /></button></div>}
+      {isDemo && <div className="workspace-demo-banner" role="status"><span><strong>{isRecording ? "촬영 모드" : "예시 데이터"}</strong> {isRecording ? "좌석 요청 → 이동 → 작업 → 복귀 · 실제 로봇에는 전송하지 않습니다. 새로고침하면 초기화됩니다." : "로봇 3대 · 요청 7건 · 결과 사진은 AI 생성 이미지입니다. 작업 요청·취소는 전송되지 않습니다."}</span><button type="button" onClick={() => setDemoMode(false)}>실제 데이터로 돌아가기 <ChevronIcon /></button></div>}
       <main className={"control-main" + (isHome ? " is-home" : "")}>
         {!isHome && <h1 className="sr-only">{titles[location.pathname]}</h1>}
         {!isHome && !hasPageError && error && <div className="workspace-api-error" role="alert">데이터를 갱신하지 못했습니다. {error.message}</div>}
