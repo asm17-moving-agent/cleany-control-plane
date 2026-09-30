@@ -34,7 +34,7 @@ def test_seat_model_preserves_canonical_shape() -> None:
     for field in ("seat_id", "label"):
         assert model["properties"][field]["pattern"] == contract["properties"][field]["pattern"]
     for example in contract["examples"]:
-        assert SeatResponse.model_validate(example).model_dump() == example
+        assert SeatResponse.model_validate(example).model_dump(exclude_unset=True) == example
 
 
 def test_pose_contract_and_sse_snapshot_examples_match_models() -> None:

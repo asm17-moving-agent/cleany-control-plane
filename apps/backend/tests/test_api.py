@@ -6,6 +6,7 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 from control_plane.server import ControlPlaneApplication, create_app
+from control_plane.settings import Settings
 
 
 @pytest.fixture
@@ -14,7 +15,13 @@ def anyio_backend() -> str:
 
 
 async def make_client() -> AsyncIterator[AsyncClient]:
-    application = ControlPlaneApplication(start_dispatcher=False)
+    application = ControlPlaneApplication(
+        start_dispatcher=False,
+        settings=Settings(
+            robot_mode="mock",
+            database_path=":memory:",
+        ),
+    )
     transport = ASGITransport(app=create_app(application))
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         yield client
@@ -57,8 +64,10 @@ async def test_room_seats_can_be_requested_without_losing_their_zone_identity() 
             assert seat["occupancy"] == "UNKNOWN"
             target = {"kind": "SEAT", "reference_id": seat_id, "label": seat["label"]}
             request = {
-                "target": target, "priority": "NORMAL",
-                "requested_by": "test-operator", "idempotency_key": seat_id,
+                "target": target,
+                "priority": "NORMAL",
+                "requested_by": "test-operator",
+                "idempotency_key": seat_id,
             }
             created = await client.post("/api/missions", json=request)
             assert created.status_code == 201

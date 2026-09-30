@@ -128,6 +128,29 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ExecutionProfile */
+        ExecutionProfile: {
+            /**
+             * Execution
+             * @enum {string}
+             */
+            execution: "sim" | "real" | "mock";
+            /**
+             * Navigation
+             * @enum {string}
+             */
+            navigation: "sim" | "real" | "mock";
+            /**
+             * Perception
+             * @enum {string}
+             */
+            perception: "sim" | "real" | "mock";
+            /**
+             * Planning
+             * @enum {string}
+             */
+            planning: "sim" | "real" | "mock";
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -140,7 +163,7 @@ export interface components {
              * @default ok
              * @constant
              */
-            status: "ok";
+            status?: "ok";
         };
         /** MissionListResponse */
         MissionListResponse: {
@@ -170,20 +193,36 @@ export interface components {
         };
         /** MissionResponse */
         MissionResponse: {
+            /** Accepted At */
+            accepted_at?: string | null;
             /** After Observation */
             after_observation: string | null;
             /** Before Observation */
             before_observation: string | null;
             /** Cancel Requested */
             cancel_requested: boolean;
+            /** Completed Tasks */
+            completed_tasks?: string[];
             /** Created At */
             created_at: string;
+            execution_profile?: components["schemas"]["ExecutionProfile"] | null;
+            /** Failed Task */
+            failed_task?: string | null;
+            /** Failure Code */
+            failure_code?: string | null;
+            /** Finished At */
+            finished_at?: string | null;
             /** Idempotency Key */
             idempotency_key: string;
             /** Message */
             message: string;
             /** Mission Id */
             mission_id: string;
+            /**
+             * Needs Human Review
+             * @default false
+             */
+            needs_human_review?: boolean;
             outcome: components["schemas"]["MissionOutcome"] | null;
             phase: components["schemas"]["MissionPhase"];
             priority: components["schemas"]["Priority"];
@@ -193,6 +232,8 @@ export interface components {
             seat_id: string | null;
             /** Sequence */
             sequence: number;
+            /** Skipped Tasks */
+            skipped_tasks?: string[];
             target: components["schemas"]["MissionTargetModel"];
         };
         /** MissionTargetModel */
@@ -240,8 +281,20 @@ export interface components {
         RobotResponse: {
             /** Active Mission Id */
             active_mission_id: string | null;
+            /**
+             * Can Cancel
+             * @default true
+             */
+            can_cancel?: boolean;
+            /**
+             * Control Mode
+             * @default mock
+             * @enum {string}
+             */
+            control_mode?: "gateway" | "mock";
+            execution_profile?: components["schemas"]["ExecutionProfile"] | null;
             /** Last Seen At */
-            last_seen_at: string;
+            last_seen_at: string | null;
             /** Robot Id */
             robot_id: string;
             state: components["schemas"]["RobotState"];
@@ -265,6 +318,8 @@ export interface components {
             grid_column: 1 | 2 | 3 | 5 | 6 | 8 | 9 | 10;
             /** Label */
             label: string;
+            /** Mission Supported */
+            mission_supported?: boolean | null;
             /**
              * Occupancy
              * @enum {string}
@@ -281,7 +336,7 @@ export interface components {
              * @default d-hub
              * @enum {string}
              */
-            zone_id: "d-hub" | "space-a1" | "space-a2" | "space-a3" | "space-a4" | "space-m1" | "space-m2" | "space-m3";
+            zone_id?: "d-hub" | "space-a1" | "space-a2" | "space-a3" | "space-a4" | "space-m1" | "space-m2" | "space-m3";
         };
         /**
          * TargetKind

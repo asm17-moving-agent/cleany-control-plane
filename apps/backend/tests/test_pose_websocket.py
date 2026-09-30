@@ -5,27 +5,39 @@ from fastapi import WebSocketDisconnect
 from fastapi.testclient import TestClient
 
 from control_plane.server import ControlPlaneApplication, create_app
+from control_plane.settings import Settings
 
 WS = "/api/robots/cleany-01/pose/ws"
 SNAPSHOT = "/api/robots/cleany-01/pose"
 
 
-@pytest.mark.parametrize("message", [
-    '{"x":1,"y":2,"received_at":"attacker"}',
-    '{"x":1,"y":2,"yaw":true}',
-    '{"x":1,"y":2,"yaw":NaN}',
-    '{"x":1,"y":2,"yaw":"1"}',
-    '{"x":true,"y":2}',
-    '{"x":"1","y":2}',
-    '{"x":NaN,"y":2}',
-    '{"x":Infinity,"y":2}',
-    '{"x":1}',
-    'null',
-    '[]',
-    'not json',
-])
+@pytest.mark.parametrize(
+    "message",
+    [
+        '{"x":1,"y":2,"received_at":"attacker"}',
+        '{"x":1,"y":2,"yaw":true}',
+        '{"x":1,"y":2,"yaw":NaN}',
+        '{"x":1,"y":2,"yaw":"1"}',
+        '{"x":true,"y":2}',
+        '{"x":"1","y":2}',
+        '{"x":NaN,"y":2}',
+        '{"x":Infinity,"y":2}',
+        '{"x":1}',
+        "null",
+        "[]",
+        "not json",
+    ],
+)
 def test_websocket_rejects_invalid_messages_and_releases_owner(message: str) -> None:
-    app = create_app(ControlPlaneApplication(start_dispatcher=False))
+    app = create_app(
+        ControlPlaneApplication(
+            start_dispatcher=False,
+            settings=Settings(
+                robot_mode="mock",
+                database_path=":memory:",
+            ),
+        )
+    )
     with TestClient(app) as client:
         with client.websocket_connect(WS) as socket:
             socket.send_text(message)
@@ -37,7 +49,15 @@ def test_websocket_rejects_invalid_messages_and_releases_owner(message: str) -> 
 
 
 def test_websocket_rejects_binary_frames() -> None:
-    app = create_app(ControlPlaneApplication(start_dispatcher=False))
+    app = create_app(
+        ControlPlaneApplication(
+            start_dispatcher=False,
+            settings=Settings(
+                robot_mode="mock",
+                database_path=":memory:",
+            ),
+        )
+    )
     with TestClient(app) as client, client.websocket_connect(WS) as socket:
         socket.send_bytes(b'{"x":1,"y":2}')
         with pytest.raises(WebSocketDisconnect) as error:
@@ -46,7 +66,13 @@ def test_websocket_rejects_binary_frames() -> None:
 
 
 def test_websocket_duplicate_does_not_disturb_owner() -> None:
-    application = ControlPlaneApplication(start_dispatcher=False)
+    application = ControlPlaneApplication(
+        start_dispatcher=False,
+        settings=Settings(
+            robot_mode="mock",
+            database_path=":memory:",
+        ),
+    )
     accepted = Event()
 
     def observe(event):
@@ -64,7 +90,13 @@ def test_websocket_duplicate_does_not_disturb_owner() -> None:
 
 
 def test_disconnect_and_reconnect_preserve_last_pose_but_not_freshness() -> None:
-    application = ControlPlaneApplication(start_dispatcher=False)
+    application = ControlPlaneApplication(
+        start_dispatcher=False,
+        settings=Settings(
+            robot_mode="mock",
+            database_path=":memory:",
+        ),
+    )
     accepted, released = Event(), Event()
     events = []
 
@@ -100,7 +132,13 @@ def test_disconnect_and_reconnect_preserve_last_pose_but_not_freshness() -> None
 
 
 def test_receive_timeout_emits_stale_without_a_snapshot_request() -> None:
-    application = ControlPlaneApplication(start_dispatcher=False)
+    application = ControlPlaneApplication(
+        start_dispatcher=False,
+        settings=Settings(
+            robot_mode="mock",
+            database_path=":memory:",
+        ),
+    )
     accepted = Event()
     events = []
 

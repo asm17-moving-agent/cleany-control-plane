@@ -1,0 +1,900 @@
+{
+  "$defs": {
+    "AcceptedEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "event_type": {
+          "const": "mission.accepted",
+          "title": "Event Type",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mission Id"
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/AcceptedPayload"
+        },
+        "robot_id": {
+          "const": "cleany-01",
+          "title": "Robot Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "sequence": {
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "robot_id",
+        "mission_id",
+        "sequence",
+        "occurred_at",
+        "event_type",
+        "payload"
+      ],
+      "title": "AcceptedEvent",
+      "type": "object"
+    },
+    "AcceptedPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "message": {
+          "default": "Robot accepted the mission.",
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "title": "AcceptedPayload",
+      "type": "object"
+    },
+    "AckEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "event_type": {
+          "const": "ack",
+          "title": "Event Type",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mission Id"
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/AckPayload"
+        },
+        "robot_id": {
+          "const": "cleany-01",
+          "title": "Robot Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "sequence": {
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "robot_id",
+        "mission_id",
+        "sequence",
+        "occurred_at",
+        "event_type",
+        "payload"
+      ],
+      "title": "AckEvent",
+      "type": "object"
+    },
+    "AckPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "ack_event_id": {
+          "format": "uuid",
+          "title": "Ack Event Id",
+          "type": "string"
+        },
+        "disposition": {
+          "default": "applied",
+          "enum": [
+            "applied",
+            "duplicate",
+            "stale",
+            "conflict"
+          ],
+          "title": "Disposition",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ack_event_id"
+      ],
+      "title": "AckPayload",
+      "type": "object"
+    },
+    "CompletedReport": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "mission_id": {
+          "format": "uuid",
+          "title": "Mission Id",
+          "type": "string"
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/ReportPayload"
+        },
+        "sequence": {
+          "exclusiveMinimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "event_id",
+        "mission_id",
+        "sequence",
+        "occurred_at",
+        "payload"
+      ],
+      "title": "CompletedReport",
+      "type": "object"
+    },
+    "ExecutionProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "execution": {
+          "enum": [
+            "sim",
+            "real",
+            "mock"
+          ],
+          "title": "Execution",
+          "type": "string"
+        },
+        "navigation": {
+          "enum": [
+            "sim",
+            "real",
+            "mock"
+          ],
+          "title": "Navigation",
+          "type": "string"
+        },
+        "perception": {
+          "enum": [
+            "sim",
+            "real",
+            "mock"
+          ],
+          "title": "Perception",
+          "type": "string"
+        },
+        "planning": {
+          "enum": [
+            "sim",
+            "real",
+            "mock"
+          ],
+          "title": "Planning",
+          "type": "string"
+        }
+      },
+      "required": [
+        "navigation",
+        "perception",
+        "planning",
+        "execution"
+      ],
+      "title": "ExecutionProfile",
+      "type": "object"
+    },
+    "HeartbeatEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "event_type": {
+          "const": "robot.heartbeat",
+          "title": "Event Type",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mission Id"
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/RobotStatus"
+        },
+        "robot_id": {
+          "const": "cleany-01",
+          "title": "Robot Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "sequence": {
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "robot_id",
+        "mission_id",
+        "sequence",
+        "occurred_at",
+        "event_type",
+        "payload"
+      ],
+      "title": "HeartbeatEvent",
+      "type": "object"
+    },
+    "MissionOutcome": {
+      "enum": [
+        "SUCCESS",
+        "PARTIAL_SUCCESS",
+        "HUMAN_REVIEW_REQUIRED",
+        "BLOCKED",
+        "FAILED",
+        "CANCELLED",
+        "EXPIRED",
+        "REJECTED",
+        "INTERRUPTED"
+      ],
+      "title": "MissionOutcome",
+      "type": "string"
+    },
+    "PhaseEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "event_type": {
+          "const": "mission.phase",
+          "title": "Event Type",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mission Id"
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/PhasePayload"
+        },
+        "robot_id": {
+          "const": "cleany-01",
+          "title": "Robot Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "sequence": {
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "robot_id",
+        "mission_id",
+        "sequence",
+        "occurred_at",
+        "event_type",
+        "payload"
+      ],
+      "title": "PhaseEvent",
+      "type": "object"
+    },
+    "PhasePayload": {
+      "additionalProperties": false,
+      "properties": {
+        "before_observation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Before Observation"
+        },
+        "internal_state": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Internal State"
+        },
+        "message": {
+          "default": "",
+          "title": "Message",
+          "type": "string"
+        },
+        "phase": {
+          "enum": [
+            "NAVIGATING",
+            "WORKING",
+            "RETURNING"
+          ],
+          "title": "Phase",
+          "type": "string"
+        }
+      },
+      "required": [
+        "phase"
+      ],
+      "title": "PhasePayload",
+      "type": "object"
+    },
+    "RejectedEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "event_type": {
+          "const": "mission.rejected",
+          "title": "Event Type",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mission Id"
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/RejectedPayload"
+        },
+        "robot_id": {
+          "const": "cleany-01",
+          "title": "Robot Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "sequence": {
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "robot_id",
+        "mission_id",
+        "sequence",
+        "occurred_at",
+        "event_type",
+        "payload"
+      ],
+      "title": "RejectedEvent",
+      "type": "object"
+    },
+    "RejectedPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "retryable": {
+          "default": false,
+          "title": "Retryable",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "message"
+      ],
+      "title": "RejectedPayload",
+      "type": "object"
+    },
+    "ReportPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "after_observation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "After Observation"
+        },
+        "before_observation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Before Observation"
+        },
+        "completed_tasks": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Completed Tasks",
+          "type": "array"
+        },
+        "execution_profile": {
+          "$ref": "#/$defs/ExecutionProfile"
+        },
+        "failed_task": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failed Task"
+        },
+        "failure_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Failure Code"
+        },
+        "message": {
+          "default": "",
+          "title": "Message",
+          "type": "string"
+        },
+        "needs_human_review": {
+          "default": false,
+          "title": "Needs Human Review",
+          "type": "boolean"
+        },
+        "outcome": {
+          "$ref": "#/$defs/MissionOutcome"
+        },
+        "skipped_tasks": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Skipped Tasks",
+          "type": "array"
+        }
+      },
+      "required": [
+        "outcome",
+        "execution_profile"
+      ],
+      "title": "ReportPayload",
+      "type": "object"
+    },
+    "ResultEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "event_type": {
+          "const": "mission.result",
+          "title": "Event Type",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mission Id"
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/ReportPayload"
+        },
+        "robot_id": {
+          "const": "cleany-01",
+          "title": "Robot Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "sequence": {
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "robot_id",
+        "mission_id",
+        "sequence",
+        "occurred_at",
+        "event_type",
+        "payload"
+      ],
+      "title": "ResultEvent",
+      "type": "object"
+    },
+    "RobotStatus": {
+      "additionalProperties": false,
+      "properties": {
+        "active_mission_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Active Mission Id"
+        },
+        "boot_id": {
+          "minLength": 1,
+          "title": "Boot Id",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "IDLE",
+            "BUSY",
+            "ERROR"
+          ],
+          "title": "State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "boot_id",
+        "state",
+        "active_mission_id"
+      ],
+      "title": "RobotStatus",
+      "type": "object"
+    },
+    "SnapshotEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "event_type": {
+          "const": "robot.snapshot",
+          "title": "Event Type",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mission Id"
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/SnapshotPayload"
+        },
+        "robot_id": {
+          "const": "cleany-01",
+          "title": "Robot Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "sequence": {
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "robot_id",
+        "mission_id",
+        "sequence",
+        "occurred_at",
+        "event_type",
+        "payload"
+      ],
+      "title": "SnapshotEvent",
+      "type": "object"
+    },
+    "SnapshotPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "active_mission_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Active Mission Id"
+        },
+        "active_phase": {
+          "anyOf": [
+            {
+              "enum": [
+                "ACCEPTED",
+                "NAVIGATING",
+                "WORKING",
+                "RETURNING"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Active Phase"
+        },
+        "active_sequence": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Active Sequence",
+          "type": "integer"
+        },
+        "boot_id": {
+          "minLength": 1,
+          "title": "Boot Id",
+          "type": "string"
+        },
+        "can_cancel": {
+          "title": "Can Cancel",
+          "type": "boolean"
+        },
+        "completed_reports": {
+          "items": {
+            "$ref": "#/$defs/CompletedReport"
+          },
+          "title": "Completed Reports",
+          "type": "array"
+        },
+        "execution_profile": {
+          "$ref": "#/$defs/ExecutionProfile"
+        },
+        "state": {
+          "enum": [
+            "IDLE",
+            "BUSY",
+            "ERROR"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "supported_seat_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Supported Seat Ids",
+          "type": "array"
+        },
+        "unaccepted_mission_ids": {
+          "items": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "title": "Unaccepted Mission Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "boot_id",
+        "state",
+        "active_mission_id",
+        "supported_seat_ids",
+        "can_cancel",
+        "execution_profile"
+      ],
+      "title": "SnapshotPayload",
+      "type": "object"
+    }
+  },
+  "discriminator": {
+    "mapping": {
+      "ack": "#/$defs/AckEvent",
+      "mission.accepted": "#/$defs/AcceptedEvent",
+      "mission.phase": "#/$defs/PhaseEvent",
+      "mission.rejected": "#/$defs/RejectedEvent",
+      "mission.result": "#/$defs/ResultEvent",
+      "robot.heartbeat": "#/$defs/HeartbeatEvent",
+      "robot.snapshot": "#/$defs/SnapshotEvent"
+    },
+    "propertyName": "event_type"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/SnapshotEvent"
+    },
+    {
+      "$ref": "#/$defs/HeartbeatEvent"
+    },
+    {
+      "$ref": "#/$defs/AcceptedEvent"
+    },
+    {
+      "$ref": "#/$defs/RejectedEvent"
+    },
+    {
+      "$ref": "#/$defs/PhaseEvent"
+    },
+    {
+      "$ref": "#/$defs/ResultEvent"
+    },
+    {
+      "$ref": "#/$defs/AckEvent"
+    }
+  ]
+}

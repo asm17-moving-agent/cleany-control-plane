@@ -1,0 +1,354 @@
+{
+  "$defs": {
+    "AckEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "event_type": {
+          "const": "ack",
+          "title": "Event Type",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mission Id"
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/AckPayload"
+        },
+        "robot_id": {
+          "const": "cleany-01",
+          "title": "Robot Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "sequence": {
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "robot_id",
+        "mission_id",
+        "sequence",
+        "occurred_at",
+        "event_type",
+        "payload"
+      ],
+      "title": "AckEvent",
+      "type": "object"
+    },
+    "AckPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "ack_event_id": {
+          "format": "uuid",
+          "title": "Ack Event Id",
+          "type": "string"
+        },
+        "disposition": {
+          "default": "applied",
+          "enum": [
+            "applied",
+            "duplicate",
+            "stale",
+            "conflict"
+          ],
+          "title": "Disposition",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ack_event_id"
+      ],
+      "title": "AckPayload",
+      "type": "object"
+    },
+    "CancelEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "event_type": {
+          "const": "mission.cancel",
+          "title": "Event Type",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mission Id"
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/Payload"
+        },
+        "robot_id": {
+          "const": "cleany-01",
+          "title": "Robot Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "sequence": {
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "robot_id",
+        "mission_id",
+        "sequence",
+        "occurred_at",
+        "event_type",
+        "payload"
+      ],
+      "title": "CancelEvent",
+      "type": "object"
+    },
+    "OfferEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "event_type": {
+          "const": "mission.offer",
+          "title": "Event Type",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mission Id"
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/OfferPayload"
+        },
+        "robot_id": {
+          "const": "cleany-01",
+          "title": "Robot Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "sequence": {
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "robot_id",
+        "mission_id",
+        "sequence",
+        "occurred_at",
+        "event_type",
+        "payload"
+      ],
+      "title": "OfferEvent",
+      "type": "object"
+    },
+    "OfferPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "mission_type": {
+          "const": "clean_seat",
+          "default": "clean_seat",
+          "title": "Mission Type",
+          "type": "string"
+        },
+        "requested_by": {
+          "minLength": 1,
+          "title": "Requested By",
+          "type": "string"
+        },
+        "target_id": {
+          "minLength": 1,
+          "title": "Target Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "target_id",
+        "requested_by"
+      ],
+      "title": "OfferPayload",
+      "type": "object"
+    },
+    "Payload": {
+      "additionalProperties": false,
+      "properties": {},
+      "title": "Payload",
+      "type": "object"
+    },
+    "SyncEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "event_type": {
+          "const": "sync.request",
+          "title": "Event Type",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mission Id"
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/SyncPayload"
+        },
+        "robot_id": {
+          "const": "cleany-01",
+          "title": "Robot Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "sequence": {
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "event_id",
+        "robot_id",
+        "mission_id",
+        "sequence",
+        "occurred_at",
+        "event_type",
+        "payload"
+      ],
+      "title": "SyncEvent",
+      "type": "object"
+    },
+    "SyncPayload": {
+      "additionalProperties": false,
+      "properties": {
+        "heartbeat_interval_seconds": {
+          "exclusiveMinimum": 0,
+          "title": "Heartbeat Interval Seconds",
+          "type": "number"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reason",
+        "heartbeat_interval_seconds"
+      ],
+      "title": "SyncPayload",
+      "type": "object"
+    }
+  },
+  "discriminator": {
+    "mapping": {
+      "ack": "#/$defs/AckEvent",
+      "mission.cancel": "#/$defs/CancelEvent",
+      "mission.offer": "#/$defs/OfferEvent",
+      "sync.request": "#/$defs/SyncEvent"
+    },
+    "propertyName": "event_type"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/OfferEvent"
+    },
+    {
+      "$ref": "#/$defs/CancelEvent"
+    },
+    {
+      "$ref": "#/$defs/SyncEvent"
+    },
+    {
+      "$ref": "#/$defs/AckEvent"
+    }
+  ]
+}

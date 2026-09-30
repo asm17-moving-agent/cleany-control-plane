@@ -1,0 +1,128 @@
+{
+  "backend": [
+    {
+      "schema_version": 1,
+      "event_id": "00000000-0000-4000-8000-000000000001",
+      "robot_id": "cleany-01",
+      "mission_id": null,
+      "event_type": "sync.request",
+      "sequence": 0,
+      "occurred_at": "2026-09-30T12:00:00Z",
+      "payload": {
+        "reason": "connection established",
+        "heartbeat_interval_seconds": 1
+      }
+    },
+    {
+      "schema_version": 1,
+      "event_id": "00000000-0000-4000-8000-000000000002",
+      "robot_id": "cleany-01",
+      "mission_id": "00000000-0000-4000-8000-000000000010",
+      "event_type": "mission.offer",
+      "sequence": 0,
+      "occurred_at": "2026-09-30T12:00:00Z",
+      "payload": {
+        "mission_type": "clean_seat",
+        "target_id": "seat-12",
+        "requested_by": "operator"
+      }
+    },
+    {
+      "schema_version": 1,
+      "event_id": "00000000-0000-4000-8000-000000000003",
+      "robot_id": "cleany-01",
+      "mission_id": "00000000-0000-4000-8000-000000000010",
+      "event_type": "mission.cancel",
+      "sequence": 0,
+      "occurred_at": "2026-09-30T12:00:00Z",
+      "payload": {}
+    },
+    {
+      "schema_version": 1,
+      "event_id": "00000000-0000-4000-8000-000000000004",
+      "robot_id": "cleany-01",
+      "mission_id": null,
+      "event_type": "ack",
+      "sequence": 0,
+      "occurred_at": "2026-09-30T12:00:00Z",
+      "payload": {
+        "ack_event_id": "00000000-0000-4000-8000-000000000005",
+        "disposition": "applied"
+      }
+    }
+  ],
+  "robot": [
+    {
+      "schema_version": 1,
+      "event_id": "00000000-0000-4000-8000-000000000005",
+      "robot_id": "cleany-01",
+      "mission_id": null,
+      "event_type": "robot.snapshot",
+      "sequence": 0,
+      "occurred_at": "2026-09-30T12:00:00Z",
+      "payload": {
+        "boot_id": "example-boot-1",
+        "state": "IDLE",
+        "active_mission_id": null,
+        "supported_seat_ids": [
+          "seat-12",
+          "seat-18"
+        ],
+        "can_cancel": true,
+        "execution_profile": {
+          "navigation": "sim",
+          "perception": "mock",
+          "planning": "mock",
+          "execution": "mock"
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "event_id": "00000000-0000-4000-8000-000000000006",
+      "robot_id": "cleany-01",
+      "mission_id": "00000000-0000-4000-8000-000000000010",
+      "event_type": "mission.accepted",
+      "sequence": 1,
+      "occurred_at": "2026-09-30T12:00:00Z",
+      "payload": {}
+    },
+    {
+      "schema_version": 1,
+      "event_id": "00000000-0000-4000-8000-000000000007",
+      "robot_id": "cleany-01",
+      "mission_id": "00000000-0000-4000-8000-000000000010",
+      "event_type": "mission.phase",
+      "sequence": 2,
+      "occurred_at": "2026-09-30T12:00:00Z",
+      "payload": {
+        "phase": "WORKING",
+        "internal_state": "PERCEIVE"
+      }
+    },
+    {
+      "schema_version": 1,
+      "event_id": "00000000-0000-4000-8000-000000000008",
+      "robot_id": "cleany-01",
+      "mission_id": "00000000-0000-4000-8000-000000000010",
+      "event_type": "mission.result",
+      "sequence": 3,
+      "occurred_at": "2026-09-30T12:00:00Z",
+      "payload": {
+        "outcome": "SUCCESS",
+        "execution_profile": {
+          "navigation": "sim",
+          "perception": "mock",
+          "planning": "mock",
+          "execution": "mock"
+        },
+        "completed_tasks": [
+          "pick_object",
+          "place_object"
+        ],
+        "before_observation": null,
+        "after_observation": null
+      }
+    }
+  ]
+}
