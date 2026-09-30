@@ -23,20 +23,22 @@ Control Plane은 운영 단계와 결과만 관리한다.
 - terminal Mission은 다시 실행하거나 변경하지 않는다.
 - Mission cancel, safe stop과 e-stop은 서로 다른 제어 경로다.
 
-## 현재 prototype
+## 현재 구현
 
-현재 Backend는 FastAPI transport, in-memory Queue와 Mock Robot dispatcher를 사용한다.
+현재 Backend는 FastAPI transport, SQLite Queue와 양방향 Robot Gateway를 사용한다.
 React Dashboard는 React Router로 화면을 분리하고 TanStack Query cache에 HTTP와 SSE
-server state를 반영한다. 이 단계의 목적은 영속성이 아니라 Dashboard 사용자 흐름,
-phase, outcome과 event 계약 검증이다.
+server state를 반영한다. 재연결 시 snapshot으로 복구하며 Runtime이 보낸 phase와
+report를 표시한다. 명시적 `mock` 모드는 UI 검증에 사용한다.
 
 ```text
 React page
   → TanStack Query
   → FastAPI HTTP / SSE
   → ControlPlaneStore
-  → MockDispatcher
+  → SQLite repository / Gateway WebSocket
+  → Robot Gateway / Mission Manager (cleany 저장소)
 ```
 
-HTTP transport, domain store와 dispatcher는 분리한다. 이후 PostgreSQL repository와
-Robot Gateway를 추가해도 Dashboard 계약과 domain 불변식을 유지한다.
+HTTP transport, domain store와 Gateway는 분리한다. Backend는 Robot의 내부 FSM을
+변경하지 않는다. 상세 메시지와 재시작 규칙은
+[Gateway 통합 계약](robot-gateway-integration.md)을 따른다.

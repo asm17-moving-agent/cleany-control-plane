@@ -359,3 +359,23 @@ uv run --with mujoco==3.12.0 --with trimesh --with numpy python \
 최소형 좌석 현황 Firefox/niri 캡처: `docs/architecture/assets/home-implementation-20260908/38-minimal-occupancy-{wide,narrow}.png`.
 
 기존 지도 레이아웃 복원 후 캡처: `docs/architecture/assets/home-implementation-20260908/39-original-map-layout.png`.
+
+## Mission Gateway 통합
+
+Backend 기본 모드는 `gateway`다. 최초 Runtime snapshot 전에는 좌석 요청을 막고,
+연결 후에는 advertised `supported_seat_ids`만 허용한다. Robot 연결 상태는 브라우저
+SSE 연결 상태와 구분하며, 재연결 시 HTTP snapshot을 다시 조회한다.
+
+진행 및 결과 화면은 Runtime의 외부 phase, 실제 observation 참조, execution profile,
+수락/종료 시각과 작업 내역을 표시한다. navigation이 `sim`이고 작업이 `mock`이면
+혼합 실행으로 표시한다. 취소는 checkpoint 요청이며 safe stop이나 e-stop이 아니다.
+
+```bash
+pnpm contracts:check
+pnpm test:e2e:gateway
+pnpm test:e2e
+```
+
+Gateway E2E는 격리된 18082 포트/SQLite DB와 테스트용 WebSocket Runtime을 사용한다.
+기존 UI E2E는 18081 포트의 명시적 Mock 모드를 사용한다. 실제 Gazebo 검증은
+[Runtime 인계 계약](../../docs/architecture/robot-gateway-integration.md)을 따른다.
