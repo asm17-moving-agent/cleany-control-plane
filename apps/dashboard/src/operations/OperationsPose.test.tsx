@@ -56,17 +56,19 @@ it("reuses the stream, refetches snapshots on reconnect, and does not refresh mi
   await mount();
   act(() => Source.current.emit("open"));
   await waitFor(() => expect(operations.pose).toEqual(pose));
+  await waitFor(() => expect(api.missions).toHaveBeenCalledTimes(2));
   const source = Source.current;
   act(() => {
     for (let i = 0; i < 10; i++) source.emit("update", event());
   });
-  expect(api.missions).toHaveBeenCalledTimes(1);
-  expect(api.robots).toHaveBeenCalledTimes(1);
+  expect(api.missions).toHaveBeenCalledTimes(2);
+  expect(api.robots).toHaveBeenCalledTimes(2);
   expect(operations.events).toHaveLength(0);
   act(() => source.emit("error"));
   expect(operations.connectionState).toBe("error");
   act(() => source.emit("open"));
   await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+  await waitFor(() => expect(api.missions).toHaveBeenCalledTimes(3));
   expect(Source.current).toBe(source);
 });
 

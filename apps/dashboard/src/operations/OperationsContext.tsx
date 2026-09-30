@@ -130,7 +130,9 @@ function LiveOperationsProvider({ children }: PropsWithChildren) {
           if (!disposed && requestedRevision === revision) setPoseStale(true);
         });
     };
-    source.addEventListener("open", () => { setConnectionState("connected"); refreshPose(); });
+    source.addEventListener("open", () => {
+      setConnectionState("connected"); refreshPose(); void refresh();
+    });
     source.addEventListener("update", (event) => {
       try {
         const operationEvent = JSON.parse(event.data) as OperationsEvent;

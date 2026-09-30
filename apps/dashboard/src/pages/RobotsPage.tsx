@@ -11,6 +11,7 @@ import { ChevronIcon, ShieldIcon, TargetIcon } from "../components/WorkspaceIcon
 import { needsRobotAttention, robotStateLabels } from "../lib/home-summary";
 import { formatDateTime, missionTargetLabel } from "../lib/operations";
 import { useOperations } from "../operations/OperationsContext";
+import { executionSource } from "../lib/execution-source";
 import "./robots-page.css";
 
 export function RobotsPage() {
@@ -41,6 +42,7 @@ export function RobotsPage() {
           <section className="ops-panel fleet-detail" aria-label="로봇 상세">
             {selected ? <div key={selected.robot_id} className="ops-detail-content">
               <header className="fleet-detail-heading"><div><span className="fleet-eyebrow">로봇 상세</span><h3>{selected.robot_id}</h3></div><RobotStateBadge state={selected.state} /></header>
+              {selected.control_mode && <p className="ops-note">{selected.control_mode === "gateway" ? "FSM 런타임 연동" : "Backend 모의 실행"} · {executionSource(selected.execution_profile)}</p>}
               {needsRobotAttention(selected) && <div className="fleet-attention" role="status"><ShieldIcon aria-hidden="true" /><div><strong>{selected.state === "OFFLINE" ? "로봇 연결이 끊겼습니다" : "로봇 상태를 확인해 주세요"}</strong><p>{selected.state === "OFFLINE" ? "마지막 확인 이후의 상태를 알 수 없습니다. 현장 상태와 네트워크를 확인해 주세요." : "로봇에 오류가 있습니다. 현장 상태와 현재 작업을 확인해 주세요."}</p></div></div>}
               <div className="fleet-overview">
                 <section className="fleet-preview" aria-label="외형 미리보기"><div><span>외형 미리보기</span><span className="fleet-concept">외장 시안</span></div><RobotModel rotationGuide /><p>실시간 자세 미연동</p><Link to="/robot-model">모델 자세히 보기 <ChevronIcon /></Link></section>

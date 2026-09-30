@@ -9,6 +9,7 @@
     "contracts:check": "uv run --project apps/backend python packages/contracts/scripts/export_openapi.py --check",
     "typecheck": "pnpm --filter @cleany/dashboard typecheck",
     "test": "pnpm --filter @cleany/dashboard test",
-    "test:e2e": "pnpm build && pnpm --filter @cleany/dashboard test:e2e"
+    "test:e2e": "pnpm build && pnpm --filter @cleany/dashboard test:e2e",
+    "test:e2e:gateway": "pnpm build && pnpm --filter @cleany/dashboard exec playwright test -c playwright.gateway.config.ts"
   }
 }

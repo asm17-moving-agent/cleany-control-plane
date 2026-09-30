@@ -27,13 +27,15 @@ export function MissionsPage() {
   const selectedId = params.get("mission");
   const selected = selectedId ? filtered.find(item => item.mission_id === selectedId) : filtered[0];
   const assigned = robots.find(robot => robot.active_mission_id === selected?.mission_id);
+  const cancelUnsupported = !isDemo && selected?.phase !== "QUEUED"
+    && (assigned ?? robots[0])?.can_cancel === false;
   function href(changes: Record<string, string | null>) {
     const next = new URLSearchParams(params);
     Object.entries(changes).forEach(([key, value]) => value && value !== "ALL" ? next.set(key, value) : next.delete(key));
     return "/missions?" + next.toString();
   }
   async function cancel() {
-    if ((isDemo && !isRecording) || !selected || selected.phase === "TERMINAL" || selected.cancel_requested || pending.current || isLoading || error) return;
+    if ((isDemo && !isRecording) || cancelUnsupported || !selected || selected.phase === "TERMINAL" || selected.cancel_requested || pending.current || isLoading || error) return;
     const id = selected.mission_id;
     pending.current = id; setCancelling(id); setCancelError(null);
     try { await cancelMission(id); }
@@ -64,7 +66,8 @@ export function MissionsPage() {
             <dl className="ops-facts"><InfoRow label="우선순위">{selected.priority === "HIGH" ? "높음" : "보통"}</InfoRow><InfoRow label="요청자">{selected.requested_by}</InfoRow><InfoRow label="요청 시각">{formatDateTime(selected.created_at)}</InfoRow><InfoRow label="현재 배정 로봇">{assigned ? <Link to={"/robots?robot=" + encodeURIComponent(assigned.robot_id)}>{assigned.robot_id} →</Link> : selected.phase === "QUEUED" ? "배정 대기" : "현재 배정 없음"}</InfoRow></dl>
             <p className="ops-note">{selected.phase === "TERMINAL" ? "종료된 작업입니다. 작업 결과에서 관측 자료와 최종 상태를 확인하세요." : selected.cancel_requested ? "취소를 요청했습니다. 최종 종료 상태가 확인될 때까지 진행 상황을 표시합니다." : "취소 요청 후 로봇이 안전하게 작업을 마무리하고 종료 상태를 알립니다."}</p>
             {cancelError?.id === selected.mission_id && <p className="mission-cancel-error" role="alert">{cancelError.message}</p>}
-            <div className="ops-detail-actions">{selected.phase === "TERMINAL" ? <Link className="ops-button" to={"/results?mission=" + encodeURIComponent(selected.mission_id)}>작업 결과 보기 <ChevronIcon /></Link> : <button className="ops-button is-danger" disabled={(isDemo && !isRecording) || !!cancelling || selected.cancel_requested} onClick={() => void cancel()}>{cancelling === selected.mission_id ? "취소 요청 중…" : selected.cancel_requested ? "취소 요청됨" : "작업 취소 요청"}</button>}</div>
+            {cancelUnsupported && selected.phase !== "TERMINAL" && <p className="ops-note">런타임이 활성 미션 취소를 지원하지 않습니다.</p>}
+            <div className="ops-detail-actions">{selected.phase === "TERMINAL" ? <Link className="ops-button" to={"/results?mission=" + encodeURIComponent(selected.mission_id)}>작업 결과 보기 <ChevronIcon /></Link> : <button className="ops-button is-danger" disabled={(isDemo && !isRecording) || cancelUnsupported || !!cancelling || selected.cancel_requested} onClick={() => void cancel()}>{cancelling === selected.mission_id ? "취소 요청 중…" : selected.cancel_requested ? "취소 요청됨" : "작업 취소 요청"}</button>}</div>
             <details className="mission-reference"><summary>요청 정보</summary><code>{selected.mission_id}</code>{selected.message && <p>{missionMessage(selected.message)}</p>}</details>
           </div> : <OperationsEmpty icon={<MissionIcon />} title={selectedId ? "선택한 요청을 찾을 수 없습니다" : "요청 상세가 여기에 표시됩니다"}>왼쪽 목록에서 작업을 선택하세요.</OperationsEmpty>}
         </aside>

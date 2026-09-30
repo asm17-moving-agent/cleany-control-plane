@@ -8,6 +8,7 @@ import { byNewestRequest, isSuccessfulResult, needsResultReview, observationHref
 import { formatDateTime, missionTargetLabel, missionMessage } from "../lib/operations";
 import { useOperations } from "../operations/OperationsContext";
 import { useDemoMode } from "../operations/DemoModeContext";
+import { executionSource, missionElapsed } from "../lib/execution-source";
 import "./results-page.css";
 
 function Observation({ label, reference }: { label: string; reference: string | null }) {
@@ -24,6 +25,7 @@ function Observation({ label, reference }: { label: string; reference: string | 
 }
 
 export function ResultsPage() {
+  const { isDemo } = useDemoMode();
   const { missions, seats, isLoading, error, refresh } = useOperations();
   const [params] = useSearchParams();
   const filter = ["review", "success"].includes(params.get("filter") ?? "") ? params.get("filter")! : "all";
@@ -51,6 +53,16 @@ export function ResultsPage() {
             {needsResultReview(selected) && <div className="ops-notice"><strong>확인이 필요한 결과입니다.</strong><br />작업 전·후 자료와 종료 상태를 확인해 주세요. 결과를 열어도 검토 대상에서 제외되지 않습니다.</div>}
             <div className="result-observations"><Observation key={"before:" + selected.before_observation} label="작업 전" reference={selected.before_observation} /><Observation key={"after:" + selected.after_observation} label="작업 후" reference={selected.after_observation} /></div>
             <dl className="ops-facts result-facts"><InfoRow label="요청자">{selected.requested_by}</InfoRow><InfoRow label="우선순위">{selected.priority === "HIGH" ? "높음" : "보통"}</InfoRow><InfoRow label="요청 ID"><code>{selected.mission_id}</code></InfoRow></dl>
+            {!isDemo && <dl className="ops-facts result-facts">
+              <InfoRow label="실행 모드">{executionSource(selected.execution_profile)}</InfoRow>
+              <InfoRow label="요청부터 결과 수신">{missionElapsed(selected.created_at, selected.finished_at)}</InfoRow>
+              <InfoRow label="수락 / 종료">{formatDateTime(selected.accepted_at)} / {formatDateTime(selected.finished_at)}</InfoRow>
+              {selected.failure_code && <InfoRow label="실패 이유">{selected.failure_code}</InfoRow>}
+              {!!selected.completed_tasks?.length && <InfoRow label="완료 작업">{selected.completed_tasks.join(", ")}</InfoRow>}
+              {!!selected.skipped_tasks?.length && <InfoRow label="미처리 작업">{selected.skipped_tasks.join(", ")}</InfoRow>}
+              {selected.failed_task && <InfoRow label="실패 작업">{selected.failed_task}</InfoRow>}
+              {selected.needs_human_review && <InfoRow label="확인 필요">사람 확인 필요</InfoRow>}
+            </dl>}
             {selected.message && <details className="result-reference"><summary>종료 메시지 확인</summary><p>{missionMessage(selected.message)}</p></details>}
           </div> : <OperationsEmpty icon={<EyeIcon />} title={selectedId ? "선택한 결과를 찾을 수 없습니다" : "작업 전·후를 한눈에 비교하세요"}>왼쪽 목록에서 결과를 선택하면 관측 자료와 종료 상태를 확인할 수 있습니다.</OperationsEmpty>}
         </section>
