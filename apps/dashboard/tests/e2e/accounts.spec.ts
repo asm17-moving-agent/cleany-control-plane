@@ -3,6 +3,11 @@ import { execFileSync } from "node:child_process";
 
 test("company-issued account changes password, then reset and disable revoke live access", async ({ page, baseURL }, testInfo) => {
   await page.goto("/");
+  await page.getByRole("combobox", { name: "언어 선택" }).selectOption("en");
+  await expect(page.getByRole("heading", { name: "Welcome back" })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Welcome back" })).toBeVisible();
+  await page.getByRole("combobox", { name: "Select language" }).selectOption("ko");
   await expect(page.getByRole("heading", { name: "로그인", exact: true })).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("login.png") });
   await page.getByLabel("아이디", { exact: true }).fill("e2e-first");
