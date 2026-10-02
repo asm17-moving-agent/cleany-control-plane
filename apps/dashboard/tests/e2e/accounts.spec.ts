@@ -3,8 +3,6 @@ import { execFileSync } from "node:child_process";
 
 test("company-issued account changes password, then reset and disable revoke live access", async ({ page, baseURL }, testInfo) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "반복되는 정리, 클리니에게." })).toBeVisible();
-  await page.getByRole("link", { name: "클리니 시작하기", exact: true }).click();
   await expect(page.getByRole("heading", { name: "로그인", exact: true })).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("login.png") });
   await page.getByLabel("아이디", { exact: true }).fill("e2e-first");

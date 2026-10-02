@@ -3,7 +3,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { configureClient } from "../api/client";
 import type { components } from "../api/generated/openapi";
 import { Navigate, useLocation } from "react-router";
-import { LandingPage } from "../pages/LandingPage";
 import { LoginPage } from "./LoginPage";
 
 export type Session = components["schemas"]["SessionResponse"];
@@ -113,11 +112,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
 }
 
 export function AuthGate({ children }: PropsWithChildren) {
-  const { loading, session, site, logout, error } = useAuth();
+  const { loading, session, site, logout } = useAuth();
   const location = useLocation();
-  if (location.pathname === "/welcome") return <LandingPage signedIn={!!session && !session.must_change_password} />;
+  if (location.pathname === "/welcome") return <Navigate to="/login" replace />;
   if (loading) return <main className="auth-screen" role="status">계정 확인 중…</main>;
-  if (!session && location.pathname === "/" && !error) return <LandingPage />;
   if (!session || session.must_change_password) return <LoginPage />;
   if (location.pathname === "/login") return <Navigate to="/" replace />;
   if (!site) return <main className="auth-screen"><h1>연결된 매장이 없습니다</h1><p>회사 담당자에게 매장 연결을 요청해 주세요.</p><button onClick={() => void logout()}>로그아웃</button></main>;
