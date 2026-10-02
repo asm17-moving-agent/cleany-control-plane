@@ -1,0 +1,25 @@
+# Managed by Cleany public setup. Credentials are bcrypt hashes, never plaintext.
+__DOMAIN__ {
+    @cross_origin {
+        method POST PUT PATCH DELETE
+        header Origin *
+        not header Origin https://__DOMAIN__
+    }
+    route {
+        respond @cross_origin "Origin not allowed" 403
+        @robot path /api/robots/*/gateway/ws /api/robots/*/pose/ws
+        handle @robot {
+            basicauth bcrypt "Cleany Robot" {
+                cleany-robot __ROBOT_HASH__
+            }
+            reverse_proxy 127.0.0.1:8080 {
+                header_up -Authorization
+            }
+        }
+        handle {
+            reverse_proxy 127.0.0.1:8080 {
+                header_up -Authorization
+            }
+        }
+    }
+}
