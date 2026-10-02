@@ -89,6 +89,11 @@ class Mission:
     needs_human_review: bool = False
     execution_profile: dict[str, str] = field(default_factory=dict)
     robot_sequence: int = 0
+    customer_id: str | None = None
+    site_id: str | None = None
+    requested_membership_id: str | None = None
+    robot_id: str | None = None
+    origin: str = "legacy"
 
     @property
     def seat_id(self) -> str | None:
@@ -141,7 +146,7 @@ class ControlPlaneStore:
     def __init__(self, repository: SQLiteRepository | None = None) -> None:
         self._lock = RLock()
         self._missions: dict[str, Mission] = {}
-        self._idempotency: dict[str, str] = {}
+        self._idempotency: dict[tuple[str | None, str], str] = {}
         self._listeners: list[EventListener] = []
         self.robot = Robot()
         self._pose: RobotPose | None = None
@@ -160,7 +165,9 @@ class ControlPlaneStore:
                 data["outcome"] = MissionOutcome(data["outcome"]) if data["outcome"] else None
                 mission = Mission(**data)
                 self._missions[mission.mission_id] = mission
-                self._idempotency[mission.idempotency_key] = mission.mission_id
+                self._idempotency[(mission.customer_id, mission.idempotency_key)] = (
+                    mission.mission_id
+                )
             if robot:
                 robot["state"] = RobotState(robot["state"])
                 self.robot = Robot(**robot)
@@ -268,6 +275,9 @@ class ControlPlaneStore:
         idempotency_key: str,
         seat_id: str | None = None,
         target: MissionTarget | None = None,
+        customer_id: str | None = None,
+        site_id: str | None = None,
+        requested_membership_id: str | None = None,
     ) -> tuple[Mission, bool]:
         if target is not None and seat_id is not None:
             raise ValueError("provide either target or seat_id, not both")
@@ -289,11 +299,12 @@ class ControlPlaneStore:
         parsed_priority = Priority(priority)
 
         with self.transaction():
-            existing_id = self._idempotency.get(idempotency_key)
+            existing_id = self._idempotency.get((customer_id, idempotency_key))
             if existing_id:
                 existing = self._missions[existing_id]
                 if (
-                    existing.target != target
+                    existing.site_id != site_id
+                    or existing.target != target
                     or existing.priority != parsed_priority
                     or existing.requested_by != requested_by.strip()
                 ):
@@ -307,9 +318,13 @@ class ControlPlaneStore:
                 requested_by=requested_by.strip(),
                 idempotency_key=idempotency_key.strip(),
                 created_at=utc_now(),
+                customer_id=customer_id,
+                site_id=site_id,
+                requested_membership_id=requested_membership_id,
+                origin="user" if customer_id else "legacy",
             )
             self._missions[mission.mission_id] = mission
-            self._idempotency[idempotency_key] = mission.mission_id
+            self._idempotency[(customer_id, idempotency_key)] = mission.mission_id
             self._publish("mission.created", mission)
             return mission, True
 
@@ -325,12 +340,31 @@ class ControlPlaneStore:
         with self._lock:
             return self._missions.get(mission_id)
 
+    def dispatch_allowed(self, mission: Mission) -> bool:
+        if mission.customer_id is None:
+            # Direct domain fixtures remain valid; network dispatch requires registered robots.
+            return (
+                not self.repository
+                or not self.repository.connection.execute("SELECT 1 FROM robots LIMIT 1").fetchone()
+            )
+        return bool(
+            self.repository
+            and self.repository.connection.execute(
+                "SELECT 1 FROM robots r JOIN customers c USING(customer_id) "
+                "JOIN sites s ON s.site_id=r.current_site_id AND s.customer_id=r.customer_id "
+                "WHERE r.robot_id=? AND r.customer_id=? AND r.current_site_id=? "
+                "AND r.disabled_at IS NULL AND c.disabled_at IS NULL AND s.disabled_at IS NULL",
+                (self.robot.robot_id, mission.customer_id, mission.site_id),
+            ).fetchone()
+        )
+
     def next_queued(self, supported_seat_ids: list[str] | None = None) -> Mission | None:
         with self._lock:
             candidates = [
                 mission
                 for mission in self._missions.values()
                 if mission.phase == MissionPhase.QUEUED
+                and self.dispatch_allowed(mission)
                 and (supported_seat_ids is None or mission.seat_id in supported_seat_ids)
             ]
             if not candidates:

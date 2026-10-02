@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 
 import pytest
+from account_support import authorize
 from httpx import ASGITransport, AsyncClient
 
 from control_plane.server import ControlPlaneApplication, create_app
@@ -20,10 +21,14 @@ async def make_client() -> AsyncIterator[AsyncClient]:
         settings=Settings(
             robot_mode="mock",
             database_path=":memory:",
+            cookie_secure=False,
+            allowed_origins=["http://test"],
         ),
     )
     transport = ASGITransport(app=create_app(application))
     async with AsyncClient(transport=transport, base_url="http://test") as client:
+        authorize(client, application)
+        client.params = {"site_id": "BUSAN_SOMA_18F"}
         yield client
 
 

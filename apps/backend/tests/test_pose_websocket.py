@@ -1,6 +1,7 @@
 from threading import Event
 
 import pytest
+from account_support import authorize
 from fastapi import WebSocketDisconnect
 from fastapi.testclient import TestClient
 
@@ -35,10 +36,15 @@ def test_websocket_rejects_invalid_messages_and_releases_owner(message: str) -> 
             settings=Settings(
                 robot_mode="mock",
                 database_path=":memory:",
+                cookie_secure=False,
+                allowed_origins=["http://testserver"],
             ),
         )
     )
     with TestClient(app) as client:
+        authorize(client, app.state.control_plane)
+        client.headers["Origin"] = "http://testserver"
+        client.params = {"site_id": "BUSAN_SOMA_18F"}
         with client.websocket_connect(WS) as socket:
             socket.send_text(message)
             with pytest.raises(WebSocketDisconnect) as error:
@@ -55,14 +61,19 @@ def test_websocket_rejects_binary_frames() -> None:
             settings=Settings(
                 robot_mode="mock",
                 database_path=":memory:",
+                cookie_secure=False,
+                allowed_origins=["http://testserver"],
             ),
         )
     )
-    with TestClient(app) as client, client.websocket_connect(WS) as socket:
-        socket.send_bytes(b'{"x":1,"y":2}')
-        with pytest.raises(WebSocketDisconnect) as error:
-            socket.receive_json()
-        assert error.value.code == 1003
+    with TestClient(app) as client:
+        authorize(client, app.state.control_plane)
+        client.headers["Origin"] = "http://testserver"
+        with client.websocket_connect(WS) as socket:
+            socket.send_bytes(b'{"x":1,"y":2}')
+            with pytest.raises(WebSocketDisconnect) as error:
+                socket.receive_json()
+            assert error.value.code == 1003
 
 
 def test_websocket_duplicate_does_not_disturb_owner() -> None:
@@ -71,6 +82,8 @@ def test_websocket_duplicate_does_not_disturb_owner() -> None:
         settings=Settings(
             robot_mode="mock",
             database_path=":memory:",
+            cookie_secure=False,
+            allowed_origins=["http://testserver"],
         ),
     )
     accepted = Event()
@@ -80,13 +93,17 @@ def test_websocket_duplicate_does_not_disturb_owner() -> None:
             accepted.set()
 
     application.store.subscribe(observe)
-    with TestClient(create_app(application)) as client, client.websocket_connect(WS) as owner:
-        with pytest.raises(WebSocketDisconnect) as error, client.websocket_connect(WS):
-            pass
-        assert error.value.code == 1008
-        owner.send_json({"x": 1, "y": -2})
-        assert accepted.wait(1)
-        assert client.get(SNAPSHOT).json()["stale"] is False
+    app = create_app(application)
+    with TestClient(app) as client:
+        authorize(client, application)
+        client.params = {"site_id": "BUSAN_SOMA_18F"}
+        with client.websocket_connect(WS) as owner:
+            with pytest.raises(WebSocketDisconnect) as error, client.websocket_connect(WS):
+                pass
+            assert error.value.code == 1008
+            owner.send_json({"x": 1, "y": -2})
+            assert accepted.wait(1)
+            assert client.get(SNAPSHOT).json()["stale"] is False
 
 
 def test_disconnect_and_reconnect_preserve_last_pose_but_not_freshness() -> None:
@@ -95,6 +112,8 @@ def test_disconnect_and_reconnect_preserve_last_pose_but_not_freshness() -> None
         settings=Settings(
             robot_mode="mock",
             database_path=":memory:",
+            cookie_secure=False,
+            allowed_origins=["http://testserver"],
         ),
     )
     accepted, released = Event(), Event()
@@ -109,6 +128,8 @@ def test_disconnect_and_reconnect_preserve_last_pose_but_not_freshness() -> None
 
     application.store.subscribe(observe)
     with TestClient(create_app(application)) as client:
+        authorize(client, application)
+        client.params = {"site_id": "BUSAN_SOMA_18F"}
         assert client.get(SNAPSHOT).json() == {"pose": None, "stale": True}
         with client.websocket_connect(WS) as socket:
             socket.send_json({"x": -1.865, "y": -4.705, "yaw": 1.57})
@@ -137,6 +158,8 @@ def test_receive_timeout_emits_stale_without_a_snapshot_request() -> None:
         settings=Settings(
             robot_mode="mock",
             database_path=":memory:",
+            cookie_secure=False,
+            allowed_origins=["http://testserver"],
         ),
     )
     accepted = Event()
@@ -150,12 +173,15 @@ def test_receive_timeout_emits_stale_without_a_snapshot_request() -> None:
     application.store.subscribe(observe)
     app = create_app(application)
     app.state.pose_timeout = 0.1
-    with TestClient(app) as client, client.websocket_connect(WS) as socket:
-        socket.send_json({"x": 1, "y": 2})
-        assert accepted.wait(1)
-        with pytest.raises(WebSocketDisconnect) as error:
-            socket.receive_json()
-        assert error.value.code == 1001
-        assert events[-1]["event_type"] == "robot.pose.stale"
-        assert events[-1]["payload"]["stale"] is True
-        assert events[-1]["payload"]["pose"]["x"] == 1
+    with TestClient(app) as client:
+        authorize(client, app.state.control_plane)
+        client.headers["Origin"] = "http://testserver"
+        with client.websocket_connect(WS) as socket:
+            socket.send_json({"x": 1, "y": 2})
+            assert accepted.wait(1)
+            with pytest.raises(WebSocketDisconnect) as error:
+                socket.receive_json()
+            assert error.value.code == 1001
+            assert events[-1]["event_type"] == "robot.pose.stale"
+            assert events[-1]["payload"]["stale"] is True
+            assert events[-1]["payload"]["pose"]["x"] == 1

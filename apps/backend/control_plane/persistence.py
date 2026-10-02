@@ -7,6 +7,8 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
+SCOPE_FIELDS = ("customer_id", "site_id", "requested_membership_id", "robot_id", "origin")
+
 
 class SQLiteRepository:
     def __init__(self, path: str) -> None:
@@ -17,9 +19,10 @@ class SQLiteRepository:
         self.connection.execute("PRAGMA foreign_keys=ON")
         self.connection.execute("PRAGMA journal_mode=WAL")
         version = self.connection.execute("PRAGMA user_version").fetchone()[0]
-        if version not in (0, 1):
+        if version not in (0, 1, 2):
             raise ValueError(f"unsupported database version: {version}")
-        self.connection.executescript("""
+        if version < 2:
+            self.connection.executescript("""
             CREATE TABLE IF NOT EXISTS missions (
                 mission_id TEXT PRIMARY KEY, idempotency_key TEXT NOT NULL UNIQUE,
                 active INTEGER NOT NULL, payload TEXT NOT NULL
@@ -44,12 +47,69 @@ class SQLiteRepository:
             );
             PRAGMA user_version=1;
         """)
+        self.migrate_accounts()
+
+    def migrate_accounts(self) -> None:
+        from control_plane.accounts import ACCOUNT_SCHEMA
+
+        version = self.connection.execute("PRAGMA user_version").fetchone()[0]
+        if version == 2:
+            return
+        if self.connection.execute("SELECT 1 FROM missions WHERE active=1").fetchone():
+            raise ValueError("Finish unresolved missions before account migration; back up the DB.")
+        try:
+            self.connection.executescript(
+                "BEGIN IMMEDIATE;\n"
+                + ACCOUNT_SCHEMA
+                + """
+                DROP TRIGGER IF EXISTS immutable_terminal;
+                DROP INDEX IF EXISTS single_active_mission;
+                ALTER TABLE missions RENAME TO missions_v1;
+                CREATE TABLE missions (
+                    mission_id TEXT PRIMARY KEY, idempotency_key TEXT NOT NULL,
+                    active INTEGER NOT NULL, payload TEXT NOT NULL,
+                    customer_id TEXT, site_id TEXT, requested_membership_id TEXT,
+                    robot_id TEXT, origin TEXT NOT NULL DEFAULT 'legacy',
+                    UNIQUE(customer_id,idempotency_key),
+                    FOREIGN KEY(customer_id,site_id) REFERENCES sites(customer_id,site_id),
+                    FOREIGN KEY(customer_id,requested_membership_id)
+                        REFERENCES memberships(customer_id,membership_id),
+                    FOREIGN KEY(customer_id,robot_id) REFERENCES robots(customer_id,robot_id),
+                    CHECK(origin='legacy' OR (origin='user' AND customer_id IS NOT NULL
+                        AND site_id IS NOT NULL AND requested_membership_id IS NOT NULL))
+                );
+                INSERT INTO missions(mission_id,idempotency_key,active,payload)
+                    SELECT mission_id,idempotency_key,active,payload FROM missions_v1;
+                DROP TABLE missions_v1;
+                CREATE UNIQUE INDEX single_active_mission ON missions(active) WHERE active=1;
+                CREATE INDEX mission_scope ON missions(customer_id,site_id);
+                CREATE TRIGGER immutable_terminal BEFORE UPDATE OF payload ON missions
+                    WHEN json_extract(OLD.payload,'$.phase')='TERMINAL' AND NEW.payload!=OLD.payload
+                    BEGIN SELECT RAISE(ABORT,'terminal mission cannot change'); END;
+                CREATE TRIGGER immutable_scope
+                    BEFORE UPDATE OF customer_id,site_id,requested_membership_id
+                    ON missions WHEN OLD.customer_id IS NOT NULL AND
+                    (NEW.customer_id IS NOT OLD.customer_id OR NEW.site_id IS NOT OLD.site_id
+                     OR NEW.requested_membership_id IS NOT OLD.requested_membership_id)
+                    BEGIN SELECT RAISE(ABORT,'mission ownership cannot change'); END;
+                PRAGMA user_version=2;
+                COMMIT;
+            """
+            )
+        except BaseException:
+            if self.connection.in_transaction:
+                self.connection.rollback()
+            raise
 
     def load(self) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
-        missions = [
-            json.loads(row[0])
-            for row in self.connection.execute("SELECT payload FROM missions ORDER BY rowid")
-        ]
+        missions = []
+        for row in self.connection.execute(
+            "SELECT payload,customer_id,site_id,requested_membership_id,robot_id,origin "
+            "FROM missions ORDER BY rowid"
+        ):
+            data = json.loads(row[0])
+            data.update(zip(SCOPE_FIELDS, row[1:], strict=True))
+            missions.append(data)
         row = self.connection.execute("SELECT payload FROM robot_snapshot WHERE id=1").fetchone()
         return missions, json.loads(row[0]) if row else None
 
@@ -58,14 +118,25 @@ class SQLiteRepository:
         self.connection.execute("UPDATE missions SET active=0 WHERE active=1")
         for mission in missions:
             active = mission["phase"] not in ("QUEUED", "TERMINAL")
+            payload = {key: value for key, value in mission.items() if key not in SCOPE_FIELDS}
+            encoded = json.dumps(payload)
+            old = self.connection.execute(
+                "SELECT payload FROM missions WHERE mission_id=?", (mission["mission_id"],)
+            ).fetchone()
+            # Preserve legacy JSON bytes and terminal triggers on untouched records.
+            if old and json.loads(old[0]) == payload:
+                encoded = old[0]
             self.connection.execute(
-                "INSERT INTO missions VALUES(?,?,?,?) ON CONFLICT(mission_id) DO UPDATE SET "
-                "active=excluded.active, payload=excluded.payload",
+                "INSERT INTO missions(mission_id,idempotency_key,active,payload,customer_id,"
+                "site_id,requested_membership_id,robot_id,origin) VALUES(?,?,?,?,?,?,?,?,?) "
+                "ON CONFLICT(mission_id) DO UPDATE SET active=excluded.active, "
+                "payload=excluded.payload, robot_id=excluded.robot_id",
                 (
                     mission["mission_id"],
                     mission["idempotency_key"],
                     int(active),
-                    json.dumps(mission),
+                    encoded,
+                    *(mission.get(key) for key in SCOPE_FIELDS),
                 ),
             )
         self.connection.execute(

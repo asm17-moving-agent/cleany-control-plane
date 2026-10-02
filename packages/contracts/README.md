@@ -2,6 +2,24 @@
 
 Dashboard, Backend와 Robot Gateway 간 machine-readable contract의 Source of Truth다.
 
+## 계정과 접근 계약
+
+`openapi.json`의 `LoginInput`, `PasswordInput`, `SessionResponse`, `SitesResponse`가 계정 API 계약이다.
+[예시](examples/accounts.json)처럼 로그인 → 필요 시 비밀번호 변경 → 시설 조회 순서로 사용한다.
+`/api/health` 이외의 HTTP API는 세션이 필요하며, 임시 로그인은 `me`, `password/change`, `logout`만 허용한다.
+쿠키는 운영에서 `__Host-cleany_session`이고 로컬 HTTP 설정에서는 `cleany_session`이다.
+변경 요청은 같은 Origin과 응답의 `csrf_token`을 `X-CSRF-Token` 헤더에 전달해야 한다.
+
+업무 조회·SSE는 `?site_id=SITE_ID`로 선택한다. 시설이 하나면 생략할 수 있다.
+고객과 요청자는 서버 세션에서 결정하며 입력 `requested_by`는 deprecated로 무시한다.
+중복 key 범위는 고객별이다. 미션 조회는 `limit`(1~100), `before=created_at|mission_id` 커서를 받는다.
+`auth.expired` SSE를 받으면 구독을 종료하고 로그인으로 돌아간다.
+
+Robot WebSocket은 등록한 장비 토큰을 `Authorization: Bearer ...` 또는 `X-Cleany-Robot-Token`으로 전달한다.
+사용자 세션은 장비 인증을 대체하지 않는다. 프록시 Basic 인증을 쓰면 별도 장비 토큰 헤더를 함께 전달한다.
+관측 파일은 `observation://relative/path`로 전달한다. HTTP/SSE 응답은 권한을 검사하는
+`/api/missions/{id}/observations/{stage}` 경로를 제공하며 외부 URL·원시 파일 경로는 공개하지 않는다.
+
 ## 현재 schema
 
 - `mission-request.schema.json`

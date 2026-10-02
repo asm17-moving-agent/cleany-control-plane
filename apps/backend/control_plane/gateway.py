@@ -84,9 +84,12 @@ class GatewayController:
             None,
         )
 
-    def validate_target(self, target, idempotency_key: str) -> None:
+    def validate_target(self, target, idempotency_key: str, customer_id: str | None = None) -> None:
         # A successful POST retry remains valid even if capabilities later change.
-        if any(m.idempotency_key == idempotency_key for m in self.store.list_missions()):
+        if any(
+            m.idempotency_key == idempotency_key and m.customer_id == customer_id
+            for m in self.store.list_missions()
+        ):
             return
         if target.kind != TargetKind.SEAT or target.reference_id not in (
             self.store.robot.supported_seat_ids or []
@@ -383,6 +386,7 @@ class GatewayController:
                     if candidate and candidate.seat_id in (
                         self.store.robot.supported_seat_ids or []
                     ):
+                        candidate.robot_id = self.store.robot.robot_id
                         candidate.execution_profile = dict(self.store.robot.execution_profile)
                         self.store.transition(
                             candidate.mission_id,

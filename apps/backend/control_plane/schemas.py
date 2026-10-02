@@ -30,7 +30,7 @@ class MissionRequest(BaseModel):
     seat_id: str | None = Field(default=None, min_length=1)
     target: MissionTargetModel | None = None
     priority: Priority
-    requested_by: str = Field(min_length=1)
+    requested_by: str | None = Field(default=None, min_length=1, deprecated=True)
     idempotency_key: str = Field(min_length=1)
 
     @model_validator(mode="after")

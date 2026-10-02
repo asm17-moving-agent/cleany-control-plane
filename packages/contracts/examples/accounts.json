@@ -1,0 +1,6 @@
+{
+  "login": {"login_id": "customer-operator", "password": "issued-temporary-password"},
+  "password_change": {"password": "a-new-private-passphrase"},
+  "session": {"user_id": "user-example", "login_id": "customer-operator", "display_name": "사용자", "customer_id": "customer-example", "customer_name": "고객", "must_change_password": true, "csrf_token": "example-only", "expires_at": 1790899200},
+  "sites": {"items": [{"site_id": "site-example", "display_name": "매장", "map_ref": "facility-18f"}]}
+}
