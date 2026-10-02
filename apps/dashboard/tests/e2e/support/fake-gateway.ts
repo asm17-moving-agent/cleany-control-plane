@@ -36,7 +36,7 @@ export class FakeGateway {
     this.send(snapshot);
   }
   async connect() {
-    this.socket = new WebSocket(this.url);
+    this.socket = new WebSocket(this.url, ["cleany", "e2e-robot-token-only-for-tests"]);
     await new Promise<void>((resolve, reject) => {
       this.socket.addEventListener("error", () => reject(new Error("Fake Gateway connection failed")));
       this.socket.addEventListener("message", event => {

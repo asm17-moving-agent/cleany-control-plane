@@ -8,7 +8,7 @@ import { SettingsProvider } from "../settings/SettingsContext";
 import { DemoModeProvider } from "./DemoModeContext";
 import { OperationsProvider, useOperations } from "./OperationsContext";
 
-vi.mock("../api/client", () => ({ api: {
+vi.mock("../api/client", async (importOriginal) => ({ ...await importOriginal<typeof import("../api/client")>(), api: {
   seats: vi.fn(async () => ({ items: [] })), missions: vi.fn(async () => ({ items: [] })),
   robots: vi.fn(async () => ({ items: [] })), createMission: vi.fn(), cancelMission: vi.fn(),
 } }));

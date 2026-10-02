@@ -36,7 +36,7 @@ export function SeatMissionPanel({ seat, unavailable, onClose, onSubmitted }: {
     try {
       const mission = await createMission({
         target: { kind: "SEAT", reference_id: seat.seat_id, label: seatZoneLabel(seat) + " · " + label + "번 좌석" },
-        priority, requested_by: "scenario-operator", idempotency_key: attempt.current.key,
+        priority, idempotency_key: attempt.current.key,
       });
       setSubmittedId(mission.mission_id);
       setMessage(label + "번 좌석 작업을 대기열에 등록했습니다." + (onSubmitted ? " 로봇이 배정되면 상세 패널이 열립니다." : ""));

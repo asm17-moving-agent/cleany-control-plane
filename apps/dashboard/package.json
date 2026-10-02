@@ -29,6 +29,7 @@
     "@tailwindcss/vite": "latest",
     "@testing-library/jest-dom": "latest",
     "@testing-library/react": "latest",
+    "@types/node": "^22.20.4",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "@types/three": "0.180.0",

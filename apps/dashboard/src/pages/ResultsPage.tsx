@@ -15,7 +15,7 @@ function Observation({ label, reference }: { label: string; reference: string | 
   const { isDemo } = useDemoMode();
   const href = observationHref(reference);
   const [failed, setFailed] = useState(false);
-  const image = href && /\.(png|jpe?g|webp|gif|avif)(?:[?#]|$)/i.test(href);
+  const image = href && (href.includes("/observations/") || /\.(png|jpe?g|webp|gif|avif)(?:[?#]|$)/i.test(href));
   return <section className="result-observation" aria-label={label}>
     <header><h4>{label}</h4>{href && <a href={href} target="_blank" rel="noreferrer">원본 열기 <ChevronIcon /></a>}</header>
     {image && !failed ? <a className="result-observation-image" href={href} target="_blank" rel="noreferrer"><img src={href} alt={`${label} ${isDemo ? "AI 생성 예시" : "관측"} 사진`} onError={() => setFailed(true)} />{isDemo && <span className="result-photo-label">AI 생성 · 예시</span>}</a>

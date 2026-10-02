@@ -1,9 +1,9 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/auth";
 
 test("WebSocket pose reaches the map through SSE and stale snapshots survive reload", async ({ page }) => {
   await page.goto("/");
   await page.evaluate(() => new Promise<void>((resolve, reject) => {
-    const socket = new WebSocket(`ws://${location.host}/api/robots/cleany-01/pose/ws`);
+    const socket = new WebSocket(`ws://${location.host}/api/robots/cleany-01/pose/ws`, ["cleany", "e2e-robot-token-only-for-tests"]);
     const owner = window as unknown as { stopTestPose: () => void };
     socket.onerror = () => reject(new Error("test pose producer could not connect"));
     socket.onopen = () => {

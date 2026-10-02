@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/auth";
 import { FakeGateway } from "./support/fake-gateway";
 
 let gateway: FakeGateway;
@@ -11,7 +11,7 @@ test.afterEach(async () => { await gateway.disconnect(); });
 async function submit(page: import("@playwright/test").Page) {
   await page.goto("/?demo=0&recording=0");
   await page.locator('.facility-map-seat[data-seat-id="seat-12"]').click();
-  const response = page.waitForResponse(r => r.url().endsWith("/api/missions") && r.request().method() === "POST");
+  const response = page.waitForResponse(r => new URL(r.url()).pathname === "/api/missions" && r.request().method() === "POST");
   await page.getByRole("button", { name: "요청 보내기", exact: true }).click();
   const mission = await (await response).json();
   await expect.poll(() => gateway.offers.some(offer => offer.mission_id === mission.mission_id)).toBe(true);

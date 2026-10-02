@@ -8,8 +8,9 @@ import {
   useMemo,
   useState,
 } from "react";
-import { api } from "../api/client";
-import { queryKeys } from "../api/queryKeys";
+import { api, scopedUrl } from "../api/client";
+import { queryKeys as defaultKeys } from "../api/queryKeys";
+import { useAuthOptional } from "../auth/AuthContext";
 import type { Mission, MissionRequest, OperationsEvent, Robot, RobotPose, Seat } from "../api/types";
 import { useSettings } from "../settings/SettingsContext";
 import { useDemoMode } from "./DemoModeContext";
@@ -72,6 +73,13 @@ function DemoOperationsProvider({ children }: PropsWithChildren) {
 
 function LiveOperationsProvider({ children }: PropsWithChildren) {
   const queryClient = useQueryClient();
+  const auth = useAuthOptional();
+  const scope = auth ? [auth.session?.customer_id, auth.site?.site_id] : [];
+  const scopeKey = scope.join(":");
+  const queryKeys = useMemo(() => ({
+    seats: [...defaultKeys.seats, ...scope], missions: [...defaultKeys.missions, ...scope],
+    robots: [...defaultKeys.robots, ...scope],
+  }), [scopeKey]);
   const { settings } = useSettings();
   const [connectionState, setConnectionState] = useState<ConnectionState>("connecting");
   const [events, setEvents] = useState<OperationsEvent[]>([]);
@@ -103,10 +111,10 @@ function LiveOperationsProvider({ children }: PropsWithChildren) {
       queryClient.invalidateQueries({ queryKey: queryKeys.missions }),
       queryClient.invalidateQueries({ queryKey: queryKeys.robots }),
     ]);
-  }, [queryClient]);
+  }, [queryClient, queryKeys]);
 
   useEffect(() => {
-    const source = new EventSource("/api/events/stream");
+    const source = new EventSource(scopedUrl("/api/events/stream"));
     let disposed = false;
     let revision = 0;
     let newestTimestamp = -Infinity;
@@ -122,7 +130,7 @@ function LiveOperationsProvider({ children }: PropsWithChildren) {
     };
     const refreshPose = () => {
       const requestedRevision = ++revision;
-      void fetch("/api/robots/cleany-01/pose").then(response => response.ok ? response.json() : null)
+      void fetch(scopedUrl("/api/robots/cleany-01/pose")).then(response => response.ok ? response.json() : null)
         .then(snapshot => {
           // A newer stream event always wins over an in-flight HTTP snapshot.
           if (requestedRevision === revision) applySnapshot(snapshot);
@@ -149,7 +157,13 @@ function LiveOperationsProvider({ children }: PropsWithChildren) {
       }
       void refresh();
     });
+    source.addEventListener("auth.expired", () => {
+      source.close(); window.dispatchEvent(new Event("cleany:auth-expired"));
+    });
     source.addEventListener("error", () => {
+      if (auth) void fetch("/api/auth/me").then(response => {
+        if (response.status === 401) { source.close(); window.dispatchEvent(new Event("cleany:auth-expired")); }
+      }).catch(() => {});
       setConnectionState("error");
       revision++;
     });

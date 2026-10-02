@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/auth";
 import type { Page } from "@playwright/test";
 import type { Mission, MissionPhase, MissionOutcome, Robot } from "../../src/api/types";
 
@@ -21,6 +21,7 @@ async function missionApi(page: Page) {
   });
   await page.route(url => url.pathname.startsWith("/api/"), async route => {
     const path = new URL(route.request().url()).pathname;
+    if (path.startsWith("/api/auth/") || path === "/api/sites") return route.continue();
     if (path === "/api/missions" && route.request().method() === "POST") {
       const input = route.request().postDataJSON();
       mission = {
