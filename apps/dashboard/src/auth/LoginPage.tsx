@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { Link } from "react-router";
 import { useAuth } from "./AuthContext";
 import wordmark from "../assets/brand/wordmark.png";
 import "./auth.css";
@@ -22,7 +23,7 @@ export function LoginPage() {
     finally { setBusy(false); }
   }
   return <main className="auth-screen"><section className="auth-card">
-    <img src={wordmark} alt="Cleany" width="144" />
+    <Link to="/welcome" aria-label="Cleany 서비스 소개"><img src={wordmark} alt="Cleany" width="144" /></Link>
     <h1>{changing ? "비밀번호 변경" : "로그인"}</h1>
     <p>{changing ? "임시 비밀번호를 대신할 새 비밀번호를 설정해 주세요." : "회사에서 받은 계정으로 로그인해 주세요."}</p>
     <form onSubmit={event => void submit(event)}>
