@@ -1,0 +1,40 @@
+/* Cleany UI palette: edit base colors here; components consume semantic tokens.
+ * White-based tints, shades and overlays are derived, not independent colors.
+ * Robot 3D materials and imported raster/brand assets retain their own colors.
+ */
+:root {
+  --palette-teal: #167e70;
+  --palette-charcoal: #24333d;
+  --palette-gray: #687b80;
+  --palette-white: #ffffff;
+  --palette-amber: #94601d;
+  --palette-red: #b94834; /* Error / emergency exception. */
+
+  --color-text: var(--palette-charcoal);
+  --color-text-muted: var(--palette-gray);
+  --color-text-disabled: color-mix(in srgb, var(--palette-gray) 75%, var(--palette-white));
+  --color-background: color-mix(in srgb, var(--palette-gray) 5%, var(--palette-white));
+  --color-surface: var(--palette-white);
+  --color-surface-muted: color-mix(in srgb, var(--palette-gray) 8%, var(--palette-white));
+  --color-neutral-soft: color-mix(in srgb, var(--palette-gray) 15%, var(--palette-white));
+  --color-border: color-mix(in srgb, var(--palette-gray) 25%, var(--palette-white));
+  --color-border-strong: color-mix(in srgb, var(--palette-gray) 50%, var(--palette-white));
+  --color-on-action: var(--palette-white);
+  --color-action: var(--palette-teal);
+  --color-action-hover: color-mix(in srgb, var(--palette-teal) 85%, var(--palette-charcoal));
+  --color-action-soft: color-mix(in srgb, var(--palette-teal) 9%, var(--palette-white));
+  --color-action-border: color-mix(in srgb, var(--palette-teal) 35%, var(--palette-white));
+  --color-focus: color-mix(in srgb, var(--palette-teal) 55%, var(--palette-white));
+  --color-warning: var(--palette-amber);
+  --color-warning-soft: color-mix(in srgb, var(--palette-amber) 10%, var(--palette-white));
+  --color-warning-border: color-mix(in srgb, var(--palette-amber) 35%, var(--palette-white));
+  --color-danger: var(--palette-red);
+  --color-danger-soft: color-mix(in srgb, var(--palette-red) 8%, var(--palette-white));
+  --color-danger-border: color-mix(in srgb, var(--palette-red) 35%, var(--palette-white));
+  --color-auth-background: color-mix(in srgb, var(--palette-teal) 5%, var(--palette-white));
+  --color-illustration-line: color-mix(in srgb, var(--palette-teal) 45%, var(--palette-white));
+  --color-illustration-fill: color-mix(in srgb, var(--palette-teal) 15%, var(--palette-white));
+  --color-shadow: color-mix(in srgb, var(--palette-charcoal) 8%, transparent);
+  --color-overlay: color-mix(in srgb, var(--palette-charcoal) 85%, transparent);
+  --color-surface-overlay: color-mix(in srgb, var(--palette-white) 94%, transparent);
+}

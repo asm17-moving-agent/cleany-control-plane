@@ -387,3 +387,12 @@ pnpm test:e2e
 Gateway E2E는 격리된 18082 포트/SQLite DB와 테스트용 WebSocket Runtime을 사용한다.
 기존 UI E2E는 18081 포트의 명시적 Mock 모드를 사용한다. 실제 Gazebo 검증은
 [Runtime 인계 계약](../../docs/architecture/robot-gateway-integration.md)을 따른다.
+
+## 공통 색상
+
+팔레트와 파생 색상은 [`src/styles/tokens.css`](src/styles/tokens.css)에서 관리한다.
+기본은 청록·차콜·회색·흰색·호박색이며, 오류·긴급 상황에만 빨강을 사용한다.
+화면에서는 HEX 대신 `--color-text`, `--color-action`, `--color-warning`,
+`--color-danger` 등 용도별 변수를 사용한다. 기존 `--workspace-*`와 Tailwind
+색상은 이 변수의 별칭이다. 대기·확인 필요는 호박색, 완료·실행은 청록색,
+미확인은 회색 패턴으로 구분한다. 로고·지도 이미지와 3D 재질은 별도로 유지한다.

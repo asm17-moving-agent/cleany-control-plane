@@ -1,17 +1,18 @@
 @layer theme, components, utilities;
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
+@import "./styles/tokens.css";
 @import "../styles.css" layer(components);
 
 @theme {
-  --color-cleany-navy: #02264b;
-  --color-cleany-primary: #03336e;
-  --color-cleany-primary-bright: #00467f;
-  --color-cleany-selected: #209b88;
-  --color-cleany-surface: #ffffff;
-  --color-cleany-surface-muted: #f6f8fa;
-  --color-cleany-border: #ced7de;
-  --color-cleany-text: #0b2354;
-  --color-cleany-text-sub: #5b7191;
-  --color-cleany-text-disabled: #929eaf;
+  --color-cleany-navy: var(--color-text);
+  --color-cleany-primary: var(--color-action);
+  --color-cleany-primary-bright: var(--color-action);
+  --color-cleany-selected: var(--color-action);
+  --color-cleany-surface: var(--color-surface);
+  --color-cleany-surface-muted: var(--color-surface-muted);
+  --color-cleany-border: var(--color-border);
+  --color-cleany-text: var(--color-text);
+  --color-cleany-text-sub: var(--color-text-muted);
+  --color-cleany-text-disabled: var(--color-text-disabled);
 }

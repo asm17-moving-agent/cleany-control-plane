@@ -5,6 +5,6 @@ export function RecordingNavigationOverlay({ path }: { path: RecordingPath; scal
   return <svg className="facility-movement-path" viewBox={`0 0 ${FACILITY_18F.imageWidth} ${FACILITY_18F.imageHeight}`}
     role="img" aria-label="촬영용 이동 경로">
     <polyline points={path.points.map(p => `${p.x},${p.y}`).join(" ")}
-      stroke="#9aa5ae" strokeOpacity=".48" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+      stroke="var(--color-border-strong)" strokeOpacity=".48" strokeWidth="2" vectorEffect="non-scaling-stroke" />
   </svg>;
 }
