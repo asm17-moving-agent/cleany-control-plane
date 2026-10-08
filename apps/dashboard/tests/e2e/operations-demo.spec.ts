@@ -1,10 +1,10 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/auth";
 
 test("demo navigation loads example photos, blocks commands, and returns to live data", async ({ page }) => {
   const apiRequests: { method: string; path: string }[] = [];
   page.on("request", request => {
     const path = new URL(request.url()).pathname;
-    if (path.startsWith("/api/")) apiRequests.push({ method: request.method(), path });
+    if (/^\/api\/(missions|seats|robots|events)/.test(path)) apiRequests.push({ method: request.method(), path });
   });
 
   await page.goto("/results?demo=1&filter=review");

@@ -12,3 +12,4 @@ playwright-report/
 *.tsbuildinfo
 .env
 *.db
+apps/backend/.data/

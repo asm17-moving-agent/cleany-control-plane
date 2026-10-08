@@ -1,3 +1,4 @@
+import { useAuthOptional } from "../auth/AuthContext";
 import wordmark from "../assets/brand/wordmark.png";
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router";
@@ -13,7 +14,7 @@ export const facilityFloors = [
   { id: "BUSAN_SOMA_18F", label: "부산 소마 센터 18층", mapAvailable: true },
   { id: "BUSAN_SOMA_19F", label: "부산 소마 센터 19층", mapAvailable: false },
 ] as const;
-export type FacilityFloor = typeof facilityFloors[number];
+export interface FacilityFloor { id: string; label: string; mapAvailable: boolean; }
 export interface FacilitySelection { floor: FacilityFloor; }
 
 const navigation = [
@@ -28,7 +29,11 @@ const titles: Record<string, string> = {
 };
 export function AppShell() {
   const location = useLocation();
-  const [floor, setFloor] = useState<FacilityFloor>(facilityFloors[0]);
+  const auth = useAuthOptional();
+  const floors = auth ? auth.sites.map(site => ({ id: site.site_id, label: site.display_name,
+    mapAvailable: site.map_ref === "facility-18f" })) : facilityFloors;
+  const [localFloor, setFloor] = useState<FacilityFloor>(facilityFloors[0]);
+  const floor = auth ? floors.find(item => item.id === auth.site?.site_id) ?? localFloor : localFloor;
   const { robots, missions, error, isLoading } = useOperations();
   const { isDemo, isRecording, setDemoMode } = useDemoMode();
   const demo = !isDemo && location.pathname === "/" && new URLSearchParams(location.search).get("summaryDemo") === "1";
@@ -56,8 +61,8 @@ export function AppShell() {
         </nav>
         <div className="workspace-header-actions">
           <label className="workspace-location"><MapPinIcon aria-hidden="true" />
-            <select aria-label="운영 층 선택" value={floor.id} onChange={(event) => setFloor(facilityFloors.find((item) => item.id === event.target.value) ?? facilityFloors[0])}>
-              {facilityFloors.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
+            <select aria-label="운영 층 선택" value={floor.id} onChange={(event) => auth ? auth.selectSite(event.target.value) : setFloor(floors.find((item) => item.id === event.target.value) ?? facilityFloors[0])}>
+              {floors.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
             </select>
           </label>
           <details className="workspace-menu" ref={alertsRef}>
@@ -71,9 +76,10 @@ export function AppShell() {
           <details className="workspace-menu" ref={menuRef}>
             <summary aria-label="운영 메뉴"><span className="workspace-avatar">운영자</span><ChevronIcon /></summary>
             <div className="workspace-popover">
-              <strong>운영자</strong>
+              <strong>{auth?.session?.display_name ?? "운영자"}</strong>
               <Link to="/monitoring"><MonitoringIcon />모니터링</Link>
               <Link to="/settings"><SettingsIcon />설정</Link>
+              {auth && <button type="button" onClick={() => void auth.logout()}>로그아웃</button>}
               {!isDemo && <button type="button" onClick={() => setDemoMode(true)}>예시 데이터 보기</button>}
               {!isRecording && <Link to="/?recording=1">촬영 모드</Link>}
             </div>

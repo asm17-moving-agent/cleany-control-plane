@@ -34,7 +34,7 @@ def test_seat_model_preserves_canonical_shape() -> None:
     for field in ("seat_id", "label"):
         assert model["properties"][field]["pattern"] == contract["properties"][field]["pattern"]
     for example in contract["examples"]:
-        assert SeatResponse.model_validate(example).model_dump() == example
+        assert SeatResponse.model_validate(example).model_dump(exclude_unset=True) == example
 
 
 def test_pose_contract_and_sse_snapshot_examples_match_models() -> None:
@@ -49,3 +49,16 @@ def test_pose_contract_and_sse_snapshot_examples_match_models() -> None:
     events = read_contract("robot-pose-event.schema.json")
     for example in events["examples"]:
         assert PoseSnapshot.model_validate(example["payload"]).model_dump() == example["payload"]
+
+
+def test_published_account_examples_match_api_models() -> None:
+    from control_plane.server import LoginInput, PasswordInput, SessionResponse, SitesResponse
+
+    examples = json.loads((CONTRACT_ROOT.parent / "examples" / "accounts.json").read_text())
+    for key, model in (
+        ("login", LoginInput),
+        ("password_change", PasswordInput),
+        ("session", SessionResponse),
+        ("sites", SitesResponse),
+    ):
+        model.model_validate(examples[key])

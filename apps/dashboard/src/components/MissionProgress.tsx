@@ -1,6 +1,7 @@
 import type { Mission, MissionPhase } from "../api/types";
 import { outcomeLabels } from "../lib/home-summary";
 import { missionTone } from "../lib/operations";
+import { executionSource } from "../lib/execution-source";
 import "./mission-progress.css";
 
 const stages = ["접수", "이동", "작업", "복귀", "완료"] as const;
@@ -31,5 +32,6 @@ export function MissionProgress({ mission }: { mission: Mission }) {
       })}
     </ol>
     <p className="mission-step-status" role="status">{status}{mission.cancel_requested && !terminal && <span> · 취소 요청 중</span>}</p>
+    {mission.execution_profile && <p className="ops-note">{executionSource(mission.execution_profile)}</p>}
   </div>;
 }

@@ -1,0 +1,36 @@
+import { expect, test } from "@playwright/test";
+import { execFileSync } from "node:child_process";
+
+test("company-issued account changes password, then reset and disable revoke live access", async ({ page, baseURL }, testInfo) => {
+  await page.goto("/");
+  await page.getByRole("combobox", { name: "언어 선택" }).selectOption("en");
+  await expect(page.getByRole("heading", { name: "Welcome back" })).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole("heading", { name: "Welcome back" })).toBeVisible();
+  await page.getByRole("combobox", { name: "Select language" }).selectOption("ko");
+  await expect(page.getByRole("heading", { name: "로그인", exact: true })).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath("login.png") });
+  await page.getByLabel("아이디", { exact: true }).fill("e2e-first");
+  await page.getByLabel("비밀번호", { exact: true }).fill("e2e-first-temporary-password");
+  await page.getByRole("button", { name: "로그인", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "비밀번호 변경", exact: true })).toBeVisible();
+  expect((await page.request.get("/api/sites")).status()).toBe(403);
+  await page.screenshot({ path: testInfo.outputPath("password-change.png") });
+  await page.getByLabel("새 비밀번호", { exact: true }).fill("e2e-first-new-password-2026");
+  await page.getByLabel("새 비밀번호 확인", { exact: true }).fill("e2e-first-new-password-2026");
+  await page.getByRole("button", { name: "변경하고 시작하기" }).click();
+  await expect(page.locator("button.facility-map-seat")).toHaveCount(82);
+  await page.screenshot({ path: testInfo.outputPath("authenticated-dashboard.png") });
+  const identity = await (await page.request.get("/api/auth/me")).json();
+  const invoke = (command: string) => JSON.parse(execFileSync("uv", ["run", "--project", "../backend", "python", "-m", "control_plane.admin", "--database", process.env.CLEANY_E2E_DATABASE!, command, identity.user_id], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }));
+  const reset = invoke("reset-password");
+  await expect(page.getByRole("heading", { name: "로그인", exact: true })).toBeVisible({ timeout: 15_000 });
+  await page.getByLabel("아이디", { exact: true }).fill("e2e-first");
+  await page.getByLabel("비밀번호", { exact: true }).fill(reset.temporary_password);
+  await page.getByRole("button", { name: "로그인", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "비밀번호 변경", exact: true })).toBeVisible();
+  invoke("disable");
+  expect((await page.request.get("/api/auth/me")).status()).toBe(401);
+  const wrongOrigin = await page.request.post("/api/auth/login", { headers: { Origin: "https://attacker.invalid" }, data: { login_id: "e2e-first", password: reset.temporary_password } });
+  expect(wrongOrigin.status()).toBe(403);
+});

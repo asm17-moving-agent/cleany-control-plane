@@ -9,7 +9,7 @@ Cleany의 Web Dashboard, Mission Queue, Robot 연결 경계와 외부 Mission li
 
 ## MVP 시나리오
 
-운영자가 18층 시설 지도에서 구역을 선택하고 Mission을 요청하면, Mock Backend가 우선순위
+운영자가 18층 시설 지도에서 구역을 선택하고 Mission을 요청하면, Backend가 우선순위
 Queue와 단일 Robot lifecycle을 실행합니다. Dashboard는 Server-Sent Events로 상태
 변경과 최종 결과를 갱신합니다.
 
@@ -17,7 +17,7 @@ Queue와 단일 Robot lifecycle을 실행합니다. Dashboard는 Server-Sent Eve
 Dashboard
   → Mission API
   → Priority Queue
-  → Mock Robot lifecycle
+  → Robot Gateway / Mission Manager
   → Server-Sent Events
   → Dashboard status/result
 ```
@@ -34,11 +34,11 @@ Dashboard
 - Robot 연결 및 현재 할당 Mission 확인
 - 브라우저별 화면 갱신·Mission 기본값 설정
 
-### Mock Backend
+### Backend
 
 - FastAPI·Pydantic 기반 HTTP/SSE transport와 OpenAPI
-- 메모리 기반 Mission Queue와 `HIGH` 우선 처리
-- 단일 Mock Robot과 하나의 활성 Mission
+- SQLite 기반 Mission Queue와 `HIGH` 우선 처리, 재시작 복구
+- 단일 Robot과 하나의 활성 Mission, 양방향 Gateway 연결
 - 외부 Mission lifecycle 및 terminal outcome 불변성
 - idempotency key 기반 중복 Mission 생성 방지
 - 안전 checkpoint에서 처리하는 취소 요청
@@ -103,7 +103,10 @@ uv run --project apps/backend python apps/backend/run.py
 
 브라우저에서 [http://127.0.0.1:8080](http://127.0.0.1:8080)을 열고 시설 구역과
 우선순위를 선택해 Mission을 생성합니다. 서버 종료는 실행한 터미널에서 `Ctrl+C`를
-누릅니다.
+누릅니다. 기본 모드는 `gateway`이며 Runtime 연결이 필요합니다. UI 시연은
+`CLEANY_ROBOT_MODE=mock CLEANY_DATABASE_PATH=/tmp/cleany-mock.db`를 명시합니다.
+[Gateway 계약과 Runtime 인계](docs/architecture/robot-gateway-integration.md),
+[Backend 설정](apps/backend/README.md)을 참고하세요.
 
 ### 개발 서버(hot reload)
 
@@ -181,9 +184,11 @@ docs/cleany-docs/      제품·기획·예비설계 KB submodule
 ## 검증
 
 ```bash
+pnpm contracts:check
 pnpm typecheck
 pnpm test
-pnpm build
+pnpm test:e2e:gateway
+pnpm test:e2e
 uv run --project apps/backend --extra dev pytest apps/backend/tests
 uv run --project apps/backend --extra dev ruff check apps/backend
 ```
@@ -193,9 +198,9 @@ uv run --project apps/backend --extra dev ruff check apps/backend
 
 ## 현재 제한사항
 
-- 데이터는 메모리에만 저장되며 서버 재시작 시 초기화됩니다.
-- Robot lifecycle은 시간 기반 Mock dispatcher가 수행합니다.
-- 인증, 권한, PostgreSQL과 실제 Robot transport는 아직 포함하지 않습니다.
+- 기본 `gateway` 모드는 Runtime의 snapshot과 지원 좌석을 받아야 Mission을 할당합니다.
+- ROS adapter와 Mission Manager는 `cleany` 저장소에서 구현해야 합니다.
+- 인증, 권한과 PostgreSQL은 아직 포함하지 않습니다.
 - Dashboard 설정은 Backend 계약이 확정되기 전까지 브라우저 `localStorage`에만
   저장됩니다.
-- PostgreSQL 영속화와 실제 Robot Gateway는 다음 구현 단계입니다.
+- 실제 Gazebo navigation과 복귀 검증은 Runtime 연결 후 수행해야 합니다.

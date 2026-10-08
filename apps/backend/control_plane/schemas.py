@@ -13,6 +13,7 @@ from control_plane.domain import (
     RobotState,
     TargetKind,
 )
+from control_plane.gateway_protocol import ExecutionProfile
 
 
 class MissionTargetModel(BaseModel):
@@ -29,7 +30,7 @@ class MissionRequest(BaseModel):
     seat_id: str | None = Field(default=None, min_length=1)
     target: MissionTargetModel | None = None
     priority: Priority
-    requested_by: str = Field(min_length=1)
+    requested_by: str | None = Field(default=None, min_length=1, deprecated=True)
     idempotency_key: str = Field(min_length=1)
 
     @model_validator(mode="after")
@@ -65,6 +66,19 @@ class MissionResponse(BaseModel):
     cancel_requested: bool
     before_observation: str | None
     after_observation: str | None
+    accepted_at: str | None = None
+    finished_at: str | None = None
+    failure_code: str | None = None
+    completed_tasks: list[str] = Field(default_factory=list)
+    skipped_tasks: list[str] = Field(default_factory=list)
+    failed_task: str | None = None
+    needs_human_review: bool = False
+    execution_profile: ExecutionProfile | None = None
+
+    @field_validator("execution_profile", mode="before")
+    @classmethod
+    def empty_profile(cls, value):
+        return value or None
 
 
 class MissionListResponse(BaseModel):
@@ -77,7 +91,15 @@ class RobotResponse(BaseModel):
     robot_id: str
     state: RobotState
     active_mission_id: str | None
-    last_seen_at: str
+    last_seen_at: str | None
+    control_mode: Literal["gateway", "mock"] = "mock"
+    can_cancel: bool = True
+    execution_profile: ExecutionProfile | None = None
+
+    @field_validator("execution_profile", mode="before")
+    @classmethod
+    def empty_profile(cls, value):
+        return value or None
 
 
 class RobotListResponse(BaseModel):
@@ -94,7 +116,8 @@ class RobotPose(BaseModel):
     received_at: str
 
     yaw: float | None = Field(
-        default=None, allow_inf_nan=False,
+        default=None,
+        allow_inf_nan=False,
         description=(
             "World heading in radians, +X=0, counterclockwise positive; null when unavailable"
         ),
@@ -133,6 +156,7 @@ class PoseSnapshot(BaseModel):
 
 
 class SeatResponse(BaseModel):
+    mission_supported: bool | None = None
     seat_id: str = Field(pattern=r"^seat-(?:[0-9]{2}|(?:a[1-4]|m[1-3])-0[1-6])$")
     label: str = Field(pattern=r"^(?:[0-9]{2}|(?:A[1-4]|M[1-3])-0[1-6])$")
     zone_id: Literal[
