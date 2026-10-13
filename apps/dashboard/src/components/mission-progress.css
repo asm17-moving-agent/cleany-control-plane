@@ -1,21 +1,21 @@
 .mission-step-progress { margin: 18px 0 12px; }
 .mission-step-progress ol { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; }
-.mission-step-progress li { position: relative; display: flex; flex-direction: column; align-items: center; gap: 9px; min-width: 0; color: #81909a; font-size: 10px; line-height: 1.4; }
-.mission-step-progress li:not(:last-child)::after { content: ""; position: absolute; top: 7px; left: calc(50% + 8px); width: calc(100% - 16px); height: 2px; background: #dce4e8; transition: background-color 240ms ease; }
-.mission-step-dot { position: relative; z-index: 1; display: grid; place-items: center; width: 16px; height: 16px; box-sizing: border-box; border: 2px solid #dce4e8; border-radius: 50%; background: #fff; transition: background-color 240ms ease, border-color 240ms ease, box-shadow 240ms ease; }
-.mission-step-dot svg { width: 12px; height: 12px; fill: none; stroke: #fff; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.mission-step-progress li[data-state=done] { color: #397d68; }
-.mission-step-progress li[data-state=done]::after { background: #397d68; }
-.mission-step-progress li[data-state=done] .mission-step-dot { border-color: #397d68; background: #397d68; }
-.mission-step-progress li[data-state=current] { color: var(--workspace-teal, #087b86); font-weight: 700; }
-.mission-step-progress li[data-state=current] .mission-step-dot { border-color: var(--workspace-teal, #087b86); background: var(--workspace-teal, #087b86); box-shadow: 0 0 0 4px #087b861c; }
-.mission-step-progress li[data-state=current] .mission-step-dot::before { content: ""; width: 4px; height: 4px; border-radius: 50%; background: #fff; }
-.mission-step-progress li[data-state=stopped] { color: #a66a20; font-weight: 700; }
-.mission-step-progress li[data-state=stopped] .mission-step-dot { border-color: #a66a20; background: #fff4e4; }
-.mission-step-progress[data-tone=danger] li[data-state=stopped] { color: var(--workspace-danger, #b44848); }
-.mission-step-progress[data-tone=danger] li[data-state=stopped] .mission-step-dot { border-color: var(--workspace-danger, #b44848); background: #ffeded; }
-.mission-step-progress .mission-step-status { margin: 14px 0 0; color: var(--workspace-teal, #087b86); font-size: 12px; font-weight: 600; }
-.mission-step-progress[data-tone=success] .mission-step-status { color: #397d68; }
-.mission-step-progress[data-tone=warning] .mission-step-status { color: #946226; }
-.mission-step-progress[data-tone=danger] .mission-step-status { color: var(--workspace-danger, #b44848); }
+.mission-step-progress li { position: relative; display: flex; flex-direction: column; align-items: center; gap: 9px; min-width: 0; color: var(--color-text-muted); font-size: 10px; line-height: 1.4; }
+.mission-step-progress li:not(:last-child)::after { content: ""; position: absolute; top: 7px; left: calc(50% + 8px); width: calc(100% - 16px); height: 2px; background: var(--color-surface-muted); transition: background-color 240ms ease; }
+.mission-step-dot { position: relative; z-index: 1; display: grid; place-items: center; width: 16px; height: 16px; box-sizing: border-box; border: 2px solid var(--color-border); border-radius: 50%; background: var(--color-surface); transition: background-color 240ms ease, border-color 240ms ease, box-shadow 240ms ease; }
+.mission-step-dot svg { width: 12px; height: 12px; fill: none; stroke: var(--color-surface); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.mission-step-progress li[data-state=done] { color: var(--color-action); }
+.mission-step-progress li[data-state=done]::after { background: var(--color-action); }
+.mission-step-progress li[data-state=done] .mission-step-dot { border-color: var(--color-action); background: var(--color-action); }
+.mission-step-progress li[data-state=current] { color: var(--workspace-teal); font-weight: 700; }
+.mission-step-progress li[data-state=current] .mission-step-dot { border-color: var(--workspace-teal); background: var(--workspace-teal); box-shadow: 0 0 0 4px var(--color-shadow); }
+.mission-step-progress li[data-state=current] .mission-step-dot::before { content: ""; width: 4px; height: 4px; border-radius: 50%; background: var(--color-surface); }
+.mission-step-progress li[data-state=stopped] { color: var(--color-warning); font-weight: 700; }
+.mission-step-progress li[data-state=stopped] .mission-step-dot { border-color: var(--color-warning); background: var(--color-warning-soft); }
+.mission-step-progress[data-tone=danger] li[data-state=stopped] { color: var(--workspace-danger); }
+.mission-step-progress[data-tone=danger] li[data-state=stopped] .mission-step-dot { border-color: var(--workspace-danger); background: var(--color-danger-soft); }
+.mission-step-progress .mission-step-status { margin: 14px 0 0; color: var(--workspace-teal); font-size: 12px; font-weight: 600; }
+.mission-step-progress[data-tone=success] .mission-step-status { color: var(--color-action); }
+.mission-step-progress[data-tone=warning] .mission-step-status { color: var(--color-warning); }
+.mission-step-progress[data-tone=danger] .mission-step-status { color: var(--workspace-danger); }
 @media (prefers-reduced-motion: reduce) { .mission-step-progress *, .mission-step-progress *::after { transition: none; } }

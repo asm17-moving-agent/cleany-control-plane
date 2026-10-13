@@ -4,7 +4,7 @@
   "title": "MissionRequest",
   "type": "object",
   "additionalProperties": false,
-  "required": ["priority", "requested_by", "idempotency_key"],
+  "required": ["priority", "idempotency_key"],
   "oneOf": [
     { "required": ["seat_id"], "not": { "required": ["target"] } },
     { "required": ["target"], "not": { "required": ["seat_id"] } }
@@ -22,7 +22,7 @@
       }
     },
     "priority": { "enum": ["NORMAL", "HIGH"] },
-    "requested_by": { "type": "string", "minLength": 1 },
+    "requested_by": { "type": ["string", "null"], "minLength": 1, "deprecated": true, "description": "Ignored; authenticated user is recorded by the server." },
     "idempotency_key": { "type": "string", "minLength": 1 }
   }
 }

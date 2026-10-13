@@ -63,7 +63,7 @@ export function useRecordingOperations(): OperationsContextValue {
     const seat = seats.find(seat => seat.seat_id === target.reference_id);
     if (!seat) throw new Error("좌석을 찾을 수 없습니다.");
     recordingRoute(seat);
-    const mission: Mission = { ...request, mission_id: crypto.randomUUID(), target,
+    const mission: Mission = { ...request, requested_by: "display-demo", mission_id: crypto.randomUUID(), target,
       seat_id: seat.seat_id, phase: "QUEUED", outcome: null, sequence: 0, cancel_requested: false,
       created_at: new Date().toISOString(), message: "촬영용 요청", before_observation: null, after_observation: null };
     submitted.current.set(request.idempotency_key, mission);

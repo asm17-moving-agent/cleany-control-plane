@@ -4,6 +4,91 @@
  */
 
 export interface paths {
+    "/api/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Login */
+        post: operations["login_api_auth_login_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Logout */
+        post: operations["logout_api_auth_logout_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Me */
+        get: operations["me_api_auth_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/password/change": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Change Password */
+        post: operations["change_password_api_auth_password_change_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/auth/session/touch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Touch */
+        post: operations["touch_api_auth_session_touch_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/events/stream": {
         parameters: {
             query?: never;
@@ -73,6 +158,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/missions/{mission_id}/observations/{stage}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Observation */
+        get: operations["observation_api_missions__mission_id__observations__stage__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/robots": {
         parameters: {
             query?: never;
@@ -124,10 +226,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/sites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sites */
+        get: operations["sites_api_sites_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ExecutionProfile */
+        ExecutionProfile: {
+            /**
+             * Execution
+             * @enum {string}
+             */
+            execution: "sim" | "real" | "mock";
+            /**
+             * Navigation
+             * @enum {string}
+             */
+            navigation: "sim" | "real" | "mock";
+            /**
+             * Perception
+             * @enum {string}
+             */
+            perception: "sim" | "real" | "mock";
+            /**
+             * Planning
+             * @enum {string}
+             */
+            planning: "sim" | "real" | "mock";
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -140,7 +282,14 @@ export interface components {
              * @default ok
              * @constant
              */
-            status: "ok";
+            status?: "ok";
+        };
+        /** LoginInput */
+        LoginInput: {
+            /** Login Id */
+            login_id: string;
+            /** Password */
+            password: string;
         };
         /** MissionListResponse */
         MissionListResponse: {
@@ -162,28 +311,47 @@ export interface components {
             /** Idempotency Key */
             idempotency_key: string;
             priority: components["schemas"]["Priority"];
-            /** Requested By */
-            requested_by: string;
+            /**
+             * Requested By
+             * @deprecated
+             */
+            requested_by?: string | null;
             /** Seat Id */
             seat_id?: string | null;
             target?: components["schemas"]["MissionTargetModel"] | null;
         };
         /** MissionResponse */
         MissionResponse: {
+            /** Accepted At */
+            accepted_at?: string | null;
             /** After Observation */
             after_observation: string | null;
             /** Before Observation */
             before_observation: string | null;
             /** Cancel Requested */
             cancel_requested: boolean;
+            /** Completed Tasks */
+            completed_tasks?: string[];
             /** Created At */
             created_at: string;
+            execution_profile?: components["schemas"]["ExecutionProfile"] | null;
+            /** Failed Task */
+            failed_task?: string | null;
+            /** Failure Code */
+            failure_code?: string | null;
+            /** Finished At */
+            finished_at?: string | null;
             /** Idempotency Key */
             idempotency_key: string;
             /** Message */
             message: string;
             /** Mission Id */
             mission_id: string;
+            /**
+             * Needs Human Review
+             * @default false
+             */
+            needs_human_review?: boolean;
             outcome: components["schemas"]["MissionOutcome"] | null;
             phase: components["schemas"]["MissionPhase"];
             priority: components["schemas"]["Priority"];
@@ -193,6 +361,8 @@ export interface components {
             seat_id: string | null;
             /** Sequence */
             sequence: number;
+            /** Skipped Tasks */
+            skipped_tasks?: string[];
             target: components["schemas"]["MissionTargetModel"];
         };
         /** MissionTargetModel */
@@ -202,6 +372,13 @@ export interface components {
             label?: string | null;
             /** Reference Id */
             reference_id: string;
+        };
+        /** PasswordInput */
+        PasswordInput: {
+            /** Current Password */
+            current_password?: string | null;
+            /** Password */
+            password: string;
         };
         /** PoseSnapshot */
         PoseSnapshot: {
@@ -240,8 +417,20 @@ export interface components {
         RobotResponse: {
             /** Active Mission Id */
             active_mission_id: string | null;
+            /**
+             * Can Cancel
+             * @default true
+             */
+            can_cancel?: boolean;
+            /**
+             * Control Mode
+             * @default mock
+             * @enum {string}
+             */
+            control_mode?: "gateway" | "mock";
+            execution_profile?: components["schemas"]["ExecutionProfile"] | null;
             /** Last Seen At */
-            last_seen_at: string;
+            last_seen_at: string | null;
             /** Robot Id */
             robot_id: string;
             state: components["schemas"]["RobotState"];
@@ -265,6 +454,8 @@ export interface components {
             grid_column: 1 | 2 | 3 | 5 | 6 | 8 | 9 | 10;
             /** Label */
             label: string;
+            /** Mission Supported */
+            mission_supported?: boolean | null;
             /**
              * Occupancy
              * @enum {string}
@@ -281,7 +472,40 @@ export interface components {
              * @default d-hub
              * @enum {string}
              */
-            zone_id: "d-hub" | "space-a1" | "space-a2" | "space-a3" | "space-a4" | "space-m1" | "space-m2" | "space-m3";
+            zone_id?: "d-hub" | "space-a1" | "space-a2" | "space-a3" | "space-a4" | "space-m1" | "space-m2" | "space-m3";
+        };
+        /** SessionResponse */
+        SessionResponse: {
+            /** Csrf Token */
+            csrf_token: string;
+            /** Customer Id */
+            customer_id: string;
+            /** Customer Name */
+            customer_name: string;
+            /** Display Name */
+            display_name: string;
+            /** Expires At */
+            expires_at: number;
+            /** Login Id */
+            login_id: string;
+            /** Must Change Password */
+            must_change_password: boolean;
+            /** User Id */
+            user_id: string;
+        };
+        /** SiteResponse */
+        SiteResponse: {
+            /** Display Name */
+            display_name: string;
+            /** Map Ref */
+            map_ref: string;
+            /** Site Id */
+            site_id: string;
+        };
+        /** SitesResponse */
+        SitesResponse: {
+            /** Items */
+            items: components["schemas"]["SiteResponse"][];
         };
         /**
          * TargetKind
@@ -310,6 +534,128 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    login_api_auth_login_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    logout_api_auth_logout_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    me_api_auth_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionResponse"];
+                };
+            };
+        };
+    };
+    change_password_api_auth_password_change_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PasswordInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    touch_api_auth_session_touch_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     stream_events_api_events_stream_get: {
         parameters: {
             query?: never;
@@ -352,7 +698,10 @@ export interface operations {
     };
     list_missions_api_missions_get: {
         parameters: {
-            query?: never;
+            query?: {
+                limit?: number;
+                before?: string | null;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -366,6 +715,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MissionListResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -421,6 +779,38 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MissionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    observation_api_missions__mission_id__observations__stage__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mission_id: string;
+                stage: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */
@@ -490,6 +880,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SeatListResponse"];
+                };
+            };
+        };
+    };
+    sites_api_sites_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SitesResponse"];
                 };
             };
         };

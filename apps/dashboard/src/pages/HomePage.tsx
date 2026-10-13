@@ -65,6 +65,7 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
             unavailable={isLoading || !!error}>
               {isDemo ? <span className="home-telemetry-status" role="status">{isRecording ? "촬영용 이동 · 실제 로봇 미연동" : "예시 위치 · 실제 로봇 미연동"}</span> : <span className={"home-telemetry-status " + (livePose.connected ? "is-connected" : "is-disconnected")} role="status">
                 SSE {livePose.connected ? "연결됨" : "연결 끊김"} · 위치 {livePose.pose ? (livePose.stale ? "지연" : "최신") : "대기 중"}
+                {robots[0]?.control_mode && <> · {robots[0].control_mode === "mock" ? "Backend 모의 실행" : robots[0].state === "OFFLINE" ? "로봇 연결 끊김" : "로봇 연결됨"}</>}
               </span>}
               {summaryDemo && <button className="summary-demo-exit" type="button" title="화면용 예시 데이터입니다. 데모에서는 작업 요청이 전송되지 않습니다." onClick={() => setSearchParams(current => { const next = new URLSearchParams(current); next.delete("summaryDemo"); return next; })}>데모 · 해제</button>}
           </HomeMapHeader>

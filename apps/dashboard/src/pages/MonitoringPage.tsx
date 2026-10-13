@@ -1,13 +1,18 @@
 import { formatDateTime, missionTargetLabel } from "../lib/operations";
 import { useOperations } from "../operations/OperationsContext";
+import { useDemoMode } from "../operations/DemoModeContext";
 
 export function MonitoringPage() {
   const { missions, robot, seats, events } = useOperations();
+  const { isDemo } = useDemoMode();
   const terminal = missions.filter(({ phase }) => phase === "TERMINAL");
-  const succeeded = terminal.filter(({ outcome }) => outcome === "SUCCESS").length;
+  const accepted = missions.filter(m => m.accepted_at || (isDemo && m.phase !== "QUEUED"));
+  const succeeded = accepted.filter(({ outcome }) => outcome === "SUCCESS").length;
+  const unfinished = accepted.filter(m => m.phase !== "TERMINAL").length;
+  const mockRuns = accepted.filter(m => m.execution_profile && Object.values(m.execution_profile).includes("mock")).length;
   const activeCount = missions.filter(({ phase }) => !["QUEUED", "TERMINAL"].includes(phase)).length;
   const queuedCount = missions.filter(({ phase }) => phase === "QUEUED").length;
-  const successRate = terminal.length ? `${Math.round((succeeded / terminal.length) * 100)}%` : "-";
+  const successRate = accepted.length ? `${Math.round((succeeded / accepted.length) * 100)}%` : "-";
   const activities = events.length
     ? events.slice(0, 6).map((event) => ({
         id: event.event_id,
@@ -30,7 +35,7 @@ export function MonitoringPage() {
       <div className="metric-grid monitor-metrics">
         <article className="metric-card"><span>처리 중 / 대기</span><strong>{activeCount} / {queuedCount}</strong><small>현재 Mission</small></article>
         <article className="metric-card"><span>완료 Mission</span><strong>{terminal.length}</strong><small>전체 {missions.length}건</small></article>
-        <article className="metric-card"><span>성공률</span><strong>{successRate}</strong><small>종료 Mission 기준</small></article>
+        <article className="metric-card"><span>시나리오 성공률</span><strong>{successRate}</strong><small>수락 {accepted.length}건 · 미종료 {unfinished}건 · 모의 단계 포함 {mockRuns}건</small></article>
       </div>
       <div className="monitor-grid">
         <article className="panel monitor-panel">
@@ -38,10 +43,10 @@ export function MonitoringPage() {
           <div className="health-visual">
             <span className="health-ring"><i /></span>
             <div>
-              <strong>{robot?.state === "BUSY" ? "Mission 수행 중" : "Robot 대기 중"}</strong>
+              <strong>{robot?.state === "BUSY" ? "Mission 수행 중" : robot?.state === "IDLE" ? "Robot 대기 중" : robot?.state === "ERROR" ? "로봇 확인 필요" : "로봇 연결 확인 필요"}</strong>
               <p>{robot?.state === "BUSY"
                 ? "할당된 작업의 상태 변경을 실시간으로 수신하고 있습니다."
-                : "새 Mission을 받을 수 있는 상태입니다."}</p>
+                : robot?.state === "IDLE" ? "새 Mission을 받을 수 있는 상태입니다." : "상태가 확인될 때까지 새 Mission을 배정하지 않습니다."}</p>
             </div>
           </div>
           <dl className="detail-list compact-detail-list">

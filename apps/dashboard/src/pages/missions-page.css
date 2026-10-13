@@ -1,7 +1,7 @@
 .mission-table-heading, .mission-table-row { display: grid; grid-template-columns: minmax(170px, 1fr) 105px 150px 16px; gap: 16px; align-items: center; }
-.mission-table-heading { padding: 11px 20px; background: #fafbfc; border-bottom: 1px solid #edf0f3; color: var(--workspace-muted); font-size: 11px; }
-.mission-table-row time { color: #74818d; font-size: 11px; font-variant-numeric: tabular-nums; }
-.mission-priority-high { color: #ad762c; }
+.mission-table-heading { padding: 11px 20px; background: var(--color-background); border-bottom: 1px solid var(--color-background); color: var(--workspace-muted); font-size: 11px; }
+.mission-table-row time { color: var(--color-text-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.mission-priority-high { color: var(--color-warning); }
 .mission-cancel-error { margin: 16px 0 0; padding: 10px; background: var(--workspace-danger-soft); color: var(--workspace-danger); font-size: 12px; border-radius: 6px; }
 .mission-reference { margin-top: 20px; color: var(--workspace-muted); font-size: 11px; }
 .mission-reference summary { cursor: pointer; }

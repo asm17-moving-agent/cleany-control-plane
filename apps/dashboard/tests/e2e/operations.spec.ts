@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./support/auth";
 
 test("operator can select a seat on the map and send a supported request", async ({ page }) => {
   await page.goto("/");
@@ -12,13 +12,13 @@ test("operator can select a seat on the map and send a supported request", async
   await expect(fleet).toBeVisible();
   await page.getByRole("button", { name: "지도 확대", exact: true }).click();
   await panel.getByRole("radio", { name: "높음" }).check();
-  const requestPromise = page.waitForRequest((request) => request.url().endsWith("/api/missions") && request.method() === "POST");
-  const responsePromise = page.waitForResponse((response) => response.url().endsWith("/api/missions") && response.request().method() === "POST");
+  const requestPromise = page.waitForRequest((request) => new URL(request.url()).pathname === "/api/missions" && request.method() === "POST");
+  const responsePromise = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/missions" && response.request().method() === "POST");
   await panel.getByRole("button", { name: "요청 보내기" }).click();
   const payload = (await requestPromise).postDataJSON();
   expect(payload).toEqual({
     target: { kind: "SEAT", reference_id: "seat-12", label: "D-HUB · 12번 좌석" },
-    priority: "HIGH", requested_by: "scenario-operator", idempotency_key: expect.any(String),
+    priority: "HIGH", idempotency_key: expect.any(String),
   });
   const response = await responsePromise;
   expect(response.status()).toBe(201);

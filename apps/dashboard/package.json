@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc -b && vite build",
-    "contracts:types": "openapi-typescript ../../packages/contracts/openapi.json -o src/api/generated/openapi.ts",
+    "contracts:types": "openapi-typescript ../../packages/contracts/openapi.json --default-non-nullable false -o src/api/generated/openapi.ts",
     "typecheck": "tsc -b --pretty false",
     "test": "vitest run",
     "test:e2e": "playwright test",
@@ -29,6 +29,7 @@
     "@tailwindcss/vite": "latest",
     "@testing-library/jest-dom": "latest",
     "@testing-library/react": "latest",
+    "@types/node": "^22.20.4",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "@types/three": "0.180.0",

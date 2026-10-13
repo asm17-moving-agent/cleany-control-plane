@@ -32,7 +32,7 @@ describe("seat mission submission", () => {
     fireEvent.click(screen.getByRole("button", { name: "다시 요청" }));
     await screen.findByRole("link", { name: "요청 현황 보기" });
     expect(createMission.mock.calls[1][0]).toEqual(createMission.mock.calls[0][0]);
-    expect(createMission.mock.calls[0][0]).toEqual({ target: { kind: "SEAT", reference_id: "seat-12", label: "D-HUB · 12번 좌석" }, priority: "HIGH", requested_by: "scenario-operator", idempotency_key: expect.any(String) });
+    expect(createMission.mock.calls[0][0]).toEqual({ target: { kind: "SEAT", reference_id: "seat-12", label: "D-HUB · 12번 좌석" }, priority: "HIGH", idempotency_key: expect.any(String) });
     expect(screen.getByRole("link", { name: "요청 현황 보기" })).toHaveAttribute("href", "/missions?mission=mission-retry");
     expect(screen.getByRole("button", { name: "대기열 등록 완료" })).toBeDisabled();
   });

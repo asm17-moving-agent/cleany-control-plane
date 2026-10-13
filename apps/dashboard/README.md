@@ -1,5 +1,13 @@
 # Cleany Dashboard
 
+미로그인 상태의 `/`와 `/login`은 로그인 화면을 표시한다. 로그인하면 매장 대시보드로 연결한다.
+기존 `/welcome` 링크는 `/login`으로 이동한다. 로그인·첫 비밀번호 변경 화면은 모바일도 지원한다. 오른쪽 위 지구본에서 해당 화면의
+한국어·영어를 선택하며 브라우저에 선택을 저장한다. 배경 선화는 `AuthBackdrop.tsx`의 SVG다.
+
+회사가 발급한 계정으로 로그인하고 첫 접속에서 비밀번호를 변경한다. 고객의 시설 목록을
+선택하며 시설 전환·로그아웃 때 조회 cache와 실시간 구독을 정리한다. 예시/촬영 모드도
+로그인이 필요하다. [계정 발급과 로컬 실행](../backend/README.md#계정-발급과-첫-실행)을 따른다.
+
 ## 촬영 모드와 실시간 위치 연동
 
 - `/?demo=0`: backend snapshot/SSE의 위치와 yaw를 표시한다. 위치가 없으면
@@ -331,7 +339,7 @@ uv run --with mujoco==3.12.0 --with trimesh --with numpy python \
 전체 운영 페이지 예시 모드: `/results?demo=1`, `/missions?demo=1`, `/robots?demo=1`.
 운영자 메뉴의 **예시 데이터 보기**로도 켤 수 있다. 같은 탭에서 메뉴 이동·새로고침 후에도 유지되고,
 상단 **실제 데이터로 돌아가기**로 해제한다. 로봇 3대·요청 7건과 AI 생성 전후 사진을 표시한다.
-예시 모드에서는 API 조회/SSE와 작업 요청·취소 전송을 하지 않는다.
+예시 모드에서는 업무 데이터 API 조회/SSE와 작업 요청·취소 전송을 하지 않는다. 계정 확인과 세션 활동 요청은 유지한다.
 사진 경로·생성 프롬프트·검증은 [운영 페이지 예시 문서](../../docs/architecture/operations-demo-20260910.md)에 남겼다.
 
 홈 `/?demo=1`에서는 82석을 연한 파랑(점유 중 19석), 기존 무채색 좌석(청소 완료 46석),
@@ -359,3 +367,32 @@ uv run --with mujoco==3.12.0 --with trimesh --with numpy python \
 최소형 좌석 현황 Firefox/niri 캡처: `docs/architecture/assets/home-implementation-20260908/38-minimal-occupancy-{wide,narrow}.png`.
 
 기존 지도 레이아웃 복원 후 캡처: `docs/architecture/assets/home-implementation-20260908/39-original-map-layout.png`.
+
+## Mission Gateway 통합
+
+Backend 기본 모드는 `gateway`다. 최초 Runtime snapshot 전에는 좌석 요청을 막고,
+연결 후에는 advertised `supported_seat_ids`만 허용한다. Robot 연결 상태는 브라우저
+SSE 연결 상태와 구분하며, 재연결 시 HTTP snapshot을 다시 조회한다.
+
+진행 및 결과 화면은 Runtime의 외부 phase, 실제 observation 참조, execution profile,
+수락/종료 시각과 작업 내역을 표시한다. navigation이 `sim`이고 작업이 `mock`이면
+혼합 실행으로 표시한다. 취소는 checkpoint 요청이며 safe stop이나 e-stop이 아니다.
+
+```bash
+pnpm contracts:check
+pnpm test:e2e:gateway
+pnpm test:e2e
+```
+
+Gateway E2E는 격리된 18082 포트/SQLite DB와 테스트용 WebSocket Runtime을 사용한다.
+기존 UI E2E는 18081 포트의 명시적 Mock 모드를 사용한다. 실제 Gazebo 검증은
+[Runtime 인계 계약](../../docs/architecture/robot-gateway-integration.md)을 따른다.
+
+## 공통 색상
+
+팔레트와 파생 색상은 [`src/styles/tokens.css`](src/styles/tokens.css)에서 관리한다.
+기본은 청록·차콜·회색·흰색·호박색이며, 오류·긴급 상황에만 빨강을 사용한다.
+화면에서는 HEX 대신 `--color-text`, `--color-action`, `--color-warning`,
+`--color-danger` 등 용도별 변수를 사용한다. 기존 `--workspace-*`와 Tailwind
+색상은 이 변수의 별칭이다. 대기·확인 필요는 호박색, 완료·실행은 청록색,
+미확인은 회색 패턴으로 구분한다. 로고·지도 이미지와 3D 재질은 별도로 유지한다.

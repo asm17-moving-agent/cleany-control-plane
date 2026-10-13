@@ -7,8 +7,17 @@ import type {
   Seat,
 } from "./types";
 
+let csrf: string | null = null;
+let siteId: string | null = null;
+export function configureClient(token: string | null, site: string | null) { csrf = token; siteId = site; }
+export function scopedUrl(path: string) {
+  return siteId ? path + (path.includes("?") ? "&" : "?") + "site_id=" + encodeURIComponent(siteId) : path;
+}
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(path, init);
+  const response = await fetch(scopedUrl(path), init ? { ...init,
+    headers: { ...init.headers, "X-CSRF-Token": csrf ?? "" },
+  } : undefined);
+  if (response.status === 401) window.dispatchEvent(new Event("cleany:auth-expired"));
   const payload = (await response.json()) as T | ApiErrorPayload;
   if (!response.ok) {
     const error = payload as ApiErrorPayload;

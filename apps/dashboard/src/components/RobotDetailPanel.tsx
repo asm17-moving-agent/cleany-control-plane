@@ -9,6 +9,7 @@ import { InfoRow } from "./InfoRow";
 import { formatDateTime, missionTargetLabel, missionMessage } from "../lib/operations";
 import { RobotModel } from "./RobotModel";
 import { MissionProgress } from "./MissionProgress";
+import { executionSource } from "../lib/execution-source";
 
 export function RobotDetailPanel({ robot, mission, seats, unavailable, onClose, attentionCount = 0 }: {
   robot: Robot; mission?: Mission; seats: Seat[]; unavailable: boolean; onClose: () => void; attentionCount?: number;
@@ -21,6 +22,7 @@ export function RobotDetailPanel({ robot, mission, seats, unavailable, onClose, 
     <header><h2 ref={heading} tabIndex={-1} className="sr-only">로봇 상세</h2><button className="robot-list-back" type="button" onClick={onClose}><ChevronIcon />로봇 목록</button>{attentionCount > 0 && <span className="robot-list-attention" role="status">조치 {attentionCount}</span>}</header>
     <div className="robot-detail-content">
       <div className="robot-detail-identity"><h3>{robot.robot_id}</h3><RobotStateBadge state={robot.state} /></div>
+      {robot.control_mode && <p className="ops-note">{robot.control_mode === "gateway" ? "FSM 런타임 연동" : "Backend 모의 실행"} · {executionSource(robot.execution_profile)}</p>}
       {unavailable && <p role="alert" className="robot-detail-notice">정보를 갱신하지 못했습니다. 마지막으로 받은 정보를 표시합니다.</p>}
       {needsRobotAttention(robot) && <p className="robot-detail-notice">{robot.state === "OFFLINE" ? "연결이 끊겼습니다. 현장 상태와 네트워크를 확인해 주세요." : "오류가 발생했습니다. 현장 상태를 확인해 주세요."}</p>}
       <dl className="robot-detail-metrics"><InfoRow label="배터리"><BatteryStatus /></InfoRow><InfoRow label="마지막 확인">{formatDateTime(robot.last_seen_at)}</InfoRow></dl>
