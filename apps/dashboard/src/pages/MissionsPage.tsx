@@ -13,6 +13,7 @@ import { useDemoMode } from "../operations/DemoModeContext";
 import "./missions-page.css";
 
 type PhaseFilter = "ALL" | "ACTIVE" | "QUEUED" | "TERMINAL";
+/** Keep filters and selected detail in the URL, guarding unsupported or duplicate cancel requests. */
 export function MissionsPage() {
   const { missions, robots, seats, cancelMission, refresh, isLoading, error } = useOperations();
   const { isDemo, isRecording } = useDemoMode();

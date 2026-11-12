@@ -8,6 +8,7 @@ import { useDemoMode } from "../operations/DemoModeContext";
 import { useSettings } from "../settings/SettingsContext";
 import { seatZoneLabel, seatOccupancyLabel, seatDisplayLabel } from "../lib/operations";
 
+/** Submit a supported seat target, retaining the same request key for retries of unchanged input. */
 export function SeatMissionPanel({ seat, unavailable, onClose, onSubmitted }: {
   seat: Seat; unavailable: boolean; onClose: () => void; onSubmitted?: (mission: Mission) => void;
 }) {
@@ -30,6 +31,7 @@ export function SeatMissionPanel({ seat, unavailable, onClose, onSubmitted }: {
   async function submit(event: FormEvent) {
     event.preventDefault();
     if ((isDemo && !isRecording) || !supported || submitting.current || busy || unavailable || submittedId) return;
+    // Retry unchanged input with the original key so a lost response cannot create a second mission.
     const signature = JSON.stringify([seat.seat_id, priority]);
     if (attempt.current?.signature !== signature) attempt.current = { signature, key: crypto.randomUUID() };
     submitting.current = true; setPending(true); setFailed(false); setMessage("");
@@ -38,6 +40,7 @@ export function SeatMissionPanel({ seat, unavailable, onClose, onSubmitted }: {
         target: { kind: "SEAT", reference_id: seat.seat_id, label: seatZoneLabel(seat) + " · " + label + "번 좌석" },
         priority, idempotency_key: attempt.current.key,
       });
+      // Submission confirms registration; robot assignment is observed separately by the parent.
       setSubmittedId(mission.mission_id);
       setMessage(label + "번 좌석 작업을 대기열에 등록했습니다." + (onSubmitted ? " 로봇이 배정되면 상세 패널이 열립니다." : ""));
       onSubmitted?.(mission);

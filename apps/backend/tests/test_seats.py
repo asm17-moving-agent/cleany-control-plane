@@ -7,7 +7,7 @@ from pathlib import Path
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(BACKEND_ROOT))
 
-from control_plane.fixtures import GRID_COLUMNS, SEATS  # noqa: E402
+from control_plane.mock.fixtures import GRID_COLUMNS, SEATS  # noqa: E402
 
 
 class SeatFixtureTest(unittest.TestCase):

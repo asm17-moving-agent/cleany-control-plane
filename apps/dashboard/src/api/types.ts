@@ -9,6 +9,10 @@ export type RobotState = components["schemas"]["RobotState"];
 export type Robot = components["schemas"]["RobotResponse"];
 export type Seat = components["schemas"]["SeatResponse"];
 
+/**
+ * Live SSE envelope from mission-event.schema.json; payload shape depends on event_type.
+ * Sequence numbers are per mission, with zero for robot events, not a global stream cursor.
+ */
 export interface OperationsEvent {
   schema_version: 1;
   event_id: string;

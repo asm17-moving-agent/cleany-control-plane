@@ -30,6 +30,11 @@ function recordingWaypoints(seat: Seat, start: RecordingPoint): RecordingPoint[]
   return [...common, { x: 400, y: 200 }, { x: doorX, y: 200 }, { x: doorX, y: 130 },
     { x: aisleX, y: 130 }, { x: aisleX, y: approach.y }, approach];
 }
+/**
+ * Build a deterministic artwork-space filming path; it is never a runtime navigation goal.
+ * @param start - Current marker position in artwork units, defaulting to the recording home.
+ * @throws An Error if the seat has no mapped position.
+ */
 export function recordingRoute(seat: Seat, start: RecordingPoint = RECORDING_HOME): RecordingPoint[] {
   const points = recordingWaypoints(seat, start).filter((p, i, all) => !i || Math.hypot(p.x - all[i - 1].x, p.y - all[i - 1].y) > .01);
   const smooth = [points[0]];
@@ -49,6 +54,13 @@ export function recordingRoute(seat: Seat, start: RecordingPoint = RECORDING_HOM
 }
 const heading = (a: RecordingPoint, b: RecordingPoint) => Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI;
 const angleDelta = (a: number, b: number) => ((b - a + 540) % 360) - 180;
+/**
+ * Sample an artwork-space path, including turns that consume time without distance progress.
+ * @param points - Nonempty path in artwork units.
+ * @param elapsed - Elapsed milliseconds; Infinity traverses the full path to compute total duration.
+ * @returns Position, heading in degrees, and distance progress. With finite elapsed time,
+ * duration is accumulated timing before the active turn/travel segment, not total route duration.
+ */
 export function routeMotion(points: RecordingPoint[], elapsed = Infinity) {
   let duration = 0, distance = 0;
   let previous = heading(points[0], points[1] ?? points[0]);

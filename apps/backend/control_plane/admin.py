@@ -14,6 +14,10 @@ from control_plane.settings import Settings
 
 
 def main():
+    """Provision or revoke access in the selected local database and print newly issued credentials.
+
+    Legacy ownership adoption requires an empty execution slot; the repository closes on exit.
+    """
     logging.basicConfig(level=logging.WARNING, format="%(asctime)s %(levelname)s %(message)s")
     parser = argparse.ArgumentParser(description="Cleany company account management")
     parser.add_argument("--database", default=Settings().database_path)

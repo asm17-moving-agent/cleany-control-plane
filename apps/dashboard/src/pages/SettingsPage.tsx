@@ -11,6 +11,7 @@ const settingsSchema = z.object({
   completionNotification: z.boolean(),
 });
 
+/** Validate and explicitly save this browser's preferences; edits stay local until submission. */
 export function SettingsPage() {
   const { settings, saveSettings } = useSettings();
   const [message, setMessage] = useState("");

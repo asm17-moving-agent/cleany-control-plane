@@ -38,6 +38,10 @@ export interface FacilityRobotMarker {
 const width = FACILITY_18F.imageWidth;
 const height = FACILITY_18F.imageHeight;
 const fullBounds = { x: 0, y: 0, width, height };
+/**
+ * Combine canonical seat inventory and artwork-space markers with controlled selection callbacks.
+ * Live/scenario provenance and stale poses are supplied by the caller; this component issues no commands.
+ */
 export function FacilityMap({ seats, seatCleaning, selectedSeatId, onSelectSeat, robots, selectedRobotId, onSelectRobot, robotFocusKey = 0, seatSelectionDisabled = false, highlightedSeatIds, overlayInsetLeft = 0, focusRobotOnSelect = true, movementPath }: FacilityMapProps) {
   const { stage, view, camera, dragging, focusMotion, zoomBy, fitView, canZoomIn, canZoomOut, panHandlers, endFocus } = useMapCamera({
     robots, selectedRobotId: focusRobotOnSelect ? selectedRobotId : null, robotFocusKey, fullBounds, activeBounds: FACILITY_ACTIVE_BOUNDS, overlayInsetLeft,

@@ -6,6 +6,11 @@ type ActivePanel = { kind: "none" } | { kind: "seat"; id: string } | { kind: "ro
 type ClosingPanel = { kind: "seat"; seat: Seat } | { kind: "robot"; robot: Robot; missionId: string | null };
 type FollowedMission = { robotId: string; missionId: string };
 
+/**
+ * Keep seat and robot panels mutually exclusive while retaining snapshots for exit animations.
+ * Submitted work follows assignment evidence; in-flight creation blocks selection changes.
+ * Cleanup cancels closing timers and scheduled focus restoration.
+ */
 export function useHomePanelState({ robots, seats, events, isCreatingMission, unavailable }: {
   robots: Robot[]; seats: Seat[]; events: OperationsEvent[]; isCreatingMission: boolean; unavailable: boolean;
 }) {

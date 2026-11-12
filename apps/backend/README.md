@@ -15,6 +15,18 @@ domain, SQLite repository와 Robot Gateway를 분리해 core logic을 독립적�
 - Robot Edge pose WebSocket (`/api/robots/cleany-01/pose/ws`), latest snapshot and stale events
 - idempotency key 기반 중복 생성 방지
 
+## 코드 구조
+
+- `control_plane/server.py`: 인증된 HTTP/SSE와 Robot WebSocket, application lifecycle
+- `control_plane/domain.py`: 외부 Mission 규칙과 Queue, transaction 및 event 발행
+- `control_plane/persistence.py`: SQLite 저장과 schema migration
+- `control_plane/gateway.py`: Runtime 메시지와 재연결 처리
+- `control_plane/mock/fixtures.py`: 고정 시설 배치, 가상 D-HUB 점유와 SPACE 점유 미확인 데이터
+- `control_plane/mock/dispatcher.py`: 명시적 Mock 모드의 시간 기반 실행과 가상 관찰 참조 생성
+
+기본 실행 모드는 Gateway다. Mock dispatcher는 관찰 참조를 생성하고 domain store는
+그 참조를 상태 전이와 같은 transaction에서 저장한 뒤 event를 발행한다.
+
 ## 계정 발급과 첫 실행
 
 인증은 항상 켜져 있다. 회사 담당자가 서버 관리 명령으로 고객·시설·계정을 만들고

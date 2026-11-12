@@ -15,6 +15,10 @@ export function seatOccupancyLabel(seat: Seat) {
   return seat.occupancy === "OCCUPIED" ? "사용 중" : seat.occupancy === "AVAILABLE" ? "비어 있음" : "점유 미확인";
 }
 
+/**
+ * Map seats to one-based CSS cells; SPACE rooms use their explicit row and grid_column.
+ * D-HUB labels 01–48 reserve columns 4/7 for aisles and CSS rows 1/4/7 for labels or gaps.
+ */
 export function seatPosition(seat: Seat) {
   if (seat.zone_id && seat.zone_id !== "d-hub") return { column: seat.grid_column, row: seat.row, gridRow: seat.row };
   const index = Number.parseInt(seat.label, 10) - 1;
@@ -81,6 +85,7 @@ export function missionMessage(message: string | null | undefined) {
   return message ? missionMessages[message] ?? message : "";
 }
 
+/** Fixed display percentages for external phases, not measured work completion or success. */
 export function missionProgress(phase: MissionPhase) {
   return {
     QUEUED: 8,

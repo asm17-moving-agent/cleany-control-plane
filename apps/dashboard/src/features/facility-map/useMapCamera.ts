@@ -2,6 +2,11 @@ import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent, type T
 import type { MapBounds } from "./map-viewport";
 import { resolveMapCamera, zoomMapCamera, panMapCamera, MIN_MAP_ZOOM, MAX_MAP_ZOOM, type MapView } from "./map-camera";
 
+/**
+ * Manage artwork-space pan/zoom and refocus on explicit robot selection or focus requests.
+ * Moving markers alone do not recenter the camera.
+ * ResizeObserver updates frame dimensions and disconnects on unmount.
+ */
 export function useMapCamera({ robots, selectedRobotId, robotFocusKey, fullBounds, activeBounds, overlayInsetLeft }: {
   robots: { robotId: string; x: number; y: number }[]; selectedRobotId: string | null; robotFocusKey: number;
   fullBounds: MapBounds; activeBounds: MapBounds; overlayInsetLeft: number;

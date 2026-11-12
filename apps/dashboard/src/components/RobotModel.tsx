@@ -9,6 +9,10 @@ class ModelBoundary extends Component<{ children: ReactNode; onError: () => void
   render() { return this.state.failed ? null : this.props.children; }
 }
 
+/**
+ * Lazily enable the CAD preview near the viewport on devices with a fine, hover-capable pointer.
+ * Retain a poster fallback and permit explicit retries after load/render failures; no live pose is used.
+ */
 export function RobotModel({ compact = false, hoverEnabled = true, rotationGuide = false }: {
   compact?: boolean; hoverEnabled?: boolean; rotationGuide?: boolean;
 }) {

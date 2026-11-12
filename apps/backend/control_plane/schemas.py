@@ -1,3 +1,5 @@
+"""HTTP validation and response models mirrored by the checked-in OpenAPI contract."""
+
 from __future__ import annotations
 
 from math import isfinite
@@ -24,6 +26,7 @@ class MissionTargetModel(BaseModel):
     label: str | None = None
 
 
+# Legacy requested_by is accepted for compatibility; HTTP creation uses the authenticated user.
 class MissionRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -40,6 +43,7 @@ class MissionRequest(BaseModel):
         return self
 
     def to_domain_target(self) -> MissionTarget:
+        """Normalize either target representation after mutually exclusive input validation."""
         if self.target is not None:
             return MissionTarget(
                 kind=self.target.kind,
@@ -49,6 +53,7 @@ class MissionRequest(BaseModel):
         return MissionTarget(kind=TargetKind.SEAT, reference_id=self.seat_id or "")
 
 
+# Full external lifecycle snapshot; observation values are media references.
 class MissionResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -138,6 +143,7 @@ class PoseInput(BaseModel):
     @field_validator("x", "y", mode="before")
     @classmethod
     def finite_number(cls, value: object) -> float:
+        """Accept finite numeric coordinates without coercing strings or booleans."""
         if isinstance(value, (bool, str)):
             raise ValueError("pose coordinates must be finite numbers")
         try:

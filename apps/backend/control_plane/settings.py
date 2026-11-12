@@ -1,3 +1,5 @@
+"""Server, authentication, persistence, and adapter settings from CLEANY_ variables and .env."""
+
 from pathlib import Path
 from typing import Literal
 

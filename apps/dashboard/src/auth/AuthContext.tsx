@@ -26,6 +26,11 @@ export function useAuth() {
   return value;
 }
 
+/**
+ * Restore cookie sessions and share the authenticated user and selected facility.
+ * Authentication transitions and site selection clear queries and reconfigure API scope.
+ * Activity listeners extend idle expiry; cleanup removes listeners and the expiry timer.
+ */
 export function AuthProvider({ children }: PropsWithChildren) {
   const queryClient = useQueryClient();
   const [session, setSession] = useState<Session | null>(null);
@@ -52,6 +57,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }
   async function apply(value: Session) {
     clear();
+    // A later clear/login invalidates this in-flight facility lookup.
     const current = generation.current;
     configureClient(value.csrf_token, null); setSession(value);
     if (value.must_change_password) return;
@@ -103,6 +109,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     selectSite: siteId => {
       const next = sites.find(item => item.site_id === siteId);
       if (!next || !session) return;
+      // Discard the previous facility cache before installing its new request scope.
       void queryClient.cancelQueries(); queryClient.clear();
       configureClient(session.csrf_token, siteId); setSite(next);
       const url = new URL(window.location.href); url.searchParams.set("site", siteId);
@@ -111,6 +118,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }}>{children}</AuthContext.Provider>;
 }
 
+/** Require a full session and linked facility; keyed children reset local state on user/site changes. */
 export function AuthGate({ children }: PropsWithChildren) {
   const { loading, session, site, logout } = useAuth();
   const location = useLocation();

@@ -86,6 +86,57 @@ class ControlPlaneStoreTest(unittest.TestCase):
         self.assertEqual(MissionOutcome.SUCCESS, result.outcome)
         self.assertFalse(result.cancel_requested)
 
+    def test_transitions_do_not_fabricate_observation_references(self) -> None:
+        mission, _ = self.create("no-observations")
+        self.store.transition(mission.mission_id, MissionPhase.WORKING, "working")
+        self.store.transition(
+            mission.mission_id,
+            MissionPhase.TERMINAL,
+            "done",
+            outcome=MissionOutcome.SUCCESS,
+        )
+
+        self.assertIsNone(mission.before_observation)
+        self.assertIsNone(mission.after_observation)
+
+    def test_observation_references_are_published_with_the_transition(self) -> None:
+        mission, _ = self.create("observations")
+        events = []
+        unsubscribe = self.store.subscribe(events.append)
+        try:
+            self.store.transition(
+                mission.mission_id,
+                MissionPhase.WORKING,
+                "working",
+                before_observation="media://before",
+            )
+            self.store.transition(
+                mission.mission_id,
+                MissionPhase.TERMINAL,
+                "done",
+                outcome=MissionOutcome.SUCCESS,
+                after_observation="media://after",
+            )
+            terminal_snapshot = mission.to_dict()
+            with self.assertRaisesRegex(ValueError, "terminal mission"):
+                self.store.transition(
+                    mission.mission_id,
+                    MissionPhase.TERMINAL,
+                    "overwrite",
+                    outcome=MissionOutcome.FAILED,
+                    before_observation="media://replacement",
+                    after_observation="media://replacement",
+                )
+        finally:
+            unsubscribe()
+
+        self.assertEqual(terminal_snapshot, mission.to_dict())
+        self.assertEqual(2, len(events))
+        self.assertEqual([1, 2], [event["sequence"] for event in events])
+        self.assertEqual("media://before", events[0]["payload"]["before_observation"])
+        self.assertIsNone(events[0]["payload"]["after_observation"])
+        self.assertEqual(terminal_snapshot, events[1]["payload"])
+
 
 if __name__ == "__main__":
     unittest.main()

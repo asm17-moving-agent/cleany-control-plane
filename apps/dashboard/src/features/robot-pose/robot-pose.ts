@@ -31,6 +31,12 @@ export function validPoseSnapshot(value: unknown): value is RobotPoseSnapshot {
 
 export interface PoseSample { pose: MapPose; received: number; }
 
+/**
+ * Sample poses on the local receipt clock, holding endpoints outside the sample window.
+ * @param samples - Chronologically ordered samples with receipt times in milliseconds.
+ * @param time - Render time on the same clock as the samples.
+ * @returns An interpolated/endpoint pose, or null when there are no samples.
+ */
 export function samplePose(samples: PoseSample[], time: number): MapPose | null {
   if (!samples.length) return null;
   const before = [...samples].reverse().find(sample => sample.received <= time);
@@ -40,6 +46,11 @@ export function samplePose(samples: PoseSample[], time: number): MapPose | null 
     : before?.pose ?? samples[0].pose;
 }
 
+/**
+ * Interpolate position and shortest-path yaw in radians.
+ * @param amount - Interpolation fraction clamped to [0, 1].
+ * @returns A new pose; absent target yaw omits heading, and absent source yaw uses the target yaw.
+ */
 export function interpolatePose(from: MapPose, to: MapPose, amount: number): MapPose {
   const t = Math.max(0, Math.min(1, amount));
   const result: MapPose = { x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t };

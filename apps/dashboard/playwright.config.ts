@@ -7,6 +7,7 @@ process.env.CLEANY_E2E_DATABASE ??= join(mkdtempSync(join(tmpdir(), "cleany-acco
 export default defineConfig({
   testDir: "./tests/e2e",
   testIgnore: "**/gateway.spec.ts",
+  // Browser scenarios share one mock backend and execute serially.
   fullyParallel: false,
   workers: 1,
   retries: 0,

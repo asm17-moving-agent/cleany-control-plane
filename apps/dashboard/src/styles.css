@@ -1,5 +1,6 @@
 @layer theme, components, utilities;
 @import "tailwindcss/theme.css" layer(theme);
+/* Omit Preflight so Tailwind does not reset the existing dashboard styles. */
 @import "tailwindcss/utilities.css" layer(utilities);
 @import "./styles/tokens.css";
 @import "../styles.css" layer(components);

@@ -7,6 +7,12 @@ export const MIN_MAP_ZOOM = 1;
 export const MAX_MAP_ZOOM = 4;
 export function clamp(value: number, min: number, max: number) { return Math.min(max, Math.max(min, value)); }
 
+/**
+ * Resolve a camera in artwork coordinates with a CSS-pixel frame and left-panel inset.
+ * Fit modes account for the occluded area; manual camera centers are constrained to the full map.
+ * @param overlayInsetLeft - Occluded width in CSS pixels, capped at 40% of the frame width.
+ * @returns Artwork-space centers, CSS pixels per artwork unit, and the corresponding CSS transform.
+ */
 export function resolveMapCamera(view: MapView, frame: MapFrame, fullBounds: MapBounds, activeBounds: MapBounds, overlayInsetLeft = 0) {
   const { width, height } = fullBounds;
   const fit = fitMapBounds(fullBounds, frame).scale;
@@ -34,6 +40,7 @@ export type MapCamera = ReturnType<typeof resolveMapCamera>;
 export function zoomMapCamera(camera: MapCamera, factor: number): MapView {
   return { mode: "manual", zoom: clamp(camera.zoom * factor, MIN_MAP_ZOOM, MAX_MAP_ZOOM), x: camera.centerX, y: camera.centerY };
 }
+/** Convert a drag delta in CSS pixels into the opposite camera displacement in artwork units. */
 export function panMapCamera(camera: MapCamera, start: { x: number; y: number }, delta: { x: number; y: number }, bounds: MapBounds): MapView {
   return { mode: "manual", zoom: camera.zoom, x: clamp(start.x - delta.x / camera.scale, 0, bounds.width), y: clamp(start.y - delta.y / camera.scale, 0, bounds.height) };
 }

@@ -54,6 +54,8 @@ class AuthError(ValueError):
 
 @dataclass(frozen=True)
 class Identity:
+    """Validated membership/session snapshot; later requests recheck expiry and revocation."""
+
     user_id: str
     login_id: str
     display_name: str
@@ -67,6 +69,11 @@ class Identity:
 
 
 class Accounts:
+    """Provision customer-owned identities and validate revocable sessions and device tokens.
+
+    Database access shares the store lock; login failure histories are process-local.
+    """
+
     def __init__(self, store, settings):
         self.store = store
         self.db = store.repository.connection
@@ -74,6 +81,15 @@ class Accounts:
         self.failures: dict[str, list[float]] = {}
 
     def _session(self, membership_id: str, must_change: bool, temporary_expiry=None):
+        """Create a session inside the caller transaction; persist only its token hash.
+
+        Args:
+            temporary_expiry: Required Unix deadline when must_change is True;
+                caps the restricted session lifetime at the password's expiry.
+
+        Returns:
+            The raw session token for the client's cookie.
+        """
         now = time.time()
         token = secrets.token_urlsafe(32)
         expiry = now + (
@@ -98,6 +114,18 @@ class Accounts:
         return token
 
     def authenticate(self, token: str | None, full: bool = True) -> Identity:
+        """Resolve a live membership without extending session idle time.
+
+        Args:
+            full: Require full access; False also permits password-change sessions.
+
+        Returns:
+            A validated identity snapshot; future requests must authenticate again.
+
+        Raises:
+            AuthError: The session or ownership chain is invalid, expired, or revoked,
+                or the session lacks the required scope.
+        """
         if not token:
             raise AuthError()
         with self.store._lock:
@@ -125,11 +153,22 @@ class Accounts:
             return Identity(*row[:10])
 
     def login(self, login_id: str, password: str, ip: str):
+        """Verify credentials and issue a session, with per-identity and per-IP failure limits.
+
+        Hash verification runs outside the lock; credentials are rechecked before session creation.
+
+        Returns:
+            A raw session token, restricted to password replacement when required.
+
+        Raises:
+            AuthError: Credentials are invalid or expired, account access changed
+                during verification, or a failure limit was reached (status 429).
+        """
         login_id = login_id.strip().lower()
         now = time.monotonic()
         keys = (f"id:{login_id}", f"ip:{ip}")
         with self.store._lock:
-            # Bound memory even when callers rotate login IDs/IPs.
+            # Expire inactive failure histories while retaining entries in the current window.
             self.failures = {
                 k: [t for t in values if t > now - self.settings.auth_failure_window]
                 for k, values in self.failures.items()
@@ -169,6 +208,21 @@ class Accounts:
             return self._session(row[3], bool(row[1]), row[2])
 
     def change_password(self, token: str, password: str, current_password: str | None = None):
+        """Replace the password, revoke all old sessions, and return a new full-access token.
+
+        Full sessions require the current password; restricted first-login sessions do not.
+
+        Args:
+            password: A replacement of 15-128 characters, different from the old password.
+            current_password: Required when the token identifies a full-access session.
+
+        Returns:
+            A new full-access session token; all previous user sessions are revoked.
+
+        Raises:
+            AuthError: Session validation fails, password checks fail, or credentials
+                change while the replacement hash is being computed.
+        """
         if not 15 <= len(password) <= 128:
             raise AuthError("비밀번호는 15~128자로 입력해 주세요.", 422)
         identity = self.authenticate(token, full=False)
@@ -205,6 +259,7 @@ class Accounts:
             return self._session(identity.membership_id, False)
 
     def revoke_user_sessions(self, user_id: str):
+        """Invalidate all sessions for a user inside the caller transaction."""
         self.db.execute(
             "UPDATE sessions SET revoked_at=? WHERE membership_id IN "
             "(SELECT membership_id FROM memberships WHERE user_id=?)",
@@ -228,6 +283,18 @@ class Accounts:
         return identifier
 
     def provision(self, customer_id: str, login_id: str, name: str):
+        """Create a user and membership with an expiring, first-login password.
+
+        Args:
+            login_id: Normalized to lowercase with outer whitespace removed.
+
+        Returns:
+            The new user ID and raw temporary password; only its hash is stored.
+
+        Raises:
+            ValueError: The normalized login ID is empty or exceeds 64 characters.
+            sqlite3.IntegrityError: The login ID is taken or the customer does not exist.
+        """
         login_id = login_id.strip().lower()
         if not login_id or len(login_id) > 64:
             raise ValueError("login_id must contain 1~64 characters")
@@ -251,6 +318,17 @@ class Accounts:
         return user_id, password
 
     def reset(self, user_id: str, reactivate: bool = False):
+        """Replace credentials with a temporary password and revoke all user sessions.
+
+        Args:
+            reactivate: Clear user disablement; membership/customer state is unchanged.
+
+        Returns:
+            The raw temporary password, requiring replacement after login.
+
+        Raises:
+            ValueError: The user does not exist.
+        """
         password = secrets.token_urlsafe(24)
         encoded = HASHER.hash(password)
         with self.store.transaction():
@@ -267,6 +345,11 @@ class Accounts:
         return password
 
     def disable(self, user_id: str):
+        """Disable login and revoke sessions in the same transaction.
+
+        Raises:
+            ValueError: The user does not exist.
+        """
         with self.store.transaction():
             if (
                 self.db.execute(
@@ -278,6 +361,15 @@ class Accounts:
             self.revoke_user_sessions(user_id)
 
     def register_robot(self, customer_id: str, site_id: str, robot_id="cleany-01"):
+        """Register or reassign a robot within one customer and rotate its device token.
+
+        Returns:
+            The raw device token; only its hash is stored, replacing any previous token.
+
+        Raises:
+            ValueError: Unresolved work exists, or the robot belongs to another customer.
+            sqlite3.IntegrityError: The customer/site pair does not exist.
+        """
         token = secrets.token_urlsafe(32)
         with self.store.transaction():
             if (
@@ -299,6 +391,14 @@ class Accounts:
         return token
 
     def robot_scope(self, robot_id: str, token: str | None = None):
+        """Resolve an enabled robot and its enabled customer/site assignment.
+
+        Args:
+            token: Device credential to verify; None performs an internal scope lookup only.
+
+        Returns:
+            The customer/site pair, or None for invalid access or credentials.
+        """
         with self.store._lock:
             row = self.db.execute(
                 "SELECT r.customer_id,r.current_site_id,r.token_hash FROM robots r "

@@ -8,6 +8,7 @@ export const outcomeLabels: Record<MissionOutcome, string> = {
   BLOCKED: "작업 차단", FAILED: "실패", CANCELLED: "취소", EXPIRED: "만료",
   REJECTED: "거절", INTERRUPTED: "중단",
 };
+// Review grouping uses outcomes; needs_human_review remains a separate report field.
 const reviewOutcomes = new Set<MissionOutcome>([
   "HUMAN_REVIEW_REQUIRED", "PARTIAL_SUCCESS", "BLOCKED", "FAILED", "INTERRUPTED",
 ]);
@@ -32,7 +33,7 @@ export function getHomeSummary(robots: Robot[], missions: Mission[]) {
     successes: byNewestRequest(missions.filter(isSuccessfulResult)),
   };
 }
-// Observation references may be opaque identifiers (including mock://), not image URLs.
+/** Permit local paths or HTTP(S) links; opaque references such as mock:// remain nonclickable. */
 export function observationHref(reference: string | null | undefined) {
   if (!reference) return null;
   if (reference.startsWith("/") && !reference.startsWith("//") && !reference.includes("\\")) return reference;

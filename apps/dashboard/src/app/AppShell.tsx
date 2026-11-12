@@ -27,6 +27,7 @@ const titles: Record<string, string> = {
   "/": "운영 홈", "/missions": "작업 요청", "/results": "작업 결과",
   "/robots": "로봇 관리", "/monitoring": "운영 모니터링", "/settings": "관제 설정",
 };
+/** Share navigation and facility selection across routes, keeping document titles synchronized. */
 export function AppShell() {
   const location = useLocation();
   const auth = useAuthOptional();

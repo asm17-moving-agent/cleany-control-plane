@@ -7,6 +7,11 @@ import type { OperationsContextValue } from "./OperationsContext";
 type Run = { id: string; started: number; duration: number; route: RecordingPoint[] };
 const seats = operationsDemo.seats.map(seat => ({ ...seat, occupancy: "AVAILABLE" as const }));
 
+/**
+ * Simulate queued missions and artwork-space motion entirely in this mounted hook.
+ * Request keys are remembered locally, cancellation parks the simulated marker, and run timers clean up.
+ * These commands never reach the Backend or a robot.
+ */
 export function useRecordingOperations(): OperationsContextValue {
   const [missions, setMissions] = useState<Mission[]>([]);
   const [run, setRun] = useState<Run | null>(null);

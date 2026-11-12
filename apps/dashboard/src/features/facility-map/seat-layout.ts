@@ -4,6 +4,7 @@ import type { Seat } from "../../api/types";
 // The artwork's raster wall centers fix the map anchor for world-coordinate telemetry.
 export const D_HUB_UNITS_PER_METER = 400 / 12.26;
 export const D_HUB_ORIGIN = { x: 776, topY: 8, worldTopY: 10.94 / 2 };
+/** Convert Gazebo world meters (+X right, +Y up) to anchored D-HUB artwork units (+Y down). */
 export function worldToMap(x: number, y: number) {
   return { x: D_HUB_ORIGIN.x + x * D_HUB_UNITS_PER_METER, y: D_HUB_ORIGIN.topY + (D_HUB_ORIGIN.worldTopY - y) * D_HUB_UNITS_PER_METER };
 }
@@ -45,6 +46,11 @@ export const D_HUB_TABLES = [3.17, 0, -3.17].flatMap((worldY, row) =>
     id: "table-" + (row * 3 + column + 1),
   })),
 );
+/**
+ * Map zone-local, one-based seat indices into the facility artwork.
+ * @param seat - Missing zone_id uses the legacy D-HUB layout.
+ * @returns Artwork coordinates and rotation in degrees, or null for an unknown layout position.
+ */
 export function seatMapPosition(seat: Pick<Seat, "row" | "grid_column"> & Partial<Pick<Seat, "zone_id">>) {
   if (seat.zone_id && seat.zone_id !== "d-hub") {
     const room = ROOM_TABLES.find(room => room.id === seat.zone_id);

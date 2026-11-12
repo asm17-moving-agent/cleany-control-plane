@@ -4,6 +4,10 @@ import { useSearchParams } from "react-router";
 const storageKey = "cleany.operations-demo";
 const DemoModeContext = createContext({ isDemo: false, isRecording: false, setDemoMode: (_enabled: boolean) => {} });
 
+/**
+ * Resolve live, demo, and recording modes from URL overrides and per-tab sessionStorage.
+ * Explicit zero disables a persisted mode; changing demo mode clears recording and detail selections.
+ */
 export function DemoModeProvider({ children }: PropsWithChildren) {
   const [params, setParams] = useSearchParams();
   const [enabled, setEnabled] = useState(() => sessionStorage.getItem(storageKey) === "1");

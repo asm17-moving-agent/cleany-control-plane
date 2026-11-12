@@ -15,6 +15,7 @@ class Payload(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
+# Declared stage provenance; validation cannot verify the underlying runtime.
 class ExecutionProfile(Payload):
     navigation: Literal["sim", "real", "mock"]
     perception: Literal["sim", "real", "mock"]
@@ -22,6 +23,7 @@ class ExecutionProfile(Payload):
     execution: Literal["sim", "real", "mock"]
 
 
+# Final execution evidence; reported provenance and review flags are preserved as supplied.
 class ReportPayload(Payload):
     outcome: MissionOutcome
     execution_profile: ExecutionProfile
@@ -35,6 +37,7 @@ class ReportPayload(Payload):
     after_observation: str | None = None
 
 
+# Replays a final report with its original identity/sequence for inbox deduplication.
 class CompletedReport(Payload):
     event_id: UUID
     mission_id: UUID
@@ -49,6 +52,7 @@ class CompletedReport(Payload):
         return self
 
 
+# ERROR may carry unresolved work; IDLE cannot, and BUSY must identify an active mission.
 class RobotStatus(Payload):
     boot_id: str = Field(min_length=1)
     state: Literal[RobotState.IDLE, RobotState.BUSY, RobotState.ERROR]
@@ -76,6 +80,7 @@ class SnapshotPayload(RobotStatus):
 
     @model_validator(mode="after")
     def active_feedback(self):
+        """Require phase and sequence together with an active mission, and neither when inactive."""
         if self.active_mission_id is not None:
             if self.active_phase is None or self.active_sequence < 1:
                 raise ValueError("active snapshot requires phase and positive sequence")
@@ -100,6 +105,7 @@ class PhasePayload(Payload):
     before_observation: str | None = None
 
 
+# ACKs confirm event receipt, not acceptance or completion of a mission command.
 class AckPayload(Payload):
     ack_event_id: UUID
     disposition: Literal["applied", "duplicate", "stale", "conflict"] = "applied"
@@ -116,6 +122,7 @@ class SyncPayload(Payload):
     heartbeat_interval_seconds: float = Field(gt=0, allow_inf_nan=False)
 
 
+# Transport identity and mission scope; feedback sequences are separate from HTTP/SSE cursors.
 class Envelope(Payload):
     schema_version: Literal[1]
     event_id: UUID
@@ -126,6 +133,7 @@ class Envelope(Payload):
 
     @model_validator(mode="after")
     def scope_and_time(self):
+        """Validate timestamp awareness, mission scope, and positive feedback sequences."""
         if self.occurred_at.tzinfo is None:
             raise ValueError("occurred_at requires an explicit UTC offset")
         mission_event = getattr(self, "event_type", "").startswith("mission.")

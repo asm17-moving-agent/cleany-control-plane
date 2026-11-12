@@ -1,3 +1,5 @@
+"""Authenticated HTTP/SSE and robot WebSockets with Gateway or Mock execution."""
+
 from __future__ import annotations
 
 import asyncio
@@ -23,9 +25,10 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from control_plane.accounts import Accounts, AuthError, Identity
-from control_plane.domain import ControlPlaneStore, MissionOutcome, MissionPhase, RobotState
-from control_plane.fixtures import SEATS
+from control_plane.domain import ControlPlaneStore, MissionPhase, RobotState
 from control_plane.gateway import GatewayController
+from control_plane.mock.dispatcher import MockDispatcher
+from control_plane.mock.fixtures import SEATS
 from control_plane.persistence import SQLiteRepository
 from control_plane.schemas import (
     HealthResponse,
@@ -41,79 +44,9 @@ from control_plane.schemas import (
 from control_plane.settings import Settings
 
 
-class MockDispatcher:
-    CHECKPOINTS = (
-        (MissionPhase.OFFERED, "Mission offered to cleany-01."),
-        (MissionPhase.ACCEPTED, "Robot accepted the mission."),
-        (MissionPhase.NAVIGATING, "Navigating to the selected seat."),
-        (MissionPhase.WORKING, "Observing and processing the tabletop scene."),
-        (MissionPhase.RETURNING, "Returning to the waiting position."),
-    )
-
-    def __init__(self, store: ControlPlaneStore, step_delay: float = 0.8) -> None:
-        from threading import Event, Thread
-
-        self.store = store
-        self.step_delay = step_delay
-        self._stop = Event()
-        self._thread = Thread(target=self._run, name="mock-dispatcher", daemon=True)
-
-    def start(self) -> None:
-        self._thread.start()
-
-    def stop(self) -> None:
-        self._stop.set()
-        self._thread.join(timeout=2)
-
-    def _run(self) -> None:
-        while not self._stop.is_set():
-            with self.store.transaction():
-                mission = (
-                    self.store.next_queued() if self.store.robot.state == RobotState.IDLE else None
-                )
-                if mission:
-                    mission.robot_id = self.store.robot.robot_id
-                    self.store.set_robot_state(RobotState.BUSY, mission.mission_id)
-                    self.store.transition(mission.mission_id, *self.CHECKPOINTS[0])
-            if mission is None:
-                self._stop.wait(0.1)
-                continue
-
-            for phase, message in self.CHECKPOINTS[1:]:
-                if self._stop.is_set():
-                    return
-                if mission.cancel_requested:
-                    break
-                if phase == MissionPhase.WORKING:
-                    mission.before_observation = (
-                        f"mock://observations/before-{mission.target.reference_id}"
-                    )
-                self.store.transition(mission.mission_id, phase, message)
-                self._stop.wait(self.step_delay)
-
-            if self._stop.is_set():
-                return
-            if mission.cancel_requested:
-                self.store.transition(
-                    mission.mission_id,
-                    MissionPhase.TERMINAL,
-                    "Mission cancelled at a safe checkpoint.",
-                    outcome=MissionOutcome.CANCELLED,
-                )
-            else:
-                mission.after_observation = (
-                    f"mock://observations/after-{mission.target.reference_id}"
-                )
-                self.store.transition(
-                    mission.mission_id,
-                    MissionPhase.TERMINAL,
-                    "Mission completed successfully.",
-                    outcome=MissionOutcome.SUCCESS,
-                )
-            self.store.set_robot_state(RobotState.IDLE)
-
-
 class ControlPlaneApplication:
+    """Lazily construct persistent state, accounts, and the configured execution adapter."""
+
     def __init__(self, *, start_dispatcher: bool = True, settings: Settings | None = None) -> None:
         self.settings = settings or Settings()
         # Open SQLite on startup/first request, never on module import or OpenAPI export.
@@ -125,6 +58,10 @@ class ControlPlaneApplication:
 
     @property
     def store(self) -> ControlPlaneStore:
+        """Open durable state lazily and configure the selected execution adapter.
+
+        Unfinished Mock work exposes an ERROR robot rather than being automatically resumed.
+        """
         if self._store is None:
             self._store = ControlPlaneStore(SQLiteRepository(self.settings.database_path))
             if self.settings.robot_mode == "gateway":
@@ -166,6 +103,18 @@ class ControlPlaneApplication:
         return self._dispatcher
 
     def create_mission(self, request: MissionRequest, identity: Identity, site_id: str):
+        """Register scoped work and capture execution provenance for new Mock requests.
+
+        Args:
+            identity: Authenticated requester; client-supplied requester names are ignored.
+            site_id: Enabled site already resolved for the requester by the HTTP layer.
+
+        Returns:
+            The live mission and whether it was newly created.
+
+        Raises:
+            ValueError: Target validation or idempotency matching fails.
+        """
         target = request.to_domain_target()
         with self.store.transaction():
             if self.gateway:
@@ -220,6 +169,14 @@ def create_app(
     *,
     dashboard_root: Path | None = None,
 ) -> FastAPI:
+    """Wire authenticated APIs, runtime maintenance, and optional dashboard files.
+
+    The lifespan opens state, starts the selected adapter, and closes background work and SQLite.
+
+    Args:
+        application: State/adapter owner to reuse, or None to construct one from settings.
+        dashboard_root: Optional built dashboard directory; served only when it exists.
+    """
     control_plane = application or ControlPlaneApplication()
     dashboard_dist = dashboard_root or Path(__file__).resolve().parents[2] / "dashboard" / "dist"
 
@@ -232,6 +189,7 @@ def create_app(
 
         async def maintenance() -> None:
             while True:
+                # The WebSocket loop owns ticks while connected; maintenance handles offline expiry.
                 if control_plane.gateway and not control_plane.gateway.connected:
                     control_plane.gateway.tick()
                 await asyncio.sleep(control_plane.settings.gateway_tick_interval_seconds)
@@ -294,6 +252,10 @@ def create_app(
 
     @app.middleware("http")
     async def authenticate_http(request: Request, call_next):
+        """Authorize API access and enforce Origin/CSRF checks for mutation requests.
+
+        Restricted sessions can only inspect identity, change their password, or log out.
+        """
         if not request.url.path.startswith("/api/") or request.url.path == "/api/health":
             return await call_next(request)
         try:
@@ -324,6 +286,13 @@ def create_app(
             return await auth_error(request, error)
 
     def selected_site(request: Request) -> str:
+        """Resolve site_id within the session customer's enabled facilities.
+
+        Missing selection defaults only when exactly one enabled site exists.
+
+        Raises:
+            HTTPException: Return 404 for absent, ambiguous, or inaccessible selection.
+        """
         identity = request.state.identity
         with control_plane.store._lock:
             rows = control_plane.accounts.db.execute(
@@ -344,12 +313,21 @@ def create_app(
         )
 
     def scoped_mission(request: Request, mission_id: str):
+        """Resolve customer ownership independently of the currently selected site.
+
+        Returns:
+            The live mission record for the authenticated customer.
+
+        Raises:
+            HTTPException: Return the same 404 for missing and foreign mission IDs.
+        """
         mission = control_plane.store.get_mission(mission_id)
         if mission is None or mission.customer_id != request.state.identity.customer_id:
             raise HTTPException(404, "mission not found")
         return mission
 
     def public_mission(mission) -> MissionResponse:
+        """Expose managed observations via authenticated URLs and suppress unmanaged links."""
         result = MissionResponse.model_validate(mission)
         for field, stage in (("before_observation", "before"), ("after_observation", "after")):
             reference = getattr(result, field)
@@ -360,6 +338,7 @@ def create_app(
                 setattr(result, field, "외부 관측 자료 · 저장소 연결 필요")
         return result
 
+    # Resolve only managed files below the observation root after customer ownership checks.
     @app.get("/api/missions/{mission_id}/observations/{stage}")
     def observation(mission_id: str, stage: str, request: Request):
         mission = scoped_mission(request, mission_id)
@@ -375,6 +354,7 @@ def create_app(
         return FileResponse(target, headers={"Cache-Control": "no-store"})
 
     def robot_auth(websocket: WebSocket, robot_id: str) -> bool:
+        """Validate device credentials, including the browser subprotocol fallback."""
         value = websocket.headers.get("authorization", "")
         token = value.removeprefix("Bearer ") if value.startswith("Bearer ") else ""
         token = websocket.headers.get("x-cleany-robot-token", token)
@@ -400,6 +380,7 @@ def create_app(
     def me(request: Request):
         return identity_response(request.state.identity)
 
+    # Rotate the cookie after replacement; all prior user sessions are revoked.
     @app.post("/api/auth/password/change", response_model=SessionResponse)
     def change_password(input: PasswordInput, request: Request, response: Response):
         token = control_plane.accounts.change_password(
@@ -407,6 +388,7 @@ def create_app(
         )
         return session_response(token, response)
 
+    # Logout revokes only the current session, unlike password replacement or account disablement.
     @app.post("/api/auth/logout", status_code=204)
     def logout(request: Request, response: Response):
         with control_plane.store.transaction():
@@ -416,6 +398,7 @@ def create_app(
             )
         response.delete_cookie(cookie_name, path="/")
 
+    # Explicit user activity extends idle expiry; reads and stream heartbeats do not.
     @app.post("/api/auth/session/touch", status_code=204)
     def touch(request: Request):
         from time import time
@@ -439,10 +422,12 @@ def create_app(
             items=[SiteResponse(site_id=r[0], display_name=r[1], map_ref=r[2]) for r in rows]
         )
 
+    # API liveness only; this does not probe robot connectivity or execution health.
     @app.get("/api/health", response_model=HealthResponse)
     async def health() -> HealthResponse:
         return HealthResponse()
 
+    # Inventory is map-specific; unknown runtime capabilities remain null rather than unsupported.
     @app.get("/api/seats", response_model=SeatListResponse)
     async def list_seats(request: Request) -> SeatListResponse:
         site_id = selected_site(request)
@@ -474,6 +459,7 @@ def create_app(
             items=[control_plane.store.robot] if robot_visible(request) else []
         )
 
+    # A device token and sole connection ownership are required; ACKs follow committed receipt.
     @app.websocket("/api/robots/{robot_id}/gateway/ws")
     async def robot_gateway(robot_id: str, websocket: WebSocket) -> None:
         if not robot_auth(websocket, robot_id):
@@ -519,6 +505,7 @@ def create_app(
         finally:
             gateway.disconnect()
 
+    # A stale read retains coordinates and may publish the cycle's first stale notification.
     @app.get("/api/robots/cleany-01/pose", response_model=PoseSnapshot)
     async def latest_pose(request: Request) -> PoseSnapshot:
         if not robot_visible(request):
@@ -535,6 +522,7 @@ def create_app(
             stale=stale,
         )
 
+    # Pose ownership is independent of the mission Gateway; timeout/disconnect marks data stale.
     @app.websocket("/api/robots/cleany-01/pose/ws")
     async def robot_pose(websocket: WebSocket) -> None:
         if not robot_auth(websocket, "cleany-01"):
@@ -572,6 +560,7 @@ def create_app(
         finally:
             control_plane.store.release_pose_producer()
 
+    # Newest-first facility history uses an exclusive created_at|mission_id cursor, not an offset.
     @app.get("/api/missions", response_model=MissionListResponse)
     async def list_missions(
         request: Request, limit: int = 50, before: str | None = None
@@ -589,6 +578,8 @@ def create_app(
             items = [control_plane.store.get_mission(row[0]) for row in rows]
         return MissionListResponse(items=[public_mission(item) for item in items])
 
+    # Scope requests to the authenticated user and selected facility; key conflicts return 409.
+    # New missions return 201; matching repeated requests return the existing record with 200.
     @app.post("/api/missions", response_model=MissionResponse)
     async def create_mission(
         input: MissionRequest, request: Request, response: Response
@@ -614,6 +605,7 @@ def create_app(
         response.status_code = status.HTTP_201_CREATED if created else status.HTTP_200_OK
         return public_mission(mission)
 
+    # 202 acknowledges handling, not completion of active work; access is customer-scoped.
     @app.post("/api/missions/{mission_id}/cancel", response_model=MissionResponse, status_code=202)
     async def cancel_mission(mission_id: str, request: Request) -> MissionResponse:
         mission = scoped_mission(request, mission_id)
@@ -638,6 +630,7 @@ def create_app(
                 detail=str(error),
             ) from error
 
+    # SSE has no replay cursor: reconnecting clients refetch snapshots and revalidate their session.
     @app.get("/api/events/stream")
     async def stream_events(request: Request) -> StreamingResponse:
         site_id = selected_site(request)
@@ -672,6 +665,7 @@ def create_app(
                     else:
                         overflow.set()
 
+                # Worker callbacks hand queue access to the event loop.
                 loop.call_soon_threadsafe(enqueue)
 
             unsubscribe = control_plane.store.subscribe(listener)
@@ -728,6 +722,7 @@ app = create_app()
 
 
 def run(host: str | None = None, port: int | None = None) -> None:
+    """Start Uvicorn using explicit bind overrides or the configured CLEANY_ defaults."""
     settings = Settings()
     logging.basicConfig(
         level=settings.log_level, format="%(asctime)s %(levelname)s %(name)s %(message)s"

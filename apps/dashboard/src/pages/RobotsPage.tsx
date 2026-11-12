@@ -14,6 +14,7 @@ import { useOperations } from "../operations/OperationsContext";
 import { executionSource } from "../lib/execution-source";
 import "./robots-page.css";
 
+/** Filter visible robots and resolve their current assignments from mission snapshots. */
 export function RobotsPage() {
   const { robots, missions, seats, isLoading, error, refresh } = useOperations();
   const [params] = useSearchParams();

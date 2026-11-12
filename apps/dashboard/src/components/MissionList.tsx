@@ -10,6 +10,7 @@ interface MissionListProps {
   onCancel?: (missionId: string) => void;
 }
 
+/** Present external phases or terminal outcomes; offer cancellation only for nonterminal records. */
 export function MissionList({ missions, seats, emptyMessage, onCancel }: MissionListProps) {
   if (!missions.length) {
     return <p className="empty">{emptyMessage ?? "아직 생성된 Mission이 없습니다."}</p>;

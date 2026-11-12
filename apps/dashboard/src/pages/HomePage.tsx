@@ -21,6 +21,7 @@ import { useRobotPose } from "../features/robot-pose/useRobotPose";
 import { useDemoMode } from "../operations/DemoModeContext";
 import "./home-dashboard.css";
 
+/** Coordinate facility-scoped seat selection, robot details, and mission panels across runtime modes. */
 export function HomePage() {
   const { floor } = useOutletContext<FacilitySelection>();
   return <HomeWorkspace key={floor.id} floor={floor} />;

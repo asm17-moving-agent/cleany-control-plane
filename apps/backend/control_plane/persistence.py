@@ -11,10 +11,18 @@ SCOPE_FIELDS = ("customer_id", "site_id", "requested_membership_id", "robot_id",
 
 
 class SQLiteRepository:
+    """Own a single-worker WAL SQLite connection and durable queue/inbox/outbox tables.
+
+    The store serializes access and supplies transaction boundaries for related updates.
+    Repository mutations alone do not provide a shared atomic boundary.
+    Opening initializes or migrates the schema; unsupported versions fail startup.
+    """
+
     def __init__(self, path: str) -> None:
         if path != ":memory:":
             path = str(Path(path).expanduser().resolve())
             Path(path).parent.mkdir(parents=True, exist_ok=True)
+        # Threads share this connection; the store lock provides serialization.
         self.connection = sqlite3.connect(path, check_same_thread=False, isolation_level=None)
         self.connection.execute("PRAGMA foreign_keys=ON")
         self.connection.execute("PRAGMA journal_mode=WAL")
@@ -50,6 +58,13 @@ class SQLiteRepository:
         self.migrate_accounts()
 
     def migrate_accounts(self) -> None:
+        """Upgrade schema v1 to v2 atomically while retaining legacy mission payloads.
+
+        Already-upgraded databases are unchanged; failed upgrades roll back.
+
+        Raises:
+            ValueError: An unresolved active mission blocks the upgrade.
+        """
         from control_plane.accounts import ACCOUNT_SCHEMA
 
         version = self.connection.execute("PRAGMA user_version").fetchone()[0]
@@ -102,6 +117,12 @@ class SQLiteRepository:
             raise
 
     def load(self) -> tuple[list[dict[str, Any]], dict[str, Any] | None]:
+        """Restore mission payloads with authoritative ownership columns.
+
+        Returns:
+            Mission dictionaries in insertion order and the persisted robot
+            snapshot, or None when no robot snapshot has been saved.
+        """
         missions = []
         for row in self.connection.execute(
             "SELECT payload,customer_id,site_id,requested_membership_id,robot_id,origin "
@@ -114,6 +135,18 @@ class SQLiteRepository:
         return missions, json.loads(row[0]) if row else None
 
     def save(self, missions: list[dict[str, Any]], robot: dict[str, Any]) -> None:
+        """Persist the complete mission/robot state inside the caller transaction.
+
+        Database constraints enforce one active slot and immutable terminal payloads and ownership.
+
+        Args:
+            missions: All current records; omitted rows are not deleted.
+            robot: Internal snapshot, including fields omitted from public responses.
+
+        Raises:
+            sqlite3.IntegrityError: A uniqueness, ownership, or terminal-payload
+                constraint is violated. The caller must roll back the transaction.
+        """
         # Remove the old active index entry before installing the new reservation.
         self.connection.execute("UPDATE missions SET active=0 WHERE active=1")
         for mission in missions:
@@ -155,24 +188,28 @@ class SQLiteRepository:
         )
 
     def record(self, event: dict[str, Any], disposition: str) -> None:
+        """Persist the inbox envelope and disposition in the event-application transaction."""
         self.connection.execute(
             "INSERT INTO event_inbox VALUES(?,?,?)",
             (event["event_id"], json.dumps(event), disposition),
         )
 
     def enqueue(self, event: dict[str, Any]) -> None:
+        """Persist an unchanged command envelope for acknowledgment tracking and retries."""
         self.connection.execute(
             "INSERT INTO command_outbox(event_id,mission_id,payload) VALUES(?,?,?)",
             (event["event_id"], event["mission_id"], json.dumps(event)),
         )
 
     def acknowledge(self, event_id: str) -> None:
+        """Stop command retries; this does not confirm runtime acceptance or completion."""
         self.connection.execute(
             "UPDATE command_outbox SET acknowledged=1 WHERE event_id=?",
             (event_id,),
         )
 
     def retire(self, mission_id: str, event_type: str | None = None) -> None:
+        """Stop obsolete command retries by mission/type while retaining their rows."""
         sql = "UPDATE command_outbox SET acknowledged=1 WHERE mission_id=?"
         values: list[Any] = [mission_id]
         if event_type:
@@ -181,6 +218,15 @@ class SQLiteRepository:
         self.connection.execute(sql, values)
 
     def pending(self, now: float) -> list[tuple[dict[str, Any], int]]:
+        """Read due commands without claiming them or advancing retry state.
+
+        Args:
+            now: Retry cutoff as Unix time in seconds, not monotonic time.
+
+        Returns:
+            Envelope/attempt-count pairs in insertion order. Envelopes retain
+            their original event IDs and payloads for retransmission.
+        """
         return [
             (json.loads(row[0]), row[1])
             for row in self.connection.execute(
@@ -191,6 +237,13 @@ class SQLiteRepository:
         ]
 
     def sent(self, event_id: str, next_attempt: float) -> None:
+        """Advance retry bookkeeping before transport delivery, without marking receipt.
+
+        A failed send remains eligible at its new deadline until acknowledged or retired.
+
+        Args:
+            next_attempt: Next retry deadline as Unix time in seconds.
+        """
         self.connection.execute(
             "UPDATE command_outbox SET attempts=attempts+1,next_attempt=? WHERE event_id=?",
             (next_attempt, event_id),

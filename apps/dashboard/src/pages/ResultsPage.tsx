@@ -24,6 +24,7 @@ function Observation({ label, reference }: { label: string; reference: string | 
   </section>;
 }
 
+/** Present terminal results and observation references; viewing a result does not mark it reviewed. */
 export function ResultsPage() {
   const { isDemo } = useDemoMode();
   const { missions, seats, isLoading, error, refresh } = useOperations();

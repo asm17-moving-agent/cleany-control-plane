@@ -22,6 +22,7 @@ import { POSE_STALE_TIMEOUT_MS, validPoseSnapshot } from "../features/robot-pose
 
 type ConnectionState = "connecting" | "connected" | "error";
 
+/** Shared operation snapshots and commands; live data may omit recording-only fields. */
 export interface OperationsContextValue {
   recordingPosition?: { x: number; y: number };
   recordingHeading?: number;
@@ -46,6 +47,11 @@ export interface OperationsContextValue {
 
 const OperationsContext = createContext<OperationsContextValue | null>(null);
 
+/**
+ * Expose one operations interface for authenticated live data, demo fixtures, or recording replay.
+ * Demo commands reject; recording commands mutate local simulation; live commands use the API.
+ * Changing mode replaces the provider and discards its local state.
+ */
 export function OperationsProvider({ children }: PropsWithChildren) {
   const { isDemo, isRecording } = useDemoMode();
   return isRecording ? <RecordingOperationsProvider>{children}</RecordingOperationsProvider>
@@ -71,6 +77,11 @@ function DemoOperationsProvider({ children }: PropsWithChildren) {
   return <OperationsContext.Provider value={demoValue}>{children}</OperationsContext.Provider>;
 }
 
+/**
+ * Share customer/site-scoped snapshots and mutations, refetching non-pose state after SSE updates.
+ * Pose updates reject stale snapshots; polling backs up a disconnected stream.
+ * Cleanup closes EventSource and its local pose watchdog.
+ */
 function LiveOperationsProvider({ children }: PropsWithChildren) {
   const queryClient = useQueryClient();
   const auth = useAuthOptional();
@@ -117,6 +128,7 @@ function LiveOperationsProvider({ children }: PropsWithChildren) {
     const source = new EventSource(scopedUrl("/api/events/stream"));
     let disposed = false;
     let revision = 0;
+    // Remote timestamps reject older samples; local receipt time alone drives the stale watchdog.
     let newestTimestamp = -Infinity;
     let lastReceipt = -Infinity;
     const applySnapshot = (snapshot: unknown) => {
@@ -155,6 +167,7 @@ function LiveOperationsProvider({ children }: PropsWithChildren) {
       } catch {
         // Invalid event data is recovered by the state refresh below.
       }
+      // Fetch full snapshots instead of merging event payloads or relying on event sequence ordering.
       void refresh();
     });
     source.addEventListener("auth.expired", () => {
@@ -167,7 +180,7 @@ function LiveOperationsProvider({ children }: PropsWithChildren) {
       setConnectionState("error");
       revision++;
     });
-    // Wall time at this browser, never the remote machine's UTC clock.
+    // A monotonic browser clock detects stale delivery independently of remote clock skew.
     const watchdog = window.setInterval(() => {
       if (performance.now() - lastReceipt > POSE_STALE_TIMEOUT_MS) setPoseStale(true);
     }, Math.min(250, POSE_STALE_TIMEOUT_MS));

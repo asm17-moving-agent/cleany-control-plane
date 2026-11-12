@@ -5,6 +5,7 @@ import { RobotModelMotion, ROTATION_GUIDE } from "./robot-model-motion";
 import { createRobotExterior } from "./RobotExterior";
 import { createRobotRotationGuide } from "./RobotRotationGuide";
 
+/** Dispose each shared geometry, material, and mesh texture once when a preview is discarded. */
 function disposeModel(model: THREE.Object3D) {
   const geometries = new Set<THREE.BufferGeometry>();
   const materials = new Set<THREE.Material>();
@@ -22,6 +23,11 @@ function disposeModel(model: THREE.Object3D) {
   geometries.forEach(geometry => geometry.dispose());
 }
 
+/**
+ * Own the preview renderer, on-demand frames, interaction handlers, and model resources.
+ * onReady follows the first rendered frame; load/context failures reach onError.
+ * Cleanup disposes scene resources and rejects late loader results.
+ */
 export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true, rotationGuide = false }: {
   onReady: () => void; onError: () => void; hoverEnabled?: boolean; rotationGuide?: boolean;
 }) {

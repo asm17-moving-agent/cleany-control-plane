@@ -42,3 +42,9 @@ React page
 HTTP transport, domain store와 Gateway는 분리한다. Backend는 Robot의 내부 FSM을
 변경하지 않는다. 상세 메시지와 재시작 규칙은
 [Gateway 통합 계약](robot-gateway-integration.md)을 따른다.
+
+
+고정 시설 fixture와 명시적 Mock 실행은 `apps/backend/control_plane/mock/`에 둔다.
+`server.py`는 transport와 adapter lifecycle을 연결하고, `domain.py`는 Queue와
+외부 Mission 규칙을 관리한다. Mock dispatcher가 가상 관찰 참조를 생성하면,
+domain store는 그 참조를 상태 전이와 같은 transaction에서 저장한 뒤 event를 발행한다.

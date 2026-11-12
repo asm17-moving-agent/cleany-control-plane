@@ -5,6 +5,7 @@ export interface MapBounds {
   height: number;
 }
 
+/** Return a CSS-pixels-per-artwork-unit scale and a center that remains in artwork coordinates. */
 export function fitMapBounds(bounds: MapBounds, frame: { width: number; height: number }) {
   const padding = 16;
   return {

@@ -2,6 +2,7 @@ import { formatDateTime, missionTargetLabel } from "../lib/operations";
 import { useOperations } from "../operations/OperationsContext";
 import { useDemoMode } from "../operations/DemoModeContext";
 
+/** Derive operational metrics from snapshots and show live activity with a mission-history fallback. */
 export function MonitoringPage() {
   const { missions, robot, seats, events } = useOperations();
   const { isDemo } = useDemoMode();

@@ -72,7 +72,7 @@ test("seat submission opens the assigned robot and advances five connected stage
     await expect(steps.nth(current)).toHaveAttribute("aria-current", "step");
     for (let index = 0; index < 5; index++) await expect(steps.nth(index)).toHaveAttribute("data-state", index < current ? "done" : index === current ? "current" : "pending");
     if (phase === "WORKING") {
-      await expect(steps.nth(0).locator(".mission-step-dot")).toHaveCSS("background-color", "rgb(57, 125, 104)");
+      await expect(steps.nth(0).locator(".mission-step-dot")).toHaveCSS("background-color", "rgb(22, 126, 112)");
       await page.waitForTimeout(700);
       await expect(steps.nth(current)).toHaveAttribute("aria-current", "step");
       await page.screenshot({ path: test.info().outputPath("working.png") });

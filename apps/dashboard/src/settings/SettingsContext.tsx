@@ -10,6 +10,7 @@ import type { Priority } from "../api/types";
 
 const STORAGE_KEY = "cleany.dashboard.settings";
 
+/** Browser-local preferences; liveStatus and completionNotification are stored but not consumed yet. */
 export interface DashboardSettings {
   refreshSeconds: "5" | "10" | "30";
   liveStatus: boolean;
@@ -31,6 +32,7 @@ interface SettingsContextValue {
 
 const SettingsContext = createContext<SettingsContextValue | null>(null);
 
+/** Merge saved values with defaults; read/parse failures fall back without validating stored fields. */
 function readSettings(): DashboardSettings {
   try {
     const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}") as Partial<DashboardSettings>;
@@ -40,6 +42,10 @@ function readSettings(): DashboardSettings {
   }
 }
 
+/**
+ * Shares preferences initialized from localStorage, with no backend or cross-tab synchronization.
+ * Saving writes storage before publishing React state; storage write errors reach the caller.
+ */
 export function SettingsProvider({ children }: PropsWithChildren) {
   const [settings, setSettings] = useState(readSettings);
   const saveSettings = useCallback((next: DashboardSettings) => {

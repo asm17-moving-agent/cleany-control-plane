@@ -4,7 +4,13 @@ import { samplePose, poseDistance, POSE_INTERPOLATION_MS, POSE_SNAP_DISTANCE, ty
 
 interface PoseState { pose: MapPose | null; stale: boolean; connected: boolean; }
 
-/** Interpolates on local receipt time; server timestamps are ordering metadata only. */
+/**
+ * Smooth world poses on the browser receipt clock, snapping large position discontinuities.
+ * Stale data may initialize an empty marker but cannot move an existing one.
+ * Cleanup cancels the animation frame loop.
+ * @param connected - Caller-reported stream status, passed through without controlling interpolation.
+ * @returns The rendered pose and caller-reported freshness/connection flags.
+ */
 export function useRobotPose(pose: RobotPose | null, poseStale: boolean, connected: boolean): PoseState {
   const samples = useRef<PoseSample[]>([]);
   const rendered = useRef<MapPose | null>(null);

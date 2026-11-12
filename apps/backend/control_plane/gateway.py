@@ -18,8 +18,8 @@ from control_plane.domain import (
     TargetKind,
     utc_now,
 )
-from control_plane.fixtures import SEATS
 from control_plane.gateway_protocol import ROBOT_MESSAGE, Envelope, SnapshotEvent
+from control_plane.mock.fixtures import SEATS
 from control_plane.settings import Settings
 
 logger = logging.getLogger(__name__)
@@ -27,6 +27,7 @@ PHASE_ORDER = {phase: index for index, phase in enumerate(MissionPhase)}
 
 
 def envelope(kind: str, payload: dict[str, Any], mission_id: str | None = None) -> dict[str, Any]:
+    """Create a fresh Backend envelope; durable retries reuse the stored envelope instead."""
     return {
         "schema_version": 1,
         "event_id": str(uuid4()),
@@ -40,6 +41,12 @@ def envelope(kind: str, payload: dict[str, Any], mission_id: str | None = None) 
 
 
 class GatewayController:
+    """Reconcile runtime evidence with a durable queue and command outbox for one robot.
+
+    Connection and synchronization flags are process-local; mission, inbox, and outbox changes
+    share store transactions. A single transport owner must drive this controller.
+    """
+
     def __init__(self, store: ControlPlaneStore, settings: Settings) -> None:
         self.store = store
         self.settings = settings
@@ -59,6 +66,11 @@ class GatewayController:
             store.robot.state = RobotState.OFFLINE
 
     def claim(self) -> bool:
+        """Claim connection ownership and require a fresh snapshot before dispatching work.
+
+        Returns:
+            False if already connected; True after resetting synchronization state.
+        """
         if self.connected:
             return False
         self.connected = True
@@ -69,12 +81,14 @@ class GatewayController:
         return True
 
     def disconnect(self) -> None:
+        """Mark the robot offline while retaining unresolved mission and outbox state."""
         self.connected = self.synchronized = False
         self.store.set_robot_state(
             RobotState.OFFLINE, self.store.robot.active_mission_id, seen=False
         )
 
     def reservation(self) -> Mission | None:
+        """Find the nonqueued, nonterminal mission holding the single execution slot."""
         return next(
             (
                 m
@@ -85,7 +99,14 @@ class GatewayController:
         )
 
     def validate_target(self, target, idempotency_key: str, customer_id: str | None = None) -> None:
-        # A successful POST retry remains valid even if capabilities later change.
+        """Validate new mission targets against runtime-reported seat capabilities.
+
+        Existing customer/key pairs bypass capability checks; create_mission still
+        checks whether the retried request matches its original content.
+
+        Raises:
+            ValueError: A new target is not a seat advertised by the runtime.
+        """
         if any(
             m.idempotency_key == idempotency_key and m.customer_id == customer_id
             for m in self.store.list_missions()
@@ -97,6 +118,17 @@ class GatewayController:
             raise ValueError("런타임이 지원하는 좌석을 확인한 뒤 요청해 주세요.")
 
     def cancel(self, mission_id: str) -> Mission:
+        """Cancel queued work locally or durably enqueue an active cancellation request.
+
+        Delivery does not confirm cancellation completion; the runtime must report the result.
+
+        Returns:
+            The live mission record; queued work is terminal, while active work
+            is flagged for cancellation. Repeated requests leave it unchanged.
+
+        Raises:
+            ValueError: The mission is missing, or active cancellation is unsupported.
+        """
         with self.store.transaction():
             mission = self.store.get_mission(mission_id)
             if mission is None:
@@ -111,6 +143,22 @@ class GatewayController:
             return result
 
     def receive(self, raw: Any) -> dict[str, Any] | None:
+        """Apply a runtime event transactionally and build its acknowledgment.
+
+        Event IDs deduplicate receipt; mission sequences distinguish stale feedback.
+        Command ACKs stop retries without confirming acceptance or completion.
+
+        Args:
+            raw: Runtime envelope validated against the robot message schema.
+
+        Returns:
+            An ACK with the event disposition after commit, including duplicate
+            or stale receipt. Incoming ACKs return None to avoid ACK loops.
+
+        Raises:
+            ValueError: Validation fails, or the event conflicts with the current
+                reservation or synchronization state.
+        """
         event = ROBOT_MESSAGE.validate_python(raw)
         data = event.model_dump(mode="json")
         disposition = "applied"
@@ -149,6 +197,7 @@ class GatewayController:
         return envelope("ack", {"ack_event_id": data["event_id"], "disposition": disposition})
 
     def _heartbeat(self, event: Envelope) -> None:
+        """Apply synchronized-boot availability without releasing unresolved reservations."""
         status = event.payload
         active_id = str(status.active_mission_id) if status.active_mission_id else None
         if not self.synchronized or status.boot_id != self.store.robot.boot_id:
@@ -170,6 +219,11 @@ class GatewayController:
         self.store.set_robot_state(status.state, active_id)
 
     def _snapshot(self, event: SnapshotEvent) -> None:
+        """Reconcile final reports, active state, and explicit nonacceptance proof.
+
+        Replay results before inferring reboot interruptions. Empty active state cannot release
+        an offer, and unknown active missions are rejected.
+        """
         status = event.payload
         if not set(status.supported_seat_ids).issubset({s["seat_id"] for s in SEATS}):
             raise ValueError("snapshot contains non-canonical seat IDs")
@@ -239,6 +293,12 @@ class GatewayController:
         self.synchronized = True
 
     def _advance(self, mission: Mission, phase: MissionPhase, message: str) -> bool:
+        """Keep phases moving forward and timestamp the first observed execution evidence.
+
+        Returns:
+            False for a regressive phase; True for an equal or later phase.
+            Equal phases may set accepted_at but do not publish a phase change.
+        """
         if PHASE_ORDER[phase] < PHASE_ORDER[mission.phase]:
             return False
         if mission.accepted_at is None:
@@ -248,6 +308,16 @@ class GatewayController:
         return True
 
     def _mission_event(self, data: dict[str, Any]) -> str:
+        """Apply feedback for the reserved mission using its runtime sequence cursor.
+
+        Terminal result conflicts compare outcome only; other terminal feedback is stale.
+
+        Returns:
+            An applied, stale, or conflict disposition for the enclosing inbox/ACK.
+
+        Raises:
+            ValueError: The mission is unknown or does not hold the execution slot.
+        """
         mission = self.store.get_mission(data["mission_id"])
         if mission is None:
             raise ValueError("event references unknown mission")
@@ -262,6 +332,7 @@ class GatewayController:
         reservation = self.reservation()
         if reservation is None or reservation.mission_id != mission.mission_id:
             raise ValueError("event does not match reserved mission")
+        # A gap requests resynchronization but does not discard this newer event.
         if data["sequence"] > mission.robot_sequence + 1:
             self.sync_reason = "mission event sequence gap"
         mission.robot_sequence = data["sequence"]
@@ -326,6 +397,15 @@ class GatewayController:
         return "applied"
 
     def tick(self) -> list[dict[str, Any]]:
+        """Expire work and return due commands after committing retry state.
+
+        Offers require a fresh synchronized IDLE robot and an empty slot.
+        Command ACKs stop retries; offer timeouts request evidence instead of assuming rejection.
+
+        Returns:
+            Envelopes for the transport to send, with durable commands' retry
+            counters already advanced. This method does not perform network I/O.
+        """
         output: list[dict[str, Any]] = []
         now = time()
         with self.store.transaction():

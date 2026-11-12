@@ -11,6 +11,7 @@ import { RobotModel } from "./RobotModel";
 import { MissionProgress } from "./MissionProgress";
 import { executionSource } from "../lib/execution-source";
 
+/** Show retained robot/assignment snapshots and move focus to the heading when selection changes. */
 export function RobotDetailPanel({ robot, mission, seats, unavailable, onClose, attentionCount = 0 }: {
   robot: Robot; mission?: Mission; seats: Seat[]; unavailable: boolean; onClose: () => void; attentionCount?: number;
 }) {

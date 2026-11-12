@@ -1,3 +1,5 @@
+"""Export or verify HTTP, Gateway, and generated dashboard type contracts."""
+
 from __future__ import annotations
 
 import argparse
@@ -11,6 +13,7 @@ from control_plane.server import create_app
 
 
 def main() -> None:
+    """Write snapshots, or compare them and generated types without starting the app lifespan."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
