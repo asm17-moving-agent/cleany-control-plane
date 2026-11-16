@@ -9,3 +9,5 @@ export function PanelHeader({ title, description, icon, action, className }: { t
 export function Field({ label, htmlFor, hint, children, className }: { label: string; htmlFor: string; hint?: string; children: ReactNode; className?: string }) { return <div className={cn("ui-field", className)}><label htmlFor={htmlFor}>{label}</label>{children}{hint && <small id={`${htmlFor}-hint`}>{hint}</small>}</div>; }
 export function StatusBadge({ tone = "neutral", className, ...props }: ComponentProps<"span"> & { tone?: Tone }) { return <span className={cn("ui-status", className)} data-tone={tone} {...props} />; }
 export function Notice({ tone = "neutral", className, ...props }: ComponentProps<"p"> & { tone?: Tone }) { return <p className={cn("ui-notice", className)} data-tone={tone} {...props} />; }
+
+export function Details({ label, children, className, ...props }: ComponentProps<"details"> & { label: string }) { return <details className={cn("ui-details", className)} {...props}><summary>{label}</summary><div className="ui-details-content">{children}</div></details>; }

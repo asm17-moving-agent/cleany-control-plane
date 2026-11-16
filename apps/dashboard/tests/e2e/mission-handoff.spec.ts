@@ -81,7 +81,7 @@ test("seat submission opens the assigned robot and advances five connected stage
   await advance("TERMINAL", "SUCCESS");
   await expect(panel.locator(".mission-step-status")).toHaveText("완료");
   await expect(panel.locator(".mission-step-progress li[data-state=done]")).toHaveCount(5);
-  await expect(panel.getByText("현재 할당된 작업이 없습니다.")).toHaveCount(0);
+  await expect(panel.getByText("배정된 작업 없음")).toHaveCount(0);
   await expect(panel.getByRole("link", { name: "작업 상세 보기" })).toHaveAttribute("href", "/missions?mission=new-request");
 });
 

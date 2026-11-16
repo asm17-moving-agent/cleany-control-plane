@@ -1,4 +1,4 @@
-import { Notice } from "../components/patterns";
+import { Details, Notice } from "../components/patterns";
 import { Button } from "@/components/ui/button";
 import { NativeSelect } from "@/components/ui/native-select";
 import { useRef, useState } from "react";
@@ -46,34 +46,34 @@ export function MissionsPage() {
     catch (failure) { setCancelError({ id, message: failure instanceof Error ? failure.message : "취소 요청을 보내지 못했습니다." }); }
     finally { pending.current = null; setCancelling(null); }
   }
-  return <OperationsPage className="missions-view" title="작업 요청" description="대기 중인 요청과 진행 상황을 확인하세요."
+  return <OperationsPage className="missions-view" title="작업 요청"
     action={<Button asChild variant="primary"><Link className="ops-button is-primary" to="/"><span aria-hidden="true">＋</span> 새 작업 요청</Link></Button>}>
     <div className="ops-toolbar">
       <OperationsTabs label="작업 필터" tabs={([["ALL", "전체 요청"], ["ACTIVE", "진행 중"], ["QUEUED", "대기"], ["TERMINAL", "종료"]] as const).map(([id, label]) => ({ label, href: href({ phase: id, mission: null }), active: phase === id, count: isLoading || error ? "—" : missions.filter(item => phaseMatches(id, item)).length }))} />
       <div className="ops-filters"><label>우선순위<NativeSelect value={priority} onChange={event => setParams(new URLSearchParams(href({ priority: event.target.value, mission: null }).split("?")[1]))}><option value="ALL">전체</option><option value="HIGH">높음</option><option value="NORMAL">보통</option></NativeSelect></label><Button variant="secondary" size="default" className="ops-button" onClick={() => void refresh()} disabled={isLoading}>새로고침</Button></div>
     </div>
     <div className="ops-body" aria-busy={isLoading}>
-      {isLoading || error ? <WorkspaceMessage kind={error ? "error" : "loading"}>{error ? "작업 요청을 불러오지 못했습니다. 새로고침해 주세요." : "작업 요청을 불러오는 중입니다."}</WorkspaceMessage> : <div className="ops-layout">
+      {isLoading || error ? <WorkspaceMessage kind={error ? "error" : "loading"} onRetry={() => void refresh()}>{error ? "작업 목록을 불러올 수 없음" : "작업 목록 불러오는 중"}</WorkspaceMessage> : <div className="ops-layout">
         <section className="ops-panel" aria-label="작업 요청 목록">
           <header className="ops-panel-heading"><h3>요청 목록 <span>{filtered.length}건</span></h3><small>요청 시각 최신순</small></header>
           {filtered.length ? <><div className="mission-table-heading" aria-hidden="true"><span>작업 대상</span><span>진행 상태</span><span>요청 시각</span><span /></div>
           <div className="ops-list">{filtered.map(mission => <Link className="ops-row mission-table-row" key={mission.mission_id} aria-current={mission.mission_id === selected?.mission_id ? "true" : undefined} to={href({ mission: mission.mission_id })}>
-            <span><strong>{missionTargetLabel(mission, seats)}</strong><small><span className={mission.priority === "HIGH" ? "mission-priority-high" : ""}>{mission.priority === "HIGH" ? "↑ 높은 우선순위" : "보통 우선순위"}</span> · 책상 위 물체 정리</small></span>
+            <span><strong>{missionTargetLabel(mission, seats)}</strong>{mission.priority === "HIGH" && <small className="mission-priority-high">우선순위 높음</small>}</span>
             <MissionStatusBadge mission={mission} /><time dateTime={mission.created_at}>{formatDateTime(mission.created_at)}</time><ChevronIcon aria-hidden="true" />
-          </Link>)}</div><footer className="ops-list-footer">높은 우선순위부터 배정되며, 진행 중인 작업은 유지됩니다.</footer></>
-          : <OperationsEmpty icon={<MissionIcon />} title="표시할 작업 요청이 없습니다">필터를 바꾸거나 <Link to="/">지도에서 좌석을 선택</Link>해 작업을 요청하세요.</OperationsEmpty>}
+          </Link>)}</div><footer className="ops-list-footer">배정: 높은 우선순위 먼저 · 진행 중인 작업 유지</footer></>
+          : <OperationsEmpty icon={<MissionIcon />} title={missions.length ? "조건에 맞는 작업 없음" : "작업 요청 없음"}>{missions.length ? <Link to="/missions">전체 작업</Link> : <Link to="/">새 작업 요청</Link>}</OperationsEmpty>}
         </section>
         <aside className="ops-panel ops-detail" aria-label="작업 요청 상세"><header className="ops-panel-heading"><h3>요청 상세</h3><MissionIcon aria-hidden="true" /></header>
           {selected ? <div className="ops-detail-content" key={selected.mission_id}>
-            <div className="ops-detail-title"><MissionStatusBadge mission={selected} /><h3>{missionTargetLabel(selected, seats)}</h3><p>책상 위 물체 정리</p></div>
+            <div className="ops-detail-title"><h3>{missionTargetLabel(selected, seats)}</h3></div>
             <MissionProgress mission={selected} />
-            <dl className="ops-facts"><InfoRow label="우선순위">{selected.priority === "HIGH" ? "높음" : "보통"}</InfoRow><InfoRow label="요청자">{selected.requested_by}</InfoRow><InfoRow label="요청 시각">{formatDateTime(selected.created_at)}</InfoRow><InfoRow label="현재 배정 로봇">{assigned ? <Link to={"/robots?robot=" + encodeURIComponent(assigned.robot_id)}>{assigned.robot_id} →</Link> : selected.phase === "QUEUED" ? "배정 대기" : "현재 배정 없음"}</InfoRow></dl>
-            <p className="ops-note">{selected.phase === "TERMINAL" ? "종료된 작업입니다. 작업 결과에서 관측 자료와 최종 상태를 확인하세요." : selected.cancel_requested ? "취소를 요청했습니다. 최종 종료 상태가 확인될 때까지 진행 상황을 표시합니다." : "취소 요청 후 로봇이 안전하게 작업을 마무리하고 종료 상태를 알립니다."}</p>
+            <dl className="ops-facts">{selected.priority === "HIGH" && <InfoRow label="우선순위">높음</InfoRow>}<InfoRow label="현재 배정 로봇">{assigned ? <Link to={"/robots?robot=" + encodeURIComponent(assigned.robot_id)}>{assigned.robot_id} →</Link> : selected.phase === "QUEUED" ? "배정 대기" : "현재 배정 없음"}</InfoRow></dl>
+            {selected.cancel_requested && selected.phase !== "TERMINAL" && <p className="ops-note">종료 확인 대기</p>}
             {cancelError?.id === selected.mission_id && <Notice tone="danger" className="mission-cancel-error" role="alert">{cancelError.message}</Notice>}
-            {cancelUnsupported && selected.phase !== "TERMINAL" && <p className="ops-note">런타임이 활성 미션 취소를 지원하지 않습니다.</p>}
+            {cancelUnsupported && selected.phase !== "TERMINAL" && <p className="ops-note">현재 작업은 원격 취소 미지원</p>}
             <div className="ops-detail-actions">{selected.phase === "TERMINAL" ? <Button asChild variant="secondary"><Link className="ops-button" to={"/results?mission=" + encodeURIComponent(selected.mission_id)}>작업 결과 보기 <ChevronIcon /></Link></Button> : <Button variant="danger-outline" size="default" className="ops-button is-danger" disabled={(isDemo && !isRecording) || cancelUnsupported || !!cancelling || selected.cancel_requested} onClick={() => void cancel()}>{cancelling === selected.mission_id ? "취소 요청 중…" : selected.cancel_requested ? "취소 요청됨" : "작업 취소 요청"}</Button>}</div>
-            <details className="mission-reference"><summary>요청 정보</summary><code>{selected.mission_id}</code>{selected.message && <p>{missionMessage(selected.message)}</p>}</details>
-          </div> : <OperationsEmpty icon={<MissionIcon />} title={selectedId ? "선택한 요청을 찾을 수 없습니다" : "요청 상세가 여기에 표시됩니다"}>왼쪽 목록에서 작업을 선택하세요.</OperationsEmpty>}
+            <Details label="요청 정보"><dl className="ops-facts"><InfoRow label="요청자">{selected.requested_by}</InfoRow><InfoRow label="요청 시각">{formatDateTime(selected.created_at)}</InfoRow><InfoRow label="우선순위">{selected.priority === "HIGH" ? "높음" : "보통"}</InfoRow><InfoRow label="요청 ID"><code>{selected.mission_id}</code></InfoRow></dl>{selected.message && <p>{missionMessage(selected.message)}</p>}</Details>
+          </div> : <OperationsEmpty icon={<MissionIcon />} title={selectedId ? "선택한 작업 없음" : "작업 선택"} />}
         </aside>
       </div>}
     </div>

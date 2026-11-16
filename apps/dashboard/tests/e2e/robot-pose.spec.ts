@@ -24,7 +24,7 @@ test("WebSocket pose reaches the map through SSE and stale snapshots survive rel
   await expect(marker).toHaveClass(/is-stale/);
   await page.reload();
   await expect(marker).toHaveClass(/is-stale/);
-  await expect(page.locator(".home-telemetry-status")).toContainText("SSE 연결됨 · 위치 지연");
+  await expect(page.locator(".home-telemetry-status")).toContainText("대시보드 연결됨 · 위치 지연");
   await expect(marker.locator(".facility-robot-bearing g")).toHaveAttribute("transform", "rotate(-90 50 50)");
   await expect.poll(async () => marker.evaluate(element => parseFloat(element.style.top)))
     .toBeCloseTo(8 + (5.47 + 4.705) * 400 / 12.26, 2);
@@ -45,7 +45,7 @@ test("recording and demo modes stay isolated from live telemetry", async ({ page
   await page.getByRole("button", { name: "요청 보내기", exact: true }).click();
   await expect.poll(() => marker.getAttribute("style")).not.toBe(before);
   await expect(page.locator(".facility-movement-path")).toBeVisible();
-  await expect(page.locator(".home-telemetry-status")).toContainText("촬영용 이동");
+  await expect(page.locator(".home-telemetry-status")).toContainText("촬영 위치");
   expect(commands).toEqual([]);
   expect(liveConnections).toEqual([]);
   await page.goto("/?demo=1&recording=0");

@@ -13,7 +13,6 @@ export function HomeMapHeader({ seats, mapAvailable, unavailable, children, slam
   return <header className="home-map-header">
     <div className="home-map-intro">
       <h2>{slam ? "실측 시설 지도" : mapAvailable ? "18층 좌석 지도" : "19층 시설 지도"}</h2>
-      <p>{slam ? "SLAM 지도에서 시설과 로봇 위치를 확인하세요" : mapAvailable ? "좌석을 선택해 작업을 요청하세요" : "18층을 선택하면 좌석 지도를 볼 수 있습니다"}</p>
     </div>
     <div className="home-map-header-actions">
       {children}

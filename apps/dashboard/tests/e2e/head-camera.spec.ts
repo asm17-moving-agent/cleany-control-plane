@@ -18,7 +18,7 @@ test('head camera shows fresh frames, clears lost video, and stops fetching in d
   await page.getByRole('region',{name:'수동 조종',exact:true}).screenshot({path:testInfo.outputPath('head-camera-panel.png')});
   online = false;
   await expect(panel.getByRole('img')).toHaveCount(0);
-  await expect(panel.getByText('헤드캠 연결 대기').first()).toBeVisible();
+  await expect(panel.getByText('영상 대기').first()).toBeVisible();
   await page.goto('/robots?demo=1');
   const stopped = requests;
   await page.waitForTimeout(1800);

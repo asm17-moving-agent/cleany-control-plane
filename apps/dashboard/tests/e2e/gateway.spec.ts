@@ -33,7 +33,7 @@ test("supported seat executes the external FSM phases and displays honest result
   await expect(detail).toContainText("시뮬레이션 · 작업 모의 실행");
   await page.screenshot({ path: testInfo.outputPath("gateway-working.png"), fullPage: true, animations: "disabled" });
   await gateway.disconnect();
-  await expect(page.locator(".home-telemetry-status")).toContainText("SSE 연결됨");
+  await expect(page.locator(".home-telemetry-status")).toContainText("대시보드 연결됨");
   await expect(page.locator(".home-telemetry-status")).toContainText("로봇 연결 끊김");
   await gateway.connect();
   await expect(detail).toContainText("정리 작업 중");
@@ -44,8 +44,10 @@ test("supported seat executes the external FSM phases and displays honest result
   await page.goto("/results?mission=" + id);
   const result = page.getByRole("region", { name: "작업 결과 상세" });
   await expect(result).toContainText("시뮬레이션 · 작업 모의 실행");
-  await expect(result).toContainText("요청부터 결과 수신");
+  await expect(result.getByText("요청부터 결과 수신")).not.toBeVisible();
+  await result.getByText("상세 정보", {exact:true}).click();
+  await expect(result.getByText("요청부터 결과 수신")).toBeVisible();
   await expect(result).toContainText("pick_object, place_object");
-  await expect(result.getByText("연결된 관측 자료가 없습니다")).toHaveCount(2);
+  await expect(result.getByText("자료 없음")).toHaveCount(2);
   await page.screenshot({ path: testInfo.outputPath("gateway-result.png"), fullPage: true, animations: "disabled" });
 });

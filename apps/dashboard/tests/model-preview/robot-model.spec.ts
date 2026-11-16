@@ -173,7 +173,7 @@ test("home roster stays static while the detail model supports dragging and tear
   const panel = page.getByRole("complementary", { name: "로봇 상세", exact: true });
   await expect(panel.locator(".robot-model-card")).toHaveCount(1);
   await expect(panel.getByText("미연동", { exact: true })).toBeVisible();
-  await expect(panel.getByText("현재 할당된 작업이 없습니다.")).toBeVisible();
+  await expect(panel.getByText("배정된 작업 없음")).toBeVisible();
   expect(await panel.locator(".robot-detail-metrics").evaluate(element =>
     element.getBoundingClientRect().bottom <= element.closest(".robot-detail-content")!.getBoundingClientRect().bottom,
   )).toBe(true);

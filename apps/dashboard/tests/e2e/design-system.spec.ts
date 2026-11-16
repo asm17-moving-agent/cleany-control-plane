@@ -13,14 +13,22 @@ test('menus support keyboard navigation, dismissal and focus return', async ({pa
  await trigger.click(); await page.getByRole('heading',{name:'관제 설정',exact:true,level:2}).click(); await expect(menu).toHaveCount(0);
 });
 
-test('settings switch persists the boolean value after explicit save', async ({page}) => {
+test('settings save consumed preferences without overwriting dormant values', async ({page}) => {
  await page.goto('/settings');
- const toggle=page.getByRole('switch',{name:'실시간 상태 표시'});
- const before=await toggle.isChecked(); await toggle.focus(); await page.keyboard.press('Space');
- await expect(toggle).toBeChecked({checked:!before});
+ const original={refreshSeconds:'5',defaultPriority:'NORMAL',liveStatus:false,completionNotification:false};
+ await page.evaluate(value=>localStorage.setItem('cleany.dashboard.settings',JSON.stringify(value)),original);
+ await page.reload();
+ await expect(page.getByRole('switch')).toHaveCount(0);
+ await expect(page.getByText('Local Mock')).toHaveCount(0);
+ await page.getByRole('combobox',{name:'연결 끊김 시 갱신 간격'}).selectOption('30');
+ await page.getByRole('combobox',{name:'기본 우선순위'}).selectOption('HIGH');
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('cleany.dashboard.settings')!))).toEqual(original);
  await page.getByRole('button',{name:'설정 저장'}).click(); await page.reload();
- await expect(toggle).toBeChecked({checked:!before});
- await expect(toggle).toHaveCSS('width','40px'); await expect(toggle).toHaveCSS('height','24px');
+ await expect(page.getByRole('combobox',{name:'연결 끊김 시 갱신 간격'})).toHaveValue('30');
+ await expect(page.getByRole('combobox',{name:'기본 우선순위'})).toHaveValue('HIGH');
+ expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('cleany.dashboard.settings')!))).toEqual({...original,refreshSeconds:'30',defaultPriority:'HIGH'});
+ await page.goto('/'); await page.getByRole('button',{name:'12번 좌석 · 비어 있음'}).click();
+ await expect(page.getByRole('radio',{name:'높음'})).toBeChecked();
 });
 
 test('shared controls and status badges have the same visual roles across pages', async ({page}) => {

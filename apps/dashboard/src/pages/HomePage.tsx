@@ -67,13 +67,13 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
         <section className="home-map-panel" aria-label="시설 지도">
           <HomeMapHeader slam={!isDemo && !!floor.mapRef && floor.mapRef !== "facility-18f"} seats={displaySeats} mapAvailable={floor.mapAvailable}
             unavailable={isLoading || !!error}>
-              {isDemo ? <span className="home-telemetry-status" role="status">{isRecording ? "촬영용 이동 · 실제 로봇 미연동" : "예시 위치 · 실제 로봇 미연동"}</span> : <span className={"home-telemetry-status " + (livePose.connected ? "is-connected" : "is-disconnected")} role="status">
-                SSE {livePose.connected ? "연결됨" : "연결 끊김"} · 위치 {livePose.pose ? (livePose.stale ? "지연" : "최신") : "대기 중"}
-                {robots[0]?.control_mode && <> · {robots[0].control_mode === "mock" ? "Backend 모의 실행" : robots[0].state === "OFFLINE" ? "로봇 연결 끊김" : "로봇 연결됨"}</>}
+              {isDemo ? <span className="home-telemetry-status" role="status">{isRecording ? "촬영 위치" : "예시 위치"}</span> : <span className={"home-telemetry-status " + (livePose.connected ? "is-connected" : "is-disconnected")} role="status">
+                대시보드 {livePose.connected ? "연결됨" : "연결 끊김"} · 위치 {livePose.pose ? (livePose.stale ? "지연" : "최신") : "대기 중"}
+                {robots[0]?.control_mode && <> · {robots[0].control_mode === "mock" ? "모의 실행" : robots[0].state === "OFFLINE" ? "로봇 연결 끊김" : "로봇 연결됨"}</>}
               </span>}
               {summaryDemo && <Button variant="secondary" size="default" className="summary-demo-exit" type="button" title="화면용 예시 데이터입니다. 데모에서는 작업 요청이 전송되지 않습니다." onClick={() => setSearchParams(current => { const next = new URLSearchParams(current); next.delete("summaryDemo"); return next; })}>데모 · 해제</Button>}
           </HomeMapHeader>
-          {error && <div className="home-data-error" role="alert"><span>데이터를 갱신하지 못했습니다. {error.message}</span><Button variant="secondary" size="default" type="button" onClick={() => void refresh()}>새로고침</Button></div>}
+          {error && <div className="home-data-error" role="alert"><span>갱신 실패 · {error.message}</span><Button variant="secondary" size="default" type="button" onClick={() => void refresh()}>새로고침</Button></div>}
           <div className="home-map-content">
         <aside className={"home-robot-panel" + (selectedRobot ? " is-hidden" : "")} aria-label="로봇 목록" inert={!!selectedRobot} aria-hidden={!!selectedRobot}>
           <div className="home-robot-heading"><h2>로봇 목록</h2><span>{robots.length}대</span></div>
@@ -107,7 +107,7 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
             overlayInsetLeft={320}
             onSelectSeat={selectSeat} selectedRobotId={selectedRobotId}
             onSelectRobot={selectRobot} robotFocusKey={robotFocusKey} seatSelectionDisabled={isLoading || !!error || isCreatingMission}
-          /> : <div className="floor-map-empty"><span>19F</span><h2>19층 지도 연결 전</h2><p>상단의 운영 층에서 18층을 선택하면 좌석 지도를 볼 수 있습니다.</p></div>}
+          /> : <div className="floor-map-empty"><span>19F</span><h2>19층 지도 연결 전</h2></div>}
         <MapOverlayPanel className="home-request-drawer" open={!!selectedSeat}>
           {(selectedSeat || closingSeat) && floor.mapAvailable && <SeatMissionPanel key={(selectedSeat || closingSeat)!.seat_id} seat={(selectedSeat || closingSeat)!} unavailable={!!error || isLoading || summaryDemo} onClose={closeRequest} onSubmitted={mission => onMissionSubmitted(mission.mission_id)} />}
         </MapOverlayPanel>

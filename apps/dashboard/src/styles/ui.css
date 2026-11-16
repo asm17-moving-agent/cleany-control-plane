@@ -58,6 +58,7 @@
  .ui-surface-attached { border-radius: 0; }
  :where(.ui-page-header, .home-map-header) { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 96px; padding: 20px 24px; border-bottom: 1px solid var(--color-border); background: var(--color-surface); }
  :where(.ui-page-header, .home-map-header) h2 { margin: 0; font-size: var(--text-title); line-height: 32px; font-weight: 700; letter-spacing: -.4px; }
+ .ui-page-header { min-height: 72px; padding-block: 12px; }
  .ui-page-header p { margin: 4px 0 0; font-size: var(--text-body); line-height: 20px; color: var(--color-text-muted); }
  :where(.ui-panel-header, .ops-panel-heading, .seat-mission-heading) { min-height: 56px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
  :where(.ui-panel-header h3, .ops-panel-heading h3, .seat-mission-heading h2, .home-robot-heading h2, .settings-heading h3, .panel-heading h2, .manual-control h4, .seat-layout-editor h2) { margin: 0; font-size: var(--text-panel); line-height: 24px; font-weight: 600; letter-spacing: 0; }
@@ -67,10 +68,28 @@
  :where(.settings-layout, .monitor-grid, .metric-grid) { width: 100%; gap: 20px; }
  :where(.settings-view .view-intro, .settings-layout, .monitor-metrics, .monitor-grid) { max-width: 1024px; }
  .metric-card::before { display: none; }
+ .metric-card { align-content: start; gap: 8px; }
  .metric-card strong { font-size: var(--text-title); line-height: 32px; font-weight: 600; font-variant-numeric: tabular-nums; }
  .health-visual { background: var(--color-surface-muted); border-radius: var(--radius-control); }
  .ui-panel-header.settings-heading { justify-content: flex-start; padding: 0; min-height: auto; }
  .ui-panel-header p { margin: 4px 0 0; color: var(--color-text-muted); font-size: var(--text-caption); line-height: 18px; }
+ .settings-layout { grid-template-columns: minmax(0, 1fr); max-width: 680px; margin: 0; }
+ .settings-card .field-row { min-height: 64px; margin: 0; padding: 12px 0; }
+ .settings-card .field-row:first-child { border-top: 0; padding-top: 0; }
+ .settings-card .field-row:last-child { padding-bottom: 0; }
+ .settings-actions { grid-column: 1; }
+ .ui-details { margin-block: 12px; color: var(--color-text-muted); font-size: var(--text-caption); line-height: 18px; }
+ .ui-details > summary { width: fit-content; padding-block: 4px; cursor: pointer; }
+ .ui-details-content { padding-block: 8px; font-size: var(--text-body); line-height: 20px; }
+ .ui-details-content p { margin: 0 0 8px; overflow-wrap: anywhere; }
+ .ui-details code { overflow-wrap: anywhere; }
+ .ui-details .ops-facts { margin-block: 0; }
+ .workspace-empty > p { margin: 0 0 12px; }
+ .manual-control > header { margin-bottom: 16px; }
+ .manual-stop-status dd { font-weight: 600; }
+ .manual-message { margin: 12px 0; }
+ .manual-feedback .ui-details { margin-block: 8px; }
+ .metric-card .ui-details { margin-bottom: 0; }
  .settings-save { min-height: var(--control-default); width: auto; }
  :where(.ui-field, .auth-field) { align-content: start; display: grid; gap: 8px; }
  :where(.ui-field label, .auth-field label, .field-row strong, .switch-row strong, .field-caption, .mission-priority legend) { font-size: var(--text-caption); line-height: 18px; font-weight: 600; color: var(--color-text-muted); }
@@ -92,6 +111,7 @@
  :where(.ops-empty h3) { font-size: var(--text-panel); line-height: 24px; font-weight: 600; }
  :where(.workspace-empty, .ops-empty p) { font-size: var(--text-body); line-height: 20px; }
  :where(.ops-row) { min-height: 80px; padding: 16px 20px; }
+ .mission-table-row { min-height: 64px; padding-block: 12px; }
  :where(.ops-row strong, .home-robot-identity strong, .fleet-identity > strong) { font-size: var(--text-body); line-height: 20px; font-weight: 600; }
  :where(.ops-row[aria-current=true], .fleet-roster-card[aria-current=true], .home-robot-row.is-selected) { background: var(--color-action-soft); box-shadow: inset 3px 0 var(--color-action); }
  :where(.home-robot-row, .fleet-roster-card) { border-radius: var(--radius-panel); }

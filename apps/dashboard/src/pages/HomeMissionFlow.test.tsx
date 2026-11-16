@@ -60,7 +60,7 @@ it("waits for the requested assignment, opens its robot and retains the complete
   data.robots = data.robots.map(robot => robot.robot_id === "cleany-02" ? { ...robot, state: "IDLE", active_mission_id: null } : robot);
   view.rerender(<View />);
   expect(within(panel).getAllByRole("listitem").every(step => step.dataset.state === "done")).toBe(true);
-  expect(within(panel).queryByText("현재 할당된 작업이 없습니다.")).not.toBeInTheDocument();
+  expect(within(panel).queryByText("배정된 작업 없음")).not.toBeInTheDocument();
 });
 
 it("does not reopen a queued request after the operator closes its panel", async () => {

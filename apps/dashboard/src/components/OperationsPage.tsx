@@ -8,7 +8,7 @@ import { panelMotionStyle } from "./panel-motion";
 import "./operations-page.css";
 
 export function OperationsPage({ title, description, action, children, className = "" }: {
-  title: string; description: string; action?: ReactNode; children: ReactNode; className?: string;
+  title: string; description?: string; action?: ReactNode; children: ReactNode; className?: string;
 }) {
   return <section className={`ops-page ${className}`} style={panelMotionStyle}>
     <PageHeader title={title} description={description} action={action} />
@@ -25,7 +25,7 @@ export function OperationsTabs({ label, tabs }: {
   </Link>)}</nav>;
 }
 
-const phaseLabels = { QUEUED: "대기", OFFERED: "배정 확인 중", ACCEPTED: "작업 준비", NAVIGATING: "이동 중", WORKING: "작업 중", RETURNING: "복귀 중", TERMINAL: "종료" };
+export const phaseLabels = { QUEUED: "대기", OFFERED: "배정 확인 중", ACCEPTED: "작업 준비", NAVIGATING: "이동 중", WORKING: "작업 중", RETURNING: "복귀 중", TERMINAL: "종료" };
 export function MissionStatusBadge({ mission }: { mission: Mission }) {
   const tone = mission.phase === "TERMINAL" ? mission.outcome === "SUCCESS" ? "success" : needsResultReview(mission) ? missionTone(mission) : "neutral"
     : ["QUEUED", "OFFERED", "ACCEPTED"].includes(mission.phase) ? "waiting" : "info";

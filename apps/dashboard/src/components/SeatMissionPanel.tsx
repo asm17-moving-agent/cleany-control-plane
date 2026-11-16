@@ -63,7 +63,7 @@ export function SeatMissionPanel({ seat, unavailable, onClose, onSubmitted }: {
             <p>{seatZoneLabel(seat)} <span>·</span> {seatOccupancyLabel(seat)}</p>
           </section>
           <div className="mission-readonly-field"><span className="field-caption" id="dispatch-label">로봇</span>
-            <output aria-labelledby="dispatch-label"><span>자동 할당</span><small>등록 {robots.length}대</small></output>
+            <output aria-labelledby="dispatch-label"><span>자동 할당</span></output>
           </div>
           <div className="mission-readonly-field"><span className="field-caption" id="command-label">명령</span>
             <output aria-labelledby="command-label">책상 위 물체 확인 및 정리</output>
@@ -75,7 +75,7 @@ export function SeatMissionPanel({ seat, unavailable, onClose, onSubmitted }: {
                 onChange={() => { setPriority(option.value); attempt.current = null; setMessage(""); setFailed(false); }} /><span>{option.label}</span></label>
             ))}</div>
           </fieldset>
-          <p className="mission-queue-note">요청은 대기열에 등록됩니다.<br />진행 중인 작업을 중단하지 않습니다.</p>
+          <p className="mission-queue-note">대기열 등록 · 진행 중인 작업 유지</p>
         </div>
         <div className="seat-mission-submit">
           {message && <Notice tone={failed ? "danger" : "success"} role={failed ? "alert" : "status"} className={failed ? "request-feedback is-error" : "request-feedback"}>{message}</Notice>}

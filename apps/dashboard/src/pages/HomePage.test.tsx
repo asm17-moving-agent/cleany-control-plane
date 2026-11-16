@@ -27,7 +27,7 @@ it("opens robot details from the roster and map and closes without leaving home"
  let panel = screen.getByRole("complementary", { name: "로봇 상세" });
  expect(within(panel).getByRole("figure", { name: "Cleany 외형 미리보기" })).toBeInTheDocument();
  expect(within(panel).getByText("미연동")).toBeInTheDocument();
- expect(within(panel).getByText("현재 할당된 작업이 없습니다.")).toBeInTheDocument();
+ expect(within(panel).getByText("배정된 작업 없음")).toBeInTheDocument();
  fireEvent.click(within(panel).getByRole("button", { name: "로봇 목록" }));
  expect(screen.queryByRole("complementary", { name: "로봇 상세" })).not.toBeInTheDocument();
  fireEvent.click(screen.getByRole("button", { name: "cleany-01 로봇 · 대기 · 실시간 위치" }));

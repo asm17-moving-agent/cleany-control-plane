@@ -21,6 +21,12 @@ test("request", async ({ page }, testInfo) => {
 });
 test("robot drawer", async ({ page }, testInfo) => {
   await page.goto("/?demo=1");
+  // Finish the initial map paint before focusing/zooming it. Otherwise Chromium can
+  // retain a different SVG text raster when the floorplan decodes during the zoom.
+  await page.locator("img.facility-plan-artwork").evaluate(async element => {
+    await (element as HTMLImageElement).decode();
+    await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+  });
   await page.getByRole("button", { name: "cleany-01 상세 열기" }).click();
   await expect(page.getByRole("complementary", { name: "로봇 상세", exact: true })).toBeVisible();
   await capture(page, testInfo, "robot-drawer");
@@ -33,7 +39,7 @@ test("menu", async ({ page }, testInfo) => {
 });
 test("empty", async ({ page }, testInfo) => {
   await page.goto("/missions");
-  await expect(page.getByRole("heading", { name: "표시할 작업 요청이 없습니다" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "작업 요청 없음" })).toBeVisible();
   await capture(page, testInfo, "empty");
 });
 
@@ -53,7 +59,7 @@ test("manual and camera", async ({ page }, testInfo) => {
 test("data error", async ({ page }, testInfo) => {
   await page.route('**/api/missions?*', route => route.fulfill({status:503,json:{detail:'fixture unavailable'}}));
   await page.goto('/missions');
-  await expect(page.getByText('작업 요청을 불러오지 못했습니다. 새로고침해 주세요.')).toBeVisible();
+  await expect(page.getByText('작업 목록을 불러올 수 없음')).toBeVisible();
   await capture(page, testInfo, 'data-error');
 });
 test("loading", async ({ page }, testInfo) => {

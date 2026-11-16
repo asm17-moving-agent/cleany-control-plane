@@ -94,7 +94,7 @@ export function AppShell() {
           </div>
         </div>
       </header>
-      {isDemo && <div className="workspace-demo-banner" role="status"><span><strong>{isRecording ? "촬영 모드" : "예시 데이터"}</strong> {isRecording ? "좌석 요청 → 이동 → 작업 → 복귀 · 실제 로봇에는 전송하지 않습니다. 새로고침하면 초기화됩니다." : "로봇 3대 · 요청 7건 · 결과 사진은 AI 생성 이미지입니다. 작업 요청·취소는 전송되지 않습니다."}</span><Button variant="secondary" size="default" type="button" onClick={() => setDemoMode(false)}>실제 데이터로 돌아가기 <ChevronIcon /></Button></div>}
+      {isDemo && <div className="workspace-demo-banner" role="status"><span><strong>{isRecording ? "촬영 모드" : "예시 데이터"}</strong> · 실제 명령 미전송{isRecording && " · 새로고침 시 초기화"}</span><Button variant="secondary" size="default" type="button" onClick={() => setDemoMode(false)}>실제 데이터로 돌아가기 <ChevronIcon /></Button></div>}
       <main className={"control-main" + (isHome ? " is-home" : "")}>
         {!isHome && <h1 className="sr-only">{titles[location.pathname]}</h1>}
         {!isHome && !hasPageError && error && <div className="workspace-api-error" role="alert">데이터를 갱신하지 못했습니다. {error.message}</div>}
