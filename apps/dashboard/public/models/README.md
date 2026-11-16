@@ -57,3 +57,27 @@ display-only enclosure, arm covers, couplers, wordmark and front sensor openings
 These concept shapes are generated separately by `RobotExterior.ts`,
 `RobotArmCovers.ts` and `RobotSensorOpenings.ts`; they do
 not alter the pinned CAD or claim confirmed manufacturing specifications.
+
+## 관절별 Digital Twin
+
+`cleany-c32c3074-articulated.glb`는 위 정적 CAD와 같은 원본의378개 형상을 몸체 계층으로
+묶은 파생 모델입니다. 원본 파일과 기존 합본 GLB는 바꾸지 않았습니다. 색상별 합본 대신
+92개 draw mesh를 사용하며591,768개 삼각형을 유지합니다. 원본 SHA-256과 관절 축,
+피벗, 기준 qpos, 한계는 같은 이름의 JSON에 기록합니다. 렌더러용 매핑은
+`src/components/robot-twin-rig.json`이며 GLB 해시가 같아야 합니다.
+
+```bash
+OPENBLAS_CORETYPE=ARMV8 uv run --with mujoco==3.12.0 --with trimesh==4.12.2 \
+  --with fast-simplification==0.1.13 python tools/export_articulated_robot.py \
+  /path/to/cleany-at-c32c3074 /new/output/cleany-c32c3074-articulated.glb
+```
+
+저장소 루트에서 실행합니다. ARMV8 설정은 aarch64 호스트의 OpenBLAS CPU 자동 선택 문제를
+피하며 x86 환경에서는 생략합니다. 동역학용 actuator/sensor를 메모리 사본에서 제외하고
+원본 geometry, body, joint의 정기구학만 계산합니다. 파일을 덮어쓰지 않습니다.
+관절별 독립 perturbation의 모든 몸체 변환을 MuJoCo FK와 비교합니다. 이 검사는 관절
+변환 코드의 합성 검증이며 실제 장치 영점이나 가동 증거가 아닙니다.
+
+현재 원본의 양쪽 gripper joint는 사실상0 범위의 고정 카메라 툴입니다. 이 두 관절은
+모델에서 회전시키지 않고 UI에 실제 수신값을 표시합니다. 실제 개폐 형상이 필요한 하드웨어에는
+그 description에 맞는 CAD가 필요합니다. 누락되거나 이름이 다른 관절을 추정하지 않습니다.

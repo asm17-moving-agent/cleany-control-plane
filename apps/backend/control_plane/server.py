@@ -7,7 +7,7 @@ import json
 import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager, suppress
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 from time import monotonic, time
 
@@ -34,6 +34,7 @@ from control_plane.maps import SlamMap, load_map, map_directory
 from control_plane.mock.dispatcher import MockDispatcher
 from control_plane.mock.fixtures import SEATS
 from control_plane.persistence import SQLiteRepository
+from control_plane.robot_observations import RobotObservations
 from control_plane.schemas import (
     HealthResponse,
     MissionListResponse,
@@ -57,6 +58,7 @@ from control_plane.seat_layouts import (
     target_export,
 )
 from control_plane.settings import Settings
+from control_plane.telemetry_models import RobotAnalytics, RobotObservation, RobotTelemetrySnapshot
 
 
 class ControlPlaneApplication:
@@ -72,6 +74,15 @@ class ControlPlaneApplication:
         self._dispatcher: MockDispatcher | None = None
         self.start_dispatcher = start_dispatcher
         self._accounts: Accounts | None = None
+        self._telemetry: RobotObservations | None = None
+
+    @property
+    def telemetry(self) -> RobotObservations:
+        if self._telemetry is None:
+            self._telemetry = RobotObservations(
+                self.store, self.settings, self.accounts.robot_scope
+            )
+        return self._telemetry
 
     @property
     def store(self) -> ControlPlaneStore:
@@ -202,6 +213,7 @@ def create_app(
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         _ = control_plane.store
+        _ = control_plane.telemetry
         mock = control_plane.start_dispatcher and control_plane.settings.robot_mode == "mock"
         if mock:
             control_plane.dispatcher.start()
@@ -213,15 +225,29 @@ def create_app(
                     control_plane.gateway.tick()
                 await asyncio.sleep(control_plane.settings.gateway_tick_interval_seconds)
 
+        async def observation_maintenance() -> None:
+            while True:
+                try:
+                    control_plane.telemetry.tick()
+                except Exception:
+                    # Observation storage must not stop Gateway expiry or mission admission.
+                    logging.getLogger(__name__).exception("Robot observation maintenance failed")
+                await asyncio.sleep(control_plane.settings.telemetry_activity_sample_seconds)
+
         task = asyncio.create_task(maintenance())
+        observation_task = asyncio.create_task(observation_maintenance())
         try:
             yield
         finally:
             task.cancel()
+            observation_task.cancel()
             with suppress(asyncio.CancelledError):
                 await task
+            with suppress(asyncio.CancelledError):
+                await observation_task
             if mock:
                 control_plane.dispatcher.stop()
+            control_plane.telemetry.unsubscribe()
             if control_plane.store.repository:
                 control_plane.store.repository.close()
 
@@ -351,7 +377,8 @@ def create_app(
         with control_plane.store._lock:
             review = control_plane.accounts.db.execute(
                 "SELECT reviewed_at,reviewed_by,reviewer_name FROM mission_reviews "
-                "WHERE mission_id=?", (mission.mission_id,),
+                "WHERE mission_id=?",
+                (mission.mission_id,),
             ).fetchone()
         if review:
             result.review = MissionReviewResponse(
@@ -592,6 +619,66 @@ def create_app(
             items=[control_plane.store.robot] if robot_visible(request) else []
         )
 
+    def observation_scope(robot_id: str, request: Request):
+        scope = (request.state.identity.customer_id, selected_site(request))
+        if control_plane.accounts.robot_scope(robot_id) != scope:
+            raise HTTPException(404, "robot not found")
+        return scope
+
+    @app.get("/api/robots/{robot_id}/telemetry", response_model=RobotTelemetrySnapshot)
+    def robot_telemetry(robot_id: str, request: Request):
+        return control_plane.telemetry.snapshot(robot_id, observation_scope(robot_id, request))
+
+    @app.get("/api/robots/{robot_id}/analytics", response_model=RobotAnalytics)
+    def robot_analytics(
+        robot_id: str, request: Request, start: datetime, end: datetime, before: str | None = None
+    ):
+        scope = observation_scope(robot_id, request)
+        try:
+            return control_plane.telemetry.analytics(robot_id, scope, start, end, before)
+        except (ValueError, OverflowError) as error:
+            raise HTTPException(422, str(error)) from error
+
+    @app.websocket("/api/robots/{robot_id}/telemetry/ws")
+    async def robot_observations(robot_id: str, websocket: WebSocket):
+        if not robot_auth(websocket, robot_id):
+            await websocket.close(code=1008, reason="device authentication required")
+            return
+        scope = control_plane.accounts.robot_scope(robot_id)
+        session = control_plane.telemetry.claim(robot_id, scope)
+        if not session:
+            await websocket.close(code=1008, reason="telemetry producer already connected")
+            return
+        try:
+            await accept_robot(websocket)
+            while True:
+                if (
+                    not robot_auth(websocket, robot_id)
+                    or control_plane.accounts.robot_scope(robot_id) != scope
+                ):
+                    await websocket.close(code=1008, reason="device access changed")
+                    return
+                try:
+                    raw = await asyncio.wait_for(
+                        websocket.receive_text(),
+                        timeout=control_plane.settings.telemetry_receive_timeout_seconds,
+                    )
+                    if len(raw) > 262144:
+                        raise ValueError("telemetry frame too large")
+                    frame = RobotObservation.model_validate_json(raw)
+                except TimeoutError:
+                    await websocket.close(code=1001, reason="telemetry receive timeout")
+                    return
+                except (ValueError, TypeError, KeyError):
+                    await websocket.close(code=1003, reason="invalid telemetry observation")
+                    return
+                accepted = control_plane.telemetry.receive(robot_id, scope, session, frame)
+                await websocket.send_json({"sequence": frame.sequence, "accepted": accepted})
+        except WebSocketDisconnect:
+            pass
+        finally:
+            control_plane.telemetry.release(robot_id, session)
+
     # A device token and sole connection ownership are required; ACKs follow committed receipt.
     @app.websocket("/api/robots/{robot_id}/gateway/ws")
     async def robot_gateway(robot_id: str, websocket: WebSocket) -> None:
@@ -645,14 +732,21 @@ def create_app(
 
     def pending_work(request: Request) -> bool:
         with control_plane.store._lock:
-            return bool(control_plane.accounts.db.execute(
-                "SELECT 1 FROM missions WHERE customer_id=? AND site_id=? "
-                "AND json_extract(payload,'$.phase')!='TERMINAL' LIMIT 1",
-                (request.state.identity.customer_id, selected_site(request)),
-            ).fetchone())
+            return bool(
+                control_plane.accounts.db.execute(
+                    "SELECT 1 FROM missions WHERE customer_id=? AND site_id=? "
+                    "AND json_extract(payload,'$.phase')!='TERMINAL' LIMIT 1",
+                    (request.state.identity.customer_id, selected_site(request)),
+                ).fetchone()
+            )
 
-    @app.get("/api/robots/{robot_id}/camera/head", response_class=Response,
-             responses={200: {"content": {"image/jpeg": {"schema": {"type": "string", "format": "binary"}}}}})
+    @app.get(
+        "/api/robots/{robot_id}/camera/head",
+        response_class=Response,
+        responses={
+            200: {"content": {"image/jpeg": {"schema": {"type": "string", "format": "binary"}}}}
+        },
+    )
     async def head_camera_frame(robot_id: str, request: Request):
         manual_scope(robot_id, request)
         return await control_plane.head_camera.frame()
@@ -660,7 +754,14 @@ def create_app(
     @app.get("/api/robots/{robot_id}/manual/status", response_model=ManualStatus)
     async def manual_status(robot_id: str, request: Request):
         manual_scope(robot_id, request)
-        return await control_plane.manual.status(pending_work(request))
+        result = await control_plane.manual.status(pending_work(request))
+        blocked = control_plane.telemetry.manual_block(
+            robot_id, observation_scope(robot_id, request)
+        )
+        if blocked:
+            result.ready = False
+            result.blocked_reason = blocked
+        return result
 
     @app.post("/api/robots/{robot_id}/manual/control", response_model=ManualStatus)
     async def manual_command(robot_id: str, input: ManualCommand, request: Request):
@@ -674,6 +775,11 @@ def create_app(
             control_plane.accounts.authenticate(request.cookies[cookie_name])
             if pending_work(request):
                 raise HTTPException(409, "대기 또는 진행 중인 작업을 종료한 뒤 조종하세요.")
+            blocked = control_plane.telemetry.manual_block(
+                robot_id, observation_scope(robot_id, request)
+            )
+            if blocked:
+                raise HTTPException(409, blocked)
             return await control_plane.manual.command(input, session_key)
 
     @app.get("/api/robots/cleany-01/pose", response_model=PoseSnapshot)
@@ -757,8 +863,18 @@ def create_app(
                 "OR (?=date('now','+9 hours') AND json_extract(payload,'$.phase')!='TERMINAL' "
                 "AND date(json_extract(payload,'$.created_at'),'+9 hours')<?)) "
                 "ORDER BY json_extract(payload,'$.created_at') DESC,mission_id DESC LIMIT ?",
-                (request.state.identity.customer_id, site_id, before, before,
-                 selected_day, selected_day, selected_day, selected_day, selected_day, limit),
+                (
+                    request.state.identity.customer_id,
+                    site_id,
+                    before,
+                    before,
+                    selected_day,
+                    selected_day,
+                    selected_day,
+                    selected_day,
+                    selected_day,
+                    limit,
+                ),
             ).fetchall()
             items = [control_plane.store.get_mission(row[0]) for row in rows]
         return MissionListResponse(items=[public_mission(item) for item in items])

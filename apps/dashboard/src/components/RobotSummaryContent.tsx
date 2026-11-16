@@ -6,8 +6,8 @@ import { ChevronIcon } from "./WorkspaceIcons";
 import "./robot-summary.css";
 
 /** Shared presentation; the caller retains button selection or link navigation semantics. */
-export function RobotSummaryContent({ robot, assignment }: { robot: Robot; assignment?: string }) {
+export function RobotSummaryContent({ robot, assignment, showBattery = true }: { robot: Robot; assignment?: string; showBattery?: boolean }) {
   return <><span className="robot-summary-thumbnail"><img src={ROBOT_MODEL.poster} alt="" width="56" height="64" /></span>
-    <span className="robot-summary-copy"><strong>{robot.robot_id}</strong><RobotStateBadge state={robot.state} />{assignment && <small>{assignment}</small>}<BatteryStatus compact /></span>
+    <span className="robot-summary-copy"><strong>{robot.robot_id}</strong><RobotStateBadge state={robot.state} />{assignment && <small>{assignment}</small>}{showBattery && <BatteryStatus compact />}</span>
     <ChevronIcon aria-hidden="true" /></>;
 }

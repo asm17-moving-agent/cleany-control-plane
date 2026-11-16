@@ -13,6 +13,8 @@ async function fixtureApi(page: Page, robotCount = 1) {
     if (path === "/api/sites") return route.fulfill({ json: { items: [{
       site_id: "preview-site", display_name: "Preview", map_ref: "facility-18f",
     }] } });
+    if (path.endsWith('/telemetry')) return route.fulfill({json:{robot_id:'cleany-01',connected:false,samples:{},poll_interval_ms:200}});
+    if (path.endsWith('/analytics')) return route.fulfill({json:{robot_id:'cleany-01',start:new Date().toISOString(),end:new Date().toISOString(),window_seconds:0,observed_seconds:0,activities:[],battery:[],events:[],next_event_cursor:null,provenance:[],retention_days:90}});
     if (path === "/api/events/stream") return route.fulfill({ contentType: "text/event-stream", body: ": connected\n\n" });
     return route.fulfill({ json: { items: path === "/api/robots" ? Array.from({ length: robotCount }, (_, index) => ({
       robot_id: "cleany-" + String(index + 1).padStart(2, "0"), state: "IDLE", active_mission_id: null, last_seen_at: "2026-09-08T10:00:00Z",
@@ -201,11 +203,12 @@ test("home roster stays static while the detail model supports dragging and tear
   await expect(page.locator(".robot-model-card, .robot-model-canvas canvas")).toHaveCount(0);
 });
 
-test("robot detail extends a two-headed arc with its outward turn and return, then yields to dragging", async ({ page }) => {
+test("map detail extends a two-headed arc with its outward turn and return, then yields to dragging", async ({ page }) => {
   test.setTimeout(45000);
   await fixtureApi(page);
-  await page.goto("/robots?renderStats=1");
-  const card = page.locator(".fleet-preview .robot-model-card");
+  await page.goto("/map?renderStats=1");
+  await page.getByRole("button",{name:"cleany-01 상세 열기"}).click();
+  const card = page.getByRole("complementary",{name:"로봇 상세",exact:true}).locator(".robot-model-card");
   await expect(card).toHaveAttribute("data-state", "ready");
   const canvas = card.getByRole("group", { name: "Cleany 모델 회전" });
   const guide = card.locator(".robot-model-rotation-guide");
@@ -253,7 +256,7 @@ test("reduced motion suppresses the detail guide and keeps keyboard rotation", a
   await page.emulateMedia({ reducedMotion: "reduce" });
   await fixtureApi(page);
   await page.goto("/robots?renderStats=1");
-  const card = page.locator(".fleet-preview .robot-model-card");
+  const card = page.locator(".robot-twin .robot-model-card");
   await expect(card).toHaveAttribute("data-state", "ready");
   const canvas = card.getByRole("group", { name: "Cleany 모델 회전" });
   const home = await yaw(canvas);
@@ -308,4 +311,37 @@ test("leaving home during download does not resurrect its canvas", async ({ page
   await page.waitForTimeout(150);
   await expect(page.locator(".robot-model-card, .robot-model-canvas canvas")).toHaveCount(0);
   expect(errors).toEqual([]);
+});
+
+
+test("digital twin uses measured joints, holds stale poses, and supports zoom and reset", async ({page}, testInfo) => {
+  await fixtureApi(page);
+  let angle=0, stale=false, target=.9;
+  let loads=0;
+  page.on('request',r=>{if(r.url().includes('articulated.glb'))loads++;});
+  await page.route('**/api/robots/cleany-01/telemetry?*',route=>route.fulfill({json:{robot_id:'cleany-01',connected:!stale,poll_interval_ms:200,samples:Object.fromEntries(['joints','joint_targets'].map(kind=>[kind,{received_at:new Date().toISOString(),expires_at:new Date(Date.now()+3000).toISOString(),stale,observation:{schema_version:1,boot_id:'fixture',sequence:1,source_topic:'/fixture',source_stamp:1,source_age_seconds:0,provenance:'sim',sample:{kind,names:['left_wrist_roll_joint'],positions:[kind==='joints'?angle:target],ages_seconds:[0]}}}]))}}));
+  await page.goto('/robots');
+  await page.evaluate(()=>document.fonts.ready);
+  const card=page.locator('.robot-twin .robot-model-card');
+  await expect(card).toHaveAttribute('data-state','ready');
+  const canvas=card.locator('canvas');
+  await page.mouse.move(0,0);
+  const before=await canvas.screenshot();
+  angle=.8;
+  await expect.poll(async()=>!(await canvas.screenshot()).equals(before)).toBe(true);
+  const observed=await canvas.screenshot();
+  target=1.4;
+  await page.waitForTimeout(450);
+  expect((await canvas.screenshot()).equals(observed)).toBe(true);
+  stale=true;
+  await expect(page.locator('.robot-twin')).toContainText('갱신 중단');
+  expect((await canvas.screenshot()).equals(observed)).toBe(true);
+  await page.getByRole('button',{name:'모델 확대',exact:true}).click();
+  expect((await canvas.screenshot()).equals(observed)).toBe(false);
+  await page.getByRole('button',{name:'모델을 처음 각도로 되돌리기'}).click();
+  await card.getByRole('group',{name:'Cleany 모델 회전'}).evaluate(el=>(el as HTMLElement).blur());
+  await page.mouse.move(0,0);
+  await expect.poll(async()=>(await canvas.screenshot()).equals(observed)).toBe(true);
+  expect(loads).toBe(1);
+  await card.screenshot({path:testInfo.outputPath('articulated-observed.png')});
 });

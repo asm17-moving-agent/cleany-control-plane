@@ -17,7 +17,7 @@ const clampElevation = (value: number) => Math.max(MIN_ELEVATION, Math.min(MAX_E
 const samePose = (a: ModelPose, b: ModelPose) => Math.abs(a.yaw - b.yaw) < .0001
   && Math.abs(a.elevation - b.elevation) < .0001;
 
-/** Camera motion only; the CAD geometry never represents live robot state. */
+/** Camera orbit only; live joint transforms are applied separately. */
 export class RobotModelMotion {
   readonly pose: ModelPose = { ...HOME_POSE };
   private rest: ModelPose = { ...HOME_POSE };

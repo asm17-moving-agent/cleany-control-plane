@@ -63,7 +63,7 @@ test("production SPA routes and URL filters work on direct access", async ({ pag
   await expect(page.getByRole("heading", { level: 2, name: "작업" })).toBeVisible();
   await expect(page.getByLabel("작업 상태", {exact:true})).toHaveValue("SUCCESS");
   await page.goto("/robots");
-  await expect(page.getByRole("heading", { level: 2, name: "로봇 관리" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "로봇 관제" })).toBeVisible();
   await page.goto("/settings");
   await page.getByRole("button", { name: "설정 저장" }).click();
   await expect(page.getByText("저장됨")).toBeVisible();

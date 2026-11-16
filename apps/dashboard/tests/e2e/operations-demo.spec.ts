@@ -23,7 +23,7 @@ test("demo navigation loads example photos, blocks commands, and returns to live
   await page.getByRole("button", { name: "새로고침", exact: true }).click();
 
   await navigation.getByRole("link", { name: "로봇", exact: true }).click();
-  await expect(page.getByRole("heading", { level: 2, name: "로봇 관리" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "로봇 관제" })).toBeVisible();
   await page.reload();
   await expect(banner).toBeVisible();
 

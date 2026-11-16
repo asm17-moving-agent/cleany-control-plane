@@ -16,9 +16,10 @@ def test_mission_request_model_matches_canonical_contract() -> None:
 
     assert set(model["required"]) == set(contract["required"])
     assert model["$defs"]["Priority"]["enum"] == contract["properties"]["priority"]["enum"]
-    assert model["$defs"]["TargetKind"]["enum"] == contract["properties"]["target"][
-        "properties"
-    ]["kind"]["enum"]
+    assert (
+        model["$defs"]["TargetKind"]["enum"]
+        == contract["properties"]["target"]["properties"]["kind"]["enum"]
+    )
 
 
 def test_seat_model_preserves_canonical_shape() -> None:
@@ -26,9 +27,9 @@ def test_seat_model_preserves_canonical_shape() -> None:
     model = SeatResponse.model_json_schema()
 
     assert set(model["required"]) == set(contract["required"])
-    assert model["properties"]["grid_column"]["enum"] == contract["properties"]["grid_column"][
-        "enum"
-    ]
+    assert (
+        model["properties"]["grid_column"]["enum"] == contract["properties"]["grid_column"]["enum"]
+    )
     assert model["properties"]["occupancy"]["enum"] == contract["properties"]["occupancy"]["enum"]
     assert model["properties"]["zone_id"]["enum"] == contract["properties"]["zone_id"]["enum"]
     assert model["properties"]["seat_id"]["pattern"] == contract["properties"]["seat_id"]["pattern"]
@@ -68,11 +69,31 @@ def test_published_account_examples_match_api_models() -> None:
 def test_workspace_example_preserves_robot_outcome_after_operator_review() -> None:
     from control_plane.schemas import MissionListResponse
 
-    example = json.loads(
-        (CONTRACT_ROOT.parent / "examples" / "mission-workspace.json").read_text()
-    )
+    example = json.loads((CONTRACT_ROOT.parent / "examples" / "mission-workspace.json").read_text())
     mission = MissionListResponse.model_validate(example["day_response"]).items[0]
     assert mission.review.reviewed_by == "sample-reviewer"
     assert mission.outcome == "FAILED" and mission.needs_human_review
     assert mission.failure_code == "OBJECT_REMAINING"
     assert mission.robot_id == "cleany-01"
+
+
+def test_robot_observation_examples_match_published_schema():
+    from control_plane.telemetry_models import RobotObservation
+
+    assert read_contract("robot-observation.schema.json") == RobotObservation.model_json_schema()
+    examples = json.loads(
+        (CONTRACT_ROOT.parent / "examples" / "robot-observations-v1.json").read_text()
+    )
+    assert {e["sample"]["kind"] for e in examples} == {
+        "battery",
+        "joints",
+        "joint_targets",
+        "base",
+        "supervisor_state",
+        "supervisor_faults",
+        "supervisor_recoveries",
+        "supervisor_event",
+        "safety",
+    }
+    for example in examples:
+        RobotObservation.model_validate(example)

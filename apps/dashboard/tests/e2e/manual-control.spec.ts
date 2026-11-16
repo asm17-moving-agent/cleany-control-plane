@@ -13,6 +13,9 @@ test('manual controls hold, stop on release/blur/navigation, and never transmit 
   await page.getByLabel('비밀번호', {exact:true}).fill('e2e-operator-password-2026');
   await page.getByRole('button',{name:'로그인',exact:true}).click();
   await page.getByRole('link',{name:'로봇',exact:true}).click();
+  await expect(page.locator('.manual-control')).toHaveCount(0);
+  await page.getByRole('button',{name:'수동 조종',exact:true}).click();
+  await page.getByRole('button',{name:'조종 시작',exact:true}).click();
   const panel = page.getByRole('region',{name:'수동 조종',exact:true});
   const forward = panel.getByRole('application',{name:'이동 조이스틱',exact:true});
   await expect(forward).toHaveAttribute('aria-disabled', 'false');
@@ -65,6 +68,7 @@ test('manual controls hold, stop on release/blur/navigation, and never transmit 
   await page.keyboard.up('ArrowUp');
   const beforeDemo=commands.length;
   await page.goto('/robots?demo=1');
+  await page.getByRole('button',{name:'수동 조종',exact:true}).click();
   await expect(page.getByRole('application',{name:'이동 조이스틱',exact:true})).toHaveAttribute('aria-disabled', 'true');
   await page.waitForTimeout(300);
   expect(commands).toHaveLength(beforeDemo);
@@ -76,9 +80,9 @@ test('unavailable controller displays disabled inputs', async ({page},testInfo)=
   await page.getByLabel('비밀번호',{exact:true}).fill('e2e-operator-password-2026');
   await page.getByRole('button',{name:'로그인',exact:true}).click();
   await page.getByRole('link',{name:'로봇',exact:true}).click();
-  const panel=page.getByRole('region',{name:'수동 조종',exact:true});
-  await expect(panel.getByText('연결 확인 중')).toHaveCount(0);
-  await expect(panel.getByRole('application',{name:'이동 조이스틱',exact:true})).toHaveAttribute('aria-disabled', 'true');
-  await panel.scrollIntoViewIfNeeded();
+  await page.getByRole('button',{name:'수동 조종',exact:true}).click();
+  await expect(page.getByRole('button',{name:'조종 시작',exact:true})).toBeDisabled();
+  await expect(page.locator('.manual-control')).toHaveCount(0);
+  await expect(page.getByRole('button',{name:'정지 요청',exact:true})).toBeDisabled();
   await page.screenshot({path:testInfo.outputPath('manual-unavailable.png'),fullPage:true});
 });

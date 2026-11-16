@@ -36,7 +36,7 @@ test('shared controls and status badges have the same visual roles across pages'
  let reference: string[] | undefined;
  for (const route of ['/missions','/results','/robots']) {
   await page.goto(route); await page.evaluate(()=>document.fonts.ready);
-  const button=page.getByRole('button',{name:'새로고침'});
+  const button=page.locator('.ui-page-header').getByRole('button',{name:'새로고침'});
   await expect(button).toBeVisible();
   const style=await button.evaluate(el=>{const s=getComputedStyle(el);return [s.height,s.fontFamily,s.fontSize,s.fontWeight,s.borderRadius,s.backgroundColor];});
   expect(style[0]).toBe('40px');expect(style[2]).toBe('14px');expect(style[3]).toBe('600');expect(style[4]).toBe('8px');
@@ -80,11 +80,15 @@ test('page shells share title alignment, spacing and deliberate width variants',
    await expect(header).toHaveCSS('border-bottom-width','0px');
    const main=page.locator('.control-main');await expect(main).toHaveCSS('padding',width<1280?'16px':'24px');
    if(route==='/robots') {
-    const camera=page.locator('.head-camera');const controls=page.locator('.manual-body');
+    await expect(page.locator('.manual-body')).toHaveCount(0);
+    await expect(page.locator('.robot-twin .robot-model-stage')).toHaveCSS('height','280px');
+    await page.getByRole('button',{name:'수동 조종',exact:true}).click();
+    const manual=page.getByRole('region',{name:'수동 조종',exact:true});
+    await expect(manual).toBeVisible();
+    const camera=manual.locator('.head-camera');const controls=manual.locator('.manual-body');
     const cam=await camera.boundingBox(),input=await controls.boundingBox();
     if(width>=1280) {expect(input!.x).toBeGreaterThan(cam!.x+cam!.width);expect(Math.abs(input!.y-cam!.y)).toBeLessThan(1);}
     else expect(input!.y).toBeGreaterThan(cam!.y+cam!.height);
-    await expect(page.locator('.fleet-preview .robot-model-stage')).toHaveCSS('height',width<1280?'180px':'200px');
     const stop=page.locator('.manual-stop');await expect(stop).toHaveCSS('height','48px');
     await stop.scrollIntoViewIfNeeded();
     const stopBox=await stop.boundingBox();expect(stopBox!.y+stopBox!.height).toBeLessThanOrEqual(1080);

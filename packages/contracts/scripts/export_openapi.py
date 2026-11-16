@@ -10,6 +10,7 @@ from pathlib import Path
 
 from control_plane.gateway_protocol import BACKEND_MESSAGE, ROBOT_MESSAGE
 from control_plane.server import create_app
+from control_plane.telemetry_models import RobotObservation
 
 
 def main() -> None:
@@ -24,6 +25,7 @@ def main() -> None:
         / "schemas/gateway-robot-message.schema.json": ROBOT_MESSAGE.json_schema(),
         contract_root
         / "schemas/gateway-backend-message.schema.json": BACKEND_MESSAGE.json_schema(),
+        contract_root / "schemas/robot-observation.schema.json": RobotObservation.model_json_schema(),
     }
     for path, document in outputs.items():
         content = (

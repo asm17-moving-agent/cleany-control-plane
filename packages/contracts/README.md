@@ -80,3 +80,18 @@ Robot의 `last_seen_at`은 첫 런타임 상태 수신 전 `null`이다.
 `pnpm contracts`는 OpenAPI, 양방향 Gateway schema와 TypeScript를 생성한다.
 `pnpm contracts:check`는 임시 TypeScript 생성물을 비교하므로 파일을 변경하지 않고,
 미커밋 변경이 있어도 생성물의 최신 상태를 검증할 수 있다.
+
+## 로봇 관측
+
+[robot-observation.schema.json](schemas/robot-observation.schema.json)은 관측 WebSocket
+입력 계약입니다. 한 frame은256KiB 이하입니다. [예시](examples/robot-observations-v1.json)는 합성 입력이며 실제 측정이 아닙니다.
+`boot_id`와 증가하는 `sequence`로 중복을 막고 `source_stamp`는 ROS clock,
+`source_age_seconds`는 전송 시점까지 이미 경과한 시간을 사용합니다. 관절의
+`ages_seconds`는 해당 frame의 가장 최신 원본 시각에서 각 관절까지의 추가 나이입니다.
+명령 목표 `joint_targets`는 실측 `joints`를 대체할 수 없습니다. 관절 단위와 이름은
+원본 Robot description을 따르며 회전 rad, 직선 m입니다. `base`의 위치는 m,
+속도는 m/s와 rad/s이며 frame을 바꾸거나 지도 좌표로 추정하지 않습니다.
+
+HTTP `RobotTelemetrySnapshot`과 `RobotAnalytics`는 OpenAPI에서 생성합니다. 최신 값,
+유효기간, 출처, 이력의 빈 구간을 보존합니다. 분석 API와 장치 인증 범위는 Backend
+README를 따릅니다. 이 계약은 명령, Mission 허가, 취소, e-stop 계약을 대체하지 않습니다.

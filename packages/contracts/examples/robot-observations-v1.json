@@ -1,0 +1,174 @@
+[
+  {
+    "schema_version": 1,
+    "boot_id": "example-boot",
+    "sequence": 1,
+    "source_topic": "/example/battery",
+    "source_stamp": 1794873600.0,
+    "source_age_seconds": 0.01,
+    "provenance": "sim",
+    "sample": {
+      "kind": "battery",
+      "percentage": 73.0,
+      "voltage": 24.1,
+      "charging": "DISCHARGING"
+    }
+  },
+  {
+    "schema_version": 1,
+    "boot_id": "example-boot",
+    "sequence": 2,
+    "source_topic": "/example/joints",
+    "source_stamp": 1794873600.01,
+    "source_age_seconds": 0.01,
+    "provenance": "sim",
+    "sample": {
+      "kind": "joints",
+      "names": [
+        "left_gripper_joint",
+        "front_left_wheel_joint"
+      ],
+      "positions": [
+        0.2,
+        1.8
+      ],
+      "ages_seconds": [
+        0.1,
+        0.0
+      ]
+    }
+  },
+  {
+    "schema_version": 1,
+    "boot_id": "example-boot",
+    "sequence": 3,
+    "source_topic": "/example/joint_targets",
+    "source_stamp": 1794873600.02,
+    "source_age_seconds": 0.01,
+    "provenance": "sim",
+    "sample": {
+      "kind": "joint_targets",
+      "names": [
+        "left_gripper_joint"
+      ],
+      "positions": [
+        0.8
+      ],
+      "ages_seconds": [
+        0.0
+      ]
+    }
+  },
+  {
+    "schema_version": 1,
+    "boot_id": "example-boot",
+    "sequence": 4,
+    "source_topic": "/example/base",
+    "source_stamp": 1794873600.03,
+    "source_age_seconds": 0.01,
+    "provenance": "sim",
+    "sample": {
+      "kind": "base",
+      "frame_id": "odom",
+      "child_frame_id": "base_link",
+      "position": [
+        1.2,
+        0.4,
+        0.0
+      ],
+      "orientation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "linear_velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "angular_velocity": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  {
+    "schema_version": 1,
+    "boot_id": "example-boot",
+    "sequence": 5,
+    "source_topic": "/example/supervisor_state",
+    "source_stamp": 1794873600.04,
+    "source_age_seconds": 0.01,
+    "provenance": "sim",
+    "sample": {
+      "kind": "supervisor_state",
+      "epoch": "example-epoch",
+      "operating_state": "OPERATIONAL"
+    }
+  },
+  {
+    "schema_version": 1,
+    "boot_id": "example-boot",
+    "sequence": 6,
+    "source_topic": "/example/supervisor_faults",
+    "source_stamp": 1794873600.05,
+    "source_age_seconds": 0.01,
+    "provenance": "sim",
+    "sample": {
+      "kind": "supervisor_faults",
+      "epoch": "example-epoch",
+      "faults": []
+    }
+  },
+  {
+    "schema_version": 1,
+    "boot_id": "example-boot",
+    "sequence": 7,
+    "source_topic": "/example/supervisor_recoveries",
+    "source_stamp": 1794873600.06,
+    "source_age_seconds": 0.01,
+    "provenance": "sim",
+    "sample": {
+      "kind": "supervisor_recoveries",
+      "epoch": "example-epoch",
+      "recoveries": []
+    }
+  },
+  {
+    "schema_version": 1,
+    "boot_id": "example-boot",
+    "sequence": 8,
+    "source_topic": "/example/supervisor_event",
+    "source_stamp": 1794873600.07,
+    "source_age_seconds": 0.01,
+    "provenance": "sim",
+    "sample": {
+      "kind": "supervisor_event",
+      "epoch": "example-epoch",
+      "event_sequence": 12,
+      "event_kind": "RECOVERY_SUCCEEDED",
+      "code": "SENSOR_TIMEOUT",
+      "severity": "INFO",
+      "detail": "Sensor restored"
+    }
+  },
+  {
+    "schema_version": 1,
+    "boot_id": "example-boot",
+    "sequence": 9,
+    "source_topic": "/example/safety",
+    "source_stamp": 1794873600.08,
+    "source_age_seconds": 0.01,
+    "provenance": "sim",
+    "sample": {
+      "kind": "safety",
+      "protection_ready": true,
+      "estop_engaged": false,
+      "physical_release_confirmed": true,
+      "stopped": true,
+      "detail": ""
+    }
+  }
+]

@@ -86,6 +86,7 @@ test("workspace request and previous day", async ({ page }, testInfo) => {
 
 test("manual and camera", async ({ page }, testInfo) => {
   await page.goto("/robots?demo=1");
+  await page.getByRole('button',{name:'수동 조종',exact:true}).click();
   const panel = page.getByRole("region", { name: "수동 조종", exact: true });
   // Wait for the local font before scrolling; native select text otherwise caches its fallback paint.
   await page.evaluate(async () => { await document.fonts.ready; await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))); });
@@ -144,4 +145,14 @@ test("robot retrieval error", async ({ page }, testInfo) => {
   await expect(page.getByRole('button', {name:'다시 시도'})).toBeVisible();
   await expect(page.getByRole('heading', {name:'등록된 로봇 없음'})).toHaveCount(0);
   await capture(page, testInfo, 'robot-error');
+});
+
+
+test("robot analytics and supervisor", async ({ page }, testInfo) => {
+  await page.goto('/robots?demo=1&robot=cleany-02');
+  await expect(page.getByText('센서 응답 대기',{exact:true})).toBeVisible();
+  await capture(page,testInfo,'robot-supervisor');
+  await page.getByRole('heading',{name:'운영 분석',exact:true}).scrollIntoViewIfNeeded();
+  await page.getByRole('heading',{name:'운영 분석',exact:true}).evaluate(el=>el.scrollIntoView({block:'start'}));
+  await capture(page,testInfo,'robot-analytics');
 });

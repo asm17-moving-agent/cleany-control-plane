@@ -1,0 +1,91 @@
+@layer components {
+ .robot-dashboard-heading,.robot-identity-line,.robot-identity-context,.robot-section-heading,.robot-period,.robot-mode-switch,.robot-data-source { display:flex; align-items:center; gap:var(--space-2); }
+ .robot-dashboard-heading,.robot-section-heading { justify-content:space-between; flex-wrap:wrap; gap:var(--space-4); }
+ .robot-dashboard-heading { align-items:flex-start; }
+ .robot-identity { flex:1; min-width:0; }
+ .robot-identity-line { flex-wrap:wrap; min-height:var(--control-compact); gap:var(--space-2) var(--space-3); }
+ .robot-dashboard-heading h3 { font-size:var(--text-entity); line-height:28px; margin:0 4px 0 0; font-weight:600; }
+ .robot-identity h3 { overflow-wrap:anywhere; }
+ .robot-connection,.robot-battery { display:inline-flex; align-items:center; gap:var(--space-2); font-size:var(--text-body); }
+ .robot-connection { color:var(--color-text-muted); }
+ .robot-battery { flex-wrap:wrap; }
+ .robot-battery svg { width:16px; height:16px; color:var(--color-text-muted); }
+ .robot-battery strong { font-weight:600; font-variant-numeric:tabular-nums; }
+ .robot-battery small { color:var(--color-text-muted); font-size:var(--text-caption); }
+ .robot-identity-context { flex-wrap:wrap; gap:var(--space-2) var(--space-4); margin-top:var(--space-1); font-size:var(--text-body); line-height:20px; color:var(--color-text-muted); }
+ .robot-identity-context>span { display:inline-flex; align-items:baseline; flex-wrap:wrap; gap:var(--space-1); min-width:0; overflow-wrap:anywhere; }
+ .robot-mission-label a { color:var(--color-action); }
+ .robot-identity [data-stale=true] { color:var(--color-warning); }
+ .robot-mode-switch { flex-shrink:0; padding:4px; background:var(--color-surface-muted); border-radius:var(--radius-control); }
+ .robot-mode-switch button[aria-pressed=true] { color:var(--color-action); background:var(--color-surface); box-shadow:0 1px 3px var(--color-shadow); }
+ .robot-connection-dot { width:8px; height:8px; flex-shrink:0; border-radius:50%; background:var(--color-danger); }
+ .robot-connection-dot[data-online=true] { background:var(--chart-clean-complete); }
+ .robot-inline-alert { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 16px; margin-top:16px; border:1px solid var(--color-warning-border); border-radius:var(--radius-control); background:var(--color-warning-soft); color:var(--color-warning); font-size:var(--text-body); }
+ .robot-faults { padding:0; margin:16px 0 0; list-style:none; }
+ .robot-faults li,.robot-recovery { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:8px; font-size:var(--text-body); }
+ .robot-faults li { padding:12px; background:var(--color-danger-soft); border-radius:var(--radius-control); }
+ .robot-live-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:var(--page-gap); }
+ .robot-twin,.robot-live-camera { min-width:0; overflow:hidden; }
+ .robot-twin>.ui-panel-header { padding:16px 20px; margin:0; min-height:56px; }
+ .robot-twin .robot-model-card { margin:0; border:0; border-radius:0; }
+ .robot-twin .robot-model-stage { height:280px; }
+ .robot-twin .robot-model-caption { padding:6px 12px; font-size:var(--text-caption); }
+ .robot-live-camera .head-camera { border:0; border-radius:0; height:100%; }
+ .robot-live-camera .head-camera-title { height:56px; padding:16px 20px; font-size:var(--text-panel); }
+ .robot-live-camera .head-camera-view { height:calc(100% - 56px); min-height:280px; }
+ .robot-history { display:flex; flex-direction:column; gap:var(--page-gap); min-width:0; }
+ .robot-section-heading { margin-top:4px; }
+ .robot-section-heading h3 { margin:0; font-size:var(--text-entity); font-weight:600; }
+ .robot-period input { width:158px; }
+ .robot-period select { width:96px; }
+ .robot-analytics-grid { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:var(--page-gap); }
+ .robot-battery-chart,.robot-activity { min-width:0; }
+ .robot-chart { height:216px; font-size:var(--text-caption); }
+ .robot-chart-empty { min-height:216px; display:grid; place-items:center; color:var(--color-text-muted); font-size:var(--text-body); }
+ .robot-chart-key { display:flex; gap:12px; font-size:var(--text-caption); color:var(--color-text-muted); }
+ .robot-chart-key span,.robot-activity-legend dt { display:flex; align-items:center; gap:8px; }
+ .robot-chart-key i,.robot-activity-legend i { display:block; width:8px; height:8px; border-radius:2px; flex-shrink:0; }
+ .robot-history [data-state=WORKING] { background:var(--chart-work); }
+ .robot-history [data-state=MOVING] { background:var(--chart-clean-complete); }
+ .robot-history [data-state=IDLE] { background:var(--color-border-strong); }
+ .robot-history [data-state=CHARGING] { background:var(--color-action); }
+ .robot-history [data-state=FAULT] { background:var(--color-danger); }
+ .robot-history [data-state=STOPPED] { background:var(--chart-clean-working); }
+ .robot-history [data-state=UNKNOWN] { background:var(--color-neutral-soft); }
+ .robot-activity-total { display:flex; gap:8px; align-items:baseline; margin:20px 0 16px; }
+ .robot-activity-total strong { font-size:var(--text-entity); font-weight:600; }
+ .robot-activity-total span { font-size:var(--text-caption); color:var(--color-text-muted); }
+ .robot-activity-bar { display:flex; overflow:hidden; border-radius:var(--radius-control); height:16px; background:var(--color-neutral-soft); }
+ .robot-activity-legend { display:grid; grid-template-columns:1fr 1fr; gap:12px 20px; margin:20px 0 0; font-size:var(--text-caption); }
+ .robot-activity-legend>div { display:flex; justify-content:space-between; gap:8px; }
+ .robot-activity-legend dt { color:var(--color-text-muted); }
+ .robot-activity-legend dd { margin:0; font-variant-numeric:tabular-nums; }
+ .robot-events { min-width:0; }
+ .robot-timeline { padding:0; margin:8px 0 0; list-style:none; }
+ .robot-timeline li { display:grid; grid-template-columns:128px 12px minmax(0,1fr) auto auto; align-items:start; gap:12px; padding:14px 0; border-bottom:1px solid var(--color-border); font-size:var(--text-body); }
+ .robot-timeline time { color:var(--color-text-muted); font-size:var(--text-caption); padding-top:4px; }
+ .robot-event-dot { width:8px; height:8px; border-radius:50%; background:var(--color-action); margin-top:7px; }
+ .robot-timeline li[data-severity=warning] .robot-event-dot { background:var(--color-warning); }
+ .robot-timeline li[data-severity=error] .robot-event-dot,.robot-timeline li[data-severity=critical] .robot-event-dot { background:var(--color-danger); }
+ .robot-timeline strong { font-weight:600; }
+ .robot-timeline p { margin:4px 0 0; font-size:var(--text-caption); color:var(--color-text-muted); overflow-wrap:anywhere; }
+ .robot-events-empty { padding:36px; text-align:center; color:var(--color-text-muted); font-size:var(--text-body); }
+ .robot-history-footer { display:flex; justify-content:space-between; gap:8px; padding-top:16px; color:var(--color-text-muted); font-size:var(--text-caption); }
+ .robot-faults li>span,.robot-faults li>strong,.robot-recovery>span { overflow-wrap:anywhere; min-width:0; }
+ .robot-preflight { display:grid; grid-template-columns:1fr 2fr; gap:20px; margin:24px 0; }
+ .robot-preflight dt { font-size:var(--text-caption); color:var(--color-text-muted); }
+ .robot-preflight dd { margin:8px 0 0; }
+ .robot-diagnostics dl>div { display:flex; flex-wrap:wrap; gap:12px; margin:12px 0; font-size:var(--text-body); }
+ .robot-diagnostics dd { margin:0; overflow-wrap:anywhere; }
+ .robot-diagnostics dt { color:var(--color-text-muted); }
+ .robot-diagnostics h4 { margin:24px 0 12px; }
+ .robot-diagnostic-table { overflow:auto; }
+ .robot-diagnostic-table table { width:100%; text-align:left; border-collapse:collapse; font-size:var(--text-caption); }
+ .robot-diagnostic-table td,.robot-diagnostic-table th { padding:12px 8px; border-bottom:1px solid var(--color-border); white-space:nowrap; }
+ .robot-diagnostics pre { overflow:auto; font-size:var(--text-caption); max-height:320px; }
+ .robot-data-source { color:var(--color-text-muted); font-size:var(--text-caption); }
+ .robot-twin-zoom { position:absolute; left:12px; bottom:12px; display:flex; gap:4px; }
+ @media(max-width:1439px) { .robot-analytics-grid { grid-template-columns:minmax(0,1fr); } }
+ @media(max-width:1100px) { .robot-live-grid { grid-template-columns:minmax(0,1fr); }.robot-live-camera .head-camera-view { height:280px; }.robot-period { flex-wrap:wrap; }.robot-timeline li { grid-template-columns:104px 8px minmax(0,1fr) auto; }.robot-timeline li>.ui-status { display:none; } }
+ @media(max-width:767px) { .fleet-layout { display:flex; flex-direction:column; }.fleet-roster { max-height:240px; flex-shrink:0; }.fleet-roster-list { flex-direction:row; }.fleet-roster-card { min-width:220px; }.fleet-detail { flex:1; }.robot-timeline li { grid-template-columns:8px minmax(0,1fr) auto; }.robot-timeline time { grid-column:2/-1; }.robot-preflight { grid-template-columns:1fr; } }
+}

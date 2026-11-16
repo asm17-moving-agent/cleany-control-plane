@@ -297,6 +297,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/robots/{robot_id}/analytics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Robot Analytics */
+        get: operations["robot_analytics_api_robots__robot_id__analytics_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/robots/{robot_id}/camera/head": {
         parameters: {
             query?: never;
@@ -340,6 +357,23 @@ export interface paths {
         };
         /** Manual Status */
         get: operations["manual_status_api_robots__robot_id__manual_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/robots/{robot_id}/telemetry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Robot Telemetry */
+        get: operations["robot_telemetry_api_robots__robot_id__telemetry_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -421,6 +455,81 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** ActivityDuration */
+        ActivityDuration: {
+            /** Seconds */
+            seconds: number;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "WORKING" | "MOVING" | "IDLE" | "CHARGING" | "FAULT" | "STOPPED" | "UNKNOWN";
+        };
+        /** BaseObservation */
+        BaseObservation: {
+            /** Angular Velocity */
+            angular_velocity: [
+                number,
+                number,
+                number
+            ];
+            /** Child Frame Id */
+            child_frame_id: string;
+            /** Frame Id */
+            frame_id: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "base";
+            /** Linear Velocity */
+            linear_velocity: [
+                number,
+                number,
+                number
+            ];
+            /** Orientation */
+            orientation: [
+                number,
+                number,
+                number,
+                number
+            ];
+            /** Position */
+            position: [
+                number,
+                number,
+                number
+            ];
+        };
+        /** BatteryObservation */
+        BatteryObservation: {
+            /**
+             * Charging
+             * @enum {string}
+             */
+            charging: "UNKNOWN" | "CHARGING" | "DISCHARGING" | "NOT_CHARGING" | "FULL";
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "battery";
+            /** Percentage */
+            percentage: number | null;
+            /** Voltage */
+            voltage?: number | null;
+        };
+        /** BatteryPoint */
+        BatteryPoint: {
+            /** Charging Percentage */
+            charging_percentage: number | null;
+            /** Percentage */
+            percentage: number | null;
+            /** Samples */
+            samples: number;
+            /** Time */
+            time: string;
+        };
         /** ExecutionProfile */
         ExecutionProfile: {
             /**
@@ -457,6 +566,20 @@ export interface components {
              * @constant
              */
             status?: "ok";
+        };
+        /** JointObservation */
+        JointObservation: {
+            /** Ages Seconds */
+            ages_seconds?: number[] | null;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "joint_targets" | "joints";
+            /** Names */
+            names: string[];
+            /** Positions */
+            positions: number[];
         };
         /** LayoutReview */
         LayoutReview: {
@@ -743,6 +866,16 @@ export interface components {
             /** Reference Id */
             reference_id: string;
         };
+        /** ObservedSample */
+        ObservedSample: {
+            /** Expires At */
+            expires_at: string;
+            observation: components["schemas"]["RobotObservation"];
+            /** Received At */
+            received_at: string;
+            /** Stale */
+            stale: boolean;
+        };
         /** PasswordInput */
         PasswordInput: {
             /** Current Password */
@@ -761,10 +894,79 @@ export interface components {
          * @enum {string}
          */
         Priority: "NORMAL" | "HIGH";
+        /** RobotAnalytics */
+        RobotAnalytics: {
+            /** Activities */
+            activities: components["schemas"]["ActivityDuration"][];
+            /** Battery */
+            battery: components["schemas"]["BatteryPoint"][];
+            /** End */
+            end: string;
+            /** Events */
+            events: components["schemas"]["RobotOperationalEvent"][];
+            /** Next Event Cursor */
+            next_event_cursor: string | null;
+            /** Observed Seconds */
+            observed_seconds: number;
+            /** Provenance */
+            provenance: string[];
+            /** Retention Days */
+            retention_days: number;
+            /** Robot Id */
+            robot_id: string;
+            /** Start */
+            start: string;
+            /** Window Seconds */
+            window_seconds: number;
+        };
         /** RobotListResponse */
         RobotListResponse: {
             /** Items */
             items: components["schemas"]["RobotResponse"][];
+        };
+        /** RobotObservation */
+        RobotObservation: {
+            /** Boot Id */
+            boot_id: string;
+            /**
+             * Provenance
+             * @enum {string}
+             */
+            provenance: "real" | "sim" | "mock";
+            /** Sample */
+            sample: components["schemas"]["BatteryObservation"] | components["schemas"]["JointObservation"] | components["schemas"]["BaseObservation"] | components["schemas"]["SupervisorStateObservation"] | components["schemas"]["SupervisorFaultObservation"] | components["schemas"]["SupervisorRecoveryObservation"] | components["schemas"]["SupervisorEventObservation"] | components["schemas"]["SafetyObservation"];
+            /**
+             * Schema Version
+             * @constant
+             */
+            schema_version: 1;
+            /** Sequence */
+            sequence: number;
+            /** Source Age Seconds */
+            source_age_seconds: number;
+            /** Source Stamp */
+            source_stamp: number;
+            /** Source Topic */
+            source_topic: string;
+        };
+        /** RobotOperationalEvent */
+        RobotOperationalEvent: {
+            /** Detail */
+            detail: string;
+            /** Event Id */
+            event_id: string;
+            /** Kind */
+            kind: string;
+            /** Mission Id */
+            mission_id?: string | null;
+            /** Occurred At */
+            occurred_at: string;
+            /** Provenance */
+            provenance: string;
+            /** Severity */
+            severity: string;
+            /** Title */
+            title: string;
         };
         /**
          * RobotPose
@@ -814,6 +1016,37 @@ export interface components {
          * @enum {string}
          */
         RobotState: "OFFLINE" | "IDLE" | "BUSY" | "ERROR";
+        /** RobotTelemetrySnapshot */
+        RobotTelemetrySnapshot: {
+            /** Connected */
+            connected: boolean;
+            /** Poll Interval Ms */
+            poll_interval_ms: number;
+            /** Robot Id */
+            robot_id: string;
+            /** Samples */
+            samples: {
+                [key: string]: components["schemas"]["ObservedSample"];
+            };
+        };
+        /** SafetyObservation */
+        SafetyObservation: {
+            /** Detail */
+            detail: string;
+            /** Estop Engaged */
+            estop_engaged: boolean;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "safety";
+            /** Physical Release Confirmed */
+            physical_release_confirmed: boolean;
+            /** Protection Ready */
+            protection_ready: boolean;
+            /** Stopped */
+            stopped: boolean;
+        };
         /** SeatLayout */
         SeatLayout: {
             /**
@@ -962,6 +1195,102 @@ export interface components {
             };
             /** Width */
             width: number;
+        };
+        /** SupervisorEventObservation */
+        SupervisorEventObservation: {
+            /** Code */
+            code: string;
+            /** Detail */
+            detail: string;
+            /** Epoch */
+            epoch: string;
+            /** Event Kind */
+            event_kind: string;
+            /** Event Sequence */
+            event_sequence: number;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "supervisor_event";
+            /** Severity */
+            severity: string;
+        };
+        /** SupervisorFault */
+        SupervisorFault: {
+            /** Active */
+            active: boolean;
+            /** Code */
+            code: string;
+            /** Detail */
+            detail: string;
+            /** Latched */
+            latched: boolean;
+            /** Recovery Policy */
+            recovery_policy: string;
+            /** Severity */
+            severity: string;
+            /** Source */
+            source: string;
+        };
+        /** SupervisorFaultObservation */
+        SupervisorFaultObservation: {
+            /** Epoch */
+            epoch: string;
+            /** Faults */
+            faults: components["schemas"]["SupervisorFault"][];
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "supervisor_faults";
+        };
+        /** SupervisorRecovery */
+        SupervisorRecovery: {
+            /** Attempt */
+            attempt: number;
+            /** Detail */
+            detail: string;
+            /** Fault Code */
+            fault_code: string;
+            /** Job Id */
+            job_id: string;
+            /** Resource Held */
+            resource_held: boolean;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "IDLE" | "RUNNING" | "SUCCEEDED" | "FAILED" | "CANCELED";
+            /** Verifying Health */
+            verifying_health: boolean;
+        };
+        /** SupervisorRecoveryObservation */
+        SupervisorRecoveryObservation: {
+            /** Epoch */
+            epoch: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "supervisor_recoveries";
+            /** Recoveries */
+            recoveries: components["schemas"]["SupervisorRecovery"][];
+        };
+        /** SupervisorStateObservation */
+        SupervisorStateObservation: {
+            /** Epoch */
+            epoch: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "supervisor_state";
+            /**
+             * Operating State
+             * @enum {string}
+             */
+            operating_state: "INITIALIZING" | "OPERATIONAL" | "DEGRADED" | "FAULT_LOCKED";
         };
         /** TargetExport */
         TargetExport: {
@@ -1473,6 +1802,41 @@ export interface operations {
             };
         };
     };
+    robot_analytics_api_robots__robot_id__analytics_get: {
+        parameters: {
+            query: {
+                start: string;
+                end: string;
+                before?: string | null;
+            };
+            header?: never;
+            path: {
+                robot_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RobotAnalytics"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     head_camera_frame_api_robots__robot_id__camera_head_get: {
         parameters: {
             query?: never;
@@ -1557,6 +1921,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ManualStatus"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    robot_telemetry_api_robots__robot_id__telemetry_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                robot_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RobotTelemetrySnapshot"];
                 };
             };
             /** @description Validation Error */

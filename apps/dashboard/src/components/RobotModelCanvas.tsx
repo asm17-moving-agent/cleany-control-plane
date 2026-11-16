@@ -1,6 +1,8 @@
 import { useEffect, useId, useRef, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { attachTwin, type TwinPose } from "./robot-twin";
+import { Button } from "./ui/button";
 import { RobotModelMotion, ROTATION_GUIDE } from "./robot-model-motion";
 import { ROBOT_MODEL } from "./robot-model-asset";
 import { createRobotRotationGuide } from "./RobotRotationGuide";
@@ -28,9 +30,15 @@ function disposeModel(model: THREE.Object3D) {
  * onReady follows the first rendered frame; load/context failures reach onError.
  * Cleanup disposes scene resources and rejects late loader results.
  */
-export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true, rotationGuide = false }: {
-  onReady: () => void; onError: () => void; hoverEnabled?: boolean; rotationGuide?: boolean;
+export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true, rotationGuide = false, twin }: {
+  onReady: () => void; onError: () => void; hoverEnabled?: boolean; rotationGuide?: boolean; twin?: TwinPose;
 }) {
+  const articulated = twin !== undefined;
+  const latestTwin = useRef(twin);
+  latestTwin.current = twin;
+  const applyPose = useRef<(() => void) | null>(null);
+  const zoom = useRef<((amount: number) => void) | null>(null);
+  useEffect(() => { applyPose.current?.(); }, [twin]);
   const host = useRef<HTMLDivElement>(null);
   const guide = useRef<SVGSVGElement>(null);
   const guidePath = useRef<SVGPathElement>(null);
@@ -53,7 +61,8 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
     let guideTimer: number | undefined;
     let guideDismissed = false, guideHasPlayed = false;
     let drag: { id: number; x: number; y: number; moved: boolean } | null = null;
-    let radius = 1, distance = 4;
+    let radius = 1, distance = 4, magnification = 1;
+    let updateTwin: ((pose: TwinPose) => boolean) | undefined;
     let canvasWidth = 1, canvasHeight = 1;
     let orbitGuide: ReturnType<typeof createRobotRotationGuide> | undefined;
     const motion = new RobotModelMotion();
@@ -172,7 +181,7 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
       camera.aspect = width / height;
       // Fit the CAD and concept layers inside the card throughout a turn.
       const halfFov = Math.atan(Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * Math.min(1, camera.aspect));
-      distance = radius / Math.sin(halfFov) * 1.02;
+      distance = radius / Math.sin(halfFov) * 1.02 / magnification;
       camera.far = distance + radius * 4;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
@@ -245,6 +254,8 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
       stopGuide(true);
       endPointer(false);
       motion.reset();
+      magnification = 1;
+      resize();
       setAdjusted(false);
       invalidate();
       element.focus({ preventScroll: true });
@@ -296,8 +307,14 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
     intersection.observe(element);
     reset.current = resetView;
 
-    new GLTFLoader().load(ROBOT_MODEL.glb, gltf => {
+    zoom.current = amount => { magnification = Math.max(.65, Math.min(2, magnification * amount)); setAdjusted(true); resize(); };
+    applyPose.current = () => { if (latestTwin.current && updateTwin?.(latestTwin.current)) invalidate(); };
+    new GLTFLoader().load(articulated ? "/models/cleany-c32c3074-articulated.glb" : ROBOT_MODEL.glb, gltf => {
       if (disposed || failed) { disposeModel(gltf.scene); return; }
+      if (articulated) {
+        try { updateTwin = attachTwin(gltf.scene); }
+        catch { disposeModel(gltf.scene); fail(); return; }
+      }
       scene.add(gltf.scene);
       const box = new THREE.Box3().setFromObject(gltf.scene, true);
       box.getCenter(center);
@@ -308,6 +325,7 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
       }
       shadow.position.set(center.x, box.min.y - .004, center.z);
       loaded = true;
+      applyPose.current?.();
       element.dataset.loaded = "true";
       if (diagnostics) {
         element.dataset.model = "cad-final";
@@ -344,12 +362,15 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
       renderer.forceContextLoss();
       renderer.domElement.remove();
       reset.current = null;
+      applyPose.current = null;
+      zoom.current = null;
     };
-  }, [onReady, onError, hoverEnabled, rotationGuide]);
+  }, [onReady, onError, hoverEnabled, rotationGuide, articulated]);
 
   return <>
     <div className="robot-model-canvas" ref={host} tabIndex={0} role="group"
       aria-label="Cleany 모델 회전" aria-describedby={instructions} />
+    {articulated && <div className="robot-twin-zoom"><Button size="icon-compact" aria-label="모델 축소" onClick={() => zoom.current?.(1/1.2)}>−</Button><Button size="icon-compact" aria-label="모델 확대" onClick={() => zoom.current?.(1.2)}>+</Button></div>}
     {rotationGuide && <svg ref={guide} className="robot-model-rotation-guide" aria-hidden="true">
       <path ref={guidePath} className="robot-model-rotation-arc" />
       <path ref={guideStartArrow} className="robot-model-arrowhead" />

@@ -69,6 +69,8 @@ export const api = {
     }
   },
   reviewMission: (id: string) => request<Mission>(`/api/missions/${encodeURIComponent(id)}/review`, { method: "POST" }),
+  robotTelemetry: (id: string, signal?: AbortSignal) => request<components["schemas"]["RobotTelemetrySnapshot"]>(`/api/robots/${encodeURIComponent(id)}/telemetry`, { signal }),
+  robotAnalytics: (id: string, start: string, end: string, before?: string, signal?: AbortSignal) => request<components["schemas"]["RobotAnalytics"]>(`/api/robots/${encodeURIComponent(id)}/analytics?` + new URLSearchParams({ start, end, ...(before ? { before } : {}) }), { signal }),
   robots: () => request<ListResponse<Robot>>("/api/robots"),
   /**
    * Register queued work; runtime acceptance and completion are confirmed separately.

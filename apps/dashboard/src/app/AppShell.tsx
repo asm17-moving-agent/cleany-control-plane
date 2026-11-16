@@ -29,7 +29,7 @@ const navigation = [
 ];
 const titles: Record<string, string> = {
   "/": "운영 현황", "/map": "시설 지도", "/missions": "작업", "/results": "작업 결과",
-  "/robots": "로봇 관리", "/monitoring": "운영 모니터링", "/settings": "관제 설정",
+  "/robots": "로봇 관제", "/monitoring": "운영 모니터링", "/settings": "관제 설정",
 };
 /** Share navigation and facility selection across routes, keeping document titles synchronized. */
 export function AppShell() {

@@ -439,3 +439,25 @@ SLAM 화면의 **좌석 배치 편집**에서 기존 좌석 번호를 유지한 
 `pnpm build` 후 `pnpm --filter @cleany/dashboard test:visual`로 개선 후 스냅샷과 비교한다.
 의도한 디자인 변경은 Before/After를 검토한 뒤 `--update-snapshots`로 반영한다.
 전체 검증 명령과 표시용 fixture의 한계는 위 명세를 참고한다.
+
+## 로봇 관제
+
+`/robots`는 상태 요약, Digital Twin와 헤드캠, 기간별 운영 분석, 이벤트를 제공합니다.
+기본 화면은 명령을 보내지 않습니다. 수동 조종은 별도 모드에서 연결, 준비, 정지 확인과
+서버 차단 사유를 확인한 뒤 진입하며, 모드를 떠나면 기존 HeldControl이 STOP을 보냅니다.
+진단 모드는 원본 토픽과 시각, 실측/명령 목표, JSON을 분리해서 표시합니다.
+
+실시간 관측과 분석은 Backend의 `/telemetry`, `/analytics`를 사용합니다. 데이터가
+없으면 미수신/빈 그래프이며 예시 모드의 수치는 별도 `robot-operations/demo.ts`에서만
+제공합니다. 원본 관측과 명령 목표는 별도 계약이며 3D에는 실측만 반영합니다. 갱신이
+끊기면 마지막 관측 자세를 유지하고 상태를 표시합니다. 기간은 Asia/Seoul의 하루/7일/30일,
+배터리 빈 구간은 연결하지 않으며 활동 분포에는 미수신 시간도 포함합니다.
+
+[파생 CAD 출처](public/models/cleany-c32c3074-articulated.json)는 기존 정적 CAD와 같은
+원본을 사용합니다. 팔, 헤드, 바퀴의 명명된 관절과 `base_link` Odometry 회전을 반영하며
+베이스 이동은 화면 중앙에 고정합니다. 원본의 양쪽 gripper joint는 고정 툴이므로 개폐
+애니메이션을 만들지 않고 관측값을 별도로 표시합니다. 다른 로봇 description이나 영점
+규약에는 대응하는 모델 매핑과 실제 캘리브레이션 확인이 필요합니다.
+
+현재 실제 배터리/관절/Supervisor 값은 ROS 관측기와 bridge 실행 후 표시합니다.
+Backend의 설정, 저장 기간과 실행 경계는 [Backend README](../backend/README.md#로봇-관측-및-운영-분석)를 따릅니다.

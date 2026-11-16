@@ -63,6 +63,12 @@ test("manual help does not send commands and blocking and stop confirmation stay
     commands.push(route.request().postDataJSON()); return route.fulfill({ json: state });
   });
   await page.goto("/robots");
+  await page.getByRole('button',{name:'수동 조종',exact:true}).click();
+  await expect(page.getByRole('button',{name:'조종 시작',exact:true})).toBeDisabled();
+  await expect(page.getByRole('alert')).toContainText('정비 중');
+  state.blocked_reason = null; state.stop_confirmed = true;
+  await page.getByRole('button',{name:'조종 시작',exact:true}).click();
+  state.blocked_reason = '정비 중 · 조종 불가'; state.stop_confirmed = false;
   const panel = page.getByRole("region", { name: "수동 조종", exact: true });
   await expect(panel.getByText(state.blocked_reason!)).toBeVisible();
   await expect(panel.getByRole("application", { name: "이동 조이스틱" })).toHaveAttribute("aria-disabled", "true");

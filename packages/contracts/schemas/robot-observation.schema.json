@@ -1,0 +1,614 @@
+{
+  "$defs": {
+    "BaseObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "angular_velocity": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Angular Velocity",
+          "type": "array"
+        },
+        "child_frame_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Child Frame Id",
+          "type": "string"
+        },
+        "frame_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Frame Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "base",
+          "title": "Kind",
+          "type": "string"
+        },
+        "linear_velocity": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Linear Velocity",
+          "type": "array"
+        },
+        "orientation": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Orientation",
+          "type": "array"
+        },
+        "position": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Position",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "frame_id",
+        "child_frame_id",
+        "position",
+        "orientation",
+        "linear_velocity",
+        "angular_velocity"
+      ],
+      "title": "BaseObservation",
+      "type": "object"
+    },
+    "BatteryObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "charging": {
+          "enum": [
+            "UNKNOWN",
+            "CHARGING",
+            "DISCHARGING",
+            "NOT_CHARGING",
+            "FULL"
+          ],
+          "title": "Charging",
+          "type": "string"
+        },
+        "kind": {
+          "const": "battery",
+          "title": "Kind",
+          "type": "string"
+        },
+        "percentage": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Percentage"
+        },
+        "voltage": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Voltage"
+        }
+      },
+      "required": [
+        "kind",
+        "percentage",
+        "charging"
+      ],
+      "title": "BatteryObservation",
+      "type": "object"
+    },
+    "JointObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "ages_seconds": {
+          "anyOf": [
+            {
+              "items": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "maxItems": 128,
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ages Seconds"
+        },
+        "kind": {
+          "enum": [
+            "joints",
+            "joint_targets"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "names": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 128,
+          "minItems": 1,
+          "title": "Names",
+          "type": "array"
+        },
+        "positions": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 128,
+          "minItems": 1,
+          "title": "Positions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "names",
+        "positions"
+      ],
+      "title": "JointObservation",
+      "type": "object"
+    },
+    "SafetyObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "detail": {
+          "maxLength": 1024,
+          "title": "Detail",
+          "type": "string"
+        },
+        "estop_engaged": {
+          "title": "Estop Engaged",
+          "type": "boolean"
+        },
+        "kind": {
+          "const": "safety",
+          "title": "Kind",
+          "type": "string"
+        },
+        "physical_release_confirmed": {
+          "title": "Physical Release Confirmed",
+          "type": "boolean"
+        },
+        "protection_ready": {
+          "title": "Protection Ready",
+          "type": "boolean"
+        },
+        "stopped": {
+          "title": "Stopped",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "kind",
+        "protection_ready",
+        "estop_engaged",
+        "physical_release_confirmed",
+        "stopped",
+        "detail"
+      ],
+      "title": "SafetyObservation",
+      "type": "object"
+    },
+    "SupervisorEventObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 128,
+          "title": "Code",
+          "type": "string"
+        },
+        "detail": {
+          "maxLength": 1024,
+          "title": "Detail",
+          "type": "string"
+        },
+        "epoch": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Epoch",
+          "type": "string"
+        },
+        "event_kind": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Event Kind",
+          "type": "string"
+        },
+        "event_sequence": {
+          "minimum": 0,
+          "title": "Event Sequence",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "supervisor_event",
+          "title": "Kind",
+          "type": "string"
+        },
+        "severity": {
+          "maxLength": 32,
+          "title": "Severity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "epoch",
+        "event_sequence",
+        "event_kind",
+        "code",
+        "severity",
+        "detail"
+      ],
+      "title": "SupervisorEventObservation",
+      "type": "object"
+    },
+    "SupervisorFault": {
+      "additionalProperties": false,
+      "properties": {
+        "active": {
+          "title": "Active",
+          "type": "boolean"
+        },
+        "code": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "detail": {
+          "maxLength": 1024,
+          "title": "Detail",
+          "type": "string"
+        },
+        "latched": {
+          "title": "Latched",
+          "type": "boolean"
+        },
+        "recovery_policy": {
+          "maxLength": 128,
+          "title": "Recovery Policy",
+          "type": "string"
+        },
+        "severity": {
+          "maxLength": 32,
+          "title": "Severity",
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 128,
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "source",
+        "severity",
+        "active",
+        "latched",
+        "recovery_policy",
+        "detail"
+      ],
+      "title": "SupervisorFault",
+      "type": "object"
+    },
+    "SupervisorFaultObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "epoch": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Epoch",
+          "type": "string"
+        },
+        "faults": {
+          "items": {
+            "$ref": "#/$defs/SupervisorFault"
+          },
+          "maxItems": 128,
+          "title": "Faults",
+          "type": "array"
+        },
+        "kind": {
+          "const": "supervisor_faults",
+          "title": "Kind",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "epoch",
+        "faults"
+      ],
+      "title": "SupervisorFaultObservation",
+      "type": "object"
+    },
+    "SupervisorRecovery": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt": {
+          "minimum": 0,
+          "title": "Attempt",
+          "type": "integer"
+        },
+        "detail": {
+          "maxLength": 1024,
+          "title": "Detail",
+          "type": "string"
+        },
+        "fault_code": {
+          "maxLength": 128,
+          "title": "Fault Code",
+          "type": "string"
+        },
+        "job_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Job Id",
+          "type": "string"
+        },
+        "resource_held": {
+          "title": "Resource Held",
+          "type": "boolean"
+        },
+        "state": {
+          "enum": [
+            "IDLE",
+            "RUNNING",
+            "SUCCEEDED",
+            "FAILED",
+            "CANCELED"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "verifying_health": {
+          "title": "Verifying Health",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "job_id",
+        "fault_code",
+        "state",
+        "attempt",
+        "verifying_health",
+        "resource_held",
+        "detail"
+      ],
+      "title": "SupervisorRecovery",
+      "type": "object"
+    },
+    "SupervisorRecoveryObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "epoch": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Epoch",
+          "type": "string"
+        },
+        "kind": {
+          "const": "supervisor_recoveries",
+          "title": "Kind",
+          "type": "string"
+        },
+        "recoveries": {
+          "items": {
+            "$ref": "#/$defs/SupervisorRecovery"
+          },
+          "maxItems": 128,
+          "title": "Recoveries",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "epoch",
+        "recoveries"
+      ],
+      "title": "SupervisorRecoveryObservation",
+      "type": "object"
+    },
+    "SupervisorStateObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "epoch": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Epoch",
+          "type": "string"
+        },
+        "kind": {
+          "const": "supervisor_state",
+          "title": "Kind",
+          "type": "string"
+        },
+        "operating_state": {
+          "enum": [
+            "INITIALIZING",
+            "OPERATIONAL",
+            "DEGRADED",
+            "FAULT_LOCKED"
+          ],
+          "title": "Operating State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "epoch",
+        "operating_state"
+      ],
+      "title": "SupervisorStateObservation",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "boot_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Boot Id",
+      "type": "string"
+    },
+    "provenance": {
+      "enum": [
+        "real",
+        "sim",
+        "mock"
+      ],
+      "title": "Provenance",
+      "type": "string"
+    },
+    "sample": {
+      "discriminator": {
+        "mapping": {
+          "base": "#/$defs/BaseObservation",
+          "battery": "#/$defs/BatteryObservation",
+          "joint_targets": "#/$defs/JointObservation",
+          "joints": "#/$defs/JointObservation",
+          "safety": "#/$defs/SafetyObservation",
+          "supervisor_event": "#/$defs/SupervisorEventObservation",
+          "supervisor_faults": "#/$defs/SupervisorFaultObservation",
+          "supervisor_recoveries": "#/$defs/SupervisorRecoveryObservation",
+          "supervisor_state": "#/$defs/SupervisorStateObservation"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/BatteryObservation"
+        },
+        {
+          "$ref": "#/$defs/JointObservation"
+        },
+        {
+          "$ref": "#/$defs/BaseObservation"
+        },
+        {
+          "$ref": "#/$defs/SupervisorStateObservation"
+        },
+        {
+          "$ref": "#/$defs/SupervisorFaultObservation"
+        },
+        {
+          "$ref": "#/$defs/SupervisorRecoveryObservation"
+        },
+        {
+          "$ref": "#/$defs/SupervisorEventObservation"
+        },
+        {
+          "$ref": "#/$defs/SafetyObservation"
+        }
+      ],
+      "title": "Sample"
+    },
+    "schema_version": {
+      "const": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "sequence": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Sequence",
+      "type": "integer"
+    },
+    "source_age_seconds": {
+      "minimum": 0,
+      "title": "Source Age Seconds",
+      "type": "number"
+    },
+    "source_stamp": {
+      "exclusiveMinimum": 0,
+      "title": "Source Stamp",
+      "type": "number"
+    },
+    "source_topic": {
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Source Topic",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "boot_id",
+    "sequence",
+    "source_topic",
+    "source_stamp",
+    "source_age_seconds",
+    "provenance",
+    "sample"
+  ],
+  "title": "RobotObservation",
+  "type": "object"
+}

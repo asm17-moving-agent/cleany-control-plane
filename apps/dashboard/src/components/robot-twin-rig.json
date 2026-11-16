@@ -1,0 +1,1170 @@
+{
+  "root_node": "body_chassis",
+  "joints": [
+    {
+      "name": "head_pan_joint",
+      "node": "body_head_pan_link",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": [
+        -3.2,
+        3.2
+      ]
+    },
+    {
+      "name": "head_tilt_joint",
+      "node": "body_head_tilt_link",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": [
+        -0.76,
+        1.45
+      ]
+    },
+    {
+      "name": "left_shoulder_yaw_joint",
+      "node": "body_Rotation_Pitch",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": [
+        -2.16,
+        2.16
+      ]
+    },
+    {
+      "name": "left_shoulder_pitch_joint",
+      "node": "body_Upper_Arm",
+      "kind": "revolute",
+      "axis": [
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 3.1398473243377985,
+      "limits": [
+        -0.22,
+        3.37
+      ]
+    },
+    {
+      "name": "left_elbow_pitch_joint",
+      "node": "body_Lower_Arm",
+      "kind": "revolute",
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 3.139847324337799,
+      "limits": [
+        -0.22,
+        3.14
+      ]
+    },
+    {
+      "name": "left_wrist_pitch_joint",
+      "node": "body_Wrist_Pitch_Roll",
+      "kind": "revolute",
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": -2.514373579157211e-16,
+      "limits": [
+        -1.65806284946,
+        1.65806272933
+      ]
+    },
+    {
+      "name": "left_wrist_roll_joint",
+      "node": "body_Fixed_Jaw",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": [
+        -2.743847297,
+        2.84120630938
+      ]
+    },
+    {
+      "name": "left_gripper_joint",
+      "node": "body_Moving_Jaw",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": [
+        -1e-09,
+        1e-09
+      ]
+    },
+    {
+      "name": "right_shoulder_yaw_joint",
+      "node": "body_Rotation_Pitch_2",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": [
+        -2.16,
+        2.16
+      ]
+    },
+    {
+      "name": "right_shoulder_pitch_joint",
+      "node": "body_Upper_Arm_2",
+      "kind": "revolute",
+      "axis": [
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 3.1398473243377985,
+      "limits": [
+        -0.22,
+        3.37
+      ]
+    },
+    {
+      "name": "right_elbow_pitch_joint",
+      "node": "body_Lower_Arm_2",
+      "kind": "revolute",
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 3.139847324337799,
+      "limits": [
+        -0.22,
+        3.14
+      ]
+    },
+    {
+      "name": "right_wrist_pitch_joint",
+      "node": "body_Wrist_Pitch_Roll_2",
+      "kind": "revolute",
+      "axis": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": -5.539375312651287e-16,
+      "limits": [
+        -1.65806284946,
+        1.65806272933
+      ]
+    },
+    {
+      "name": "right_wrist_roll_joint",
+      "node": "body_Fixed_Jaw_2",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": [
+        -2.743847297,
+        2.84120630938
+      ]
+    },
+    {
+      "name": "right_gripper_joint",
+      "node": "body_Moving_Jaw_2",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": [
+        -1e-09,
+        1e-09
+      ]
+    },
+    {
+      "name": "rear_left_wheel_joint",
+      "node": "body_rear_left_wheel",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_left_roller_00_joint",
+      "node": "body_rear_left_roller_00",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_left_roller_01_joint",
+      "node": "body_rear_left_roller_01",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_left_roller_02_joint",
+      "node": "body_rear_left_roller_02",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_left_roller_03_joint",
+      "node": "body_rear_left_roller_03",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_left_roller_04_joint",
+      "node": "body_rear_left_roller_04",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_left_roller_05_joint",
+      "node": "body_rear_left_roller_05",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_left_roller_06_joint",
+      "node": "body_rear_left_roller_06",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_left_roller_07_joint",
+      "node": "body_rear_left_roller_07",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_left_roller_08_joint",
+      "node": "body_rear_left_roller_08",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_left_roller_09_joint",
+      "node": "body_rear_left_roller_09",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_left_roller_10_joint",
+      "node": "body_rear_left_roller_10",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_left_roller_11_joint",
+      "node": "body_rear_left_roller_11",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_right_wheel_joint",
+      "node": "body_rear_right_wheel",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_right_roller_00_joint",
+      "node": "body_rear_right_roller_00",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_right_roller_01_joint",
+      "node": "body_rear_right_roller_01",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_right_roller_02_joint",
+      "node": "body_rear_right_roller_02",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_right_roller_03_joint",
+      "node": "body_rear_right_roller_03",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_right_roller_04_joint",
+      "node": "body_rear_right_roller_04",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_right_roller_05_joint",
+      "node": "body_rear_right_roller_05",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_right_roller_06_joint",
+      "node": "body_rear_right_roller_06",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_right_roller_07_joint",
+      "node": "body_rear_right_roller_07",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_right_roller_08_joint",
+      "node": "body_rear_right_roller_08",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_right_roller_09_joint",
+      "node": "body_rear_right_roller_09",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_right_roller_10_joint",
+      "node": "body_rear_right_roller_10",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "rear_right_roller_11_joint",
+      "node": "body_rear_right_roller_11",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_left_wheel_joint",
+      "node": "body_front_left_wheel",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_left_roller_00_joint",
+      "node": "body_front_left_roller_00",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_left_roller_01_joint",
+      "node": "body_front_left_roller_01",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_left_roller_02_joint",
+      "node": "body_front_left_roller_02",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_left_roller_03_joint",
+      "node": "body_front_left_roller_03",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_left_roller_04_joint",
+      "node": "body_front_left_roller_04",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_left_roller_05_joint",
+      "node": "body_front_left_roller_05",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_left_roller_06_joint",
+      "node": "body_front_left_roller_06",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_left_roller_07_joint",
+      "node": "body_front_left_roller_07",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_left_roller_08_joint",
+      "node": "body_front_left_roller_08",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_left_roller_09_joint",
+      "node": "body_front_left_roller_09",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_left_roller_10_joint",
+      "node": "body_front_left_roller_10",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_left_roller_11_joint",
+      "node": "body_front_left_roller_11",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_right_wheel_joint",
+      "node": "body_front_right_wheel",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_right_roller_00_joint",
+      "node": "body_front_right_roller_00",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_right_roller_01_joint",
+      "node": "body_front_right_roller_01",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_right_roller_02_joint",
+      "node": "body_front_right_roller_02",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_right_roller_03_joint",
+      "node": "body_front_right_roller_03",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_right_roller_04_joint",
+      "node": "body_front_right_roller_04",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_right_roller_05_joint",
+      "node": "body_front_right_roller_05",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_right_roller_06_joint",
+      "node": "body_front_right_roller_06",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_right_roller_07_joint",
+      "node": "body_front_right_roller_07",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_right_roller_08_joint",
+      "node": "body_front_right_roller_08",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_right_roller_09_joint",
+      "node": "body_front_right_roller_09",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_right_roller_10_joint",
+      "node": "body_front_right_roller_10",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    },
+    {
+      "name": "front_right_roller_11_joint",
+      "node": "body_front_right_roller_11",
+      "kind": "revolute",
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "anchor": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reference": 0.0,
+      "limits": null
+    }
+  ],
+  "sha256": "fceb68aaee12c42e52567608a15fdf7c5e8e56f136385ffd3e5270598102ff9f"
+}

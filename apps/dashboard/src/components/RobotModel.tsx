@@ -1,3 +1,4 @@
+import type { TwinPose } from "./robot-twin";
 import { ROBOT_MODEL } from "./robot-model-asset";
 import { Component, lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
@@ -12,10 +13,10 @@ class ModelBoundary extends Component<{ children: ReactNode; onError: () => void
 
 /**
  * Lazily enable the CAD preview near the viewport on devices with a fine, hover-capable pointer.
- * Retain a poster fallback and permit explicit retries after load/render failures; no live pose is used.
+ * Retain a poster fallback and permit retries; optional twin poses use measured joints only.
  */
-export function RobotModel({ compact = false, hoverEnabled = true, rotationGuide = false }: {
-  compact?: boolean; hoverEnabled?: boolean; rotationGuide?: boolean;
+export function RobotModel({ compact = false, hoverEnabled = true, rotationGuide = false, twin }: {
+  compact?: boolean; hoverEnabled?: boolean; rotationGuide?: boolean; twin?: TwinPose;
 }) {
   const container = useRef<HTMLElement>(null);
   const [entered, setEntered] = useState(false);
@@ -55,7 +56,7 @@ export function RobotModel({ compact = false, hoverEnabled = true, rotationGuide
         alt={status === "ready" ? "" : "Cleany CAD 조립 모델"} aria-hidden={status === "ready"} loading="lazy" />
       {interactive && entered && status !== "error" && <ModelBoundary key={attempt} onError={onError}>
         <Suspense fallback={null}><RobotModelCanvas onReady={onReady} onError={onError}
-          hoverEnabled={hoverEnabled} rotationGuide={rotationGuide && !compact} /></Suspense>
+          hoverEnabled={hoverEnabled} rotationGuide={rotationGuide && !compact} twin={twin} /></Suspense>
       </ModelBoundary>}
     </div>
     <figcaption className="robot-model-caption">
@@ -64,7 +65,7 @@ export function RobotModel({ compact = false, hoverEnabled = true, rotationGuide
       </span>
       {status === "error" ? <button className="robot-model-retry" type="button" aria-label="3D 다시 시도" onClick={() => setAttempt(attempt + 1)}>
         <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 7a7 7 0 1 1-1 6M4 2v5h5" /></svg>
-      </button> : <span className="sr-only">실시간 자세 미연동</span>}
+      </button> : <span className="sr-only">{twin ? status === "ready" ? "수신된 실측 관절만 반영" : "정적 CAD 미리보기 · 실시간 자세 표시 불가" : "실시간 자세 미연동"}</span>}
     </figcaption>
   </figure>;
 }

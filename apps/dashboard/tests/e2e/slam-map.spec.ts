@@ -74,6 +74,18 @@ test("facility preserves SLAM alignment with 82 draft seats", async ({ page }, t
   await page.getByRole("button", { name: "편집 닫기", exact: true }).click();
 
   // Synthetic pose proves the rendering transform, not physical localization.
+  // Isolate this fixture from retained SSE poses left by the live transport test.
+  // Real WebSocket -> SSE delivery remains covered by robot-pose.spec.ts.
+  await page.addInitScript(() => {
+    class AlignmentTestStream extends EventTarget {
+      constructor() {
+        super();
+        queueMicrotask(() => this.dispatchEvent(new Event("open")));
+      }
+      close() {}
+    }
+    Object.defineProperty(window, "EventSource", { value: AlignmentTestStream });
+  });
   const metadata = await (await page.request.get("/api/map?site_id=BUSAN_SOMA_19F")).json();
   let poseMapId = metadata.map_id;
   await page.route("**/api/robots?*", route => route.fulfill({ json: { items: [{

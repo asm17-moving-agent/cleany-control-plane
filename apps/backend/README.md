@@ -172,3 +172,42 @@ SLAM 지도에서는 `GET/PUT /api/seat-layout`으로 시설별 배치 revision�
 로봇 탭은 같은 Jetson의 기존 `phone_remote` HTTP 서버에 인증된 입력을 전달합니다.
 설정, 입력 만료와 미션 충돌 검사는 [수동 조종 계약](../../docs/architecture/manual-control.md)을
 참고합니다. 서버 설정만으로 하드웨어 런타임을 시작하지 않습니다.
+
+## 로봇 관측 및 운영 분석
+
+로봇 화면은 `GET /api/robots/{robot_id}/telemetry`와
+`GET /api/robots/{robot_id}/analytics?start=<ISO8601>&end=<ISO8601>`를 사용합니다.
+조회는 기존 세션과 `site_id` 범위를 따릅니다. 시간대가 포함된 최대31일 구간이며 이벤트의
+`next_event_cursor`를 `before`로 보내 이전100개를 조회합니다. 미래 구간은 현재 시각으로
+잘리고 데이터가 없으면 빈 배열을 반환합니다.
+
+Robot은 장치 토큰으로 `/api/robots/{robot_id}/telemetry/ws`에 연결합니다. 한 로봇의
+생산자는 하나이며 저장 완료 뒤 `{sequence, accepted}`를 응답합니다.
+[관측 계약](../../packages/contracts/schemas/robot-observation.schema.json)과
+[예시](../../packages/contracts/examples/robot-observations-v1.json)를 사용합니다.
+미션 Gateway, pose WebSocket, 헤드캠과 제어 경로는 독립적입니다. ROS 노드 실행은
+`cleany_telemetry/robot_observer`, `cleany_control_bridge/robot_observation_bridge`가 담당합니다.
+
+| 환경 변수 (`CLEANY_` 접두사) | 기본값 | 용도 |
+| --- | --- | --- |
+| `TELEMETRY_RECEIVE_TIMEOUT_SECONDS` | 45 | 무수신 연결 종료 |
+| `TELEMETRY_STALE_SECONDS` | 3 | 관절과 베이스 관측 만료 |
+| `TELEMETRY_SUPERVISOR_STALE_SECONDS` | 5 | Supervisor와 safety 관측 만료 |
+| `TELEMETRY_BATTERY_STALE_SECONDS` | 30 | 배터리 관측 만료 |
+| `TELEMETRY_POLL_INTERVAL_MS` | 200 | 브라우저 관측 조회 간격 |
+| `TELEMETRY_ACTIVITY_SAMPLE_SECONDS` | 2 | 같은 활동 구간 저장 간격 |
+| `TELEMETRY_BATTERY_SAMPLE_SECONDS` | 30 | 배터리 저장 간격; 충전 변경은 즉시 저장 |
+| `TELEMETRY_RETENTION_DAYS` | 90 | 배터리, 활동, 이벤트 보관 기간 |
+| `TELEMETRY_PRUNE_INTERVAL_SECONDS` | 3600 | 만료 기록 정리 간격 |
+| `TELEMETRY_MOVING_SPEED_THRESHOLD` | 0.01 | odom 선속도(m/s) 또는 각속도(rad/s)의 이동 판정 하한 |
+
+만료는 원본 나이와 서버 수신 이후 경과 시간을 함께 반영합니다. 관측 연결이 닫히면
+즉시 마지막 값으로 표시하며 재시작도 같은 규칙을 따릅니다. 활동 우선순위는 Supervisor
+장애 잠금, safety 보호/비상정지, 충전, Gateway 오류/작업/이동, odom 이동, Gateway 대기,
+미수신입니다. Gateway가 Mock 모드인 가동 시간을 실제 관측으로 저장하지 않습니다.
+각 상태는 상호 배타적이며 유효기간이 끝난 시간은 미수신에 포함합니다.
+
+배터리는 시간 구간 평균이고 빈 구간을 선으로 연결하지 않습니다. 시각은 Backend 수신
+시각 기준입니다. 장기 보관과 고주파 관절 재생이 필요한 경우 별도 Logger를 사용합니다.
+Supervisor 상태 조회는 복구 명령 권한을 만들지 않습니다. 관측된 안전 채널이 오래되면
+수동 이동을 차단하지만 기존 STOP 경로와 물리 비상정지는 별개입니다.
