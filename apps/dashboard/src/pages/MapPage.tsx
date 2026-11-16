@@ -25,7 +25,7 @@ import { useDemoMode } from "../operations/DemoModeContext";
 import "./home-dashboard.css";
 
 /** Coordinate facility-scoped seat selection, robot details, and mission panels across runtime modes. */
-export function HomePage() {
+export function MapPage() {
   const { floor } = useOutletContext<FacilitySelection>();
   return <HomeWorkspace key={floor.id} floor={floor} />;
 }
@@ -61,7 +61,7 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
       positionMode: "live", poseStale: livePose.stale }];
   }, [isDemo, recordingPosition, recordingHeading, livePose.pose, livePose.stale, robots]);
   return (
-    <section className="home-workspace" aria-label="로봇 관제 홈" style={panelMotionStyle}>
+    <section className="home-workspace" aria-label="시설 지도 화면" style={panelMotionStyle}>
       <h1 className="sr-only">{floor.label}</h1>
       <div className={"home-workspace-body" + (selectedSeat ? " has-request" : "")}>
         <section className="home-map-panel" aria-label="시설 지도">

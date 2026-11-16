@@ -163,7 +163,7 @@ test("a lost WebGL context falls back cleanly and supports a fresh renderer", as
 
 test("home roster stays static while the detail model supports dragging and teardown", async ({ page }) => {
   await fixtureApi(page);
-  await page.goto("/?renderStats=1");
+  await page.goto("/map?renderStats=1");
   const roster = page.getByRole("complementary", { name: "로봇 목록", exact: true });
   await roster.locator(".home-robot-thumbnail").hover();
   await page.mouse.move(0, 0);
@@ -268,7 +268,7 @@ test("reduced motion suppresses the detail guide and keeps keyboard rotation", a
 test("home detail pauses its guide when the model is scrolled out of view", async ({ page }) => {
   await page.setViewportSize({ width: 1366, height: 480 });
   await fixtureApi(page);
-  await page.goto("/?renderStats=1");
+  await page.goto("/map?renderStats=1");
   await page.getByRole("button", { name: "cleany-01 상세 열기" }).click();
   const panel = page.getByRole("complementary", { name: "로봇 상세", exact: true });
   const card = panel.locator(".robot-model-card");
@@ -296,7 +296,7 @@ test("leaving home during download does not resurrect its canvas", async ({ page
   page.on("pageerror", error => errors.push(error.message));
   await page.route("**/models/*.glb", async route => { await delayed; await route.continue(); });
   const requested = page.waitForRequest(request => request.url().endsWith(".glb"));
-  await page.goto("/");
+  await page.goto("/map");
   await page.getByRole("button", { name: "cleany-01 상세 열기" }).click();
   await page.locator(".robot-model-card").scrollIntoViewIfNeeded();
   await requested;

@@ -46,6 +46,7 @@ export async function capture(page: Page, testInfo: TestInfo, name: string) {
   await page.evaluate(async () => {
     await document.fonts.ready;
     await Promise.all(Array.from(document.images).map(img => img.decode().catch(() => {})));
+    await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
   });
   await expect(page).toHaveScreenshot(name + ".png", { fullPage: true });
   // Metadata makes viewport and fixture provenance explicit in exported comparison reports.

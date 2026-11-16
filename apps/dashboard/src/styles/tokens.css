@@ -85,3 +85,11 @@
  --motion-control: 150ms; --shadow-floating: 0 6px 22px var(--color-shadow);
 }
 @font-face { font-family: "Cleany Pretendard"; src: url("/fonts/PretendardVariable.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+
+:root {
+ --chart-clean-complete: #26886b;
+ --chart-clean-working: #e9b949;
+ --chart-clean-needed: var(--color-danger);
+ --chart-occupancy: var(--color-action);
+ --chart-work: #467e95;
+}

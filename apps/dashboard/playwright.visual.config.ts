@@ -14,6 +14,10 @@ export default defineConfig({
     baseURL: external ?? "http://127.0.0.1:18083",
     locale: "ko-KR", timezoneId: "Asia/Seoul", colorScheme: "light",
     reducedMotion: "reduce", deviceScaleFactor: 1, trace: "retain-on-failure",
+    // Partial raster retains slightly different SVG/rounded-edge antialiasing after
+    // incremental paints. Render complete tiles for reproducible zero-pixel checks.
+    // https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md
+    launchOptions: { args: ["--disable-partial-raster"] },
   },
   projects: [
     { name: "desktop", use: { viewport: { width: 1920, height: 1080 } } },

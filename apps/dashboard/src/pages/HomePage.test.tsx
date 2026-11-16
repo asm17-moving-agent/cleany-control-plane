@@ -3,7 +3,7 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter, Outlet, Route, Routes } from "react-router";
 import { afterEach, it, expect, vi } from "vitest";
-import { HomePage } from "./HomePage";
+import { MapPage } from "./MapPage";
 vi.mock("../operations/OperationsContext", () => ({ useOperations: () => ({
  pose: { x: -1.865, y: -4.705, received_at: "2026-09-18T00:00:00Z" }, poseStale: false, connectionState: "connected",
  robots: [{ robot_id: "cleany-01", state: "IDLE", active_mission_id: null, last_seen_at: "2026-09-08T01:00:00Z" }],
@@ -12,7 +12,7 @@ vi.mock("../operations/OperationsContext", () => ({ useOperations: () => ({
 vi.mock("../settings/SettingsContext", () => ({ useSettings: () => ({ settings: { defaultPriority: "NORMAL" } }) }));
 afterEach(cleanup);
 it("opens robot details from the roster and map and closes without leaving home", () => {
- render(<MemoryRouter><Routes><Route element={<Outlet context={{ floor: { id: "BUSAN_SOMA_18F", label: "18층", mapAvailable: true } }} />}><Route index element={<HomePage />} /></Route></Routes></MemoryRouter>);
+ render(<MemoryRouter><Routes><Route element={<Outlet context={{ floor: { id: "BUSAN_SOMA_18F", label: "18층", mapAvailable: true } }} />}><Route index element={<MapPage />} /></Route></Routes></MemoryRouter>);
  expect(within(screen.getByRole("complementary", { name: "로봇 목록" })).queryByRole("link")).not.toBeInTheDocument();
  expect(screen.queryByRole("complementary", { name: "로봇 상세" })).not.toBeInTheDocument();
  expect(within(screen.getByRole("complementary", { name: "로봇 목록" })).getAllByRole("button")).toHaveLength(1);
@@ -38,7 +38,7 @@ it("opens robot details from the roster and map and closes without leaving home"
 });
 
 it("toggles the same seat panel and can reopen it during the closing animation", () => {
- render(<MemoryRouter><Routes><Route element={<Outlet context={{ floor: { id: "BUSAN_SOMA_18F", label: "18층", mapAvailable: true } }} />}><Route index element={<HomePage />} /></Route></Routes></MemoryRouter>);
+ render(<MemoryRouter><Routes><Route element={<Outlet context={{ floor: { id: "BUSAN_SOMA_18F", label: "18층", mapAvailable: true } }} />}><Route index element={<MapPage />} /></Route></Routes></MemoryRouter>);
  const seat = screen.getByRole("button", { name: "12번 좌석 · 비어 있음" });
  fireEvent.click(seat);
  expect(seat).toHaveAttribute("aria-pressed", "true");
@@ -51,7 +51,7 @@ it("toggles the same seat panel and can reopen it during the closing animation",
 });
 
 it("keeps seat and robot panels mutually exclusive from both robot entry points", () => {
- render(<MemoryRouter><Routes><Route element={<Outlet context={{ floor: { id: "BUSAN_SOMA_18F", label: "18층", mapAvailable: true } }} />}><Route index element={<HomePage />} /></Route></Routes></MemoryRouter>);
+ render(<MemoryRouter><Routes><Route element={<Outlet context={{ floor: { id: "BUSAN_SOMA_18F", label: "18층", mapAvailable: true } }} />}><Route index element={<MapPage />} /></Route></Routes></MemoryRouter>);
  const seat = screen.getByRole("button", { name: "12번 좌석 · 비어 있음" });
  for (const name of ["cleany-01 상세 열기", "cleany-01 로봇 · 대기 · 실시간 위치"]) {
   fireEvent.click(seat);
@@ -72,7 +72,7 @@ it("keeps seat and robot panels mutually exclusive from both robot entry points"
 });
 
 it("keeps demo visible and prevents real mission submission", () => {
- render(<MemoryRouter initialEntries={["/?summaryDemo=1"]}><Routes><Route element={<Outlet context={{ floor: { id: "BUSAN_SOMA_18F", label: "18층", mapAvailable: true } }} />}><Route index element={<HomePage />} /></Route></Routes></MemoryRouter>);
+ render(<MemoryRouter initialEntries={["/?summaryDemo=1"]}><Routes><Route element={<Outlet context={{ floor: { id: "BUSAN_SOMA_18F", label: "18층", mapAvailable: true } }} />}><Route index element={<MapPage />} /></Route></Routes></MemoryRouter>);
  expect(screen.getByRole("button", { name: "데모 · 해제" })).toBeVisible();
  fireEvent.click(screen.getByRole("button", { name: "12번 좌석 · 비어 있음" }));
  expect(screen.getByRole("button", { name: "요청 보내기" })).toBeDisabled();

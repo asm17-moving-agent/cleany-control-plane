@@ -47,7 +47,7 @@ export function MissionsPage() {
     finally { pending.current = null; setCancelling(null); }
   }
   return <OperationsPage className="missions-view" title="작업 요청"
-    action={<Button asChild variant="primary"><Link className="ops-button is-primary" to="/"><span aria-hidden="true">＋</span> 새 작업 요청</Link></Button>}>
+    action={<Button asChild variant="primary"><Link className="ops-button is-primary" to="/map"><span aria-hidden="true">＋</span> 새 작업 요청</Link></Button>}>
     <div className="ops-toolbar">
       <OperationsTabs label="작업 필터" tabs={([["ALL", "전체 요청"], ["ACTIVE", "진행 중"], ["QUEUED", "대기"], ["TERMINAL", "종료"]] as const).map(([id, label]) => ({ label, href: href({ phase: id, mission: null }), active: phase === id, count: isLoading || error ? "—" : missions.filter(item => phaseMatches(id, item)).length }))} />
       <div className="ops-filters"><label>우선순위<NativeSelect value={priority} onChange={event => setParams(new URLSearchParams(href({ priority: event.target.value, mission: null }).split("?")[1]))}><option value="ALL">전체</option><option value="HIGH">높음</option><option value="NORMAL">보통</option></NativeSelect></label><Button variant="secondary" size="default" className="ops-button" onClick={() => void refresh()} disabled={isLoading}>새로고침</Button></div>
@@ -61,7 +61,7 @@ export function MissionsPage() {
             <span><strong>{missionTargetLabel(mission, seats)}</strong>{mission.priority === "HIGH" && <small className="mission-priority-high">우선순위 높음</small>}</span>
             <MissionStatusBadge mission={mission} /><time dateTime={mission.created_at}>{formatDateTime(mission.created_at)}</time><ChevronIcon aria-hidden="true" />
           </Link>)}</div><footer className="ops-list-footer">배정: 높은 우선순위 먼저 · 진행 중인 작업 유지</footer></>
-          : <OperationsEmpty icon={<MissionIcon />} title={missions.length ? "조건에 맞는 작업 없음" : "작업 요청 없음"}>{missions.length ? <Link to="/missions">전체 작업</Link> : <Link to="/">새 작업 요청</Link>}</OperationsEmpty>}
+          : <OperationsEmpty icon={<MissionIcon />} title={missions.length ? "조건에 맞는 작업 없음" : "작업 요청 없음"}>{missions.length ? <Link to="/missions">전체 작업</Link> : <Link to="/map">새 작업 요청</Link>}</OperationsEmpty>}
         </section>
         <aside className="ops-panel ops-detail" aria-label="작업 요청 상세"><header className="ops-panel-heading"><h3>요청 상세</h3><MissionIcon aria-hidden="true" /></header>
           {selected ? <div className="ops-detail-content" key={selected.mission_id}>

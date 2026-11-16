@@ -1,80 +1,91 @@
-import { Details, PageHeader } from "../components/patterns";
-import { phaseLabels } from "../components/OperationsPage";
-import { outcomeLabels } from "../lib/home-summary";
-import { formatDateTime, missionTargetLabel } from "../lib/operations";
-import { useOperations } from "../operations/OperationsContext";
-import { useDemoMode } from "../operations/DemoModeContext";
+import { useMemo, useState } from "react";
+import { Link, useOutletContext, useSearchParams } from "react-router";
+import { Bar, BarChart, CartesianGrid, LabelList, Line, LineChart, Pie, PieChart, XAxis, YAxis } from "recharts";
+import type { FacilitySelection } from "../app/AppShell";
+import { PageHeader, PanelHeader, Surface, StatusBadge } from "../components/patterns";
+import { Button } from "../components/ui/button";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "../components/ui/chart";
+import { averageOccupancy, completedByType, getHomeSnapshot, minuteLabel } from "../features/operations-home/home-data";
+import "../features/operations-home/operations-home.css";
 
-/** Derive operational metrics from snapshots and show live activity with a mission-history fallback. */
+const chartConfig = {
+  occupied: { label: "평균 점유", color: "var(--chart-occupancy)" },
+  vacant: { label: "평균 미점유", color: "var(--color-neutral-soft)" },
+  rate: { label: "점유율", color: "var(--chart-occupancy)" },
+  count: { label: "처리 건수", color: "var(--chart-work)" },
+} satisfies ChartConfig;
+const cleaningConfig = [
+  { key: "complete", label: "완료" }, { key: "working", label: "진행 중" }, { key: "needed", label: "정리 필요" },
+] as const;
+
+/** Café overview, using an isolated display-only snapshot rather than robot telemetry. */
 export function MonitoringPage() {
-  const { missions, robot, seats, events } = useOperations();
-  const { isDemo } = useDemoMode();
-  const terminal = missions.filter(({ phase }) => phase === "TERMINAL");
-  const accepted = missions.filter(m => m.accepted_at || (isDemo && m.phase !== "QUEUED"));
-  const succeeded = accepted.filter(({ outcome }) => outcome === "SUCCESS").length;
-  const unfinished = accepted.filter(m => m.phase !== "TERMINAL").length;
-  const mockRuns = accepted.filter(m => m.execution_profile && Object.values(m.execution_profile).includes("mock")).length;
-  const activeCount = missions.filter(({ phase }) => !["QUEUED", "TERMINAL"].includes(phase)).length;
-  const queuedCount = missions.filter(({ phase }) => phase === "QUEUED").length;
-  const successRate = accepted.length ? `${Math.round((succeeded / accepted.length) * 100)}%` : "-";
-  const eventLabels: Record<string, string> = {
-    "mission.created": "작업 접수", "mission.cancel_requested": "취소 요청",
-    "mission.status_changed": "작업 상태 변경", "robot.state_changed": "로봇 상태 변경",
-    "robot.pose": "위치 갱신", "robot.pose.stale": "위치 지연",
-  };
-  const activities = events.length
-    ? events.slice(0, 6).map((event) => ({
-        id: event.event_id,
-        title: eventLabels[event.event_type] ?? "상태 갱신",
-        detail: event.event_type,
-        description: event.mission_id ? `작업 ${event.mission_id.slice(0, 8)}` : event.robot_id,
-        occurredAt: event.occurred_at,
-        success: event.payload?.outcome === "SUCCESS",
-      }))
-    : missions.slice(0, 6).map((mission) => ({
-        id: mission.mission_id,
-        title: mission.outcome ? outcomeLabels[mission.outcome] : phaseLabels[mission.phase],
-        detail: mission.message,
-        description: missionTargetLabel(mission, seats),
-        occurredAt: mission.created_at,
-        success: mission.outcome === "SUCCESS",
-      }));
-
-  return (
-    <section className="workspace dashboard-view section-view monitoring-view">
-      <PageHeader title="운영 모니터링" />
-      <div className="metric-grid monitor-metrics">
-        <article className="metric-card"><span>처리 중 / 대기</span><strong>{activeCount} / {queuedCount}</strong></article>
-        <article className="metric-card"><span>종료 작업</span><strong>{terminal.length}</strong><small>전체 {missions.length}건</small></article>
-        <article className="metric-card"><span>수락 대비 성공</span><strong>{successRate}</strong><small>성공 {succeeded} / 수락 {accepted.length}건 · 모의 포함 {mockRuns}건</small><Details label="집계 기준"><p>수락한 작업 기준 · 미종료 {unfinished}건 포함 · 모의는 한 단계 이상 모의 실행한 작업</p></Details></article>
-      </div>
-      <div className="monitor-grid">
-        <article className="panel monitor-panel">
-          <div className="panel-heading"><div><h2>연결 및 작업 상태</h2></div></div>
-          <div className="health-visual">
-            <span className="health-ring"><i /></span>
-            <div>
-              <strong>{robot?.state === "BUSY" ? "작업 중" : robot?.state === "IDLE" ? "대기 중" : robot?.state === "ERROR" ? "로봇 확인 필요" : "로봇 연결 확인 필요"}</strong>
-            </div>
+  const { floor } = useOutletContext<FacilitySelection>();
+  const [params] = useSearchParams();
+  const [asOf, setAsOf] = useState(() => new Date());
+  const scenario = params.get("homeScenario") === "attention" ? "attention" : "normal";
+  const snapshot = useMemo(() => getHomeSnapshot(floor.id, asOf, scenario), [floor.id, asOf, scenario]);
+  const average = snapshot ? averageOccupancy(snapshot.occupancy) : null;
+  const bars = snapshot ? completedByType(snapshot.completions, snapshot.asOfMinute) : [];
+  const trend = snapshot?.occupancy.flatMap((item, index) => [
+    ...(index === 0 ? [{ minute: item.startMinute, rate: item.occupied / item.capacity * 100 }] : []),
+    { minute: item.endMinute, rate: item.occupied / item.capacity * 100 },
+  ]) ?? [];
+  const attention = snapshot && (!snapshot.robot.connected || snapshot.reviewCount > 0);
+  return <section className="cafe-home" aria-label="스터디카페 운영 현황">
+    <PageHeader title="운영 현황" action={<div className="cafe-header-actions"><StatusBadge>예시 데이터</StatusBadge>{snapshot && <time dateTime={`${snapshot.day}T${minuteLabel(snapshot.asOfMinute)}:00+09:00`}>{snapshot.day.replaceAll("-", ". ")} · {minuteLabel(snapshot.asOfMinute)} 기준</time>}<Button variant="secondary" onClick={() => setAsOf(new Date())}>새로고침</Button></div>} />
+    {!snapshot ? <Surface className="cafe-empty"><h3>예시 데이터 없음</h3><p>{floor.label}</p></Surface> : <>
+      {attention && <div className="cafe-alert" role="alert"><div><strong>관리자 확인 필요</strong><span>로봇 연결 끊김 · 결과 검토 {snapshot.reviewCount}건</span></div><div><Button asChild variant="danger-outline"><Link to="/robots">로봇 보기</Link></Button><Button asChild variant="secondary"><Link to="/results?filter=review">결과 보기</Link></Button></div></div>}
+      <div className="cafe-grid">
+        <Surface className="cafe-card cafe-cleaning" aria-label="좌석 정리 현황">
+          <PanelHeader title="좌석 정리 현황" action={<Button asChild variant="ghost" size="compact"><Link to="/map">지도 보기 →</Link></Button>} />
+          <div className="cafe-seat-total"><strong>{snapshot.capacity}<small>석</small></strong><span>현재 정리 상태</span></div>
+          <div className="cafe-seat-grid" role="img" aria-label={`전체 ${snapshot.capacity}석, 완료 ${snapshot.cleaning.complete}석, 진행 중 ${snapshot.cleaning.working}석, 정리 필요 ${snapshot.cleaning.needed}석`}>
+            {cleaningConfig.flatMap(({ key }) => Array.from({ length: snapshot.cleaning[key] }, (_, index) => <span key={`${key}-${index}`} data-cleaning={key} aria-hidden="true" />))}
           </div>
-          <dl className="detail-list compact-detail-list">
-            <div><dt>마지막 수신</dt><dd>{formatDateTime(robot?.last_seen_at)}</dd></div>
-            <div><dt>배정 작업</dt><dd>{robot?.active_mission_id?.slice(0, 8) ?? "없음"}</dd></div>
-            <div><dt>대기 작업</dt><dd>{queuedCount}개</dd></div>
-          </dl>
-        </article>
-        <article className="panel timeline-panel">
-          <div className="panel-heading"><div><h2>최근 활동</h2></div></div>
-          <div className="activity-list">
-            {activities.length ? activities.map((item) => (
-              <div className={`activity-item${item.success ? " success" : ""}`} key={item.id}>
-                <i className="activity-dot" />
-                <div className="activity-copy"><strong>{item.title}</strong><span>{item.description}</span><time>{formatDateTime(item.occurredAt)}</time>{item.detail && <Details label="기록 상세"><p>{item.detail}</p></Details>}</div>
-              </div>
-            )) : <p className="empty">최근 활동 없음</p>}
+          <dl className="cafe-cleaning-legend">{cleaningConfig.map(({ key, label }) => <div key={key}><dt><i data-cleaning={key} />{label}</dt><dd>{snapshot.cleaning[key]}<small>석</small></dd></div>)}</dl>
+        </Surface>
+        <Surface className="cafe-card" aria-label="오늘 평균 점유율">
+          <PanelHeader title="오늘 평균 점유율" />
+          <div className="cafe-donut">
+            <ChartContainer config={chartConfig} style={{ height: 210, width: "100%", aspectRatio: "auto" }}>
+              <PieChart accessibilityLayer aria-label={average === null ? "점유 데이터 없음" : `오늘 평균 점유율 ${Math.round(average)}%`}>
+                <Pie data={average === null ? [{ name: "vacant", value: 100, fill: "var(--color-neutral-soft)" }] : [{ name: "occupied", value: average, fill: "var(--color-occupied)" }, { name: "vacant", value: 100 - average, fill: "var(--color-vacant)" }]} dataKey="value" nameKey="name" innerRadius={70} outerRadius={92} strokeWidth={0} startAngle={90} endAngle={-270} isAnimationActive={false} />
+              </PieChart>
+            </ChartContainer>
+            <div className="cafe-donut-value"><strong>{average === null ? "—" : Math.round(average)}{average !== null && <small>%</small>}</strong><span>오늘 평균</span></div>
           </div>
-        </article>
+          <p className="cafe-chart-caption">{average === null ? "집계 시작 전" : `00:00–${minuteLabel(snapshot.asOfMinute)} · 전체 ${snapshot.capacity}석 기준`}</p>
+        </Surface>
+        <Surface className="cafe-card" aria-label="시간대별 좌석 점유율">
+          <PanelHeader title="시간대별 좌석 점유율" />
+          <ChartContainer config={chartConfig} style={{ height: 230, width: "100%", aspectRatio: "auto" }}>
+            <LineChart accessibilityLayer data={trend} margin={{ top: 16, right: 16, left: -12, bottom: 0 }} aria-label="오늘 0시부터 기준 시각까지의 좌석 점유율">
+              <CartesianGrid vertical={false} stroke="var(--color-border)" strokeDasharray="3 3" />
+              <XAxis dataKey="minute" type="number" domain={[0, 1440]} ticks={[0, 240, 480, 720, 960, 1200, 1440]} tickFormatter={value => `${Math.floor(value / 60)}시`} axisLine={false} tickLine={false} tickMargin={12} />
+              <YAxis domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={value => `${value}%`} axisLine={false} tickLine={false} />
+              <ChartTooltip content={<ChartTooltipContent labelFormatter={(_, payload) => minuteLabel(Number(payload[0]?.payload?.minute ?? 0))} formatter={value => `${Number(value).toFixed(1)}%`} />} />
+              <Line dataKey="rate" type="linear" stroke="var(--color-rate)" strokeWidth={3} dot={false} activeDot={{ r: 5 }} isAnimationActive={false} />
+            </LineChart>
+          </ChartContainer>
+          <div className="sr-only"><table><caption>시간대별 점유율 데이터</caption><thead><tr><th>시간 구간</th><th>점유율</th></tr></thead><tbody>{snapshot.occupancy.map(item => <tr key={item.startMinute}><th>{minuteLabel(item.startMinute)}–{minuteLabel(item.endMinute)}</th><td>{(item.occupied / item.capacity * 100).toFixed(1)}%</td></tr>)}</tbody></table></div>
+          {!trend.length && <p className="cafe-chart-caption">집계 시작 전</p>}
+        </Surface>
+        <Surface className="cafe-card" aria-label="작업 유형별 처리 건수">
+          <PanelHeader title="작업 유형별 처리 건수" action={<span className="cafe-total">오늘 {bars.reduce((sum, item) => sum + item.count, 0)}건</span>} />
+          <ChartContainer config={chartConfig} style={{ height: 230, width: "100%", aspectRatio: "auto" }}>
+            <BarChart accessibilityLayer data={bars} layout="vertical" margin={{ left: 0, right: 36, top: 16, bottom: 0 }} aria-label="오늘 완료한 유형별 작업 건수">
+              <CartesianGrid horizontal={false} stroke="var(--color-border)" strokeDasharray="3 3" />
+              <XAxis type="number" allowDecimals={false} axisLine={false} tickLine={false} />
+              <YAxis dataKey="type" type="category" width={82} axisLine={false} tickLine={false} />
+              <ChartTooltip content={<ChartTooltipContent formatter={value => `${value}건`} />} />
+              <Bar dataKey="count" fill="var(--color-count)" radius={[0, 6, 6, 0]} barSize={24} isAnimationActive={false}><LabelList dataKey="count" position="right" fill="var(--color-text)" /></Bar>
+            </BarChart>
+          </ChartContainer>
+          <p className="sr-only">{bars.map(item => `${item.type} ${item.count}건`).join(", ")}</p>
+        </Surface>
       </div>
-    </section>
-  );
+      <Surface className="cafe-operation" aria-label="운영 상태"><div><h3>운영 상태</h3><StatusBadge tone={attention ? "warning" : "success"}>{attention ? "확인 필요" : "정상 운영"}</StatusBadge></div><dl><div><dt>로봇 배터리</dt><dd><span className="cafe-battery" aria-hidden="true"><i style={{ width: `${snapshot.robot.battery}%` }} /></span>{snapshot.robot.battery}%</dd></div><div><dt>현재 작업</dt><dd>{snapshot.robot.currentTask ?? "중단 · 연결 확인 필요"}</dd></div><div><dt>관리자 개입</dt><dd>{attention ? `결과 검토 ${snapshot.reviewCount}건` : "필요 없음"}</dd></div></dl><Button asChild variant="secondary"><Link to="/robots">로봇 보기</Link></Button></Surface>
+    </>}
+  </section>;
 }

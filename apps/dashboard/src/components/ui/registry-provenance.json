@@ -18,5 +18,10 @@
   "switch": {
     "url": "https://ui.shadcn.com/r/styles/new-york-v4/switch.json",
     "sha256": "cc526c3a4827be315be746355a988e22dacc99d663ed31924fd30c2507cdc005"
+  },
+  "chart": {
+    "url": "https://ui.shadcn.com/r/styles/new-york-v4/chart.json",
+    "sha256": "2ea906f5c8e304dfb81c84e7b2172d13c03a302e183b7195cac24c101dee72e5",
+    "adaptation": "Local cn import; Recharts 3.10.1; Cleany chart colors and typography."
   }
 }

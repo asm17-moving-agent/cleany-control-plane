@@ -28,7 +28,7 @@ export function RobotsPage() {
   const selected = selectedId ? filtered.find(robot => robot.robot_id === selectedId) : filtered[0];
   const active = missions.find(mission => mission.mission_id === selected?.active_mission_id);
   return <OperationsPage className="robots-view" title="로봇 관리"
-    action={<Button asChild variant="secondary"><Link className="ops-button" to="/"><TargetIcon /> 좌석 지도 보기</Link></Button>}>
+    action={<Button asChild variant="secondary"><Link className="ops-button" to="/map"><TargetIcon /> 좌석 지도 보기</Link></Button>}>
     <div className="ops-toolbar"><OperationsTabs label="로봇 필터" tabs={[
       { label: "전체 로봇", href: "/robots", active: !attentionOnly, count: isLoading || error ? "—" : robots.length },
       { label: "즉시 조치", href: "/robots?filter=attention", active: attentionOnly, count: isLoading || error ? "—" : robots.filter(needsRobotAttention).length, attention: true },

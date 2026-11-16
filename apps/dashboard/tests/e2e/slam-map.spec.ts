@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process";
 
 test("facility preserves SLAM alignment with 82 draft seats", async ({ page }, testInfo) => {
   execFileSync("uv", ["run", "--project", "../backend", "python", "-m", "control_plane.admin", "--database", process.env.CLEANY_E2E_DATABASE!, "site-set-map", "BUSAN_SOMA_19F", "slam-20261108"]);
-  await page.goto("/");
+  await page.goto("/map");
   await page.getByLabel("아이디", { exact: true }).fill("e2e-operator");
   await page.getByLabel("비밀번호", { exact: true }).fill("e2e-operator-password-2026");
   await page.getByRole("button", { name: "로그인", exact: true }).click();

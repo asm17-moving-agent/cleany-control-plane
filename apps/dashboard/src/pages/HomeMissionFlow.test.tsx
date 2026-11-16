@@ -5,7 +5,7 @@ import { MemoryRouter, Outlet, Route, Routes } from "react-router";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import type { Mission } from "../api/types";
 import { useOperations } from "../operations/OperationsContext";
-import { HomePage } from "./HomePage";
+import { MapPage } from "./MapPage";
 
 const { readOperations, createMission } = vi.hoisted(() => ({ readOperations: vi.fn(), createMission: vi.fn() }));
 vi.mock("../operations/OperationsContext", () => ({ useOperations: readOperations }));
@@ -19,7 +19,7 @@ const request: Mission = {
   message: "", cancel_requested: false, sequence: 0, before_observation: null, after_observation: null,
 };
 function View() {
-  return <MemoryRouter><Routes><Route element={<Outlet context={{ floor: { id: "BUSAN_SOMA_18F", label: "18층", mapAvailable: true } }} />}><Route index element={<HomePage />} /></Route></Routes></MemoryRouter>;
+  return <MemoryRouter><Routes><Route element={<Outlet context={{ floor: { id: "BUSAN_SOMA_18F", label: "18층", mapAvailable: true } }} />}><Route index element={<MapPage />} /></Route></Routes></MemoryRouter>;
 }
 async function submit() {
   fireEvent.click(screen.getByRole("button", { name: "12번 좌석 · 비어 있음" }));

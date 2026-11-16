@@ -8,7 +8,7 @@ test("page headers are compact and the map keeps its viewport geometry", async (
     await expect(header).toHaveCSS("height", "72px");
     await expect(header.locator("p")).toHaveCount(0);
   }
-  await page.goto("/?demo=1");
+  await page.goto("/map?demo=1");
   // The occupancy chart may grow beyond the map header's existing minimum.
   await expect(page.locator(".home-map-header")).toHaveCSS("min-height", "96px");
   await expect(page.locator("button.facility-map-seat")).toHaveCount(82);

@@ -19,6 +19,8 @@ test("company-issued account changes password, then reset and disable revoke liv
   await page.getByLabel("새 비밀번호", { exact: true }).fill("e2e-first-new-password-2026");
   await page.getByLabel("새 비밀번호 확인", { exact: true }).fill("e2e-first-new-password-2026");
   await page.getByRole("button", { name: "변경하고 시작하기" }).click();
+  await expect(page.getByRole("heading", { name: "운영 현황", level: 2 })).toBeVisible();
+  await page.getByRole("navigation", { name: "주요 메뉴" }).getByRole("link", { name: "지도", exact: true }).click();
   await expect(page.locator("button.facility-map-seat")).toHaveCount(82);
   await page.screenshot({ path: testInfo.outputPath("authenticated-dashboard.png") });
   const identity = await (await page.request.get("/api/auth/me")).json();

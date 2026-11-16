@@ -141,3 +141,15 @@
  @media (max-width: 600px) { :where(.auth-card h1) { font-size: 28px; line-height: 36px; } }
  @media (prefers-reduced-motion: reduce) { .ui-button, .ui-input, .ui-switch, .ui-switch [data-slot=switch-thumb], [data-slot=dropdown-menu-content] { transition: none; animation: none; } }
 }
+
+@layer components {
+ /* Keep all five labelled destinations visible, including on the map's compact shell. */
+ @media (max-width: 1280px) {
+  .control-app .workspace-brand { width: 166px; flex-basis: 166px; padding-inline: 16px; }
+  .control-app .workspace-navigation { gap: 0; padding-left: 0; }
+  .control-app .workspace-navigation a { min-width: 0; padding-inline: 10px; gap: 6px; }
+  .control-app .workspace-header-actions { gap: 8px; padding-inline: 12px; }
+  .control-app .workspace-location select { width: 166px; }
+  .control-app .workspace-avatar { padding-inline: 4px; }
+ }
+}

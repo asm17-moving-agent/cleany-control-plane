@@ -9,7 +9,7 @@ test.beforeEach(async ({ baseURL }) => {
 test.afterEach(async () => { await gateway.disconnect(); });
 
 async function submit(page: import("@playwright/test").Page) {
-  await page.goto("/?demo=0&recording=0");
+  await page.goto("/map?demo=0&recording=0");
   await page.locator('.facility-map-seat[data-seat-id="seat-12"]').click();
   const response = page.waitForResponse(r => new URL(r.url()).pathname === "/api/missions" && r.request().method() === "POST");
   await page.getByRole("button", { name: "요청 보내기", exact: true }).click();
@@ -19,7 +19,7 @@ async function submit(page: import("@playwright/test").Page) {
 }
 
 test("supported seat executes the external FSM phases and displays honest result provenance", async ({ page }, testInfo) => {
-  await page.goto("/?demo=0&recording=0");
+  await page.goto("/map?demo=0&recording=0");
   await page.locator('.facility-map-seat[data-seat-id="seat-a1-01"]').click();
   await expect(page.getByRole("button", { name: "요청 보내기", exact: true })).toBeDisabled();
   await expect(page.getByText("이 좌석은 아직 로봇 작업을 지원하지 않습니다.")).toBeVisible();

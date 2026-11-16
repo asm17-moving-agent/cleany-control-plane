@@ -1,7 +1,7 @@
 import { expect, test } from "./support/auth";
 
 test("WebSocket pose reaches the map through SSE and stale snapshots survive reload", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/map");
   await page.evaluate(() => new Promise<void>((resolve, reject) => {
     const socket = new WebSocket(`ws://${location.host}/api/robots/cleany-01/pose/ws`, ["cleany", "e2e-robot-token-only-for-tests"]);
     const owner = window as unknown as { stopTestPose: () => void };
@@ -37,7 +37,7 @@ test("recording and demo modes stay isolated from live telemetry", async ({ page
     if (request.method() === "POST" && request.url().includes("/api/missions")) commands.push(request.url());
     if (/\/api\/(events\/stream|robots\/cleany-01\/pose)/.test(request.url())) liveConnections.push(request.url());
   });
-  await page.goto("/?recording=1");
+  await page.goto("/map?recording=1");
   const marker = page.locator(".facility-map-robot");
   await expect(marker).toHaveAttribute("aria-label", /예시 위치/);
   const before = await marker.getAttribute("style");
@@ -48,7 +48,7 @@ test("recording and demo modes stay isolated from live telemetry", async ({ page
   await expect(page.locator(".home-telemetry-status")).toContainText("촬영 위치");
   expect(commands).toEqual([]);
   expect(liveConnections).toEqual([]);
-  await page.goto("/?demo=1&recording=0");
+  await page.goto("/map?demo=1&recording=0");
   await expect(page.locator(".facility-map-robot")).toHaveCount(3);
   await expect(page.locator(".home-telemetry-status")).toContainText("예시 위치");
   expect(liveConnections).toEqual([]);

@@ -1,7 +1,7 @@
 import { expect, test } from "./support/auth";
 
 test("operator can select a seat on the map and send a supported request", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/map");
   const fleet = page.getByRole("complementary", { name: "로봇 목록", exact: true });
   await expect(fleet).toBeVisible();
   await expect(page.locator("button.facility-map-seat")).toHaveCount(82);
@@ -33,7 +33,7 @@ test("operator can select a seat on the map and send a supported request", async
 });
 
 test("home entry points and unavailable floors remain accessible", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/map");
   const floorSelect = page.getByLabel("운영 층 선택");
   await floorSelect.selectOption("BUSAN_SOMA_19F");
   await expect(page.getByRole("heading", { name: "19층 지도 연결 전" })).toBeVisible();
@@ -52,9 +52,8 @@ test("home entry points and unavailable floors remain accessible", async ({ page
   await page.getByRole("menuitem", { name: /즉시 조치/ }).click();
   await expect(page).toHaveURL(/\/robots\?filter=attention$/);
 
-  await page.getByLabel("운영 메뉴", { exact: true }).click();
-  await page.getByRole("menuitem", { name: "모니터링", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "연결 및 작업 상태" })).toBeVisible();
+  await page.getByRole("navigation", { name: "주요 메뉴" }).getByRole("link", { name: "홈", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "운영 상태" })).toBeVisible();
 });
 
 test("production SPA routes and URL filters work on direct access", async ({ page }) => {
@@ -73,7 +72,7 @@ test("production SPA routes and URL filters work on direct access", async ({ pag
 for (const viewport of [{ width: 1920, height: 1080 }, { width: 1366, height: 768 }]) {
   test("home panels fit " + viewport.width + " × " + viewport.height, async ({ page }) => {
     await page.setViewportSize(viewport);
-    await page.goto("/");
+    await page.goto("/map");
     await page.getByRole("button", { name: "12번 좌석 · 비어 있음" }).click();
     for (const selector of [".workspace-header", ".home-robot-panel", ".home-map-panel", ".seat-mission-panel", ".facility-map-legend"]) {
       // Opening panels animate into place; assert their settled geometry.

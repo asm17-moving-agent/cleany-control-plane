@@ -1,0 +1,43 @@
+import { expect, test } from "./support/auth";
+test("home uses an isolated café snapshot and keeps five destinations", async ({ page }) => {
+ await page.clock.setFixedTime(new Date('2026-11-17T09:30:00Z'));
+ const commands: string[] = [];
+ page.on('request',r=>{if(r.method()==='POST' && /\/api\/(missions|robots)/.test(r.url()))commands.push(r.url());});
+ await page.goto('/?demo=0');
+ const home=page.getByRole('region',{name:'스터디카페 운영 현황'});
+ await expect(home.getByText('예시 데이터',{exact:true})).toBeVisible();
+ await expect(home.locator('.cafe-seat-grid > span')).toHaveCount(82);
+ await expect(home.getByText('정상 운영',{exact:true})).toBeVisible();
+ await expect(home.getByRole('alert')).toHaveCount(0);
+ await expect(home.locator('canvas, .facility-map-stage, .manual-control')).toHaveCount(0);
+ const trend=home.getByRole('application',{name:'오늘 0시부터 기준 시각까지의 좌석 점유율'});
+ await expect(trend).toHaveCSS('stroke','none');
+ await trend.focus(); await page.keyboard.press('ArrowRight');
+ await expect(home.getByRole('region',{name:'시간대별 좌석 점유율'}).locator('.recharts-tooltip-wrapper')).toContainText('01:00');
+ await expect(home.getByRole('table',{name:'시간대별 점유율 데이터'})).toHaveCount(1);
+ expect(await page.evaluate(()=>document.documentElement.scrollHeight)).toBe(page.viewportSize()!.height);
+ expect(await page.getByRole('navigation',{name:'주요 메뉴'}).getByRole('link').allTextContents()).toEqual(['홈','지도','작업','로봇','설정']);
+ await page.getByRole('button',{name:'새로고침',exact:true}).click();
+ await expect(home.locator('.cafe-seat-grid > span')).toHaveCount(82);
+ expect(await page.evaluate(()=>sessionStorage.getItem('cleany.operations-demo'))).toBeNull();
+ await page.goto('/?homeScenario=attention');
+ await expect(page.getByRole('alert')).toContainText('로봇 연결 끊김');
+ await expect(home.locator('[data-cleaning=working]')).toHaveCount(1); // Legend only; no active seat.
+ await expect(home.getByText('결과 검토 2건',{exact:true})).toBeVisible();
+ await home.getByRole('link',{name:'결과 보기',exact:true}).click();
+ await expect(page).toHaveURL(/\/results\?filter=review$/);
+ await expect(page.getByRole('navigation',{name:'주요 메뉴'}).getByRole('link',{name:'작업',exact:true})).toHaveClass('is-active');
+ expect(commands).toEqual([]);
+});
+test("legacy routes preserve mode and floor selection without losing the map",async({page})=>{
+ await page.goto('/monitoring?demo=1'); await expect(page).toHaveURL(/\/\?demo=1$/);
+ await expect(page.getByRole('heading',{name:'운영 현황',level:2})).toBeVisible();
+ await page.goto('/?summaryDemo=1&demo=1'); await expect(page).toHaveURL(/\/map\?summaryDemo=1&demo=1$/);
+ await expect(page.locator('button.facility-map-seat')).toHaveCount(82);
+ await page.goto('/?recording=1'); await expect(page).toHaveURL(/\/map\?recording=1$/);
+ await page.goto('/?demo=0');
+ await page.getByLabel('운영 층 선택').selectOption('BUSAN_SOMA_19F');
+ await expect(page.getByRole('heading',{name:'예시 데이터 없음'})).toBeVisible();
+ await page.getByLabel('운영 층 선택').selectOption('BUSAN_SOMA_18F');
+ await expect(page.locator('.cafe-seat-grid > span')).toHaveCount(82);
+});

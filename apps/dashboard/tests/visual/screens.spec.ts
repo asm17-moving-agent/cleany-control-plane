@@ -3,24 +3,29 @@ import { capture, fixture } from "./fixture";
 
 test.beforeEach(async ({ page }) => { await fixture(page); });
 for (const [name, route] of [
-  ["home", "/?demo=1"], ["missions", "/missions?demo=1"],
+  ["home", "/map?demo=1"], ["missions", "/missions?demo=1"],
   ["results", "/results?demo=1&filter=review"], ["robots", "/robots?demo=1"],
   ["monitoring", "/monitoring?demo=1"], ["settings", "/settings?demo=1"],
 ] as const) {
   test(name, async ({ page }, testInfo) => {
     await page.goto(route);
     await expect(page.getByRole("navigation", { name: "주요 메뉴" })).toBeVisible();
+    if (name === "monitoring") {
+      // The home is lazy-loaded; navigation alone does not prove chart readiness.
+      await expect(page.locator(".cafe-seat-grid > span")).toHaveCount(82);
+      await expect(page.locator(".cafe-home .recharts-surface")).toHaveCount(3);
+    }
     await capture(page, testInfo, name);
   });
 }
 test("request", async ({ page }, testInfo) => {
-  await page.goto("/?demo=1");
+  await page.goto("/map?demo=1");
   await page.getByRole("button", { name: /^12번 좌석 ·/ }).click();
   await expect(page.getByRole("button", { name: "요청 보내기" })).toBeDisabled();
   await capture(page, testInfo, "request");
 });
 test("robot drawer", async ({ page }, testInfo) => {
-  await page.goto("/?demo=1");
+  await page.goto("/map?demo=1");
   // Finish the initial map paint before focusing/zooming it. Otherwise Chromium can
   // retain a different SVG text raster when the floorplan decodes during the zoom.
   await page.locator("img.facility-plan-artwork").evaluate(async element => {
@@ -67,4 +72,16 @@ test("loading", async ({ page }, testInfo) => {
   await page.goto('/missions');
   await expect(page.locator('.ops-body')).toHaveAttribute('aria-busy','true');
   await capture(page, testInfo, 'loading');
+});
+
+test("home attention", async ({ page }, testInfo) => {
+  await page.goto('/?demo=1&homeScenario=attention');
+  await expect(page.getByRole('alert')).toContainText('관리자 확인 필요');
+  await capture(page, testInfo, 'home-attention');
+});
+test("home no data", async ({ page }, testInfo) => {
+  await page.route('**/api/sites', route => route.fulfill({json:{items:[{site_id:'BUSAN_SOMA_19F',display_name:'부산 소마 센터 19층',map_ref:'unconnected'}]}}));
+  await page.goto('/?demo=1');
+  await expect(page.getByRole('heading',{name:'예시 데이터 없음'})).toBeVisible();
+  await capture(page, testInfo, 'home-no-data');
 });

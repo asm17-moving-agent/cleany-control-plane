@@ -47,7 +47,7 @@ async function missionApi(page: Page) {
 }
 
 async function submitSeat(page: Page) {
-  await page.goto("/");
+  await page.goto("/map");
   await page.getByRole("button", { name: "12번 좌석 · 비어 있음" }).click();
   const request = page.getByRole("complementary", { name: "작업 요청 패널" });
   await request.getByRole("button", { name: "요청 보내기" }).click();

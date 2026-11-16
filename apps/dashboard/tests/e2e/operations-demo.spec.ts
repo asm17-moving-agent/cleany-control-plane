@@ -27,7 +27,7 @@ test("demo navigation loads example photos, blocks commands, and returns to live
   await page.reload();
   await expect(banner).toBeVisible();
 
-  await navigation.getByRole("link", { name: "홈", exact: true }).click();
+  await navigation.getByRole("link", { name: "지도", exact: true }).click();
   await expect(page.locator("button.facility-map-seat")).toHaveCount(82);
   const fleet = page.getByRole("complementary", { name: "로봇 목록", exact: true });
   await expect(fleet.getByRole("article")).toHaveCount(3);

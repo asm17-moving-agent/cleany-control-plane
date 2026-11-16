@@ -5,11 +5,12 @@ test('menus support keyboard navigation, dismissal and focus return', async ({pa
  const trigger=page.getByRole('button',{name:'운영 메뉴',exact:true});
  await trigger.focus(); await page.keyboard.press('ArrowDown');
  const menu=page.getByRole('menu'); await expect(menu).toBeVisible();
- await expect(page.getByRole('menuitem',{name:'모니터링',exact:true})).toBeFocused();
- await page.keyboard.press('ArrowDown'); await expect(page.getByRole('menuitem',{name:'설정',exact:true})).toBeFocused();
+ await expect(page.getByRole('menuitem',{name:'로그아웃',exact:true})).toBeFocused();
+ await page.keyboard.press('ArrowDown'); await expect(page.getByRole('menuitem',{name:'예시 데이터 보기',exact:true})).toBeFocused();
  await page.keyboard.press('Escape'); await expect(menu).toHaveCount(0); await expect(trigger).toBeFocused();
- await trigger.click(); await page.getByRole('menuitem',{name:'설정',exact:true}).click();
- await expect(page).toHaveURL(/\/settings$/); await expect(menu).toHaveCount(0);
+ await trigger.click(); await page.getByRole('menuitem',{name:'촬영 모드',exact:true}).click();
+ await expect(page).toHaveURL(/\/map\?recording=1$/); await expect(menu).toHaveCount(0);
+ await page.goto('/settings');
  await trigger.click(); await page.getByRole('heading',{name:'관제 설정',exact:true,level:2}).click(); await expect(menu).toHaveCount(0);
 });
 
@@ -27,7 +28,7 @@ test('settings save consumed preferences without overwriting dormant values', as
  await expect(page.getByRole('combobox',{name:'연결 끊김 시 갱신 간격'})).toHaveValue('30');
  await expect(page.getByRole('combobox',{name:'기본 우선순위'})).toHaveValue('HIGH');
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('cleany.dashboard.settings')!))).toEqual({...original,refreshSeconds:'30',defaultPriority:'HIGH'});
- await page.goto('/'); await page.getByRole('button',{name:'12번 좌석 · 비어 있음'}).click();
+ await page.goto('/map'); await page.getByRole('button',{name:'12번 좌석 · 비어 있음'}).click();
  await expect(page.getByRole('radio',{name:'높음'})).toBeChecked();
 });
 
@@ -41,7 +42,7 @@ test('shared controls and status badges have the same visual roles across pages'
   expect(style[0]).toBe('40px');expect(style[2]).toBe('14px');expect(style[3]).toBe('600');expect(style[4]).toBe('8px');
   if(reference) expect(style).toEqual(reference); else reference=style;
  }
- await page.goto('/?demo=1'); const home=page.locator('.home-robot-list .robot-state-badge').first();
+ await page.goto('/map?demo=1'); const home=page.locator('.home-robot-list .robot-state-badge').first();
  await expect(home).toHaveCSS('border-radius','6px'); await expect(home).toHaveCSS('font-size','12px');
  await page.goto('/robots?demo=1'); await expect(page.locator('.fleet-roster .robot-state-badge').first()).toHaveCSS('border-radius','6px');
 });
