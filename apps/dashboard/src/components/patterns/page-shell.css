@@ -1,0 +1,23 @@
+@layer components {
+ :root { --page-standard: 1440px; --page-wide: 1760px; --page-gutter: 24px; --page-gap: 20px; --panel-padding: 20px; }
+ .control-main:not(.is-home) { padding: var(--page-gutter); }
+ .control-main[data-flow=workspace] { display: flex; flex-direction: column; overflow: hidden; }
+ .page-shell { width: 100%; max-width: var(--page-standard); margin-inline: auto; display: flex; flex-direction: column; gap: var(--page-gap); min-height: 0; }
+ .page-shell[data-width=wide] { max-width: var(--page-wide); }
+ .page-shell[data-flow=workspace] { flex: 1; }
+ .page-shell > .ui-page-header { padding: 12px 0; min-height: 72px; flex: 0 0 auto; border: 0; background: transparent; }
+ .page-actions { display: flex; align-items: center; gap: 8px; }
+ .page-shell .ui-surface-panel { padding: var(--panel-padding); }
+ .page-shell .ui-surface-panel[data-padding=none] { padding: 0; }
+ .icon-previous { transform: rotate(180deg); }
+ :where(.workspace-empty,.ops-empty) { min-height: 160px; padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; color: var(--color-text-muted); }
+ :where(.workspace-empty,.ops-empty) > p { margin: 0; }
+ :where(.workspace-empty,.ops-empty) h3 { font-size: var(--text-panel); line-height: 24px; }
+ .workspace-empty[role=alert] { color: var(--color-danger); }
+ .settings-view .settings-layout { width: 100%; max-width: 680px; margin: 0; display: block; }
+ .settings-view .settings-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 20px calc(-1 * var(--panel-padding)) calc(-1 * var(--panel-padding)); padding: 16px var(--panel-padding); border-top: 1px solid var(--color-border); }
+ .settings-actions > div { display: grid; gap: 4px; font-size: var(--text-caption); color: var(--color-text-muted); }
+ .settings-actions p { margin: 0; }
+ .settings-actions p:empty { display: none; }
+ @media (max-width: 1279px) { :root { --page-gutter: 16px; --page-gap: 16px; --panel-padding: 16px; } }
+}

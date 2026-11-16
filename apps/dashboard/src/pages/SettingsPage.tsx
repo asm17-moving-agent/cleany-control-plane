@@ -1,4 +1,4 @@
-import { PageHeader, Surface } from "../components/patterns";
+import { PageShell, PageHeader, Surface } from "../components/patterns";
 import { Button } from "@/components/ui/button";
 import { NativeSelect } from "@/components/ui/native-select";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,14 +24,14 @@ export function SettingsPage() {
     saveSettings({ ...settings, ...values });
     setMessage("저장됨");
   });
-  return <section className="workspace dashboard-view section-view settings-view">
-    <PageHeader title="관제 설정" action={<span className="ops-note">이 브라우저에만 적용</span>} />
+  return <PageShell className="settings-view">
+    <PageHeader title="관제 설정" />
     <form className="settings-layout" onSubmit={submit}>
       <Surface className="settings-card">
         <label className="field-row"><span><strong>연결 끊김 시 갱신 간격</strong></span><NativeSelect {...register("refreshSeconds")}><option value="5">5초</option><option value="10">10초</option><option value="30">30초</option></NativeSelect></label>
         <label className="field-row"><span><strong>기본 우선순위</strong></span><NativeSelect {...register("defaultPriority")}><option value="NORMAL">보통</option><option value="HIGH">높음</option></NativeSelect></label>
+      <div className="settings-actions"><div><span>이 브라우저에만 적용</span><p aria-live="polite">{message}</p></div><Button variant="primary" className="settings-save" type="submit">설정 저장</Button></div>
       </Surface>
-      <div className="settings-actions"><p aria-live="polite">{message}</p><Button variant="primary" className="settings-save" type="submit">설정 저장</Button></div>
     </form>
-  </section>;
+  </PageShell>;
 }

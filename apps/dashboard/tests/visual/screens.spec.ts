@@ -51,7 +51,7 @@ test("empty", async ({ page }, testInfo) => {
 
 test("workspace request and previous day", async ({ page }, testInfo) => {
   await page.goto('/missions?demo=1');
-  await page.getByRole('button', {name:'＋ 새 작업 요청', exact:true}).click();
+  await page.getByRole('button', {name:'새 작업 요청 열기', exact:true}).click();
   await page.getByLabel('작업 좌석', {exact:true}).selectOption('seat-12');
   await expect(page.getByRole('button', {name:'요청 보내기', exact:true})).toBeDisabled();
   const submit = await page.getByRole('button', {name:'요청 보내기', exact:true}).boundingBox();
@@ -98,4 +98,28 @@ test("home no data", async ({ page }, testInfo) => {
   await page.goto('/?demo=1');
   await expect(page.getByRole('heading',{name:'예시 데이터 없음'})).toBeVisible();
   await capture(page, testInfo, 'home-no-data');
+});
+
+test("robot attention", async ({ page }, testInfo) => {
+  await page.goto('/robots?demo=1&filter=attention&robot=cleany-03');
+  await expect(page.getByRole('region', {name:'로봇 상세', exact:true})).toContainText('연결 끊김 · 마지막 수신 정보');
+  await expect(page.locator('.fleet-roster-card')).toHaveCount(2);
+  await expect(page.locator('.fleet-roster > header')).toContainText('2대');
+  await capture(page, testInfo, 'robot-attention');
+});
+
+test("robot empty", async ({ page }, testInfo) => {
+  await page.goto('/robots');
+  await expect(page.getByRole('heading', {name:'등록된 로봇 없음'})).toBeVisible();
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  await capture(page, testInfo, 'robot-empty');
+});
+
+test("robot retrieval error", async ({ page }, testInfo) => {
+  await page.route('**/api/robots?*', route => route.fulfill({status:503,json:{detail:'fixture unavailable'}}));
+  await page.goto('/robots');
+  await expect(page.getByRole('alert')).toContainText('로봇 정보를 불러올 수 없음');
+  await expect(page.getByRole('button', {name:'다시 시도'})).toBeVisible();
+  await expect(page.getByRole('heading', {name:'등록된 로봇 없음'})).toHaveCount(0);
+  await capture(page, testInfo, 'robot-error');
 });

@@ -1,3 +1,4 @@
+import { MissionPriorityField } from "./MissionPriorityField";
 import { Notice } from "./patterns";
 import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState, type FormEvent } from "react";
@@ -68,13 +69,8 @@ export function SeatMissionPanel({ seat, unavailable, onClose, onSubmitted }: {
           <div className="mission-readonly-field"><span className="field-caption" id="command-label">명령</span>
             <output aria-labelledby="command-label">책상 위 물체 확인 및 정리</output>
           </div>
-          <fieldset className="mission-priority" disabled={busy || !!submittedId}>
-            <legend>우선순위</legend>
-            <div>{([{ value: "NORMAL", label: "보통" }, { value: "HIGH", label: "높음" }] as const).map((option) => (
-              <label key={option.value}><input type="radio" name="priority" value={option.value} checked={priority === option.value}
-                onChange={() => { setPriority(option.value); attempt.current = null; setMessage(""); setFailed(false); }} /><span>{option.label}</span></label>
-            ))}</div>
-          </fieldset>
+          <MissionPriorityField id="seat-priority" value={priority} disabled={busy || !!submittedId}
+            onChange={value => { setPriority(value); attempt.current = null; setMessage(""); setFailed(false); }} />
           <p className="mission-queue-note">대기열 등록 · 진행 중인 작업 유지</p>
         </div>
         <div className="seat-mission-submit">

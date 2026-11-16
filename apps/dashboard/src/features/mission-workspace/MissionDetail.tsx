@@ -1,3 +1,4 @@
+import { ChevronIcon, ClockIcon } from "../../components/WorkspaceIcons";
 import { useRef, useState } from "react";
 import { Link } from "react-router";
 import type { Mission } from "../../api/types";
@@ -24,7 +25,7 @@ export function MissionDetail({ mission, onRetry, onChanged }: { mission: Missio
   const [pending, setPending] = useState<"cancel" | "review" | null>(null), [failure, setFailure] = useState("");
   const sending = useRef(false);
   const disabled = isLoading || !!error || !!pending;
-  const facts = <dl className="task-facts"><InfoRow label="담당 로봇">{robotId ? <Link to={`/robots?robot=${encodeURIComponent(robotId)}`}>{robotId} ↗</Link> : mission.phase === "QUEUED" ? "배정 대기" : "기록 없음"}</InfoRow><InfoRow label="우선순위">{mission.priority === "HIGH" ? "높음" : "보통"}</InfoRow><InfoRow label="요청 시각">{formatDateTime(mission.created_at)}</InfoRow><InfoRow label={terminal ? "완료·종료 시각" : "수락 시각"}>{terminal ? mission.finished_at ? formatDateTime(mission.finished_at) : "기록 없음" : mission.accepted_at ? formatDateTime(mission.accepted_at) : "수락 대기"}</InfoRow></dl>;
+  const facts = <dl className="task-facts"><InfoRow label="담당 로봇">{robotId ? <Link to={`/robots?robot=${encodeURIComponent(robotId)}`}>{robotId} <ChevronIcon aria-hidden="true" /></Link> : mission.phase === "QUEUED" ? "배정 대기" : "기록 없음"}</InfoRow><InfoRow label="우선순위">{mission.priority === "HIGH" ? "높음" : "보통"}</InfoRow><InfoRow label="요청 시각">{formatDateTime(mission.created_at)}</InfoRow><InfoRow label={terminal ? "완료·종료 시각" : "수락 시각"}>{terminal ? mission.finished_at ? formatDateTime(mission.finished_at) : "기록 없음" : mission.accepted_at ? formatDateTime(mission.accepted_at) : "수락 대기"}</InfoRow></dl>;
   async function act(action: "cancel" | "review") {
     if (sending.current || disabled || (isDemo && (action === "review" || !isRecording))) return;
     if (action === "cancel" && (terminal || unsupported || mission.cancel_requested)) return;
@@ -49,7 +50,7 @@ export function MissionDetail({ mission, onRetry, onChanged }: { mission: Missio
           <dl className="task-result-facts">{mission.failure_code && <InfoRow label="실패 이유">{mission.failure_code}</InfoRow>}{!!mission.completed_tasks?.length && <InfoRow label="완료 작업">{mission.completed_tasks.join(", ")}</InfoRow>}{!!mission.skipped_tasks?.length && <InfoRow label="미처리 작업">{mission.skipped_tasks.join(", ")}</InfoRow>}{mission.failed_task && <InfoRow label="실패 작업">{mission.failed_task}</InfoRow>}{mission.needs_human_review && <InfoRow label="로봇 보고">사람 확인 필요</InfoRow>}</dl>
           <div className="result-observations"><MissionObservation key={`before:${mission.before_observation}`} label="작업 전" reference={mission.before_observation} /><MissionObservation key={`after:${mission.after_observation}`} label="작업 후" reference={mission.after_observation} /></div>
           {mission.review && <p className="task-reviewed">{mission.review.reviewer_name} · {formatDateTime(mission.review.reviewed_at)} 확인</p>}
-        </> : <div className="task-result-pending"><span aria-hidden="true">◷</span><strong>{mission.phase === "QUEUED" ? "작업 대기 중" : "작업 진행 중"}</strong><span>결과 도착 시 이곳에 표시됩니다.</span></div>}
+        </> : <div className="task-result-pending"><ClockIcon aria-hidden="true" /><strong>{mission.phase === "QUEUED" ? "작업 대기 중" : "작업 진행 중"}</strong><span>결과 도착 시 이곳에 표시됩니다.</span></div>}
       </section>
       {terminal && facts}
       <Details label="상세 정보"><dl className="task-result-facts"><InfoRow label="요청자">{mission.requested_by}</InfoRow><InfoRow label="요청 ID"><code>{mission.mission_id}</code></InfoRow><InfoRow label="요청부터 결과 수신">{missionElapsed(mission.created_at, mission.finished_at)}</InfoRow></dl></Details>

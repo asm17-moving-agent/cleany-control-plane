@@ -11,7 +11,7 @@ test("operator can select a seat on the map and send a supported request", async
   await expect(panel).toBeVisible();
   await expect(fleet).toBeVisible();
   await page.getByRole("button", { name: "지도 확대", exact: true }).click();
-  await panel.getByRole("radio", { name: "높음" }).check();
+  await panel.getByRole("combobox", { name: "우선순위" }).selectOption("HIGH");
   const requestPromise = page.waitForRequest((request) => new URL(request.url()).pathname === "/api/missions" && request.method() === "POST");
   const responsePromise = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/missions" && response.request().method() === "POST");
   await panel.getByRole("button", { name: "요청 보내기" }).click();

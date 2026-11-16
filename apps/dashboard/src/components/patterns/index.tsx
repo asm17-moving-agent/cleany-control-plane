@@ -1,7 +1,11 @@
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import "./page-shell.css";
+export function PageShell({ width = "standard", flow = "document", className, ...props }: ComponentProps<"section"> & { width?: "standard" | "wide"; flow?: "document" | "workspace" }) {
+  return <section className={cn("page-shell", className)} data-width={width} data-flow={flow} {...props} />;
+}
 export type Tone = "neutral" | "info" | "success" | "waiting" | "warning" | "danger";
-export function Surface({ variant = "panel", className, ...props }: ComponentProps<"section"> & { variant?: "panel" | "floating" | "inset" | "attached" }) { return <section className={cn("ui-surface", `ui-surface-${variant}`, className)} {...props} />; }
+export function Surface({ variant = "panel", padding = "default", className, ...props }: ComponentProps<"section"> & { variant?: "panel" | "floating" | "inset" | "attached"; padding?: "default" | "none" }) { return <section className={cn("ui-surface", `ui-surface-${variant}`, className)} data-padding={padding} {...props} />; }
 export function PageHeader({ title, description, action }: { title: string; description?: string; action?: ReactNode }) { return <header className="ui-page-header"><div><h2>{title}</h2>{description && <p>{description}</p>}</div>{action}</header>; }
 export function PanelHeader({ title, description, icon, action, className }: { title: string; description?: string; icon?: ReactNode; action?: ReactNode; className?: string }) {
   return <header className={cn("ui-panel-header", className)}>{icon}<div><h3>{title}</h3>{description && <p>{description}</p>}</div>{action}</header>;

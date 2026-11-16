@@ -85,7 +85,7 @@ def main():
     template = template.replace('<section class="pair"', '<p id="capture-notes"></p><p id="additions"></p><section class="pair"')
     template = template.replace("render();</script>", "$('capture-notes').textContent=data.capture_notes;$('expected').textContent='의도한 변경: '+data.expected_changes;const initial=data.images.findIndex(e=>e.name===data.initial_scene);if(initial>=0)$('scene').value=initial;data.after_only.forEach(e=>{const a=document.createElement('a');a.href=e.after;a.textContent='추가 화면: '+e.name;$('additions').append(a,document.createTextNode(' · '))});render();</script>")
     (args.output / "index.html").write_text(template.replace("__DATA__", json.dumps(manifest, ensure_ascii=False).replace("<", "\\u003c")))
-    chosen = [e for e in entries if e["name"].startswith("laptop/") and Path(e["name"]).stem in ["home", "monitoring", "missions", "results", "settings"]]
+    chosen = [e for e in entries if e["name"].startswith("laptop/") and Path(e["name"]).stem in ["home", "monitoring", "missions", "results", "robots", "settings"]]
     sheet = Image.new("RGB", (1200, len(chosen) * 365), "#f5f7f7")
     draw = ImageDraw.Draw(sheet)
     for row, entry in enumerate(chosen):

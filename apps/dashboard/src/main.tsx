@@ -1,3 +1,5 @@
+// Establish cascade layers before any component stylesheet is evaluated.
+import "./styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -7,7 +9,6 @@ import { OperationsProvider } from "./operations/OperationsContext";
 import { DemoModeProvider } from "./operations/DemoModeContext";
 import { SettingsProvider } from "./settings/SettingsContext";
 import { AuthProvider, AuthGate } from "./auth/AuthContext";
-import "./styles.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {

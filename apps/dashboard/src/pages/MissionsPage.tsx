@@ -1,10 +1,11 @@
+import { PlusIcon, ChevronIcon } from "../components/WorkspaceIcons";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import type { Mission } from "../api/types";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { NativeSelect } from "../components/ui/native-select";
-import { PageHeader, Surface } from "../components/patterns";
+import { PageShell, PageHeader, Surface } from "../components/patterns";
 import { MissionStatusBadge, OperationsEmpty } from "../components/OperationsPage";
 import { MissionIcon } from "../components/Icons";
 import { WorkspaceMessage } from "../components/WorkspaceMessage";
@@ -40,19 +41,19 @@ export function MissionsPage() {
     Object.entries(changes).forEach(([key,value])=>value && value!=="ALL" ? next.set(key,value) : next.delete(key)); return next;
   }
   function selectDay(value: string) { setForm(null); setSearch(""); setParams(nextParams({date:value,mission:null})); }
-  return <section className="task-workspace" aria-label="작업 관리">
-    <PageHeader title="작업" action={<div className="task-actions"><Button variant="secondary" onClick={()=>void workspace.refresh()} disabled={isLoading}>새로고침</Button><Button variant="primary" onClick={()=>setForm({})}>＋ 새 작업 요청</Button></div>} />
-    <Surface className="task-summary-bar" aria-label="일별 요약">
+  return <PageShell width="wide" flow="workspace" className="task-workspace" aria-label="작업 관리">
+    <PageHeader title="작업" action={<div className="task-actions"><Button variant="secondary" onClick={()=>void workspace.refresh()} disabled={isLoading}>새로고침</Button><Button variant="primary" aria-label="새 작업 요청 열기" onClick={()=>setForm({})}><PlusIcon aria-hidden="true" />새 작업 요청</Button></div>} />
+    <Surface padding="none" className="task-summary-bar" aria-label="일별 요약">
       <div><span>선택일 전체</span><strong>{count("ALL")}<small>건</small></strong></div>
       {taskFilters.slice(1,6).map(([key,label])=><Button key={key} variant="ghost" className="task-summary-metric" data-state={key} aria-pressed={filter===key} title={key==="REVIEW"?"다른 상태와 중복될 수 있는 미확인 결과":undefined} onClick={()=>{setForm(null);setParams(nextParams({filter:filter===key?null:key,mission:null,date:day}));}}><span><i />{label}</span><strong>{count(key)}</strong></Button>)}
     </Surface>
     <div className="task-layout">
       <aside className="task-sidebar" aria-label="날짜 선택">
-        <Surface className="task-calendar-surface"><MissionCalendar day={day} today={today} onSelect={selectDay} /></Surface>
+        <Surface padding="none" className="task-calendar-surface"><MissionCalendar day={day} today={today} onSelect={selectDay} /></Surface>
         <p className="task-day-note">요청·종료일 기준{day===today && " · 이전 요청 중 진행/대기 작업 포함"}</p>
       </aside>
-      <Surface className="task-list-panel" aria-label="작업 요청 목록">
-        <header className="task-list-heading"><div><span className="task-eyebrow">{day===today ? "오늘의 작업" : `${day.slice(0,4)}년 작업`}</span><h3>{dateTitle}</h3></div><div className="task-actions"><Button variant="ghost" size="icon-compact" aria-label="이전 날짜" onClick={()=>selectDay(shiftDay(day,-1))}>‹</Button><Button variant="ghost" size="icon-compact" aria-label="다음 날짜" onClick={()=>selectDay(shiftDay(day,1))}>›</Button></div></header>
+      <Surface padding="none" className="task-list-panel" aria-label="작업 요청 목록">
+        <header className="task-list-heading"><div><span className="task-eyebrow">{day===today ? "오늘의 작업" : `${day.slice(0,4)}년 작업`}</span><h3>{dateTitle}</h3></div><div className="task-actions"><Button variant="ghost" size="icon-compact" aria-label="이전 날짜" onClick={()=>selectDay(shiftDay(day,-1))}><ChevronIcon className="icon-previous" aria-hidden="true" /></Button><Button variant="ghost" size="icon-compact" aria-label="다음 날짜" onClick={()=>selectDay(shiftDay(day,1))}><ChevronIcon aria-hidden="true" /></Button></div></header>
         <div className="task-list-tools"><Input aria-label="작업 검색" placeholder="좌석 또는 요청 ID 검색" value={search} onChange={e=>{setSearch(e.target.value);setParams(nextParams({mission:null}));}} />
           <div><NativeSelect aria-label="작업 상태" value={filter} onChange={e=>{setForm(null);setParams(nextParams({filter:e.target.value,mission:null,date:day}));}}>{taskFilters.map(([key,label])=><option key={key} value={key}>{label} · {count(key)}</option>)}</NativeSelect><NativeSelect aria-label="우선순위" value={priority} onChange={e=>setParams(nextParams({priority:e.target.value,mission:null,date:day}))}><option value="ALL">우선순위 전체</option><option value="HIGH">높음</option><option value="NORMAL">보통</option></NativeSelect></div>
         </div>
@@ -65,7 +66,7 @@ export function MissionsPage() {
         </div>
         <footer className="task-list-footer"><span>{isLoading || error ? "—" : filtered.length}건</span><span>진행 · 확인 필요 우선</span></footer>
       </Surface>
-      <Surface className="task-detail-panel" aria-label="작업 상세">
+      <Surface padding="none" className="task-detail-panel" aria-label="작업 상세">
         {form ? <MissionRequestForm key={form.retry?.mission_id ?? "new"} retry={form.retry} onClose={()=>setForm(null)} onCreated={mission=>{setForm(null);setSearch("");setParams(nextParams({date:dayKey(mission.created_at),mission:mission.mission_id,filter:null,priority:null}));void workspace.refresh();}} />
         : isLoading || error ? <WorkspaceMessage kind={error?"empty":"loading"}>{error?"목록 연결을 확인하면 상세가 표시됩니다.":"작업 상세 불러오는 중"}</WorkspaceMessage>
         : workspace.detailError ? <WorkspaceMessage kind="error" onRetry={()=>void workspace.refresh()}>선택한 작업을 불러올 수 없음</WorkspaceMessage>
@@ -73,5 +74,5 @@ export function MissionsPage() {
         : <div className="task-detail-empty"><span aria-hidden="true"><MissionIcon /></span><h3>{selectedId?"선택한 작업 없음":"선택한 날짜의 작업이 없습니다"}</h3><p>작업을 선택하면 진행 상황과 결과를 확인할 수 있습니다.</p><Button variant="primary" onClick={()=>setForm({})}>새 작업 요청</Button></div>}
       </Surface>
     </div>
-  </section>;
+  </PageShell>;
 }

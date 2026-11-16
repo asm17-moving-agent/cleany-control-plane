@@ -29,7 +29,7 @@ test('settings save consumed preferences without overwriting dormant values', as
  await expect(page.getByRole('combobox',{name:'기본 우선순위'})).toHaveValue('HIGH');
  expect(await page.evaluate(()=>JSON.parse(localStorage.getItem('cleany.dashboard.settings')!))).toEqual({...original,refreshSeconds:'30',defaultPriority:'HIGH'});
  await page.goto('/map'); await page.getByRole('button',{name:'12번 좌석 · 비어 있음'}).click();
- await expect(page.getByRole('radio',{name:'높음'})).toBeChecked();
+ await expect(page.getByRole('combobox',{name:'우선순위'})).toHaveValue('HIGH');
 });
 
 test('shared controls and status badges have the same visual roles across pages', async ({page}) => {
@@ -63,4 +63,45 @@ test('semantic text and control borders meet contrast targets', async ({page}) =
  });
  for(const value of contrasts.slice(0,-1)) expect(value).toBeGreaterThanOrEqual(4.5);
  expect(contrasts.at(-1)).toBeGreaterThanOrEqual(3);
+});
+
+test('page shells share title alignment, spacing and deliberate width variants', async ({page}) => {
+ for (const width of [1920,1366,1024]) {
+  await page.setViewportSize({width,height:1080});
+  for (const [route,max] of [['/',1440],['/settings',1440],['/missions',1760],['/robots',1760]] as const) {
+   await page.goto(route+'?demo=1');
+   const shell=page.locator('.page-shell');await expect(shell).toBeVisible();
+   const box=await shell.boundingBox();const header=shell.locator('> .ui-page-header');
+   const heading=await header.locator('h2').boundingBox();
+   expect(box!.width).toBe(Math.min(max,width-(width<1280?32:48)));
+   expect(box!.x).toBe((width-box!.width)/2);expect(heading!.x).toBe(box!.x);
+   await expect(header).toHaveCSS('height','72px');
+   await expect(header).toHaveCSS('background-color','rgba(0, 0, 0, 0)');
+   await expect(header).toHaveCSS('border-bottom-width','0px');
+   const main=page.locator('.control-main');await expect(main).toHaveCSS('padding',width<1280?'16px':'24px');
+   if(route==='/robots') {
+    const camera=page.locator('.head-camera');const controls=page.locator('.manual-body');
+    const cam=await camera.boundingBox(),input=await controls.boundingBox();
+    if(width>=1280) {expect(input!.x).toBeGreaterThan(cam!.x+cam!.width);expect(Math.abs(input!.y-cam!.y)).toBeLessThan(1);}
+    else expect(input!.y).toBeGreaterThan(cam!.y+cam!.height);
+    await expect(page.locator('.fleet-preview .robot-model-stage')).toHaveCSS('height',width<1280?'180px':'200px');
+    const stop=page.locator('.manual-stop');await expect(stop).toHaveCSS('height','48px');
+    await stop.scrollIntoViewIfNeeded();
+    const stopBox=await stop.boundingBox();expect(stopBox!.y+stopBox!.height).toBeLessThanOrEqual(1080);
+    for(const part of await page.locator('.manual-sticks,.manual-feedback').all()) {
+     expect(await part.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
+    }
+   }
+  }
+ }
+});
+
+test('map and fleet robot cards share selection and attention styling', async ({page}) => {
+ const styles: string[][]=[];
+ for(const route of ['/map','/robots']) {
+  await page.goto(route+'?demo=1');
+  const card=page.locator('.robot-summary[data-attention]').first();await expect(card).toBeVisible();
+  styles.push(await card.evaluate(el=>{const s=getComputedStyle(el);return [s.padding,s.borderRadius,s.borderColor,s.backgroundColor,s.gridTemplateColumns];}));
+ }
+ expect(styles[0].slice(0,4)).toEqual(styles[1].slice(0,4));
 });

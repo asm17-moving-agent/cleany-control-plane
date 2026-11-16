@@ -1,6 +1,5 @@
 @layer components {
- .cafe-home { max-width: 1440px; margin-inline: auto; display: grid; gap: 20px; padding-bottom: 24px; }
- .cafe-home .ui-page-header { border: 0; background: transparent; padding-inline: 0; }
+ .cafe-home { padding-bottom: 24px; }
  .cafe-header-actions { display: flex; align-items: center; gap: 16px; }
  .cafe-header-actions time, .cafe-total, .cafe-chart-caption { font-size: var(--text-caption); color: var(--color-text-muted); }
  .cafe-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 20px; }
@@ -42,7 +41,6 @@
  .cafe-empty p { color: var(--color-text-muted); }
  @media (max-width: 1279px) {
   .cafe-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-  .cafe-home { gap: 16px; }
   .cafe-header-actions { gap: 12px; }
   .cafe-cleaning-legend { gap: 24px; }
   .cafe-operation { flex-wrap: wrap; gap: 16px; }

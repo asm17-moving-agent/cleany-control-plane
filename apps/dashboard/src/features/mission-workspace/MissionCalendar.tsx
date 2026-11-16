@@ -1,3 +1,4 @@
+import { ChevronIcon } from "../../components/WorkspaceIcons";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../../components/ui/button";
 import { dayKey, shiftDay } from "./mission-day";
@@ -16,7 +17,7 @@ export function MissionCalendar({ day, today, onSelect }: { day: string; today: 
     const date = new Date(`${first}T12:00:00+09:00`); date.setUTCMonth(date.getUTCMonth() + delta); setMonth(dayKey(date).slice(0,7));
   }
   return <div className="task-calendar" ref={root}>
-    <header><strong aria-live="polite">{title}</strong><div><Button variant="ghost" size="icon-compact" aria-label="이전 달" onClick={() => moveMonth(-1)}>‹</Button><Button variant="ghost" size="icon-compact" aria-label="다음 달" onClick={() => moveMonth(1)}>›</Button></div></header>
+    <header><strong aria-live="polite">{title}</strong><div><Button variant="ghost" size="icon-compact" aria-label="이전 달" onClick={() => moveMonth(-1)}><ChevronIcon className="icon-previous" aria-hidden="true" /></Button><Button variant="ghost" size="icon-compact" aria-label="다음 달" onClick={() => moveMonth(1)}><ChevronIcon aria-hidden="true" /></Button></div></header>
     <table aria-label="작업 날짜 선택"><thead><tr>{["일","월","화","수","목","금","토"].map(d => <th scope="col" key={d}>{d}</th>)}</tr></thead><tbody>
       {Array.from({ length: weeks }, (_, row) => <tr key={row}>{days.slice(row*7,row*7+7).map(value => <td key={value}>
         <Button variant="ghost" size="compact" className="task-calendar-day" data-day={value} data-outside={value.slice(0,7)!==month || undefined}

@@ -165,7 +165,7 @@ test("home roster stays static while the detail model supports dragging and tear
   await fixtureApi(page);
   await page.goto("/map?renderStats=1");
   const roster = page.getByRole("complementary", { name: "로봇 목록", exact: true });
-  await roster.locator(".home-robot-thumbnail").hover();
+  await roster.locator(".robot-summary-thumbnail").hover();
   await page.mouse.move(0, 0);
   await expect(roster.locator(".robot-model-card, canvas")).toHaveCount(0);
   await expect(page.getByRole("complementary", { name: "로봇 상세", exact: true })).toHaveCount(0);
@@ -196,7 +196,7 @@ test("home roster stays static while the detail model supports dragging and tear
   await expect(panel).toHaveCount(0);
   await expect(page.locator(".robot-model-card")).toHaveCount(0);
   await page.setViewportSize({ width: 1100, height: 768 });
-  expect(await roster.locator(".home-robot-identity strong").evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
+  expect(await roster.locator(".robot-summary-copy strong").evaluate(element => element.scrollWidth <= element.clientWidth)).toBe(true);
   await page.getByRole("navigation", { name: "주요 메뉴" }).getByRole("link", { name: "작업", exact: true }).click();
   await expect(page.locator(".robot-model-card, .robot-model-canvas canvas")).toHaveCount(0);
 });

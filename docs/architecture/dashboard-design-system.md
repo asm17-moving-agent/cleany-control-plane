@@ -4,6 +4,71 @@
 원본 작업을 보존한 `preview-ui-baseline`과 구현 worktree `preview-shadcn`을 비교한다.
 API, 계약, 상태 관리, 지도 좌표, Mission 요청/취소, SSE, 수동 조종의 이벤트 로직은 이번 변경 범위 밖이다.
 
+현재 페이지 구성은 아래 **페이지 구성의 공통 규칙**을 따른다. 하단 날짜별 절의 수치와
+검증 건수는 각 변경 당시의 기록이며, 현재 규칙과 다른 과거 배치에 소급 적용하지 않는다.
+
+## 페이지 구성의 공통 규칙 (2026-11-17)
+
+페이지 간 통일 작업의 Before는 `5affee2`다. 홈의 카드를 기준으로 페이지 틀과 도메인
+컴포넌트의 주변 스타일을 통합한다. [ADR0009](../adr/0009-dashboard-page-consistency.md)를 따른다.
+
+| 대상 | 공통 규칙 |
+| --- | --- |
+| 페이지 폭 | 홈·설정 `PageShell standard` 최대1440px, 작업·로봇 `wide` 최대1760px, 중앙 정렬 |
+| 바깥 여백·카드 간격 | 1280px 이상24px/20px,1024~1279px16px/16px; 제목과 첫 카드 좌측 정렬 |
+| 페이지 헤더 | 투명 배경, 바깥 border 없음,72px, 제목24/32px, 오른쪽 행동 간격8px |
+| 표면 | 화면 전체를 감싸는 흰 테두리 박스 제거; 주요 카드12px, 내부 상태/선택 항목8px, badge6px |
+| 카드 안쪽 | 기본20px, 좁은 화면16px; 목록/캘린더/상세는 컨테이너 padding0 후 내부 구획에 적용 |
+| 스크롤 | 홈·설정은 문서 흐름; 작업·로봇은 헤더 고정 및 목록/상세 내부 스크롤 |
+| 로봇 카드 | 지도/로봇 탭 모두56×64px thumbnail, 이름14px, 보조12px, padding12px, Radius8px |
+| 선택/장애 | teal soft+좌측3px 선택 표시, 장애 border+문구; 실제 Robot 상태 매핑 유지 |
+| 우선순위 | 지도·작업 요청 모두 공유 `MissionPriorityField`의40px native select; 값 NORMAL/HIGH 유지 |
+| 탐색 기호 | 추가/이전/다음/상세 링크에 공통 SVG; accessible name과 기본 링크/버튼 의미 보존 |
+| 빈 목록/오류 | 같은 가운데 정렬·14px·간격; 오류는 alert와 다시 시도, 빈 목록은 오류 문구로 대체하지 않음 |
+
+홈 첫 행2:1, 둘째 행5:5, 좌석 블록/차트는 유지한다. 지도는 전체 canvas와 기존96px
+헤더/overlay 배치를 유지한다. 설정은 같은 페이지 시작선 안에서 폼만680px로 제한하고
+저장 범위·저장 상태·저장 버튼을 카드 footer로 모은다. 로그인과 모델 전용 화면은 기능별 예외다.
+
+로봇 화면은 목록280px(좁은 화면240px)과 상세로 구성한다. 상세를 다시 큰 카드로 감싸지
+않고 상태·현재 작업 카드와 수동 조종 카드를 같은 레벨에 둔다. 3D 미리보기는 오른쪽
+220px(좁은 화면160px), stage 높이200px/180px로 줄이며 원본 모델 상세 링크를 유지한다.
+1280px 이상에서는 카메라와 조종 입력/상태를 나란히 배치한다. 1024~1279px에서는 카메라가
+위로 쌓인다. 카메라 viewport 높이는320px/240px이며 영상 비율/명령 경로는 그대로다.
+`ManualControlPanel`의 pointer capture, keyboard/blur, release/navigation 정지 처리와
+Robot 변경에 따른 keyed mount 경계는 변경하지 않는다.
+
+공통 페이지 배치는 `components/patterns/page-shell.css`, 로봇 카드 내용/스타일은
+`RobotSummaryContent.tsx`/`robot-summary.css`가 소유한다. 페이지가 조상의 배치를
+`:has()`로 재정의하지 않는다. `AppShell`에서 workspace flow를 명시하고, `main.tsx`는
+`styles.css`를 먼저 import하여 `theme → legacy → components → utilities` 순서를 보장한다.
+새 페이지는 기존 feature의 wrapper/CSS를 복사하지 말고 이 조합을 사용한다.
+
+Before45개 PNG는 `5affee2`에서 바이트 그대로 보존한다. 페이지 폭/헤더/카드 배치,
+로봇 미리보기 축소와 조종 재배치, 공유 로봇 카드·우선순위 입력·SVG 변경은 의도한 변화다.
+홈 차트 비율, 지도 좌표, 로그인, 상태 문구/조치, 입력/고정 액션의 잘림과 동작 손상은 회귀다.
+1920/1366/1024px의 실제 bounding box와 computed style, 선택/장애/빈 상태/오류,
+수동 조종·카메라·3D의 기능 suite를 함께 검사한다. 새로운 상태 장면은 After 전용으로 표시한다.
+픽셀 차이 허용치와 mask를 늘리지 않고 검토한 변경만 snapshot에 반영한다.
+
+### 페이지 통일 검증 기록
+
+- 단위106개, 기본 E2E34개, Gateway1개, 3D/개발 표본13개 통과. 최종 공통 surface
+  속성 정리 후 단위106개와 공통 스타일/수동 조종8개를 다시 확인했다.
+- TypeScript/production build, OpenAPI/Gateway schema/TypeScript 계약 검사 통과.
+  Backend/contract/KB 소스는 변경하지 않았고 Backend 전용 pytest/Ruff는 이번에 재실행하지 않았다.
+- 시각50개 통과: baseline 갱신 없이0픽셀/retry0. 기존45장 중34장 갱신,11장 동일,
+  로봇 장애·빈 목록·오류6장 추가. Before45장은 `5affee2`의 원본과 바이트가 동일하다.
+  홈 차트 배치와 지도 좌표를 유지했고 로그인9장과 지도 로봇 상세2장은 픽셀까지 동일하다.
+- 1920/1366/1024px에서 페이지 폭/중앙 정렬/제목72px/바깥 여백을 검사한다.
+  조종 정지48px와 입력 넘침, 카메라/조종의 breakpoint 배치를 검사하며 기존 계정/요청/
+  검토·취소/카메라/SSE/조종 stop/지도 정렬 테스트를 유지했다.
+- 비교 exporter는 `--before-ref 5affee2 --after-ref <reviewed-commit>
+  --initial-scene desktop/robots.png`로 실행한다. HTML·ZIP·SHA-256 manifest·전체 탭
+  contact sheet를 제공한다. 추가6장은 이전 상태를 합성하지 않고 After 전용으로 표시한다.
+- Vite의 기존500kB chunk 경고는 남는다. 표시용 Mock/테스트 Gateway 증거이며 실제 장치
+  동작이나 실시간 영상 확인을 의미하지 않는다.
+
 ## 공통 시각 명세
 
 | 역할 | 규칙 | 적용 대상 |
@@ -33,7 +98,7 @@ API, 계약, 상태 관리, 지도 좌표, Mission 요청/취소, SSE, 수동 �
 - 로그인: 기존 일러스트·중앙 카드·24px Radius, 30/40px 제목(모바일28/36px).
 - 지도: 좌석/벽/SVG/로봇 marker의 비율·좌표·범례와 밀도. 지도의 붙어 있는 경계는 square.
 - 조이스틱/회전 슬라이더: 원형·가로 입력의 기하, pointer capture, hold/release 동작.
-- 3D와 사진/영상: 자체 렌더링과 명암; 카메라 어두운 배경. 영상 박스 크기는 기존 규칙.
+- 3D와 사진/영상: 자체 렌더링과 명암; 카메라 어두운 배경. 로봇 탭 크기는 위 페이지 규칙을 따른다.
 - 운영 화면 최소1024px; 로그인만 모바일 지원. 1024px에서 패널 내용은 세로 스크롤할 수 있다.
 
 ## 컴포넌트와 책임

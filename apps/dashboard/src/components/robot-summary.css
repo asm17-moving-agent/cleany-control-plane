@@ -1,0 +1,15 @@
+@layer components {
+ .robot-summary { display: grid; grid-template-columns: 56px minmax(0,1fr) 12px; align-items: center; gap: 8px; width: 100%; min-width: 0; min-height: 104px; padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-control); background: var(--color-surface); color: var(--color-text); text-align: left; cursor: pointer; }
+ .robot-summary:hover { background: var(--color-background); }
+ .robot-summary[data-attention] { border-color: var(--color-danger-border); }
+ .robot-summary[aria-current=true], .robot-summary[aria-pressed=true] { background: var(--color-action-soft); box-shadow: inset 3px 0 var(--color-action); }
+ .robot-summary-thumbnail { display: flex; height: 64px; overflow: hidden; border-radius: var(--radius-control); background: var(--color-background); }
+ .robot-summary-thumbnail img { width: 100%; height: 100%; object-fit: contain; }
+ .robot-summary-copy { display: flex; min-width: 0; flex-direction: column; align-items: start; gap: 4px; }
+ .robot-summary-copy strong { font-size: var(--text-body); line-height: 20px; font-weight: 600; overflow-wrap: anywhere; }
+ .robot-summary-copy small { font-size: var(--text-caption); line-height: 18px; color: var(--color-text-muted); }
+ .robot-summary-copy .battery-status { width: 100%; padding-top: 8px; margin-top: 4px; border-top: 1px solid var(--color-border); }
+ .robot-summary > svg { width: 12px; height: 12px; color: var(--color-text-muted); }
+ .home-robot-row { border: 0; border-radius: var(--radius-control); }
+ .home-robot-row[data-state] { background: transparent; }
+}

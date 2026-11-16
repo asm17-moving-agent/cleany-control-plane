@@ -26,7 +26,7 @@ test("calendar, summary filters and inline results share a single workspace", as
 
 test("new work and retry register separate missions through the existing API", async ({ page }) => {
  await page.goto('/missions');
- await page.getByRole('button',{name:'＋ 새 작업 요청',exact:true}).click();
+ await page.getByRole('button',{name:'새 작업 요청 열기',exact:true}).click();
  await page.getByLabel('작업 좌석',{exact:true}).selectOption('seat-12');
  await page.getByLabel('우선순위',{exact:true}).last().selectOption('HIGH');
  const created=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/missions'&&r.request().method()==='POST');

@@ -1,4 +1,4 @@
-import { PageHeader, StatusBadge } from "./patterns";
+import { PageShell, PageHeader, StatusBadge } from "./patterns";
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 import type { Mission } from "../api/types";
@@ -10,10 +10,10 @@ import "./operations-page.css";
 export function OperationsPage({ title, description, action, children, className = "" }: {
   title: string; description?: string; action?: ReactNode; children: ReactNode; className?: string;
 }) {
-  return <section className={`ops-page ${className}`} style={panelMotionStyle}>
+  return <PageShell width="wide" className={className} style={panelMotionStyle}>
     <PageHeader title={title} description={description} action={action} />
     {children}
-  </section>;
+  </PageShell>;
 }
 
 export function OperationsTabs({ label, tabs }: {

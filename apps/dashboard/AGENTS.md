@@ -6,11 +6,21 @@
   링크 형태 버튼은 `Button asChild` + `Link`로 만들고 링크 의미를 유지한다.
 - 페이지 제목, 패널 제목, surface, field, badge, notice는 `components/patterns/`를 재사용한다.
   이 두 계층에는 API, Mission 상태 판단, Query, 인증, 통신을 넣지 않는다.
+- 일반 페이지는 `PageShell`을 사용한다. 홈·설정은 standard(1440px), 작업·로봇은
+  wide(1760px)이며 제목은 투명한72px 헤더로 둔다. 지도는 전체 canvas 예외다.
+  작업·로봇은 workspace flow로 목록/상세만 스크롤하며 페이지 헤더는 고정한다.
+  상위 main의 배치를 feature `:has()` selector로 바꾸지 말고 AppShell의 flow에 명시한다.
+- 페이지 여백/간격은 `patterns/page-shell.css`에서 소유한다. 로봇 목록의 표시 내용은
+  `RobotSummaryContent`, 작업 우선순위 입력은 `MissionPriorityField`를 재사용한다.
+  지도 button과 로봇 페이지 Link의 의미, 우선순위 변경 시 상태 처리는 각 도메인이 소유한다.
+  목록처럼 내부 구획이 여백을 소유하면 `Surface padding="none"`으로 명시한다.
 - 기본 컨트롤 40px, 지도 도구 32px, 로그인/작업 요청 주행동 48px를 선택한다.
   임의의 색·폰트·Radius·높이를 페이지마다 추가하지 않는다. 예외는 명세에 이유를 기록한다.
 - 새 스타일은 `components` layer에 작성한다. 기존 `legacy` layer는 도메인 배치와
   점진적 이관을 위한 것으로 새로운 시각적 규칙을 추가하지 않는다. Tailwind utility는
   배치에 사용할 수 있으나 역할별 크기·색상·Radius를 화면별로 덮어쓰지 않는다.
+- `main.tsx`의 첫 import는 `styles.css`다. 컴포넌트 CSS보다 먼저 layer 순서를
+  확립해야 한다. 순서를 바꾸면 전체 페이지 computed-style/시각 검사를 다시 실행한다.
 - 지도 좌석·pointer capture·조이스틱·회전 입력·3D canvas는 도메인 컴포넌트로 유지한다.
   스타일 정리를 위해 이벤트 처리나 명령 payload, 중지 조건을 바꾸지 않는다.
 - 새로운 상태를 색만으로 표현하지 않는다. 표시 문구와 role/label, disabled/focus를 확인한다.

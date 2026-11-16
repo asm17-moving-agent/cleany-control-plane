@@ -1,8 +1,9 @@
+import { ChevronIcon } from "../components/WorkspaceIcons";
 import { useMemo, useState } from "react";
 import { Link, useOutletContext, useSearchParams } from "react-router";
 import { Bar, BarChart, CartesianGrid, LabelList, Line, LineChart, Pie, PieChart, XAxis, YAxis } from "recharts";
 import type { FacilitySelection } from "../app/AppShell";
-import { PageHeader, PanelHeader, Surface, StatusBadge } from "../components/patterns";
+import { PageShell, PageHeader, PanelHeader, Surface, StatusBadge } from "../components/patterns";
 import { Button } from "../components/ui/button";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "../components/ui/chart";
 import { averageOccupancy, completedByType, getHomeSnapshot, minuteLabel } from "../features/operations-home/home-data";
@@ -32,13 +33,13 @@ export function MonitoringPage() {
     { minute: item.endMinute, rate: item.occupied / item.capacity * 100 },
   ]) ?? [];
   const attention = snapshot && (!snapshot.robot.connected || snapshot.reviewCount > 0);
-  return <section className="cafe-home" aria-label="스터디카페 운영 현황">
+  return <PageShell width="standard" flow="document" className="cafe-home" aria-label="스터디카페 운영 현황">
     <PageHeader title="운영 현황" action={<div className="cafe-header-actions"><StatusBadge>예시 데이터</StatusBadge>{snapshot && <time dateTime={`${snapshot.day}T${minuteLabel(snapshot.asOfMinute)}:00+09:00`}>{snapshot.day.replaceAll("-", ". ")} · {minuteLabel(snapshot.asOfMinute)} 기준</time>}<Button variant="secondary" onClick={() => setAsOf(new Date())}>새로고침</Button></div>} />
     {!snapshot ? <Surface className="cafe-empty"><h3>예시 데이터 없음</h3><p>{floor.label}</p></Surface> : <>
       {attention && <div className="cafe-alert" role="alert"><div><strong>관리자 확인 필요</strong><span>로봇 연결 끊김 · 결과 검토 {snapshot.reviewCount}건</span></div><div><Button asChild variant="danger-outline"><Link to="/robots">로봇 보기</Link></Button><Button asChild variant="secondary"><Link to="/missions?filter=REVIEW">결과 보기</Link></Button></div></div>}
       <div className="cafe-grid">
         <Surface className="cafe-card cafe-cleaning" aria-label="좌석 정리 현황">
-          <PanelHeader title="좌석 정리 현황" action={<Button asChild variant="ghost" size="compact"><Link to="/map">지도 보기 →</Link></Button>} />
+          <PanelHeader title="좌석 정리 현황" action={<Button asChild variant="ghost" size="compact"><Link to="/map">지도 보기 <ChevronIcon aria-hidden="true" /></Link></Button>} />
           <div className="cafe-seat-total"><strong>{snapshot.capacity}<small>석</small></strong><span>현재 정리 상태</span></div>
           <div className="cafe-seat-grid" role="img" aria-label={`전체 ${snapshot.capacity}석, 완료 ${snapshot.cleaning.complete}석, 진행 중 ${snapshot.cleaning.working}석, 정리 필요 ${snapshot.cleaning.needed}석`}>
             {cleaningConfig.flatMap(({ key }) => Array.from({ length: snapshot.cleaning[key] }, (_, index) => <span key={`${key}-${index}`} data-cleaning={key} aria-hidden="true" />))}
@@ -89,5 +90,5 @@ export function MonitoringPage() {
       </div>
       <Surface className="cafe-operation" aria-label="운영 상태"><div><h3>운영 상태</h3><StatusBadge tone={attention ? "warning" : "success"}>{attention ? "확인 필요" : "정상 운영"}</StatusBadge></div><dl><div><dt>로봇 배터리</dt><dd><span className="cafe-battery" aria-hidden="true"><i style={{ width: `${snapshot.robot.battery}%` }} /></span>{snapshot.robot.battery}%</dd></div><div><dt>현재 작업</dt><dd>{snapshot.robot.currentTask ?? "중단 · 연결 확인 필요"}</dd></div><div><dt>관리자 개입</dt><dd>{attention ? `결과 검토 ${snapshot.reviewCount}건` : "필요 없음"}</dd></div></dl><Button asChild variant="secondary"><Link to="/robots">로봇 보기</Link></Button></Surface>
     </>}
-  </section>;
+  </PageShell>;
 }

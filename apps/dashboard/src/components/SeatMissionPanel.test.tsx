@@ -25,10 +25,10 @@ describe("seat mission submission", () => {
   it("reuses the same idempotency key after a network failure and sends only supported fields", async () => {
     createMission.mockRejectedValueOnce(new Error("네트워크 오류")).mockResolvedValueOnce({ mission_id: "mission-retry" });
     panel();
-    fireEvent.click(screen.getByRole("radio", { name: "높음" }));
+    fireEvent.change(screen.getByRole("combobox", { name: "우선순위" }), { target: { value: "HIGH" } });
     fireEvent.click(screen.getByRole("button", { name: "요청 보내기" }));
     await screen.findByRole("alert");
-    expect(screen.getByRole("radio", { name: "높음" })).toBeChecked();
+    expect(screen.getByRole("combobox", { name: "우선순위" })).toHaveValue("HIGH");
     fireEvent.click(screen.getByRole("button", { name: "다시 요청" }));
     await screen.findByRole("link", { name: "요청 현황 보기" });
     expect(createMission.mock.calls[1][0]).toEqual(createMission.mock.calls[0][0]);
@@ -44,7 +44,7 @@ describe("seat mission submission", () => {
     fireEvent.submit(container.querySelector("form")!);
     expect(createMission).toHaveBeenCalledTimes(1);
     expect(screen.getByRole("button", { name: "작업 요청 닫기" })).toBeDisabled();
-    expect(screen.getByRole("radio", { name: "높음" })).toBeDisabled();
+    expect(screen.getByRole("combobox", { name: "우선순위" })).toBeDisabled();
     finish({ mission_id: "one-mission" });
     await waitFor(() => expect(screen.getByRole("button", { name: "대기열 등록 완료" })).toBeDisabled());
   });
@@ -53,7 +53,7 @@ describe("seat mission submission", () => {
     panel();
     fireEvent.click(screen.getByRole("button", { name: "요청 보내기" }));
     await screen.findByRole("alert");
-    fireEvent.click(screen.getByRole("radio", { name: "높음" }));
+    fireEvent.change(screen.getByRole("combobox", { name: "우선순위" }), { target: { value: "HIGH" } });
     fireEvent.click(screen.getByRole("button", { name: "요청 보내기" }));
     await screen.findByRole("alert");
     expect(createMission.mock.calls[1][0].priority).toBe("HIGH");

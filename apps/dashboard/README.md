@@ -420,6 +420,12 @@ SLAM 화면의 **좌석 배치 편집**에서 기존 좌석 번호를 유지한 
 [도입 결정](../../docs/adr/0007-dashboard-design-system.md), [UI 개발 규칙](AGENTS.md)을 따른다.
 개발 서버의 `/ui-preview?demo=1`에서 버튼·폼·상태의 표본을 볼 수 있다(인증 필요).
 
+페이지는 `PageShell`의 standard1440px(홈/설정), wide1760px(작업/로봇)를 사용한다.
+투명한72px 헤더·공통 여백을 공유하고 지도는 전체 canvas로 유지한다. 로봇은 운영 정보와
+작은 모델 미리보기, 별도 수동 조종 카드로 구성하며 카메라/입력은 데스크톱에서 나란히 배치한다.
+지도/로봇 목록은 `RobotSummaryContent`, 지도/작업 요청은 `MissionPriorityField`를 공유한다.
+[페이지 구성 결정과 예외](../../docs/adr/0009-dashboard-page-consistency.md)를 참고한다.
+
 `pnpm build` 후 `pnpm --filter @cleany/dashboard test:visual`로 개선 후 스냅샷과 비교한다.
 의도한 디자인 변경은 Before/After를 검토한 뒤 `--update-snapshots`로 반영한다.
 전체 검증 명령과 표시용 fixture의 한계는 위 명세를 참고한다.

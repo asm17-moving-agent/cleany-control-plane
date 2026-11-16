@@ -1,7 +1,4 @@
 @layer legacy {
-.control-main:has(.ops-page) { padding: 24px; background: var(--color-background); }
-.control-app:has(.ops-page) { min-width: 1024px; }
-.ops-page { max-width: 2040px; margin-inline: auto; border: 1px solid var(--color-border-strong); background: var(--color-surface); color: var(--color-text); }
 .ops-page-heading { display: flex; min-height: 96px; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 24px; border-bottom: 1px solid var(--color-border); }
 .ops-page-heading h2 { margin: 0 0 6px; font-size: 20px; font-weight: 700; letter-spacing: -.4px; }
 .ops-page-heading p { margin: 0; color: var(--color-text-muted); font-size: 13px; }

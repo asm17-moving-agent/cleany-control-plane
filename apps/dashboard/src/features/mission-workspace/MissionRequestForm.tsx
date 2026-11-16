@@ -1,3 +1,4 @@
+import { MissionPriorityField } from "../../components/MissionPriorityField";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { Mission, Priority } from "../../api/types";
 import { Button } from "../../components/ui/button";
@@ -40,7 +41,7 @@ export function MissionRequestForm({ retry, onClose, onCreated }: { retry?: Miss
       {retry && <Notice>이전 결과는 보존하고 새 작업을 등록합니다.</Notice>}
       <Field label="작업 좌석" htmlFor="task-seat"><NativeSelect id="task-seat" value={seatId} disabled={busy} required onChange={e => setSeatId(e.target.value)}><option value="">좌석 선택</option>{seats.map(s=><option key={s.seat_id} value={s.seat_id} disabled={!supported(s)}>{seatZoneLabel(s)} · {seatDisplayLabel(s)}번 좌석{!supported(s) ? " · 작업 미지원" : ""}</option>)}</NativeSelect></Field>
       <p className="task-request-description">정리 작업 · 오늘 등록 · 로봇 자동 할당</p>
-      <Field label="우선순위" htmlFor="task-priority"><NativeSelect id="task-priority" value={priority} disabled={busy} onChange={e=>setPriority(e.target.value as Priority)}><option value="NORMAL">보통</option><option value="HIGH">높음</option></NativeSelect></Field>
+      <MissionPriorityField id="task-priority" value={priority} disabled={busy} onChange={setPriority} />
       {seat?.occupancy === "OCCUPIED" && <Notice tone="warning">사용 중인 좌석입니다. 정리 가능한 상태인지 확인해 주세요.</Notice>}
       {!isDemo && seat && !supported(seat) && <Notice tone="warning">현재 로봇이 지원하지 않는 좌석입니다.</Notice>}
       {isDemo && !isRecording && <Notice>예시 모드 · 실제 작업은 등록되지 않습니다.</Notice>}

@@ -1,5 +1,5 @@
+import { RobotSummaryContent } from "../components/RobotSummaryContent";
 import { Button } from "@/components/ui/button";
-import { ROBOT_MODEL } from "../components/robot-model-asset";
 import { SlamMap } from "../features/facility-map/SlamMap";
 import { useMemo } from "react";
 import { useHomePanelState } from "./useHomePanelState";
@@ -8,14 +8,11 @@ import { useOutletContext, useSearchParams } from "react-router";
 import type { FacilityFloor, FacilitySelection } from "../app/AppShell";
 import { FacilityMap, type FacilityRobotMarker } from "../features/facility-map/FacilityMap";
 import { worldToMap } from "../features/facility-map/seat-layout";
-import { ChevronIcon } from "../components/WorkspaceIcons";
-import { BatteryStatus } from "../components/BatteryStatus";
 import { WorkspaceMessage } from "../components/WorkspaceMessage";
 import { MapOverlayPanel } from "../components/MapOverlayPanel";
 import { RobotDetailPanel } from "../components/RobotDetailPanel";
 import { SeatMissionPanel } from "../components/SeatMissionPanel";
 import { needsRobotAttention } from "../lib/home-summary";
-import { RobotStateBadge } from "../components/RobotStateBadge";
 import { missionTargetLabel } from "../lib/operations";
 import { useOperations } from "../operations/OperationsContext";
 import { HomeMapHeader } from "../components/HomeMapHeader";
@@ -83,12 +80,8 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
             {robots.map((robot) => {
               const active = missions.find((mission) => mission.mission_id === robot.active_mission_id);
               return <article key={robot.robot_id} aria-label={robot.robot_id} data-state={robot.state} className={"home-robot-row" + (robot.robot_id === selectedRobotId ? " is-selected" : "")}>
-                <button type="button" className="home-robot-select" aria-label={robot.robot_id + " 상세 열기"} aria-pressed={robot.robot_id === selectedRobotId} onClick={() => selectRobot(robot.robot_id)}>
-                  <span className="home-robot-thumbnail"><img src={ROBOT_MODEL.poster} alt="" /></span>
-                  <span className="home-robot-identity"><strong>{robot.robot_id}</strong><RobotStateBadge state={robot.state} />{active && <small>{missionTargetLabel(active, seats)}</small>}
-                    <BatteryStatus compact />
-                  </span>
-                  <span className="home-robot-chevron" aria-hidden="true"><ChevronIcon /></span>
+                <button type="button" className="home-robot-select robot-summary" data-attention={needsRobotAttention(robot) || undefined} aria-label={robot.robot_id + " 상세 열기"} aria-pressed={robot.robot_id === selectedRobotId} onClick={() => selectRobot(robot.robot_id)}>
+                  <RobotSummaryContent robot={robot} assignment={active ? missionTargetLabel(active, seats) : undefined} />
                 </button>
               </article>;
             })}
