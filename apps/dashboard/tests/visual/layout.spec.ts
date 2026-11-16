@@ -8,7 +8,7 @@ test("navigation and primary content stay inside supported viewports", async ({ 
     await expect(page.getByRole("navigation", { name: "주요 메뉴" })).toBeVisible();
     if (path === "/missions" || path === "/results") {
       await expect(page.locator('.task-detail-heading')).toBeVisible();
-      for (const panel of await page.locator('.task-calendar-surface, .task-summary-bar, .task-list-panel, .task-detail-panel').all()) {
+      for (const panel of await page.locator('.task-calendar-surface, .task-day-summary, .task-list-panel, .task-detail-panel').all()) {
         const box = await panel.boundingBox();
         expect(box!.x).toBeGreaterThanOrEqual(0);
         expect(box!.x + box!.width).toBeLessThanOrEqual(page.viewportSize()!.width);

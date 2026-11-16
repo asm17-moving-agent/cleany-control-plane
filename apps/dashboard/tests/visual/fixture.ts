@@ -43,6 +43,7 @@ export async function fixture(page: Page, mode: "signed-in" | "login" | "passwor
 }
 
 export async function capture(page: Page, testInfo: TestInfo, name: string) {
+  if (name !== "loading") await expect(page.locator('.task-calendar-status').filter({hasText:'불러오는 중'})).toHaveCount(0);
   await page.evaluate(async () => {
     await document.fonts.ready;
     await Promise.all(Array.from(document.images).map(img => img.decode().catch(() => {})));

@@ -16,7 +16,7 @@ import { MissionCalendar } from "../features/mission-workspace/MissionCalendar";
 import { MissionDetail } from "../features/mission-workspace/MissionDetail";
 import { MissionRequestForm } from "../features/mission-workspace/MissionRequestForm";
 import { useMissionDay } from "../features/mission-workspace/useMissionDay";
-import { clockLabel, dayKey, matchesTask, shiftDay, sortTasks, taskFilters, type TaskFilter } from "../features/mission-workspace/mission-day";
+import { clockLabel, dayKey, matchesTask, shiftDay, sortTasks, summarizeTasks, taskFilters, type TaskFilter } from "../features/mission-workspace/mission-day";
 import "../features/mission-workspace/mission-workspace.css";
 
 /** Date-scoped lifecycle workspace. Robot outcomes and operator acknowledgement remain separate. */
@@ -35,6 +35,7 @@ export function MissionsPage() {
     && `${missionTargetLabel(m,seats)} ${m.mission_id}`.toLowerCase().includes(search.toLowerCase().trim())));
   const selected = selectedId ? missions.find(m => m.mission_id === selectedId) : filtered[0];
   const count = (state: TaskFilter) => isLoading || error ? "—" : missions.filter(m=>matchesTask(m,state)).length;
+  const summary = isLoading || error ? undefined : summarizeTasks(missions);
   const dateTitle = new Intl.DateTimeFormat("ko-KR", { month:"long", day:"numeric", weekday:"long", timeZone:"Asia/Seoul" }).format(new Date(`${day}T12:00:00+09:00`));
   function nextParams(changes: Record<string,string|null>) {
     const next = new URLSearchParams(params); next.delete("phase");
@@ -43,13 +44,17 @@ export function MissionsPage() {
   function selectDay(value: string) { setForm(null); setSearch(""); setParams(nextParams({date:value,mission:null})); }
   return <PageShell width="wide" flow="workspace" className="task-workspace" aria-label="작업 관리">
     <PageHeader title="작업" action={<div className="task-actions"><Button variant="secondary" onClick={()=>void workspace.refresh()} disabled={isLoading}>새로고침</Button><Button variant="primary" aria-label="새 작업 요청 열기" onClick={()=>setForm({})}><PlusIcon aria-hidden="true" />새 작업 요청</Button></div>} />
-    <Surface padding="none" className="task-summary-bar" aria-label="일별 요약">
-      <div><span>선택일 전체</span><strong>{count("ALL")}<small>건</small></strong></div>
-      {taskFilters.slice(1,6).map(([key,label])=><Button key={key} variant="ghost" className="task-summary-metric" data-state={key} aria-pressed={filter===key} title={key==="REVIEW"?"다른 상태와 중복될 수 있는 미확인 결과":undefined} onClick={()=>{setForm(null);setParams(nextParams({filter:filter===key?null:key,mission:null,date:day}));}}><span><i />{label}</span><strong>{count(key)}</strong></Button>)}
-    </Surface>
     <div className="task-layout">
       <aside className="task-sidebar" aria-label="날짜 선택">
-        <Surface padding="none" className="task-calendar-surface"><MissionCalendar day={day} today={today} onSelect={selectDay} /></Surface>
+        <Surface padding="none" className="task-calendar-surface"><MissionCalendar day={day} today={today} localMissions={workspace.localMissions} selectedSummary={summary} onSelect={selectDay} /></Surface>
+        <Surface padding="none" className="task-day-summary" aria-label="일별 요약">
+          <div><span>전체 작업</span><strong>{summary?.total ?? "—"}</strong></div>
+          <div data-state="complete"><span>완료</span><strong>{summary?.complete ?? "—"}</strong></div>
+          <Button variant="ghost" data-state="review" aria-pressed={filter === "REVIEW"} disabled={!summary}
+            title="관리자 확인이 필요한 작업만 보기" onClick={() => { setForm(null); setSearch(""); setParams(nextParams({filter:filter === "REVIEW" ? null : "REVIEW", priority:null, mission:null, date:day})); }}>
+            <span>확인 필요</span><strong>{summary?.review ?? "—"}</strong>
+          </Button>
+        </Surface>
         <p className="task-day-note">요청·종료일 기준{day===today && " · 이전 요청 중 진행/대기 작업 포함"}</p>
       </aside>
       <Surface padding="none" className="task-list-panel" aria-label="작업 요청 목록">

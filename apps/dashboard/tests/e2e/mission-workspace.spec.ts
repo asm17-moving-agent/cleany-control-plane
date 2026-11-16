@@ -3,18 +3,29 @@ import { dayKey, shiftDay } from "../../src/features/mission-workspace/mission-d
 import { operationsDemo } from "../../src/operations/operations-demo";
 
 test("calendar, summary filters and inline results share a single workspace", async ({ page }) => {
- await page.clock.setFixedTime(new Date("2026-11-17T09:30:00Z"));
+ // Keep the real authenticated session's clock; a future fixture time expires it locally.
+ const now=new Date(), today=dayKey(now), yesterday=shiftDay(today,-1), previous=shiftDay(today,-2);
+ await page.clock.setFixedTime(now);
  await page.goto('/missions?demo=1');
- await expect(page.getByRole('button',{name:'2026-11-17',exact:true})).toHaveAttribute('aria-pressed','true');
+ await expect(page.getByRole('button',{name:today,exact:true})).toHaveAttribute('aria-pressed','true');
  await expect(page.locator('.task-row')).toHaveCount(7);
- await page.getByRole('button',{name:'2026-11-16',exact:true}).click();
+ await expect(page.locator('.task-summary-bar')).toHaveCount(0);
+ await expect(page.getByRole('button',{name:today,exact:true})).toHaveAccessibleDescription('작업 7건, 확인 필요 2건');
+ // A month can start on Sunday, placing yesterday outside its visible grid.
+ await page.getByRole('button',{name:'이전 날짜',exact:true}).click();
+ await expect(page.getByRole('button',{name:yesterday,exact:true})).toHaveAccessibleDescription('작업 1건, 확인 필요 1건');
  await expect(page.locator('.task-row')).toHaveCount(1);
  await expect(page.getByRole('region',{name:'작업 상세',exact:true})).toContainText('NAVIGATION_BLOCKED');
- const selected=page.getByRole('button',{name:'2026-11-16',exact:true});await selected.focus();await page.keyboard.press('ArrowLeft');
- await expect(page.getByRole('button',{name:'2026-11-15',exact:true})).toBeFocused();
+ const selected=page.getByRole('button',{name:yesterday,exact:true});await selected.focus();await page.keyboard.press('ArrowLeft');
+ await expect(page.getByRole('button',{name:previous,exact:true})).toBeFocused();
  await expect(page.getByRole('heading',{name:'작업 요청 없음'})).toBeVisible();
  await page.getByRole('button',{name:'오늘',exact:true}).click();
+ await expect(page.locator('.task-row')).toHaveCount(7);
+ await page.getByRole('textbox',{name:'작업 검색'}).fill('없는 좌석');
+ await page.getByRole('combobox',{name:'우선순위',exact:true}).selectOption('HIGH');
  await page.getByRole('region',{name:'일별 요약'}).getByRole('button',{name:'확인 필요 2'}).click();
+ await expect(page.getByRole('textbox',{name:'작업 검색'})).toHaveValue('');
+ await expect(page.getByRole('combobox',{name:'우선순위',exact:true})).toHaveValue('ALL');
  await expect(page.locator('.task-row')).toHaveCount(2);
  await expect(page.getByRole('region',{name:'작업 상세',exact:true})).toContainText('07번 좌석');
  await expect(page.getByRole('img',{name:'작업 전 AI 생성 예시 사진'})).toBeVisible();
@@ -60,6 +71,9 @@ test("review acknowledgement is explicit, persists on reload and retains the fai
  expect(reviews).toBe(1);
  await page.reload();await expect(detail.getByText('검토 완료',{exact:true})).toBeVisible();
  await expect(page.getByRole('region',{name:'일별 요약'}).getByRole('button',{name:'확인 필요 0'})).toBeVisible();
+ await expect(page.getByRole('button',{name:today,exact:true})).toHaveAccessibleDescription('작업 1건, 확인 필요 0건');
+ await expect(page.getByRole('button',{name:today,exact:true}).locator('..').locator('[data-marker=work]')).toHaveCount(1);
+ await expect(page.getByRole('button',{name:today,exact:true}).locator('..').locator('[data-marker=review]')).toHaveCount(0);
 });
 
 test("daily history pages beyond the latest 50 and changes date without mixing results",async({page})=>{

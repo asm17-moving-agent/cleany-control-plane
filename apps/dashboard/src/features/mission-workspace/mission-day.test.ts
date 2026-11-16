@@ -1,9 +1,22 @@
 import { describe, expect, it } from "vitest";
 import { homeSummaryDemo } from "../../lib/home-summary-demo";
-import { dayKey, matchesTask, onMissionDay, shiftDay, validDay } from "./mission-day";
+import { calendarDays, dayKey, matchesTask, onMissionDay, shiftDay, summarizeTasks, validDay } from "./mission-day";
 import { needsResultReview } from "../../lib/home-summary";
 const base = homeSummaryDemo.missions[0];
 describe("mission operational days",()=>{
+ it("covers leap months and adjacent year dates as full calendar weeks",()=>{
+  const leap=calendarDays("2028-02"), year=calendarDays("2027-01");
+  expect(leap).toContain("2028-02-29"); expect(leap.length%7).toBe(0);
+  expect(year[0]).toBe("2026-12-27");expect(year.at(-1)).toBe("2027-02-06");
+  expect(new Set(year).size).toBe(42);
+ });
+ it("counts actual work once and keeps completion separate from unacknowledged review",()=>{
+  const complete={...base,mission_id:"complete",phase:"TERMINAL" as const,outcome:"SUCCESS" as const};
+  const failed={...complete,mission_id:"failed",outcome:"FAILED" as const};
+  const reviewed={...failed,mission_id:"reviewed",review:{reviewed_at:"2026-11-17T00:00:00Z",reviewed_by:"operator",reviewer_name:"Operator"}};
+  expect(summarizeTasks([complete,complete,failed,reviewed,{...base,mission_id:"queued",phase:"QUEUED"}])).toEqual({total:4,complete:1,review:1});
+  expect(summarizeTasks([])).toEqual({total:0,complete:0,review:0});
+ });
  it("uses Korean midnight and validates real calendar dates",()=>{
   expect(dayKey("2026-11-16T15:00:00Z")).toBe("2026-11-17");
   expect(dayKey("2026-11-16T14:59:59Z")).toBe("2026-11-16");

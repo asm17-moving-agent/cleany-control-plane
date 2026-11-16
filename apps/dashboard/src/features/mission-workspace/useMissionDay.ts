@@ -27,13 +27,17 @@ export function useMissionDay(requestedDay: string | null, selectedId: string | 
   const history = useQuery({ queryKey: ["mission-day", ...scope, day], queryFn: ({ signal }) => api.missionDay(day, signal), enabled: live,
     refetchInterval: ops.connectionState === "connected" ? false : Number(settings.refreshSeconds) * 1000 });
   useEffect(() => {
-    if (live) void queryClient.invalidateQueries({ queryKey: ["mission-day", ...scope] });
+    if (live) {
+      void queryClient.invalidateQueries({ queryKey: ["mission-day", ...scope] });
+      void queryClient.invalidateQueries({ queryKey: ["mission-calendar", ...scope] });
+    }
   }, [ops.missions, ops.events, live, scope.join(":"), queryClient]);
   const refresh = async () => {
     setNow(new Date());
-    await Promise.all([ops.refresh(), live ? history.refetch() : Promise.resolve(), live && selectedId && !known ? lookup.refetch() : Promise.resolve()]);
+    await Promise.all([ops.refresh(), live ? history.refetch() : Promise.resolve(), live && selectedId && !known ? lookup.refetch() : Promise.resolve(),
+      live ? queryClient.invalidateQueries({ queryKey: ["mission-calendar", ...scope] }) : Promise.resolve()]);
   };
-  return { day, today, missions: live ? history.data ?? [] : local.filter(m => onMissionDay(m, day, today)),
+  return { day, today, localMissions: local, missions: live ? history.data ?? [] : local.filter(m => onMissionDay(m, day, today)),
     isLoading: ops.isLoading || (live && history.isPending) || (needsLookup && lookup.isPending),
     error: ops.error ?? (live ? history.error : null), detailError: needsLookup ? lookup.error : null, refresh };
 }

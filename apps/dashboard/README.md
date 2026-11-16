@@ -426,6 +426,11 @@ SLAM 화면의 **좌석 배치 편집**에서 기존 좌석 번호를 유지한 
 지도/로봇 목록은 `RobotSummaryContent`, 지도/작업 요청은 `MissionPriorityField`를 공유한다.
 [페이지 구성 결정과 예외](../../docs/adr/0009-dashboard-page-consistency.md)를 참고한다.
 
+작업 탭은 상단 통계 바 대신 캘린더 아래 전체/완료/확인 필요 요약을 제공한다.
+초록 점은 작업 기록, 주황 점은 관리자 확인 필요이며, 요약의 확인 필요를 누르면 해당 날짜의
+미확인 작업으로 필터링한다. 달력도 기존 일별 API를 끝까지 읽어 계산하며 기본 최신50건으로
+과거 기록을 추정하지 않는다. 달력 조회 실패는 목록 조회와 분리하여 재시도할 수 있다.
+
 `pnpm build` 후 `pnpm --filter @cleany/dashboard test:visual`로 개선 후 스냅샷과 비교한다.
 의도한 디자인 변경은 Before/After를 검토한 뒤 `--update-snapshots`로 반영한다.
 전체 검증 명령과 표시용 fixture의 한계는 위 명세를 참고한다.

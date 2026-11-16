@@ -12,6 +12,20 @@ export function validDay(value: string | null): value is string {
 export function shiftDay(day: string, count: number) {
   const date = new Date(`${day}T12:00:00+09:00`); date.setUTCDate(date.getUTCDate() + count); return dayKey(date);
 }
+export function calendarDays(month: string) {
+  const first = `${month}-01`;
+  const start = new Date(`${first}T12:00:00+09:00`);
+  const offset = start.getUTCDay();
+  const end = new Date(start); end.setUTCMonth(end.getUTCMonth() + 1); end.setUTCDate(0);
+  const count = Math.ceil((offset + end.getUTCDate()) / 7) * 7;
+  return Array.from({ length: count }, (_, index) => shiftDay(first, index - offset));
+}
+export function summarizeTasks(missions: Mission[]) {
+  const unique = [...new Map(missions.map(m => [m.mission_id, m])).values()];
+  return { total: unique.length, complete: unique.filter(m => matchesTask(m, "SUCCESS")).length,
+    review: unique.filter(m => needsResultReview(m)).length };
+}
+export type DaySummary = ReturnType<typeof summarizeTasks>;
 export function missionDay(mission: Mission) { return dayKey(mission.finished_at || mission.created_at); }
 export function onMissionDay(mission: Mission, day: string, today: string) {
   return dayKey(mission.created_at) === day || (!!mission.finished_at && dayKey(mission.finished_at) === day)
