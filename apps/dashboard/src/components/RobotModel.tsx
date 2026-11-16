@@ -1,3 +1,4 @@
+import { ROBOT_MODEL } from "./robot-model-asset";
 import { Component, lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import "./robot-model.css";
@@ -48,10 +49,10 @@ export function RobotModel({ compact = false, hoverEnabled = true, rotationGuide
   }, [interactive, entered, attempt]);
 
   return <figure ref={container} className={"robot-model-card" + (compact ? " robot-model-inline" : "")}
-    aria-label="Cleany 외형 미리보기" title={compact ? "대기 자세·외장 시안 · 실시간 자세 미연동" : undefined} data-state={status}>
+    aria-label="Cleany 외형 미리보기" title={compact ? "CAD 조립 형상 · 실시간 자세 미연동" : undefined} data-state={status}>
     <div className="robot-model-stage">
-      <img className="robot-model-poster" src="/models/cleany-exterior-poster.png" width="360" height="360"
-        alt={status === "ready" ? "" : "Cleany 대기 자세와 외장 시안"} aria-hidden={status === "ready"} loading="lazy" />
+      <img className="robot-model-poster" src={ROBOT_MODEL.poster} width="360" height="360"
+        alt={status === "ready" ? "" : "Cleany CAD 조립 모델"} aria-hidden={status === "ready"} loading="lazy" />
       {interactive && entered && status !== "error" && <ModelBoundary key={attempt} onError={onError}>
         <Suspense fallback={null}><RobotModelCanvas onReady={onReady} onError={onError}
           hoverEnabled={hoverEnabled} rotationGuide={rotationGuide && !compact} /></Suspense>

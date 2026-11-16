@@ -2,7 +2,10 @@
 
 미로그인 상태의 `/`와 `/login`은 로그인 화면을 표시한다. 로그인하면 매장 대시보드로 연결한다.
 기존 `/welcome` 링크는 `/login`으로 이동한다. 로그인·첫 비밀번호 변경 화면은 모바일도 지원한다. 오른쪽 위 지구본에서 해당 화면의
-한국어·영어를 선택하며 브라우저에 선택을 저장한다. 배경 선화는 `AuthBackdrop.tsx`의 SVG다.
+한국어·영어를 선택하며 브라우저에 선택을 저장한다. 배경 선화는 `AuthBackdrop.tsx`의 SVG다. 하부 차체와 바퀴는
+`CadLowerAssembly.tsx`의 CAD 치수 기반 SVG다. 원본 메시 전체의 선화 변환이 아니라,
+`cad_final.json`의 하부 패널 경계와 바퀴의 축·지름·두께를 공통 좌표로 투영한 일러스트다.
+`uv run --with numpy --with opencv-python-headless python tools/generate_auth_chassis.py /path/to/cad_final.json`으로 다시 생성한다.
 
 회사가 발급한 계정으로 로그인하고 첫 접속에서 비밀번호를 변경한다. 고객의 시설 목록을
 선택하며 시설 전환·로그아웃 때 조회 cache와 실시간 구독을 정리한다. 예시/촬영 모드도
@@ -43,7 +46,14 @@ TanStack Query로 HTTP 응답과 SSE 갱신을 관리한다. 현재 Backend는 M
 상단 메뉴에서, 즉시 조치·결과 검토는 상단 알림에서 진입한다.
 홈 최소 너비는 1024px이다.
 
-지도는 기존 18층 PNG와 정적 SVG(가구·구역명·엘리베이터), HTML 좌석·로봇 레이어를
+시설에 SLAM 지도가 연결되면 Backend의 원본과 표시용 SVG를 사용한다. 운영 지도는 가로로
+정렬하고 주요 구조를 직선과 곡선으로 단순화하며, 오른쪽 위에서 원본으로 전환한다.
+작은 장애물 등 세부 관측은 원본 보기에서 확인한다. 위치와 방향은
+같은 표시 변환을 공유하고 등록되지 않은 좌석은 생성하지 않는다. 지도 등록, 파생본 재현과
+좌표 계약은 [SLAM 지도 통합](../../docs/architecture/slam-map-integration.md)을 따른다.
+아래 예시 도면 설명은 `facility-18f`와 데모 화면에 적용한다.
+
+예시 지도는 기존 18층 PNG와 정적 SVG(가구·구역명·엘리베이터), HTML 좌석·로봇 레이어를
 사용한다. 모든 레이어가 같은 좌표 변환을 공유한다. API의 `row`와 `grid_column`을
 `features/facility-map/seat-layout.ts`에서 D-HUB 48개 좌석에 대응한다.
 실제 로봇 좌표계 및 금지 구역과의 정합은 Robot Edge 연동 전에 별도로 확정해야 한다.
@@ -246,8 +256,8 @@ Firefox/niri 캡처와 검증 범위는 [운영 페이지 검증 기록](../../d
 PNG 포스터를 먼저 보여 주고, 마우스를 사용할 수 있는 기기에서 카드가 화면 근처에
 들어오면 Three.js와 GLB를 지연 로딩한다.
 
-- 모델: Cleany `e718ac57` CAD를 접은 표시용 대기 자세와 외장 시안. 실시간 자세나 확정된 제작 사양이 아니다.
-- 기반 형상 최적화: 원본 6.80 MB → 웹용 약 2.93 MB. 고유 삼각형 375,110 → 159,586 (인스턴스 반복 전 수치).
+- 모델: Cleany `c32c3074`의 `Cleany-final.FCStd` 기반 CAD 저장 자세. 실시간 관절 상태는 연동하지 않는다.
+- 형상: CAD 메시 330개와 원본 주행 모델의 휠 롤러 48개, 삼각형 1,213,060개를 웹용 591,768개로 줄이고 같은 색상끼리 묶어 7개 메시로 표시한다. GLB 크기는 10.64 MB다.
 - 호버: 왼쪽 로봇 목록에서는 회전하지 않는다. 상세 패널과 로봇 관리에서는 수평 12°, 위쪽 2°로
   부드럽게 돌아간 뒤 멈추며, 이탈하면 호버 전 각도로 돌아간다.
 - 왼쪽 클릭 후 드래그: 수평 회전과 제한된 상하 회전. 드래그는 현재 표시 각도에서 시작하고,
@@ -263,8 +273,7 @@ PNG 포스터를 먼저 보여 주고, 마우스를 사용할 수 있는 기기�
 - `/robot-model`은 개발 모드 전용 확인 화면이다. `?renderStats=1`로 frame 수, draw call,
   삼각형 수와 카메라 각도를 확인할 수 있으며 운영 빌드에는 이 경로와 진단 표시를 제공하지 않는다.
 
-자산 출처는 `public/models/README.md`에 기록했다. 포스터는 같은 모델의 네이티브
-Firefox 화면을 niri로 캡처한 뒤 모델 영역만 잘라 생성했다. 원본 CAD·ROS 모델은 수정하지 않는다.
+자산 출처는 `public/models/README.md`에 기록했다. 포스터는 같은 대시보드 CAD 렌더러를 Chromium에서 캡처해 생성한다. 원본 CAD·ROS 모델은 수정하지 않는다.
 최적화는 파일 크기와 유휴 렌더링 감소를 목표로 하며, GPU 사용률/소비전력 감소율을 의미하지 않는다.
 
 호버·드래그 브라우저 검사는 API fixture와 Chromium 소프트웨어 WebGL을 사용한다.
@@ -288,52 +297,29 @@ Chromium 경로를 지정한다. 전용 설정이 5176 포트에서 Vite를 실�
 검토 2건과 최근 완료를 화면용 fixture로 표시한다. 로봇 목록·지도·서버 데이터는
 변경하지 않으며 상단의 '실제 데이터로 돌아가기'로 해제한다.
 
-### 표시용 대기 자세 모델
+### CAD 모델 갱신
 
-홈·로봇 관리·개발용 `/robot-model`의 공통 프리뷰는
-`cleany-e718ac57-standby.glb`를 사용한다. 원본
-`cleany-e718ac57-web.glb`의 경량 형상을 유지하면서 팔 관절의 표시 자세와
-부품별 PBR 재질만 변경했다. 양쪽 어깨 yaw를 각각 -90도/+90도로 돌려
-위팔과 아래팔이 거의 포개지도록 접고, 손목을 보정해 그리퍼가 머리 카메라와
-같은 정면을 향하게 했다. 어깨 pitch 2.9rad, 팔꿈치 3.05rad, 손목 pitch -0.15rad를 사용한다.
-MuJoCo forward kinematics로 만든 정적 예시이며,
-실시간 자세나 충돌·안전 검증을 마친 하드웨어 대기 명령이 아니다.
-각도와 재질 매핑은 같은 이름의 JSON에 기록한다.
+홈 목록, 상세 패널, 로봇 관리와 개발용 `/robot-model`은
+`src/components/robot-model-asset.ts`의 공통 GLB·포스터 경로를 사용한다.
+`robot-presentation.html`도 같은 GLB를 사용한다. 임의 외장, 팔 커버,
+전장 부품과 대체 휠은 추가하지 않는다. 기존 시안 파일은 과거 근거로 보존한다.
 
-다음 명령은 저장소 루트에서 실행한다. `CLEANY_SOURCE`는 Cleany의
-`e718ac57e861f3d34b6e0e10b0d18d87a348bf51` 체크아웃 경로다.
-출력은 기존 파일과 다른 경로로 지정한다.
+`Cleany-final.FCStd`의 저장 자세는 Cleany 저장소의
+`config/geometry/cad_final.json`에 기록된 관절 각도로 재현한다.
+CAD 메시 해시를 검증하고 MuJoCo 순기구학으로 배치한 뒤 GLB로 내보낸다.
+부품과 배치를 유지하며 복잡한 메시만 축소한다. 부품별 경계가 0.2mm 이상 변하면 원본 메시를 유지한다. 이 경계 검사는 전체 표면 오차 보증이 아니다. 색상별 병합으로 그리기 호출을 줄인다.
+GLB를 다시 읽어 삼각형 수와 경계 좌표를 검사하며 출처·해시를 JSON에 남긴다.
 
 ```bash
-uv run --with mujoco==3.12.0 --with trimesh --with numpy python \
-  tools/prepare_robot_standby.py \
-  "$CLEANY_SOURCE/ros2_ws/src/cleany_description/mjcf/cleany.xml" \
-  apps/dashboard/public/models/cleany-e718ac57-web.glb \
-  /tmp/cleany-standby-new.glb
+uv run --with mujoco==3.12.0 --with trimesh==4.12.2 --with fast-simplification==0.1.13 python \
+  tools/export_cad_web_model.py /path/to/cleany-checkout /tmp/cleany-new-cad.glb
+# 모델 경로를 갱신하고 Vite를 5176 포트에서 실행한 뒤 포스터 생성
+node apps/dashboard/tools/capture-cad-poster.mjs
 ```
 
-스크립트는 입력 GLB 해시, MJCF와 기존 노드 변환 일치, 관절 제한,
-128개 형상 배치 보존, 삼각형 수 보존, GLB 재로드 경계를 검증한다.
-팔꿈치는 어깨 뒤로, 손목은 앞으로 접히는지, 두 그리퍼의 로컬 -Y 축이
-머리 카메라의 정면 축과 일치하는지도 확인한다.
-재질은 표시를 위한 구분이며 실물의 측정된 광학 특성이 아니다.
-`cleany-standby-poster.png`는 같은 모델을 Firefox 뷰어에서 렌더링한 미리보기다.
+내보내기는 시뮬레이션 스텝이나 실물 로봇 명령을 실행하지 않는다.
+CAD 형상 확인과 브라우저 검증은 실제 제작 치수·센서 보정·동작 검증을 뜻하지 않는다.
 
-외장과 팔 커버는 `RobotExterior.ts`와 `RobotArmCovers.ts`가 추가하는 표시 레이어다.
-수거함, 연속된 본체 외장, 구동부 커플러, 부분 팔 커버와 상부 전면의 글자 로고를 포함한다.
-기존 카메라는 노출한다. 로봇의 실시간 상태나 검증된 제작 사양으로 표시하지 않는다.
-기본 포스터는 같은 시안의 `cleany-exterior-poster.png`다.
-
-전면 절단선 아래에 라이다용 가로 개구부 1개와 초음파용 가로 개구부 2개를 표시한다.
-`RobotSensorOpenings.ts`가 속이 빈 하부 외장의 양쪽 면을 관통하는 구멍과 내부 테두리를 만든다.
-표시용 라이다 높이 360mm는 원본 MJCF 기준점 460mm와 다르며, 초음파 개구부는
-60×24mm다. 센서 본체·원본 장착 좌표를 바꾸지 않은 디자인 제안이다.
-로고 위의 장식선은 제거했고 포스터에도 같은 변경을 반영했다.
-
-프리뷰는 호버·드래그·키보드 회전만 제공한다. 외장 토글과 투입구·구동부·팔·센서 확대
-버튼은 `feat/robot-model-standby`의 별도 비교 뷰어에 남아 있다.
-형상 치수, 디자인 반복과 과거 검증 범위는
-[외장 시안 문서](../../docs/architecture/robot-exterior-concept.md)에 기록한다.
 ## 운영 예시 모드와 화면 기록
 
 전체 운영 페이지 예시 모드: `/results?demo=1`, `/missions?demo=1`, `/robots?demo=1`.
@@ -396,3 +382,14 @@ Gateway E2E는 격리된 18082 포트/SQLite DB와 테스트용 WebSocket Runtim
 `--color-danger` 등 용도별 변수를 사용한다. 기존 `--workspace-*`와 Tailwind
 색상은 이 변수의 별칭이다. 대기·확인 필요는 호박색, 완료·실행은 청록색,
 미확인은 회색 패턴으로 구분한다. 로고·지도 이미지와 3D 재질은 별도로 유지한다.
+
+SLAM 화면의 **좌석 배치 편집**에서 기존 좌석 번호를 유지한 채 책상 묶음 이동·회전과
+개별 접근점 조정을 할 수 있습니다. 좌석 추가·복제는 새 ID를 생성합니다. 좌표 저장과
+목표 내보내기는 로봇 실행과 별개이며, 미검증 좌석에는 작업을 요청할 수 없습니다.
+[좌표와 검증 계약](../../docs/architecture/slam-map-integration.md#좌석-배치와-좌표)을 참고하세요.
+## 로봇 수동 조종
+
+로봇 상세 화면에서 원형 이동 스틱, 반시계·시계 회전 슬라이더, 속도 상한과 정지 확인을 제공합니다.
+누름 해제, 화면 이탈과 연결 오류 시 정지를 요청하며, Demo와 녹화 모드에서는
+실제 입력을 보내지 않습니다. [연결 및 검증 범위](../../docs/architecture/manual-control.md)를
+참고합니다.

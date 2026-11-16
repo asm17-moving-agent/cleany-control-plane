@@ -1,9 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { createRobotExterior } from "../src/components/RobotExterior";
-import { createRobotElectronics } from "../src/components/RobotElectronics";
-import { createRobotMecanumWheels } from "../src/components/RobotMecanumWheels";
+import { ROBOT_MODEL } from "../src/components/robot-model-asset";
 
 const stage = document.querySelector<HTMLDivElement>("#stage")!;
 const status = document.querySelector<HTMLParagraphElement>("#status")!;
@@ -97,19 +95,9 @@ document.querySelector("#white")!.addEventListener("click", () => savePng(false)
 document.querySelector("#transparent")!.addEventListener("click", () => savePng(true));
 
 try {
-  const gltf = await new GLTFLoader().loadAsync("/models/cleany-e718ac57-standby.glb");
-  // Replace only the pinned source's plain battery proxy in this presentation.
-  const batteryProxy = gltf.scene.getObjectByName("chassis_46");
-  if (batteryProxy) batteryProxy.visible = false;
-  const exterior = createRobotExterior(render, gltf.scene, { transparentLowerBody: true, exposedMast: true });
-  const electronics = createRobotElectronics();
-  const wheels = createRobotMecanumWheels(gltf.scene);
-  scene.add(gltf.scene, exterior.group, electronics, wheels);
+  const gltf = await new GLTFLoader().loadAsync(ROBOT_MODEL.glb);
+  scene.add(gltf.scene);
   const bounds = new THREE.Box3().setFromObject(gltf.scene, true);
-  // Include visible presentation parts only when fitting the frame.
-  exterior.group.traverseVisible(part => {
-    if (part instanceof THREE.Mesh) bounds.union(new THREE.Box3().setFromObject(part, true));
-  });
   bounds.getCenter(center);
   radius = bounds.getBoundingSphere(new THREE.Sphere()).radius;
   fullCenter.copy(center); fullRadius = radius;

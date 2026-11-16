@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -12,6 +12,7 @@ class Settings(BaseSettings):
 
     host: str = "127.0.0.1"
     port: int = Field(default=8080, ge=1, le=65535)
+    shutdown_grace_seconds: float = Field(default=5, gt=0, allow_inf_nan=False)
     pose_receive_timeout_seconds: float = Field(default=1.5, gt=0, allow_inf_nan=False)
     robot_mode: Literal["gateway", "mock"] = "gateway"
     database_path: str = str(Path(__file__).resolve().parents[1] / ".data/control-plane.db")
@@ -37,3 +38,33 @@ class Settings(BaseSettings):
     allowed_origins: list[str] = []
 
     observation_directory: str = str(Path(__file__).resolve().parents[1] / ".data/observations")
+
+    map_directory: str = str(Path(__file__).resolve().parents[1] / "maps")
+
+    teleop_url: str = ""
+    teleop_token_file: str = ""
+    teleop_timeout_seconds: float = Field(default=0.18, gt=0, le=0.25)
+
+    camera_preview_url: str = ""
+    head_camera_topic: str = ""
+    camera_timeout_seconds: float = Field(default=1, gt=0, le=3)
+
+    @field_validator("teleop_url", "camera_preview_url")
+    @classmethod
+    def local_teleop(cls, value: str) -> str:
+        from urllib.parse import urlsplit
+
+        if not value:
+            return value
+        url = urlsplit(value)
+        if (
+            url.scheme != "http"
+            or url.hostname not in {"127.0.0.1", "::1", "localhost"}
+            or url.username
+            or url.password
+            or url.path not in {"", "/"}
+            or url.query
+            or url.fragment
+        ):
+            raise ValueError("URL must be a loopback HTTP origin")
+        return value.rstrip("/")

@@ -75,6 +75,130 @@
         "title": "HealthResponse",
         "type": "object"
       },
+      "LayoutReview": {
+        "properties": {
+          "layout": {
+            "$ref": "#/components/schemas/SeatLayout"
+          },
+          "target_digest": {
+            "title": "Target Digest",
+            "type": "string"
+          },
+          "warnings": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "title": "Warnings",
+            "type": "object"
+          }
+        },
+        "required": [
+          "layout",
+          "warnings",
+          "target_digest"
+        ],
+        "title": "LayoutReview",
+        "type": "object"
+      },
+      "LayoutSeat": {
+        "additionalProperties": false,
+        "properties": {
+          "approach": {
+            "$ref": "#/components/schemas/MetricPose"
+          },
+          "depth": {
+            "maximum": 2.0,
+            "minimum": 0.3,
+            "title": "Depth",
+            "type": "number"
+          },
+          "grid_column": {
+            "enum": [
+              1,
+              2,
+              3,
+              5,
+              6,
+              8,
+              9,
+              10
+            ],
+            "title": "Grid Column",
+            "type": "integer"
+          },
+          "label": {
+            "maxLength": 24,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "pose": {
+            "$ref": "#/components/schemas/MetricPose"
+          },
+          "row": {
+            "maximum": 6.0,
+            "minimum": 1.0,
+            "title": "Row",
+            "type": "integer"
+          },
+          "seat_id": {
+            "pattern": "^seat-[a-z0-9][a-z0-9-]{0,47}$",
+            "title": "Seat Id",
+            "type": "string"
+          },
+          "table_id": {
+            "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+            "title": "Table Id",
+            "type": "string"
+          },
+          "verification": {
+            "default": "draft",
+            "enum": [
+              "draft",
+              "field_verified"
+            ],
+            "title": "Verification",
+            "type": "string"
+          },
+          "width": {
+            "maximum": 3.0,
+            "minimum": 0.3,
+            "title": "Width",
+            "type": "number"
+          },
+          "zone_id": {
+            "enum": [
+              "d-hub",
+              "space-a1",
+              "space-a2",
+              "space-a3",
+              "space-a4",
+              "space-m1",
+              "space-m2",
+              "space-m3"
+            ],
+            "title": "Zone Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "seat_id",
+          "label",
+          "zone_id",
+          "table_id",
+          "row",
+          "grid_column",
+          "pose",
+          "width",
+          "depth",
+          "approach"
+        ],
+        "title": "LayoutSeat",
+        "type": "object"
+      },
       "LoginInput": {
         "properties": {
           "login_id": {
@@ -95,6 +219,284 @@
           "password"
         ],
         "title": "LoginInput",
+        "type": "object"
+      },
+      "ManualCommand": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "enum": [
+              "press",
+              "update",
+              "stop"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "client": {
+            "pattern": "^[a-zA-Z0-9_-]{16,64}$",
+            "title": "Client",
+            "type": "string"
+          },
+          "direction": {
+            "default": "forward",
+            "enum": [
+              "forward",
+              "backward",
+              "left",
+              "right",
+              "ccw",
+              "cw"
+            ],
+            "title": "Direction",
+            "type": "string"
+          },
+          "sequence": {
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "speed": {
+            "default": 0.5,
+            "maximum": 10.0,
+            "minimum": 0.1,
+            "title": "Speed",
+            "type": "number"
+          },
+          "vector": {
+            "anyOf": [
+              {
+                "maxItems": 3,
+                "minItems": 3,
+                "prefixItems": [
+                  {
+                    "maximum": 1.0,
+                    "minimum": -1.0,
+                    "type": "number"
+                  },
+                  {
+                    "maximum": 1.0,
+                    "minimum": -1.0,
+                    "type": "number"
+                  },
+                  {
+                    "maximum": 1.0,
+                    "minimum": -1.0,
+                    "type": "number"
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vector"
+          }
+        },
+        "required": [
+          "client",
+          "sequence",
+          "action"
+        ],
+        "title": "ManualCommand",
+        "type": "object"
+      },
+      "ManualStatus": {
+        "properties": {
+          "available": {
+            "default": false,
+            "title": "Available",
+            "type": "boolean"
+          },
+          "blocked_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blocked Reason"
+          },
+          "configured": {
+            "default": false,
+            "title": "Configured",
+            "type": "boolean"
+          },
+          "connected": {
+            "default": false,
+            "title": "Connected",
+            "type": "boolean"
+          },
+          "enabled": {
+            "default": false,
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "fault_bits": {
+            "default": 0,
+            "title": "Fault Bits",
+            "type": "integer"
+          },
+          "feedback_age_ms": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Feedback Age Ms"
+          },
+          "forward_only": {
+            "default": false,
+            "title": "Forward Only",
+            "type": "boolean"
+          },
+          "message": {
+            "default": "수동 조종 서버가 연결되지 않았습니다.",
+            "title": "Message",
+            "type": "string"
+          },
+          "mock": {
+            "default": false,
+            "title": "Mock",
+            "type": "boolean"
+          },
+          "paused": {
+            "default": false,
+            "title": "Paused",
+            "type": "boolean"
+          },
+          "phase": {
+            "default": "unavailable",
+            "title": "Phase",
+            "type": "string"
+          },
+          "ready": {
+            "default": false,
+            "title": "Ready",
+            "type": "boolean"
+          },
+          "stop_confirmed": {
+            "default": false,
+            "title": "Stop Confirmed",
+            "type": "boolean"
+          },
+          "velocity": {
+            "items": {
+              "type": "number"
+            },
+            "maxItems": 4,
+            "minItems": 4,
+            "title": "Velocity",
+            "type": "array"
+          },
+          "web_max_velocity": {
+            "default": 0.5,
+            "maximum": 10.0,
+            "minimum": 0.5,
+            "title": "Web Max Velocity",
+            "type": "number"
+          }
+        },
+        "title": "ManualStatus",
+        "type": "object"
+      },
+      "MapPresentation": {
+        "additionalProperties": false,
+        "description": "Display-only rigid transform in source raster coordinates.",
+        "properties": {
+          "height": {
+            "exclusiveMinimum": 0.0,
+            "title": "Height",
+            "type": "integer"
+          },
+          "image_url": {
+            "const": "/api/map/presentation",
+            "default": "/api/map/presentation",
+            "title": "Image Url",
+            "type": "string"
+          },
+          "rotation_degrees": {
+            "title": "Rotation Degrees",
+            "type": "number"
+          },
+          "source_image_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Source Image Sha256",
+            "type": "string"
+          },
+          "transform": {
+            "maxItems": 6,
+            "minItems": 6,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Transform",
+            "type": "array"
+          },
+          "width": {
+            "exclusiveMinimum": 0.0,
+            "title": "Width",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "width",
+          "height",
+          "transform",
+          "rotation_degrees",
+          "source_image_sha256"
+        ],
+        "title": "MapPresentation",
+        "type": "object"
+      },
+      "MetricPose": {
+        "additionalProperties": false,
+        "properties": {
+          "x": {
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "title": "Y",
+            "type": "number"
+          },
+          "yaw": {
+            "maximum": 3.141592653589793,
+            "minimum": -3.141592653589793,
+            "title": "Yaw",
+            "type": "number"
+          }
+        },
+        "required": [
+          "x",
+          "y",
+          "yaw"
+        ],
+        "title": "MetricPose",
         "type": "object"
       },
       "MissionListResponse": {
@@ -480,6 +882,28 @@
         "additionalProperties": false,
         "description": "Latest accepted position with a server-owned receive timestamp.",
         "properties": {
+          "frame_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frame Id"
+          },
+          "map_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Map Id"
+          },
           "received_at": {
             "title": "Received At",
             "type": "string"
@@ -588,6 +1012,80 @@
         "title": "RobotState",
         "type": "string"
       },
+      "SeatLayout": {
+        "additionalProperties": false,
+        "properties": {
+          "frame_id": {
+            "const": "map",
+            "default": "map",
+            "title": "Frame Id",
+            "type": "string"
+          },
+          "home": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MetricPose"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "home_verified": {
+            "default": false,
+            "title": "Home Verified",
+            "type": "boolean"
+          },
+          "map_id": {
+            "title": "Map Id",
+            "type": "string"
+          },
+          "revision": {
+            "minimum": 0.0,
+            "title": "Revision",
+            "type": "integer"
+          },
+          "schema_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "seats": {
+            "items": {
+              "$ref": "#/components/schemas/LayoutSeat"
+            },
+            "maxItems": 300,
+            "minItems": 1,
+            "title": "Seats",
+            "type": "array"
+          },
+          "source_sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Source Sha256",
+            "type": "string"
+          },
+          "verification_evidence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verification Evidence"
+          }
+        },
+        "required": [
+          "map_id",
+          "source_sha256",
+          "revision",
+          "seats"
+        ],
+        "title": "SeatLayout",
+        "type": "object"
+      },
       "SeatListResponse": {
         "properties": {
           "items": {
@@ -621,7 +1119,8 @@
             "type": "integer"
           },
           "label": {
-            "pattern": "^(?:[0-9]{2}|(?:A[1-4]|M[1-3])-0[1-6])$",
+            "maxLength": 24,
+            "minLength": 1,
             "title": "Label",
             "type": "string"
           },
@@ -663,7 +1162,7 @@
             "type": "integer"
           },
           "seat_id": {
-            "pattern": "^seat-(?:[0-9]{2}|(?:a[1-4]|m[1-3])-0[1-6])$",
+            "pattern": "^seat-[a-z0-9][a-z0-9-]{0,47}$",
             "title": "Seat Id",
             "type": "string"
           },
@@ -779,6 +1278,203 @@
           "items"
         ],
         "title": "SitesResponse",
+        "type": "object"
+      },
+      "SlamMap": {
+        "additionalProperties": false,
+        "properties": {
+          "frame_id": {
+            "const": "map",
+            "default": "map",
+            "title": "Frame Id",
+            "type": "string"
+          },
+          "free_thresh": {
+            "exclusiveMaximum": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Free Thresh",
+            "type": "number"
+          },
+          "height": {
+            "exclusiveMinimum": 0.0,
+            "title": "Height",
+            "type": "integer"
+          },
+          "image_url": {
+            "default": "/api/map/image",
+            "title": "Image Url",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "map_id": {
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$",
+            "title": "Map Id",
+            "type": "string"
+          },
+          "negate": {
+            "enum": [
+              0,
+              1
+            ],
+            "title": "Negate",
+            "type": "integer"
+          },
+          "occupied_thresh": {
+            "exclusiveMaximum": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Occupied Thresh",
+            "type": "number"
+          },
+          "origin": {
+            "maxItems": 3,
+            "minItems": 3,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Origin",
+            "type": "array"
+          },
+          "presentation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MapPresentation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "resolution": {
+            "exclusiveMinimum": 0.0,
+            "title": "Resolution",
+            "type": "number"
+          },
+          "source_kind": {
+            "enum": [
+              "slam",
+              "slam_manually_edited"
+            ],
+            "title": "Source Kind",
+            "type": "string"
+          },
+          "source_run": {
+            "title": "Source Run",
+            "type": "string"
+          },
+          "source_sha256": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Source Sha256",
+            "type": "object"
+          },
+          "width": {
+            "exclusiveMinimum": 0.0,
+            "title": "Width",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "map_id",
+          "label",
+          "width",
+          "height",
+          "resolution",
+          "origin",
+          "negate",
+          "occupied_thresh",
+          "free_thresh",
+          "source_run",
+          "source_kind",
+          "source_sha256"
+        ],
+        "title": "SlamMap",
+        "type": "object"
+      },
+      "TargetExport": {
+        "properties": {
+          "frame_id": {
+            "const": "map",
+            "default": "map",
+            "title": "Frame Id",
+            "type": "string"
+          },
+          "home": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Home"
+          },
+          "layout_revision": {
+            "title": "Layout Revision",
+            "type": "integer"
+          },
+          "map_id": {
+            "title": "Map Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": 2,
+            "default": 2,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "seats": {
+            "additionalProperties": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "title": "Seats",
+            "type": "object"
+          },
+          "source_sha256": {
+            "title": "Source Sha256",
+            "type": "string"
+          },
+          "target_digest": {
+            "title": "Target Digest",
+            "type": "string"
+          },
+          "validation_status": {
+            "enum": [
+              "draft",
+              "field_verified"
+            ],
+            "title": "Validation Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "map_id",
+          "source_sha256",
+          "layout_revision",
+          "validation_status",
+          "home",
+          "seats",
+          "target_digest"
+        ],
+        "title": "TargetExport",
         "type": "object"
       },
       "TargetKind": {
@@ -986,6 +1682,46 @@
           }
         },
         "summary": "Health"
+      }
+    },
+    "/api/map": {
+      "get": {
+        "operationId": "facility_map_api_map_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SlamMap"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Facility Map"
+      }
+    },
+    "/api/map/image": {
+      "get": {
+        "operationId": "facility_map_image_api_map_image_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Facility Map Image"
+      }
+    },
+    "/api/map/presentation": {
+      "get": {
+        "operationId": "facility_map_presentation_api_map_presentation_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Facility Map Presentation"
       }
     },
     "/api/missions": {
@@ -1199,6 +1935,206 @@
           }
         },
         "summary": "Latest Pose"
+      }
+    },
+    "/api/robots/{robot_id}/camera/head": {
+      "get": {
+        "operationId": "head_camera_frame_api_robots__robot_id__camera_head_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "robot_id",
+            "required": true,
+            "schema": {
+              "title": "Robot Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Head Camera Frame"
+      }
+    },
+    "/api/robots/{robot_id}/manual/control": {
+      "post": {
+        "operationId": "manual_command_api_robots__robot_id__manual_control_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "robot_id",
+            "required": true,
+            "schema": {
+              "title": "Robot Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManualStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Manual Command"
+      }
+    },
+    "/api/robots/{robot_id}/manual/status": {
+      "get": {
+        "operationId": "manual_status_api_robots__robot_id__manual_status_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "robot_id",
+            "required": true,
+            "schema": {
+              "title": "Robot Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManualStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Manual Status"
+      }
+    },
+    "/api/seat-layout": {
+      "get": {
+        "operationId": "get_seat_layout_api_seat_layout_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LayoutReview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Seat Layout"
+      },
+      "put": {
+        "operationId": "put_seat_layout_api_seat_layout_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SeatLayout"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LayoutReview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Seat Layout"
+      }
+    },
+    "/api/seat-layout/targets": {
+      "get": {
+        "operationId": "export_seat_targets_api_seat_layout_targets_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TargetExport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Export Seat Targets"
       }
     },
     "/api/seats": {

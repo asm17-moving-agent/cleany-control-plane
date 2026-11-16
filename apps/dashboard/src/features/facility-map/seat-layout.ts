@@ -1,8 +1,9 @@
+import geometry from "./seat-geometry.json";
 import type { Seat } from "../../api/types";
 
 // Manually mirrored from cleany_gazebo_sim/config/study_cafe/study_cafe_layout.yaml.
 // The artwork's raster wall centers fix the map anchor for world-coordinate telemetry.
-export const D_HUB_UNITS_PER_METER = 400 / 12.26;
+export const D_HUB_UNITS_PER_METER = geometry.reference_room_width_units / geometry.reference_room_width_m;
 export const D_HUB_ORIGIN = { x: 776, topY: 8, worldTopY: 10.94 / 2 };
 /** Convert Gazebo world meters (+X right, +Y up) to anchored D-HUB artwork units (+Y down). */
 export function worldToMap(x: number, y: number) {
@@ -20,12 +21,12 @@ const COLUMN_X: Record<Seat["grid_column"], number> = Object.fromEntries(
   [-5.53, -4.33, -3.13, -0.6, 0.6, 3.13, 4.33, 5.53].map((x, i) => [columns[i], worldToMap(x, 0).x]),
 ) as Record<Seat["grid_column"], number>;
 const ROW_Y = [3.17, 0, -3.17].flatMap(y => [y + 0.385, y - 0.385]).map(y => worldToMap(0, y).y);
-export const D_HUB_DESK_WIDTH = 1.2 * D_HUB_UNITS_PER_METER;
-export const D_HUB_DESK_HEIGHT = 0.77 * D_HUB_UNITS_PER_METER;
-export const D_HUB_CHAIR_OFFSET = 0.385 * D_HUB_UNITS_PER_METER;
-export const ROOM_DESK_WIDTH = 38;
-export const ROOM_DESK_HEIGHT = 28;
-export const ROOM_DESK_SCALE = 0.85;
+export const D_HUB_DESK_WIDTH = geometry.dhub.width_m * D_HUB_UNITS_PER_METER;
+export const D_HUB_DESK_HEIGHT = geometry.dhub.depth_m * D_HUB_UNITS_PER_METER;
+export const D_HUB_CHAIR_OFFSET = geometry.dhub.depth_m / 2 * D_HUB_UNITS_PER_METER;
+export const ROOM_DESK_WIDTH = geometry.room.width_units;
+export const ROOM_DESK_HEIGHT = geometry.room.depth_units;
+export const ROOM_DESK_SCALE = geometry.room.scale;
 export const ROOM_TABLES: { id: string; x: number; y: number; columns: number; vertical?: boolean }[] = [
   { id: "space-a4", x: 150.85, y: 75, columns: 2 },
   { id: "space-m1", x: 262.85, y: 75, columns: 3 },
@@ -36,8 +37,8 @@ export const ROOM_TABLES: { id: string; x: number; y: number; columns: number; v
   { id: "space-a1", x: 68, y: 368, columns: 2, vertical: true },
 ];
 export function roomDeskPositions(columns: number) {
-  return [-16, 16].flatMap(y => Array.from({ length: columns }, (_, column) => ({
-    x: (column - (columns - 1) / 2) * 40, y,
+  return [-geometry.room.half_row_pitch_units, geometry.room.half_row_pitch_units].flatMap(y => Array.from({ length: columns }, (_, column) => ({
+    x: (column - (columns - 1) / 2) * geometry.room.column_pitch_units, y,
   })));
 }
 export const D_HUB_TABLES = [3.17, 0, -3.17].flatMap((worldY, row) =>

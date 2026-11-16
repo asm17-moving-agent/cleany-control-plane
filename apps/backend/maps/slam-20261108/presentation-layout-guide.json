@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "map_id": "slam-20261108",
+  "source_image_sha256": "d135945fdfc83a997f4ce29423247452743f8480c344fbe0dc0efa025ed0e63e",
+  "description": "Manually reviewed structural tracing with a faint original SLAM underlay. Openings retained; this is not collision geometry.",
+  "viewport": {
+    "width": 762,
+    "height": 462
+  },
+  "transform": [
+    -0.1725480287456468,
+    -0.9850011054694261,
+    0.9850011054694261,
+    -0.1725480287456468,
+    45.0,
+    540.0
+  ],
+  "floor": "M25 78 H60 V30 H610 V55 H618 V153 H642 V277 H724 V310 H285 V428 H228 V286 Q228 277 216 277 H181 V285 Q207 286 217 296 Q221 307 205 310 H165 V332 H145 V310 H25 Z",
+  "walls": [
+    {
+      "id": "north-west",
+      "d": "M60 78 V30 H122"
+    },
+    {
+      "id": "north-room-2",
+      "d": "M140 30 H210"
+    },
+    {
+      "id": "north-room-3",
+      "d": "M225 30 H283"
+    },
+    {
+      "id": "north-room-4",
+      "d": "M301 30 H367"
+    },
+    {
+      "id": "north-main-1",
+      "d": "M383 30 H416"
+    },
+    {
+      "id": "north-main-2",
+      "d": "M453 30 H525 V56 H533"
+    },
+    {
+      "id": "north-main-3",
+      "d": "M550 30 H558"
+    },
+    {
+      "id": "north-east",
+      "d": "M578 30 H610 V55 H618 V260 Q618 276 607 277"
+    },
+    {
+      "id": "west-upper",
+      "d": "M60 78 H25 V244"
+    },
+    {
+      "id": "west-diagonal",
+      "d": "M62 81 L102 116 V132"
+    },
+    {
+      "id": "west-room-1",
+      "d": "M25 160 H101"
+    },
+    {
+      "id": "west-room-2",
+      "d": "M25 220 H101"
+    },
+    {
+      "id": "west-room-3",
+      "d": "M39 277 H99"
+    },
+    {
+      "id": "partition-1",
+      "d": "M140 30 V55 H132 V109"
+    },
+    {
+      "id": "partition-2",
+      "d": "M217 30 V55 H210 V120 H219"
+    },
+    {
+      "id": "partition-3",
+      "d": "M294 30 V55 H291 V120 H297"
+    },
+    {
+      "id": "main-west",
+      "d": "M371 30 V274"
+    },
+    {
+      "id": "main-south",
+      "d": "M396 277 H573"
+    },
+    {
+      "id": "south-east",
+      "d": "M289 310 H700"
+    },
+    {
+      "id": "south-west",
+      "d": "M48 310 H145 V332 H165 V310 H205"
+    },
+    {
+      "id": "survey-end",
+      "d": "M239 428 H275"
+    },
+    {
+      "id": "entry-left-end",
+      "d": "M181 284 V277 H187"
+    },
+    {
+      "id": "east-survey-end",
+      "d": "M724 280 V310"
+    },
+    {
+      "id": "east-recess-cap",
+      "d": "M618 153 H638"
+    }
+  ],
+  "structures": [
+    {
+      "id": "central-divider",
+      "d": "M355 120 H371 V274 H365 Q353 274 353 259 Z"
+    },
+    {
+      "id": "central-straight-feature",
+      "d": "M308 170 H319 V249 H308 Z"
+    },
+    {
+      "id": "central-curved-feature",
+      "d": "M195 216 C197 182 236 151 273 170 L270 177 C238 161 207 185 202 216 Z"
+    },
+    {
+      "id": "round-feature-west",
+      "d": "M184 175 A11 11 0 1 1 162 175 A11 11 0 1 1 184 175 Z"
+    },
+    {
+      "id": "round-feature-south",
+      "d": "M260 224 A11 11 0 1 1 238 224 A11 11 0 1 1 260 224 Z"
+    }
+  ],
+  "boundaries": [
+    {
+      "id": "north-pier",
+      "d": "M453 30 V50 H458"
+    },
+    {
+      "id": "east-recess",
+      "d": "M618 153 H642 V269 Q642 277 650 277 H724 V310"
+    },
+    {
+      "id": "entry-recess",
+      "d": "M181 284 V277 H214 Q228 277 228 289 V306"
+    }
+  ],
+  "reference_opacity": 0.22
+}

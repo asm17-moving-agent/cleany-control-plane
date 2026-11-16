@@ -260,3 +260,17 @@ def test_commit_failure_rolls_back_state_inbox_and_notifications(gateway, monkey
     assert mission.accepted_at is None and mission.robot_sequence == 0
     assert not gateway.repository.seen(event["event_id"])
     assert observed == []
+
+
+def test_queued_target_binding_must_match_loaded_runtime(gateway):
+    binding = {"map_id": "slam-test", "source_sha256": "a"*64,
+               "layout_revision": 4, "target_digest": "b"*64}
+    gateway.receive(snapshot(target_map=binding))
+    mission = request(gateway, "bound-catalog")
+    with gateway.store.transaction():
+        mission.target_map = dict(binding)
+    gateway.receive(snapshot(target_map={**binding, "layout_revision": 5}))
+    assert not any(e["event_type"] == "mission.offer" for e in gateway.tick())
+    assert mission.phase == MissionPhase.QUEUED
+    gateway.receive(snapshot(target_map=binding))
+    assert offer(gateway, mission)["payload"]["target_id"] == "seat-12"

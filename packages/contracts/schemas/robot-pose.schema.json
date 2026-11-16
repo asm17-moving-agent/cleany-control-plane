@@ -2,14 +2,69 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://cleany.dev/contracts/robot-pose.schema.json",
   "title": "PoseInput",
-  "description": "Finite coordinates in meters in the Gazebo D-HUB world frame. Optional yaw in radians, +X=0, counterclockwise positive. No client timestamp.",
+  "description": "Finite coordinates in metres. SLAM display requires frame_id=map and a matching map_id. Legacy unlabelled coordinates are only for the fixture map. Yaw is radians, counterclockwise from +X.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["x", "y"],
+  "required": [
+    "x",
+    "y"
+  ],
   "properties": {
-    "x": {"type": "number", "minimum": -1.7976931348623157e308, "maximum": 1.7976931348623157e308},
-    "y": {"type": "number", "minimum": -1.7976931348623157e308, "maximum": 1.7976931348623157e308},
-    "yaw": {"type": ["number", "null"], "minimum": -1.7976931348623157e308, "maximum": 1.7976931348623157e308, "default": null}
+    "x": {
+      "type": "number",
+      "minimum": -1.7976931348623157e+308,
+      "maximum": 1.7976931348623157e+308
+    },
+    "y": {
+      "type": "number",
+      "minimum": -1.7976931348623157e+308,
+      "maximum": 1.7976931348623157e+308
+    },
+    "yaw": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -1.7976931348623157e+308,
+      "maximum": 1.7976931348623157e+308,
+      "default": null
+    },
+    "frame_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "default": null
+    },
+    "map_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "default": null
+    }
   },
-  "examples": [{"x": -1.865, "y": -4.705, "yaw": null}, {"x": -1.865, "y": -4.705, "yaw": 1.5707963267948966}]
+  "examples": [
+    {
+      "x": -1.865,
+      "y": -4.705,
+      "yaw": null,
+      "frame_id": null,
+      "map_id": null
+    },
+    {
+      "x": -1.865,
+      "y": -4.705,
+      "yaw": 1.5707963267948966,
+      "frame_id": null,
+      "map_id": null
+    },
+    {
+      "x": 0,
+      "y": 0,
+      "yaw": 0,
+      "frame_id": "map",
+      "map_id": "slam-20261108"
+    }
+  ]
 }

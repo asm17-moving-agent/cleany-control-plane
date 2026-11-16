@@ -119,6 +119,8 @@ class RobotPose(BaseModel):
     x: float = Field(allow_inf_nan=False)
     y: float = Field(allow_inf_nan=False)
     received_at: str
+    frame_id: str | None = None
+    map_id: str | None = None
 
     yaw: float | None = Field(
         default=None,
@@ -130,6 +132,8 @@ class RobotPose(BaseModel):
 
 
 class PoseInput(BaseModel):
+    frame_id: str | None = None
+    map_id: str | None = None
     model_config = ConfigDict(extra="forbid")
     x: float
     y: float
@@ -163,8 +167,8 @@ class PoseSnapshot(BaseModel):
 
 class SeatResponse(BaseModel):
     mission_supported: bool | None = None
-    seat_id: str = Field(pattern=r"^seat-(?:[0-9]{2}|(?:a[1-4]|m[1-3])-0[1-6])$")
-    label: str = Field(pattern=r"^(?:[0-9]{2}|(?:A[1-4]|M[1-3])-0[1-6])$")
+    seat_id: str = Field(pattern=r"^seat-[a-z0-9][a-z0-9-]{0,47}$")
+    label: str = Field(min_length=1, max_length=24)
     zone_id: Literal[
         "d-hub", "space-a1", "space-a2", "space-a3", "space-a4", "space-m1", "space-m2", "space-m3"
     ] = "d-hub"

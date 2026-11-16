@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import type { Seat } from "../api/types";
-export function HomeMapHeader({ seats, mapAvailable, unavailable, children }: {
+export function HomeMapHeader({ seats, mapAvailable, unavailable, children, slam = false }: {
   seats: Seat[]; mapAvailable: boolean; unavailable: boolean;
-  children?: ReactNode;
+  children?: ReactNode; slam?: boolean;
 }) {
   const occupied = seats.filter(seat => seat.occupancy === "OCCUPIED").length;
   const available = seats.filter(seat => seat.occupancy === "AVAILABLE").length;
@@ -12,12 +12,12 @@ export function HomeMapHeader({ seats, mapAvailable, unavailable, children }: {
     : `전체 ${seats.length}석, 사용 중 ${occupied}석, 빈 좌석 ${available}석, 미확인 ${unknown}석`;
   return <header className="home-map-header">
     <div className="home-map-intro">
-      <h2>{mapAvailable ? "18층 좌석 지도" : "19층 시설 지도"}</h2>
-      <p>{mapAvailable ? "좌석을 선택해 작업을 요청하세요" : "18층을 선택하면 좌석 지도를 볼 수 있습니다"}</p>
+      <h2>{slam ? "실측 시설 지도" : mapAvailable ? "18층 좌석 지도" : "19층 시설 지도"}</h2>
+      <p>{slam ? "SLAM 지도에서 시설과 로봇 위치를 확인하세요" : mapAvailable ? "좌석을 선택해 작업을 요청하세요" : "18층을 선택하면 좌석 지도를 볼 수 있습니다"}</p>
     </div>
     <div className="home-map-header-actions">
       {children}
-      {mapAvailable && <div className="home-occupancy" role="group" aria-label="좌석 점유 현황">
+      {mapAvailable && !slam && <div className="home-occupancy" role="group" aria-label="좌석 점유 현황">
         <div className="home-occupancy-heading"><span>{unknown ? "확인된 점유" : "좌석 점유율"}</span>
           <strong>{unavailable || !seats.length ? "—" : unknown ? `${occupied} / ${seats.length}석` : `${Math.round(percent(occupied))}%`}</strong>
         </div>

@@ -27,6 +27,9 @@ from pydantic import BaseModel, Field
 from control_plane.accounts import Accounts, AuthError, Identity
 from control_plane.domain import ControlPlaneStore, MissionPhase, RobotState
 from control_plane.gateway import GatewayController
+from control_plane.head_camera import HeadCamera
+from control_plane.manual_control import ManualCommand, ManualControl, ManualStatus
+from control_plane.maps import SlamMap, load_map, map_directory
 from control_plane.mock.dispatcher import MockDispatcher
 from control_plane.mock.fixtures import SEATS
 from control_plane.persistence import SQLiteRepository
@@ -41,6 +44,16 @@ from control_plane.schemas import (
     RobotPose,
     SeatListResponse,
 )
+from control_plane.seat_layouts import (
+    LayoutReview,
+    SeatLayout,
+    TargetExport,
+    read_layout,
+    review_layout,
+    runtime_matches,
+    save_layout,
+    target_export,
+)
 from control_plane.settings import Settings
 
 
@@ -49,6 +62,8 @@ class ControlPlaneApplication:
 
     def __init__(self, *, start_dispatcher: bool = True, settings: Settings | None = None) -> None:
         self.settings = settings or Settings()
+        self.manual = ManualControl(self.settings)
+        self.head_camera = HeadCamera(self.settings)
         # Open SQLite on startup/first request, never on module import or OpenAPI export.
         self._store: ControlPlaneStore | None = None
         self._gateway: GatewayController | None = None
@@ -128,6 +143,8 @@ class ControlPlaneApplication:
                 requested_membership_id=identity.membership_id,
                 idempotency_key=request.idempotency_key,
             )
+            if created:
+                mission.target_map = self.store.robot.target_map
             if created and self.settings.robot_mode == "mock":
                 mission.execution_profile = dict(self.store.robot.execution_profile)
             return mission, created
@@ -422,6 +439,87 @@ def create_app(
             items=[SiteResponse(site_id=r[0], display_name=r[1], map_ref=r[2]) for r in rows]
         )
 
+    def site_map(request: Request) -> SlamMap:
+        site_id = selected_site(request)
+        with control_plane.store._lock:
+            map_ref = control_plane.accounts.db.execute(
+                "SELECT map_ref FROM sites WHERE site_id=?", (site_id,)
+            ).fetchone()[0]
+        try:
+            return load_map(control_plane.settings.map_directory, map_ref)
+        except FileNotFoundError as error:
+            raise HTTPException(404, "facility map not registered") from error
+
+    @app.get("/api/map", response_model=SlamMap)
+    def facility_map(request: Request):
+        return site_map(request)
+
+    @app.get("/api/map/image", response_class=FileResponse)
+    def facility_map_image(request: Request):
+        metadata = site_map(request)
+        return FileResponse(
+            map_directory(control_plane.settings.map_directory, metadata.map_id) / "map.png",
+            media_type="image/png",
+            headers={"Cache-Control": "private, no-store"},
+        )
+
+    @app.get("/api/map/presentation", response_class=FileResponse)
+    def facility_map_presentation(request: Request):
+        metadata = site_map(request)
+        if metadata.presentation is None:
+            raise HTTPException(404, "map presentation not registered")
+        return FileResponse(
+            map_directory(control_plane.settings.map_directory, metadata.map_id)
+            / "presentation.svg",
+            media_type="image/svg+xml",
+            headers={"Cache-Control": "private, no-store"},
+        )
+
+    def site_layout(request: Request, metadata: SlamMap | None = None) -> SeatLayout:
+        metadata = metadata or site_map(request)
+        try:
+            with control_plane.store._lock:
+                return read_layout(
+                    control_plane.accounts.db,
+                    control_plane.settings.map_directory,
+                    request.state.identity.customer_id,
+                    selected_site(request),
+                    metadata,
+                )
+        except FileNotFoundError as error:
+            raise HTTPException(404, "좌석 배치가 등록되지 않았습니다.") from error
+        except ValueError as error:
+            raise HTTPException(409, str(error)) from error
+
+    @app.get("/api/seat-layout", response_model=LayoutReview)
+    def get_seat_layout(request: Request):
+        metadata = site_map(request)
+        return review_layout(
+            site_layout(request, metadata), metadata, control_plane.settings.map_directory
+        )
+
+    @app.put("/api/seat-layout", response_model=LayoutReview)
+    def put_seat_layout(input: SeatLayout, request: Request):
+        metadata = site_map(request)
+        try:
+            with control_plane.store.transaction():
+                control_plane.accounts.authenticate(request.cookies[cookie_name])
+                layout = save_layout(
+                    control_plane.accounts.db,
+                    control_plane.settings.map_directory,
+                    request.state.identity.customer_id,
+                    selected_site(request),
+                    metadata,
+                    input,
+                )
+        except ValueError as error:
+            raise HTTPException(409, str(error)) from error
+        return review_layout(layout, metadata, control_plane.settings.map_directory)
+
+    @app.get("/api/seat-layout/targets", response_model=TargetExport)
+    def export_seat_targets(request: Request):
+        return target_export(site_layout(request))
+
     # API liveness only; this does not probe robot connectivity or execution health.
     @app.get("/api/health", response_model=HealthResponse)
     async def health() -> HealthResponse:
@@ -437,6 +535,30 @@ def create_app(
             ).fetchone()[0]
         robot = control_plane.store.robot
         visible = robot_visible(request)
+        if map_ref != "facility-18f":
+            try:
+                layout = site_layout(request)
+            except HTTPException as error:
+                if error.status_code == 404:
+                    return SeatListResponse(items=[])
+                raise
+            matches = runtime_matches(layout, robot.target_map)
+            return SeatListResponse(
+                items=[
+                    {
+                        **{
+                            key: getattr(seat, key)
+                            for key in ("seat_id", "label", "zone_id", "row", "grid_column")
+                        },
+                        "occupancy": "UNKNOWN",
+                        "occupant_name": None,
+                        "mission_supported": bool(
+                            visible and matches and seat.seat_id in (robot.supported_seat_ids or [])
+                        ),
+                    }
+                    for seat in layout.seats
+                ]
+            )
         return SeatListResponse(
             items=[
                 {
@@ -506,6 +628,43 @@ def create_app(
             gateway.disconnect()
 
     # A stale read retains coordinates and may publish the cycle's first stale notification.
+    def manual_scope(robot_id: str, request: Request):
+        if robot_id != "cleany-01" or not robot_visible(request):
+            raise HTTPException(404, "robot not found")
+
+    def pending_work(request: Request) -> bool:
+        with control_plane.store._lock:
+            return bool(control_plane.accounts.db.execute(
+                "SELECT 1 FROM missions WHERE customer_id=? AND site_id=? "
+                "AND json_extract(payload,'$.phase')!='TERMINAL' LIMIT 1",
+                (request.state.identity.customer_id, selected_site(request)),
+            ).fetchone())
+
+    @app.get("/api/robots/{robot_id}/camera/head", response_class=Response,
+             responses={200: {"content": {"image/jpeg": {"schema": {"type": "string", "format": "binary"}}}}})
+    async def head_camera_frame(robot_id: str, request: Request):
+        manual_scope(robot_id, request)
+        return await control_plane.head_camera.frame()
+
+    @app.get("/api/robots/{robot_id}/manual/status", response_model=ManualStatus)
+    async def manual_status(robot_id: str, request: Request):
+        manual_scope(robot_id, request)
+        return await control_plane.manual.status(pending_work(request))
+
+    @app.post("/api/robots/{robot_id}/manual/control", response_model=ManualStatus)
+    async def manual_command(robot_id: str, input: ManualCommand, request: Request):
+        manual_scope(robot_id, request)
+        identity = request.state.identity
+        session_key = identity.csrf_token
+        if input.action == "stop":
+            return await control_plane.manual.command(input, session_key)
+        async with control_plane.manual.lock:
+            # Authentication may have been revoked while another request held admission.
+            control_plane.accounts.authenticate(request.cookies[cookie_name])
+            if pending_work(request):
+                raise HTTPException(409, "대기 또는 진행 중인 작업을 종료한 뒤 조종하세요.")
+            return await control_plane.manual.command(input, session_key)
+
     @app.get("/api/robots/cleany-01/pose", response_model=PoseSnapshot)
     async def latest_pose(request: Request) -> PoseSnapshot:
         if not robot_visible(request):
@@ -515,7 +674,14 @@ def create_app(
             control_plane.store.publish_pose_stale()
         return PoseSnapshot(
             pose=(
-                RobotPose(x=pose.x, y=pose.y, received_at=pose.received_at, yaw=pose.yaw)
+                RobotPose(
+                    x=pose.x,
+                    y=pose.y,
+                    received_at=pose.received_at,
+                    yaw=pose.yaw,
+                    frame_id=pose.frame_id,
+                    map_id=pose.map_id,
+                )
                 if pose
                 else None
             ),
@@ -554,7 +720,9 @@ def create_app(
                 except (TypeError, ValueError):
                     await websocket.close(code=1003, reason="pose must be finite {x,y}")
                     return
-                control_plane.store.update_pose(pose.x, pose.y, yaw=pose.yaw)
+                control_plane.store.update_pose(
+                    pose.x, pose.y, yaw=pose.yaw, frame_id=pose.frame_id, map_id=pose.map_id
+                )
         except WebSocketDisconnect:
             return
         finally:
@@ -586,11 +754,39 @@ def create_app(
     ) -> MissionResponse:
         try:
             site_id = selected_site(request)
-            with control_plane.store.transaction():
-                identity = control_plane.accounts.authenticate(request.cookies[cookie_name])
+            async with control_plane.manual.lock:
                 if not robot_visible(request):
                     raise HTTPException(409, "시설에 연결된 로봇이 없습니다.")
-                mission, created = control_plane.create_mission(input, identity, site_id)
+                existing_key = any(
+                    m.customer_id == request.state.identity.customer_id
+                    and m.idempotency_key == input.idempotency_key
+                    for m in control_plane.store.list_missions()
+                )
+                if not existing_key:
+                    await control_plane.manual.require_idle()
+                with control_plane.store.transaction():
+                    identity = control_plane.accounts.authenticate(request.cookies[cookie_name])
+                    if not robot_visible(request):
+                        raise HTTPException(409, "시설에 연결된 로봇이 없습니다.")
+                    map_ref = control_plane.accounts.db.execute(
+                        "SELECT map_ref FROM sites WHERE site_id=?", (site_id,)
+                    ).fetchone()[0]
+                    existing_key = any(
+                        m.customer_id == identity.customer_id
+                        and m.idempotency_key == input.idempotency_key
+                        for m in control_plane.store.list_missions()
+                    )
+                    if map_ref != "facility-18f" and not existing_key:
+                        layout = site_layout(request)
+                        if not runtime_matches(layout, control_plane.store.robot.target_map):
+                            raise HTTPException(
+                                409, "현장 검증된 작업 위치와 런타임 지도 버전이 일치하지 않습니다."
+                            )
+                        if input.to_domain_target().reference_id not in {
+                            s.seat_id for s in layout.seats
+                        }:
+                            raise HTTPException(422, "등록되지 않은 좌석입니다.")
+                    mission, created = control_plane.create_mission(input, identity, site_id)
         except AuthError:
             raise
         except ValueError as error:
@@ -727,4 +923,9 @@ def run(host: str | None = None, port: int | None = None) -> None:
     logging.basicConfig(
         level=settings.log_level, format="%(asctime)s %(levelname)s %(name)s %(message)s"
     )
-    uvicorn.run(app, host=host or settings.host, port=port or settings.port)
+    uvicorn.run(
+        app,
+        host=host or settings.host,
+        port=port or settings.port,
+        timeout_graceful_shutdown=settings.shutdown_grace_seconds,
+    )

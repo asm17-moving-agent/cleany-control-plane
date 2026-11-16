@@ -67,7 +67,15 @@ class RobotStatus(Payload):
         return self
 
 
+class TargetMapBinding(Payload):
+    map_id: str = Field(min_length=1, max_length=80)
+    source_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    layout_revision: int = Field(ge=0, strict=True)
+    target_digest: str = Field(pattern=r"^[a-f0-9]{64}$")
+
+
 class SnapshotPayload(RobotStatus):
+    target_map: TargetMapBinding | None = None
     supported_seat_ids: list[str]
     can_cancel: bool
     execution_profile: ExecutionProfile

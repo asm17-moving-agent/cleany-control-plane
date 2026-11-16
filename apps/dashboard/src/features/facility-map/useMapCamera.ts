@@ -7,13 +7,13 @@ import { resolveMapCamera, zoomMapCamera, panMapCamera, MIN_MAP_ZOOM, MAX_MAP_ZO
  * Moving markers alone do not recenter the camera.
  * ResizeObserver updates frame dimensions and disconnects on unmount.
  */
-export function useMapCamera({ robots, selectedRobotId, robotFocusKey, fullBounds, activeBounds, overlayInsetLeft }: {
+export function useMapCamera({ robots, selectedRobotId, robotFocusKey, fullBounds, activeBounds, overlayInsetLeft, initialMode = "initial" }: {
   robots: { robotId: string; x: number; y: number }[]; selectedRobotId: string | null; robotFocusKey: number;
-  fullBounds: MapBounds; activeBounds: MapBounds; overlayInsetLeft: number;
+  fullBounds: MapBounds; activeBounds: MapBounds; overlayInsetLeft: number; initialMode?: "initial" | "all";
 }) {
   const stage = useRef<HTMLDivElement>(null);
   const [frame, setFrame] = useState({ width: 900, height: 650 });
-  const [view, setView] = useState<MapView>({ mode: "initial" });
+  const [view, setView] = useState<MapView>({ mode: initialMode });
   const [focusMotion, setFocusMotion] = useState(false);
   const [dragging, setDragging] = useState(false);
   const drag = useRef<{ clientX: number; clientY: number; x: number; y: number } | null>(null);

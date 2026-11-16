@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from datetime import datetime
 from time import monotonic, time
 from typing import Any
@@ -225,7 +226,13 @@ class GatewayController:
         an offer, and unknown active missions are rejected.
         """
         status = event.payload
-        if not set(status.supported_seat_ids).issubset({s["seat_id"] for s in SEATS}):
+        if (
+            status.target_map is None
+            and not set(status.supported_seat_ids).issubset({s["seat_id"] for s in SEATS})
+        ) or any(
+            not re.fullmatch(r"seat-[a-z0-9][a-z0-9-]{0,47}", seat)
+            for seat in status.supported_seat_ids
+        ):
             raise ValueError("snapshot contains non-canonical seat IDs")
         old_boot = self.store.robot.boot_id
         if (
@@ -286,6 +293,7 @@ class GatewayController:
             else:
                 self.sync_reason = "missing report or acceptance proof"
         self.store.robot.boot_id = status.boot_id
+        self.store.robot.target_map = status.target_map.model_dump() if status.target_map else None
         self.store.robot.supported_seat_ids = sorted(set(status.supported_seat_ids))
         self.store.robot.can_cancel = status.can_cancel
         self.store.robot.execution_profile = status.execution_profile.model_dump()
@@ -463,8 +471,10 @@ class GatewayController:
                     and self.store.robot.active_mission_id is None
                 ):
                     candidate = self.store.next_queued(self.store.robot.supported_seat_ids or [])
-                    if candidate and candidate.seat_id in (
-                        self.store.robot.supported_seat_ids or []
+                    if (
+                        candidate
+                        and candidate.target_map == self.store.robot.target_map
+                        and candidate.seat_id in (self.store.robot.supported_seat_ids or [])
                     ):
                         candidate.robot_id = self.store.robot.robot_id
                         candidate.execution_profile = dict(self.store.robot.execution_profile)

@@ -204,3 +204,5 @@ uv run --project apps/backend --extra dev ruff check apps/backend
 - Dashboard 설정은 Backend 계약이 확정되기 전까지 브라우저 `localStorage`에만
   저장됩니다.
 - 실제 Gazebo navigation과 복귀 검증은 Runtime 연결 후 수행해야 합니다.
+
+SLAM 지도 저장과 Jetson LAN 호스팅은 [통합 안내](docs/architecture/slam-map-integration.md)를 따릅니다.

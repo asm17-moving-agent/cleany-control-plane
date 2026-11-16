@@ -31,8 +31,9 @@ def test_seat_model_preserves_canonical_shape() -> None:
     ]
     assert model["properties"]["occupancy"]["enum"] == contract["properties"]["occupancy"]["enum"]
     assert model["properties"]["zone_id"]["enum"] == contract["properties"]["zone_id"]["enum"]
-    for field in ("seat_id", "label"):
-        assert model["properties"][field]["pattern"] == contract["properties"][field]["pattern"]
+    assert model["properties"]["seat_id"]["pattern"] == contract["properties"]["seat_id"]["pattern"]
+    for bound in ("minLength", "maxLength"):
+        assert model["properties"]["label"][bound] == contract["properties"]["label"][bound]
     for example in contract["examples"]:
         assert SeatResponse.model_validate(example).model_dump(exclude_unset=True) == example
 

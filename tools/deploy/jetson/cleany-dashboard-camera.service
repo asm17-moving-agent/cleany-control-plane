@@ -1,0 +1,14 @@
+[Unit]
+Description=Cleany dashboard telemetry camera preview
+After=network.target
+
+[Service]
+Type=simple
+EnvironmentFile=%h/.config/cleany-control-plane/camera.env
+ExecStart=/bin/bash %h/cleany-control-plane/current/tools/deploy/jetson/head-camera-preview.sh
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=10
+
+[Install]
+WantedBy=default.target

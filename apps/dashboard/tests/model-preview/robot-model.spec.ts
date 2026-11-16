@@ -5,6 +5,14 @@ import { ROTATION_GUIDE } from "../../src/components/robot-model-motion";
 async function fixtureApi(page: Page, robotCount = 1) {
   await page.route(url => url.pathname.startsWith("/api/"), route => {
     const path = new URL(route.request().url()).pathname;
+    if (path === "/api/auth/me" || path === "/api/auth/session/touch") return route.fulfill({ json: {
+      user_id: "preview-user", customer_id: "preview-customer", customer_name: "Preview",
+      display_name: "Preview", login_id: "preview", csrf_token: "fixture",
+      expires_at: Date.now() / 1000 + 3600, must_change_password: false,
+    } });
+    if (path === "/api/sites") return route.fulfill({ json: { items: [{
+      site_id: "preview-site", display_name: "Preview", map_ref: "facility-18f",
+    }] } });
     if (path === "/api/events/stream") return route.fulfill({ contentType: "text/event-stream", body: ": connected\n\n" });
     return route.fulfill({ json: { items: path === "/api/robots" ? Array.from({ length: robotCount }, (_, index) => ({
       robot_id: "cleany-" + String(index + 1).padStart(2, "0"), state: "IDLE", active_mission_id: null, last_seen_at: "2026-09-08T10:00:00Z",
@@ -16,8 +24,8 @@ async function openPreview(page: Page) {
   await page.goto("/robot-model?renderStats=1");
   await expect(page.locator(".robot-model-card")).toHaveAttribute("data-state", "ready");
   const canvas = page.getByRole("group", { name: "Cleany 모델 회전" });
-  await expect(canvas).toHaveAttribute("data-model", "standby");
-  await expect(canvas).toHaveAttribute("data-exterior", "true");
+  await expect(canvas).toHaveAttribute("data-model", "cad-final");
+  await expect(canvas).toHaveAttribute("data-exterior", "false");
   return canvas;
 }
 async function yaw(canvas: Locator) { return Number(await canvas.getAttribute("data-yaw")); }
@@ -121,7 +129,7 @@ test("touch-only devices use the poster and do not fetch the GLB", async ({ brow
     page.on("request", request => { if (request.url().endsWith(".glb")) downloads.push(request.url()); });
     await fixtureApi(page);
     await page.goto("/robot-model");
-    await expect(page.getByAltText("Cleany 대기 자세와 외장 시안")).toBeVisible();
+    await expect(page.getByAltText("Cleany CAD 조립 모델")).toBeVisible();
     await expect(page.locator(".robot-model-card")).toHaveAttribute("data-state", "poster");
     await expect(page.locator("canvas")).toHaveCount(0);
     expect(downloads).toEqual([]);
@@ -134,7 +142,7 @@ test("a failed model download retains the poster and can be retried", async ({ p
   await page.route("**/models/*.glb", route => route.abort());
   await page.goto("/robot-model");
   await expect(page.locator(".robot-model-card")).toHaveAttribute("data-state", "error");
-  await expect(page.getByAltText("Cleany 대기 자세와 외장 시안")).toBeVisible();
+  await expect(page.getByAltText("Cleany CAD 조립 모델")).toBeVisible();
   await expect(page.locator("canvas")).toHaveCount(0);
   await page.unroute("**/models/*.glb");
   await page.getByRole("button", { name: "3D 다시 시도" }).click();
@@ -148,7 +156,7 @@ test("a lost WebGL context falls back cleanly and supports a fresh renderer", as
     gl.getExtension("WEBGL_lose_context")!.loseContext();
   });
   await expect(page.locator(".robot-model-card")).toHaveAttribute("data-state", "error");
-  await expect(page.getByAltText("Cleany 대기 자세와 외장 시안")).toBeVisible();
+  await expect(page.getByAltText("Cleany CAD 조립 모델")).toBeVisible();
   await page.getByRole("button", { name: "3D 다시 시도" }).click();
   await expect(page.locator(".robot-model-card")).toHaveAttribute("data-state", "ready");
 });

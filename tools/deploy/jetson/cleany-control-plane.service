@@ -1,0 +1,16 @@
+[Unit]
+Description=Cleany control plane
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/cleany-control-plane/current
+EnvironmentFile=%h/.config/cleany-control-plane/backend.env
+ExecStart=%h/cleany-control-plane/current/apps/backend/.venv/bin/python apps/backend/run.py
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=20
+UMask=0077
+
+[Install]
+WantedBy=default.target

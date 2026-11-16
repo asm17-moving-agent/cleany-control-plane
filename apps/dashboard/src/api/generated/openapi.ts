@@ -123,6 +123,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/map": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Facility Map */
+        get: operations["facility_map_api_map_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/map/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Facility Map Image */
+        get: operations["facility_map_image_api_map_image_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/map/presentation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Facility Map Presentation */
+        get: operations["facility_map_presentation_api_map_presentation_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/missions": {
         parameters: {
             query?: never;
@@ -209,6 +260,92 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/robots/{robot_id}/camera/head": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Head Camera Frame */
+        get: operations["head_camera_frame_api_robots__robot_id__camera_head_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/robots/{robot_id}/manual/control": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Manual Command */
+        post: operations["manual_command_api_robots__robot_id__manual_control_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/robots/{robot_id}/manual/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Manual Status */
+        get: operations["manual_status_api_robots__robot_id__manual_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/seat-layout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Seat Layout */
+        get: operations["get_seat_layout_api_seat_layout_get"];
+        /** Put Seat Layout */
+        put: operations["put_seat_layout_api_seat_layout_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/seat-layout/targets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Export Seat Targets */
+        get: operations["export_seat_targets_api_seat_layout_targets_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/seats": {
         parameters: {
             query?: never;
@@ -284,12 +421,196 @@ export interface components {
              */
             status?: "ok";
         };
+        /** LayoutReview */
+        LayoutReview: {
+            layout: components["schemas"]["SeatLayout"];
+            /** Target Digest */
+            target_digest: string;
+            /** Warnings */
+            warnings: {
+                [key: string]: string[];
+            };
+        };
+        /** LayoutSeat */
+        LayoutSeat: {
+            approach: components["schemas"]["MetricPose"];
+            /** Depth */
+            depth: number;
+            /**
+             * Grid Column
+             * @enum {integer}
+             */
+            grid_column: 1 | 2 | 3 | 5 | 6 | 8 | 9 | 10;
+            /** Label */
+            label: string;
+            pose: components["schemas"]["MetricPose"];
+            /** Row */
+            row: number;
+            /** Seat Id */
+            seat_id: string;
+            /** Table Id */
+            table_id: string;
+            /**
+             * Verification
+             * @default draft
+             * @enum {string}
+             */
+            verification?: "draft" | "field_verified";
+            /** Width */
+            width: number;
+            /**
+             * Zone Id
+             * @enum {string}
+             */
+            zone_id: "d-hub" | "space-a1" | "space-a2" | "space-a3" | "space-a4" | "space-m1" | "space-m2" | "space-m3";
+        };
         /** LoginInput */
         LoginInput: {
             /** Login Id */
             login_id: string;
             /** Password */
             password: string;
+        };
+        /** ManualCommand */
+        ManualCommand: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "press" | "update" | "stop";
+            /** Client */
+            client: string;
+            /**
+             * Direction
+             * @default forward
+             * @enum {string}
+             */
+            direction?: "forward" | "backward" | "left" | "right" | "ccw" | "cw";
+            /** Sequence */
+            sequence: number;
+            /**
+             * Speed
+             * @default 0.5
+             */
+            speed?: number;
+            /** Vector */
+            vector?: [
+                number,
+                number,
+                number
+            ] | null;
+        };
+        /** ManualStatus */
+        ManualStatus: {
+            /**
+             * Available
+             * @default false
+             */
+            available?: boolean;
+            /** Blocked Reason */
+            blocked_reason?: string | null;
+            /**
+             * Configured
+             * @default false
+             */
+            configured?: boolean;
+            /**
+             * Connected
+             * @default false
+             */
+            connected?: boolean;
+            /**
+             * Enabled
+             * @default false
+             */
+            enabled?: boolean;
+            /**
+             * Fault Bits
+             * @default 0
+             */
+            fault_bits?: number;
+            /** Feedback Age Ms */
+            feedback_age_ms?: number | null;
+            /**
+             * Forward Only
+             * @default false
+             */
+            forward_only?: boolean;
+            /**
+             * Message
+             * @default 수동 조종 서버가 연결되지 않았습니다.
+             */
+            message?: string;
+            /**
+             * Mock
+             * @default false
+             */
+            mock?: boolean;
+            /**
+             * Paused
+             * @default false
+             */
+            paused?: boolean;
+            /**
+             * Phase
+             * @default unavailable
+             */
+            phase?: string;
+            /**
+             * Ready
+             * @default false
+             */
+            ready?: boolean;
+            /**
+             * Stop Confirmed
+             * @default false
+             */
+            stop_confirmed?: boolean;
+            /** Velocity */
+            velocity?: number[];
+            /**
+             * Web Max Velocity
+             * @default 0.5
+             */
+            web_max_velocity?: number;
+        };
+        /**
+         * MapPresentation
+         * @description Display-only rigid transform in source raster coordinates.
+         */
+        MapPresentation: {
+            /** Height */
+            height: number;
+            /**
+             * Image Url
+             * @default /api/map/presentation
+             * @constant
+             */
+            image_url?: "/api/map/presentation";
+            /** Rotation Degrees */
+            rotation_degrees: number;
+            /** Source Image Sha256 */
+            source_image_sha256: string;
+            /** Transform */
+            transform: [
+                number,
+                number,
+                number,
+                number,
+                number,
+                number
+            ];
+            /** Width */
+            width: number;
+        };
+        /** MetricPose */
+        MetricPose: {
+            /** X */
+            x: number;
+            /** Y */
+            y: number;
+            /** Yaw */
+            yaw: number;
         };
         /** MissionListResponse */
         MissionListResponse: {
@@ -401,6 +722,10 @@ export interface components {
          * @description Latest accepted position with a server-owned receive timestamp.
          */
         RobotPose: {
+            /** Frame Id */
+            frame_id?: string | null;
+            /** Map Id */
+            map_id?: string | null;
             /** Received At */
             received_at: string;
             /** X */
@@ -440,6 +765,37 @@ export interface components {
          * @enum {string}
          */
         RobotState: "OFFLINE" | "IDLE" | "BUSY" | "ERROR";
+        /** SeatLayout */
+        SeatLayout: {
+            /**
+             * Frame Id
+             * @default map
+             * @constant
+             */
+            frame_id?: "map";
+            home?: components["schemas"]["MetricPose"] | null;
+            /**
+             * Home Verified
+             * @default false
+             */
+            home_verified?: boolean;
+            /** Map Id */
+            map_id: string;
+            /** Revision */
+            revision: number;
+            /**
+             * Schema Version
+             * @default 1
+             * @constant
+             */
+            schema_version?: 1;
+            /** Seats */
+            seats: components["schemas"]["LayoutSeat"][];
+            /** Source Sha256 */
+            source_sha256: string;
+            /** Verification Evidence */
+            verification_evidence?: string | null;
+        };
         /** SeatListResponse */
         SeatListResponse: {
             /** Items */
@@ -506,6 +862,91 @@ export interface components {
         SitesResponse: {
             /** Items */
             items: components["schemas"]["SiteResponse"][];
+        };
+        /** SlamMap */
+        SlamMap: {
+            /**
+             * Frame Id
+             * @default map
+             * @constant
+             */
+            frame_id?: "map";
+            /** Free Thresh */
+            free_thresh: number;
+            /** Height */
+            height: number;
+            /**
+             * Image Url
+             * @default /api/map/image
+             */
+            image_url?: string;
+            /** Label */
+            label: string;
+            /** Map Id */
+            map_id: string;
+            /**
+             * Negate
+             * @enum {integer}
+             */
+            negate: 0 | 1;
+            /** Occupied Thresh */
+            occupied_thresh: number;
+            /** Origin */
+            origin: [
+                number,
+                number,
+                number
+            ];
+            presentation?: components["schemas"]["MapPresentation"] | null;
+            /** Resolution */
+            resolution: number;
+            /**
+             * Source Kind
+             * @enum {string}
+             */
+            source_kind: "slam" | "slam_manually_edited";
+            /** Source Run */
+            source_run: string;
+            /** Source Sha256 */
+            source_sha256: {
+                [key: string]: string;
+            };
+            /** Width */
+            width: number;
+        };
+        /** TargetExport */
+        TargetExport: {
+            /**
+             * Frame Id
+             * @default map
+             * @constant
+             */
+            frame_id?: "map";
+            /** Home */
+            home: number[] | null;
+            /** Layout Revision */
+            layout_revision: number;
+            /** Map Id */
+            map_id: string;
+            /**
+             * Schema Version
+             * @default 2
+             * @constant
+             */
+            schema_version?: 2;
+            /** Seats */
+            seats: {
+                [key: string]: number[];
+            };
+            /** Source Sha256 */
+            source_sha256: string;
+            /** Target Digest */
+            target_digest: string;
+            /**
+             * Validation Status
+             * @enum {string}
+             */
+            validation_status: "draft" | "field_verified";
         };
         /**
          * TargetKind
@@ -696,6 +1137,62 @@ export interface operations {
             };
         };
     };
+    facility_map_api_map_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SlamMap"];
+                };
+            };
+        };
+    };
+    facility_map_image_api_map_image_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    facility_map_presentation_api_map_presentation_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     list_missions_api_missions_get: {
         parameters: {
             query?: {
@@ -860,6 +1357,176 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PoseSnapshot"];
+                };
+            };
+        };
+    };
+    head_camera_frame_api_robots__robot_id__camera_head_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                robot_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/jpeg": string;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    manual_command_api_robots__robot_id__manual_control_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                robot_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ManualCommand"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManualStatus"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    manual_status_api_robots__robot_id__manual_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                robot_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ManualStatus"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_seat_layout_api_seat_layout_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutReview"];
+                };
+            };
+        };
+    };
+    put_seat_layout_api_seat_layout_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SeatLayout"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LayoutReview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_seat_targets_api_seat_layout_targets_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TargetExport"];
                 };
             };
         };

@@ -841,6 +841,17 @@
           "title": "Supported Seat Ids",
           "type": "array"
         },
+        "target_map": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TargetMapBinding"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "unaccepted_mission_ids": {
           "items": {
             "format": "uuid",
@@ -859,6 +870,40 @@
         "execution_profile"
       ],
       "title": "SnapshotPayload",
+      "type": "object"
+    },
+    "TargetMapBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "layout_revision": {
+          "minimum": 0,
+          "title": "Layout Revision",
+          "type": "integer"
+        },
+        "map_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Map Id",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "target_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Target Digest",
+          "type": "string"
+        }
+      },
+      "required": [
+        "map_id",
+        "source_sha256",
+        "layout_revision",
+        "target_digest"
+      ],
+      "title": "TargetMapBinding",
       "type": "object"
     }
   },

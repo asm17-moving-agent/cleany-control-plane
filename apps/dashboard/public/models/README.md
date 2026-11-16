@@ -1,4 +1,27 @@
-# Cleany web model
+# Current CAD web model
+
+All active dashboard previews and the presentation viewer use
+`cleany-c32c3074-cad.glb` and its matching `cleany-c32c3074-cad-poster.png`.
+The shared paths live in `src/components/robot-model-asset.ts`.
+
+- Source: Cleany `refactor/docs-and-navigation`, commit `c32c30740e8a3e61f9ba99decbb6ad57914a2462`.
+- CAD: `Cleany-final.FCStd`, SHA-256 `91c26ec2eb8d1227fe9a0a18ded1235fcde257d2ef94cf9d345d337511625ff0`.
+- Geometry: the source MJCF's 330 CAD meshes (verified against its manifest) and 48 wheel roller capsules.
+- Pose: saved CAD registration angles from `config/geometry/cad_final.json`; static, not live telemetry.
+- No invented enclosure, covers, electronics or replacement wheels. Complex source meshes are simplified for web rendering; all source parts and transforms remain.
+- 1,213,060 source triangles → 591,768 web triangles, merged by original color into 7 draw meshes; 10,638,980 bytes.
+- 127 complex meshes reduced; reject reductions shifting local bounds by more than 0.2 mm. This bound check is not a surface-error certificate.
+- GLB SHA-256: `5200cee468d53b907add7a37d7f1ed308af29149bc417a75e1793618e7717083`.
+- Provenance, source hashes, visible geometry names and export verification: `cleany-c32c3074-cad.json`.
+- Reproduce with `tools/export_cad_web_model.py`; capture the poster with `apps/dashboard/tools/capture-cad-poster.mjs`, as described in the dashboard README.
+
+The poster is a transparent capture of the actual dashboard renderer, not a generated illustration.
+The original CAD/ROS assets are unchanged. This is project preview geometry, not evidence of physical calibration or a validated motion command.
+Source licensing must be reviewed before redistribution outside the project.
+
+## Historical assets (not used by active previews)
+
+### Original web model
 
 - Source repository: asm17-moving-agent/cleany
 - Source commit: e718ac57e861f3d34b6e0e10b0d18d87a348bf51
@@ -28,7 +51,7 @@ the dashboard README documents its inputs and invocation.
 - Lightweight input SHA-256: `2ef3f79e7d3fbb0cd8f43ea53afe44b8b5a377af250f7171ae23f5165c7131de`
 - Standby SHA-256: `ef8f031b27c28b6e12fc40d56803a104c0bb632474953622113fd270292f3bde`
 
-`cleany-standby-poster.png` shows that folded CAD model. The current preview uses
+`cleany-standby-poster.png` shows that folded CAD model. The former preview used
 `cleany-exterior-poster.png`, captured from the same pose with the additional
 display-only enclosure, arm covers, couplers, wordmark and front sensor openings.
 These concept shapes are generated separately by `RobotExterior.ts`,

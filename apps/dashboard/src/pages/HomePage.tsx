@@ -1,3 +1,5 @@
+import { ROBOT_MODEL } from "../components/robot-model-asset";
+import { SlamMap } from "../features/facility-map/SlamMap";
 import { useMemo } from "react";
 import { useHomePanelState } from "./useHomePanelState";
 import { panelMotionStyle } from "../components/panel-motion";
@@ -62,7 +64,7 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
       <h1 className="sr-only">{floor.label}</h1>
       <div className={"home-workspace-body" + (selectedSeat ? " has-request" : "")}>
         <section className="home-map-panel" aria-label="시설 지도">
-          <HomeMapHeader seats={displaySeats} mapAvailable={floor.mapAvailable}
+          <HomeMapHeader slam={!isDemo && !!floor.mapRef && floor.mapRef !== "facility-18f"} seats={displaySeats} mapAvailable={floor.mapAvailable}
             unavailable={isLoading || !!error}>
               {isDemo ? <span className="home-telemetry-status" role="status">{isRecording ? "촬영용 이동 · 실제 로봇 미연동" : "예시 위치 · 실제 로봇 미연동"}</span> : <span className={"home-telemetry-status " + (livePose.connected ? "is-connected" : "is-disconnected")} role="status">
                 SSE {livePose.connected ? "연결됨" : "연결 끊김"} · 위치 {livePose.pose ? (livePose.stale ? "지연" : "최신") : "대기 중"}
@@ -81,7 +83,7 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
               const active = missions.find((mission) => mission.mission_id === robot.active_mission_id);
               return <article key={robot.robot_id} aria-label={robot.robot_id} data-state={robot.state} className={"home-robot-row" + (robot.robot_id === selectedRobotId ? " is-selected" : "")}>
                 <button type="button" className="home-robot-select" aria-label={robot.robot_id + " 상세 열기"} aria-pressed={robot.robot_id === selectedRobotId} onClick={() => selectRobot(robot.robot_id)}>
-                  <span className="home-robot-thumbnail"><img src="/models/cleany-exterior-poster.png" alt="" /></span>
+                  <span className="home-robot-thumbnail"><img src={ROBOT_MODEL.poster} alt="" /></span>
                   <span className="home-robot-identity"><strong>{robot.robot_id}</strong><RobotStateBadge state={robot.state} />{active && <small>{missionTargetLabel(active, seats)}</small>}
                     <BatteryStatus compact />
                   </span>
@@ -94,7 +96,11 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
           <MapOverlayPanel className="home-robot-drawer" open={!!selectedRobot}>
             {displayedRobot && <RobotDetailPanel robot={displayedRobot} mission={missions.find((mission) => mission.mission_id === displayedMissionId)} seats={seats} unavailable={!!error || isLoading} onClose={closeRobot} attentionCount={robots.filter(needsRobotAttention).length} />}
           </MapOverlayPanel>
-          {floor.mapAvailable ? <FacilityMap seats={displaySeats} seatCleaning={displayCleaning} robots={mapRobots} selectedSeatId={selectedSeatId}
+          {!isDemo && floor.mapRef && floor.mapRef !== "facility-18f" && floor.mapAvailable ? <SlamMap
+            onSelectSeat={selectSeat} selectedSeatId={selectedSeatId}
+            siteId={floor.id} robot={robots[0]} pose={livePose.pose} sourcePose={pose} stale={livePose.stale}
+            selectedRobotId={selectedRobotId} robotFocusKey={robotFocusKey} onSelectRobot={selectRobot}
+          /> : floor.mapAvailable ? <FacilityMap seats={displaySeats} seatCleaning={displayCleaning} robots={mapRobots} selectedSeatId={selectedSeatId}
             focusRobotOnSelect={!recordingPosition}
             movementPath={recordingPath}
             overlayInsetLeft={320}

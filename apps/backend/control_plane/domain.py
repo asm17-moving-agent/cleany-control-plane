@@ -91,6 +91,7 @@ class Mission:
     skipped_tasks: list[str] = field(default_factory=list)
     failed_task: str | None = None
     needs_human_review: bool = False
+    target_map: dict | None = None
     execution_profile: dict[str, str] = field(default_factory=dict)
     robot_sequence: int = 0
     customer_id: str | None = None
@@ -126,6 +127,7 @@ class Robot:
     control_mode: str = "mock"
     can_cancel: bool = True
     supported_seat_ids: list[str] | None = None
+    target_map: dict | None = None
     execution_profile: dict[str, str] = field(default_factory=dict)
     boot_id: str | None = None
 
@@ -143,6 +145,8 @@ class RobotPose:
     received_at: str
     received_monotonic: float
     yaw: float | None = None
+    frame_id: str | None = None
+    map_id: str | None = None
 
 
 EventListener = Callable[[dict[str, object]], None]
@@ -562,6 +566,8 @@ class ControlPlaneStore:
         *,
         received_at: str | None = None,
         yaw: float | None = None,
+        frame_id: str | None = None,
+        map_id: str | None = None,
     ) -> RobotPose:
         """Replace the in-memory pose and publish its receipt metadata.
 
@@ -573,7 +579,7 @@ class ControlPlaneStore:
         Returns:
             The retained sample, including its local monotonic receipt time.
         """
-        pose = RobotPose(x, y, received_at or utc_now(), monotonic(), yaw)
+        pose = RobotPose(x, y, received_at or utc_now(), monotonic(), yaw, frame_id, map_id)
         with self._lock:
             self._pose = pose
             self._pose_stale_published = False
@@ -585,6 +591,8 @@ class ControlPlaneStore:
                         "y": pose.y,
                         "received_at": pose.received_at,
                         "yaw": pose.yaw,
+                        "frame_id": pose.frame_id,
+                        "map_id": pose.map_id,
                     },
                     "stale": False,
                 },
@@ -631,6 +639,8 @@ class ControlPlaneStore:
                         "y": pose.y,
                         "received_at": pose.received_at,
                         "yaw": pose.yaw,
+                        "frame_id": pose.frame_id,
+                        "map_id": pose.map_id,
                     }
                     if pose
                     else None,

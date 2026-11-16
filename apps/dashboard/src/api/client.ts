@@ -1,3 +1,5 @@
+import type { components } from "./generated/openapi";
+import type { SlamMapMetadata } from "../features/facility-map/slam-map";
 import type {
   ApiErrorPayload,
   ListResponse,
@@ -24,8 +26,8 @@ export function scopedUrl(path: string) {
  * A 401 emits the shared auth-expired event before reading the response body.
  * @throws An Error for non-success responses; fetch and JSON parsing failures also propagate.
  */
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(scopedUrl(path), init ? { ...init,
+async function request<T>(path: string, init?: RequestInit, selectedSite?: string): Promise<T> {
+  const response = await fetch(selectedSite ? path + "?site_id=" + encodeURIComponent(selectedSite) : scopedUrl(path), init ? { ...init,
     headers: { ...init.headers, "X-CSRF-Token": csrf ?? "" },
   } : undefined);
   if (response.status === 401) window.dispatchEvent(new Event("cleany:auth-expired"));
@@ -42,6 +44,12 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 /** Same-origin operations using session cookies and the authenticated facility scope. */
 export const api = {
+  seatLayout: (site: string) => request<components["schemas"]["LayoutReview"]>("/api/seat-layout", undefined, site),
+  saveSeatLayout: (layout: components["schemas"]["SeatLayout"], site: string) => request<components["schemas"]["LayoutReview"]>("/api/seat-layout", {
+    method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(layout),
+  }, site),
+  seatTargets: (site: string) => request<components["schemas"]["TargetExport"]>("/api/seat-layout/targets", undefined, site),
+  map: () => request<SlamMapMetadata>("/api/map"),
   seats: () => request<ListResponse<Seat>>("/api/seats"),
   missions: () => request<ListResponse<Mission>>("/api/missions"),
   robots: () => request<ListResponse<Robot>>("/api/robots"),

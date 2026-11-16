@@ -11,7 +11,7 @@ Originals are preserved. The following raster assets use deterministic ImageMagi
 - `robot-lockup.png`: complete character and lettering from `robot-original.png`, trimmed to 512×676. White areas become transparent ink gaps; navy (`#001d2c`) and yellow (`#ffd400`) are normalized to avoid pale or colored edge fringes. Retained as a design alternative; the 3D enclosure currently uses the wordmark alone.
 - `public/brand/favicon.png`: face resized within 56×40, centered on a white 64×64 canvas.
 
-Wordmark appears in the app header and on the 3D enclosure. Navigation uses the original face artwork. The Home robot roster and robot management page use the standby model with its concept exterior; the detail drawer shows operational information.
+Wordmark appears in the app header. Navigation uses the original face artwork. The Home robot roster and robot management page use the current CAD model poster; the detail drawer shows operational information.
 
 `robot-face-soft.svg` is the map-specific vector implementation of the user's selected [02 Soft icon concept](../../../../../docs/architecture/assets/robot-face-icon-variants-20260909-v1/02-soft-face.png), generated with built-in imagegen on 2026-09-09. The rounded navy housing integrates the yellow side panel and warm-white face into one compact silhouette, displayed at 28px wide. There is no outer circular badge or status dot. Hover, keyboard focus and selection reveal only the robot name; state remains in the accessible button label and detail panel. The SVG is maintained directly rather than cropped from the generated design board. `robot-face-classic.svg` preserves the earlier classic implementation as an alternative.
 

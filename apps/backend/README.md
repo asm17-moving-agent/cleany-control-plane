@@ -60,7 +60,8 @@ uv run --project apps/backend python -m control_plane.admin reactivate USER_ID
 `CLEANY_ALLOWED_ORIGINS='["http://127.0.0.1:5173"]'`도 지정한다. 운영 HTTPS는 Secure 기본값을 유지한다.
 사진은 `CLEANY_OBSERVATION_DIRECTORY` 안에 두고 Runtime 결과가 `observation://relative/path.jpg`로
 참조하면 소속을 검사하는 API를 통해 제공한다. 외부 URL·파일 경로는 화면에 공개하지 않는다.
-현재 지도·좌석은 `facility-18f` fixture만 제공한다. 새 시설의 실제 지도 등록은 후속 작업이다.
+저장 SLAM 지도는 [지도 등록과 Jetson 통합](../../docs/architecture/slam-map-integration.md)을 따른다.
+`facility-18f`는 기존 예시 지도이며 SLAM 시설에는 실제 좌석 좌표 등록 전까지 좌석을 제공하지 않는다.
 
 ## 기존 DB 이관
 
@@ -149,3 +150,20 @@ uv run --project apps/backend --extra dev ruff check apps/backend
 ```
 
 Gateway 검사는 실제 ROS/Gazebo 실행을 대체하지 않는다. PostgreSQL과 다중 worker는 지원하지 않는다.
+
+### SLAM 좌석 배치
+
+SLAM 지도에서는 `GET/PUT /api/seat-layout`으로 시설별 배치 revision을 관리하고
+`GET /api/seat-layout/targets`로 로봇 목표 JSON을 내보냅니다. 기존 82석은 초안으로
+등록하며 점유 상태는 UNKNOWN입니다. 편집 저장은 현장 검증 상태를 해제합니다.
+배치 좌표, 현장 검증 기록과 Runtime 버전 확인 절차는
+[SLAM 통합 계약](../../docs/architecture/slam-map-integration.md#좌석-배치와-좌표)을 따릅니다.
+
+`CLEANY_SHUTDOWN_GRACE_SECONDS`는 SSE 연결이 열린 상태에서 종료를 기다리는 시간을
+정하며 기본 5초입니다. Jetson user service의 종료 제한은 20초로 설정합니다.
+재배포 전 미종료 미션을 확인하고 DB를 백업합니다.
+## 수동 조종 연결
+
+로봇 탭은 같은 Jetson의 기존 `phone_remote` HTTP 서버에 인증된 입력을 전달합니다.
+설정, 입력 만료와 미션 충돌 검사는 [수동 조종 계약](../../docs/architecture/manual-control.md)을
+참고합니다. 서버 설정만으로 하드웨어 런타임을 시작하지 않습니다.

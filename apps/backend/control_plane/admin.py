@@ -9,6 +9,7 @@ import logging
 
 from control_plane.accounts import Accounts
 from control_plane.domain import ControlPlaneStore
+from control_plane.maps import load_map
 from control_plane.persistence import SQLiteRepository
 from control_plane.settings import Settings
 
@@ -28,6 +29,9 @@ def main():
     site.add_argument("customer_id")
     site.add_argument("name")
     site.add_argument("--map-ref", default="facility-18f")
+    assign_map = commands.add_parser("site-set-map")
+    assign_map.add_argument("site_id")
+    assign_map.add_argument("map_ref")
     create = commands.add_parser("account-create")
     create.add_argument("customer_id")
     create.add_argument("login_id")
@@ -49,6 +53,22 @@ def main():
             result = {"customer_id": accounts.create_customer(args.name)}
         elif args.command == "site-create":
             result = {"site_id": accounts.create_site(args.customer_id, args.name, args.map_ref)}
+        elif args.command == "site-set-map":
+            load_map(Settings().map_directory, args.map_ref)
+            with store.transaction():
+                if repo.connection.execute(
+                    "SELECT 1 FROM missions WHERE site_id=? "
+                    "AND json_extract(payload,'$.phase')!='TERMINAL'",
+                    (args.site_id,),
+                ).fetchone():
+                    raise ValueError("unfinished missions; cannot replace facility map")
+                count = repo.connection.execute(
+                    "UPDATE sites SET map_ref=? WHERE site_id=? AND disabled_at IS NULL",
+                    (args.map_ref, args.site_id),
+                ).rowcount
+                if count != 1:
+                    raise ValueError("enabled site not found")
+            result = {"site_id": args.site_id, "map_ref": args.map_ref}
         elif args.command == "account-create":
             user_id, password = accounts.provision(args.customer_id, args.login_id, args.name)
             result = {

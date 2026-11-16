@@ -14,7 +14,7 @@ export const facilityFloors = [
   { id: "BUSAN_SOMA_18F", label: "부산 소마 센터 18층", mapAvailable: true },
   { id: "BUSAN_SOMA_19F", label: "부산 소마 센터 19층", mapAvailable: false },
 ] as const;
-export interface FacilityFloor { id: string; label: string; mapAvailable: boolean; }
+export interface FacilityFloor { id: string; label: string; mapAvailable: boolean; mapRef?: string; }
 export interface FacilitySelection { floor: FacilityFloor; }
 
 const navigation = [
@@ -32,7 +32,7 @@ export function AppShell() {
   const location = useLocation();
   const auth = useAuthOptional();
   const floors = auth ? auth.sites.map(site => ({ id: site.site_id, label: site.display_name,
-    mapAvailable: site.map_ref === "facility-18f" })) : facilityFloors;
+    mapRef: site.map_ref, mapAvailable: site.map_ref !== "unconnected" })) : facilityFloors;
   const [localFloor, setFloor] = useState<FacilityFloor>(facilityFloors[0]);
   const floor = auth ? floors.find(item => item.id === auth.site?.site_id) ?? localFloor : localFloor;
   const { robots, missions, error, isLoading } = useOperations();

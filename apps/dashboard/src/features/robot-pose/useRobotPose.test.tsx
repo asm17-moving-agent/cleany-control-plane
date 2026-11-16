@@ -42,3 +42,10 @@ it("interpolates, freezes on stale, and snaps large resets", () => {
   rerender({ point: { ...pose, x: -5 }, stale: false });
   expect(result.current.pose?.x).toBe(-5);
 });
+
+it("clears interpolation when the map identity changes", () => {
+  const first = { ...pose, frame_id: "map", map_id: "first" };
+  const { result, rerender } = renderHook(({ point }) => useRobotPose(point, false, true), { initialProps: { point: first } });
+  rerender({ point: { ...first, x: 1.1, map_id: "second" } });
+  expect(result.current.pose?.x).toBe(1.1);
+});

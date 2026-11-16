@@ -12,10 +12,18 @@ interface PoseState { pose: MapPose | null; stale: boolean; connected: boolean; 
  * @returns The rendered pose and caller-reported freshness/connection flags.
  */
 export function useRobotPose(pose: RobotPose | null, poseStale: boolean, connected: boolean): PoseState {
+  const sourceKey = pose ? `${pose.frame_id ?? ""}:${pose.map_id ?? ""}` : null;
+  const renderedSource = useRef<string | null>(null);
   const samples = useRef<PoseSample[]>([]);
   const rendered = useRef<MapPose | null>(null);
   const [current, setCurrent] = useState<MapPose | null>(null);
   useEffect(() => {
+    if (sourceKey !== renderedSource.current) {
+      samples.current = [];
+      rendered.current = null;
+      renderedSource.current = sourceKey;
+      setCurrent(null);
+    }
     if (!pose) return;
     const next = { x: pose.x, y: pose.y, yaw: pose.yaw };
     if (!rendered.current || poseStale || poseDistance(rendered.current, next) > POSE_SNAP_DISTANCE) {
@@ -47,5 +55,5 @@ export function useRobotPose(pose: RobotPose | null, poseStale: boolean, connect
     frame = requestAnimationFrame(render);
     return () => cancelAnimationFrame(frame);
   }, [poseStale]);
-  return { pose: current, stale: poseStale, connected };
+  return { pose: sourceKey === renderedSource.current ? current : null, stale: poseStale, connected };
 }

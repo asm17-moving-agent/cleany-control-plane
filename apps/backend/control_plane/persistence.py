@@ -56,6 +56,9 @@ class SQLiteRepository:
             PRAGMA user_version=1;
         """)
         self.migrate_accounts()
+        from control_plane.seat_layouts import initialize_layouts
+
+        initialize_layouts(self.connection)
 
     def migrate_accounts(self) -> None:
         """Upgrade schema v1 to v2 atomically while retaining legacy mission payloads.

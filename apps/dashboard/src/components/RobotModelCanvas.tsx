@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { RobotModelMotion, ROTATION_GUIDE } from "./robot-model-motion";
-import { createRobotExterior } from "./RobotExterior";
+import { ROBOT_MODEL } from "./robot-model-asset";
 import { createRobotRotationGuide } from "./RobotRotationGuide";
 
 /** Dispose each shared geometry, material, and mesh texture once when a preview is discarded. */
@@ -55,7 +55,6 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
     let drag: { id: number; x: number; y: number; moved: boolean } | null = null;
     let radius = 1, distance = 4;
     let canvasWidth = 1, canvasHeight = 1;
-    let enclosure: ReturnType<typeof createRobotExterior> | undefined;
     let orbitGuide: ReturnType<typeof createRobotRotationGuide> | undefined;
     const motion = new RobotModelMotion();
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -297,13 +296,10 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
     intersection.observe(element);
     reset.current = resetView;
 
-    new GLTFLoader().load("/models/cleany-e718ac57-standby.glb", gltf => {
+    new GLTFLoader().load(ROBOT_MODEL.glb, gltf => {
       if (disposed || failed) { disposeModel(gltf.scene); return; }
       scene.add(gltf.scene);
-      enclosure = createRobotExterior(invalidate, gltf.scene);
-      scene.add(enclosure.group);
-      const box = new THREE.Box3().setFromObject(gltf.scene, true)
-        .union(new THREE.Box3().setFromObject(enclosure.group, true));
+      const box = new THREE.Box3().setFromObject(gltf.scene, true);
       box.getCenter(center);
       radius = box.getBoundingSphere(new THREE.Sphere()).radius;
       if (rotationGuide) {
@@ -314,8 +310,8 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
       loaded = true;
       element.dataset.loaded = "true";
       if (diagnostics) {
-        element.dataset.model = "standby";
-        element.dataset.exterior = "true";
+        element.dataset.model = "cad-final";
+        element.dataset.exterior = "false";
       }
       motion.setHovered(hoverEnabled && element.matches(":hover"));
       resize();
@@ -343,7 +339,6 @@ export default function RobotModelCanvas({ onReady, onError, hoverEnabled = true
       element.removeEventListener("focusin", focusIn);
       element.removeEventListener("focusout", scheduleGuide);
       renderer.domElement.removeEventListener("webglcontextlost", contextLost);
-      enclosure?.stopLoading();
       disposeModel(scene);
       renderer.dispose();
       renderer.forceContextLoss();
