@@ -2,7 +2,6 @@
  .task-actions { display: flex; align-items: center; gap: 8px; }
  .task-layout { display: grid; grid-template-columns: 248px minmax(300px,.85fr) minmax(420px,1.4fr); gap: var(--page-gap); flex: 1; min-height: 0; }
  .task-calendar-surface { padding: 0; }
- .task-day-note { margin: 0; padding-inline: 8px; color: var(--color-text-muted); font-size: var(--text-caption); line-height: 20px; }
  .task-sidebar { display: flex; flex-direction: column; gap: 16px; overflow: auto; min-height: 0; }
  .task-calendar { padding: 16px; }
  .task-calendar header, .task-summary header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }

@@ -51,7 +51,6 @@ export function MissionsPage() {
         <MissionDaySummary missions={missions} summary={summary} error={!!error} filter={filter} onFilter={value => {
           setForm(null); setSearch(""); setParams(nextParams({filter:filter === value ? null : value, priority:null, mission:null, date:day}));
         }} />
-        <p className="task-day-note">요청·종료일 기준{day===today && " · 이전 요청 중 진행/대기 작업 포함"}</p>
       </aside>
       <Surface padding="none" className="task-list-panel" aria-label="작업 요청 목록">
         <header className="task-list-heading"><div><span className="task-eyebrow">{day===today ? "오늘의 작업" : `${day.slice(0,4)}년 작업`}</span><h3>{dateTitle}</h3></div><div className="task-actions"><Button variant="ghost" size="icon-compact" aria-label="이전 날짜" onClick={()=>selectDay(shiftDay(day,-1))}><ChevronIcon className="icon-previous" aria-hidden="true" /></Button><Button variant="ghost" size="icon-compact" aria-label="다음 날짜" onClick={()=>selectDay(shiftDay(day,1))}><ChevronIcon aria-hidden="true" /></Button></div></header>
@@ -65,7 +64,7 @@ export function MissionsPage() {
             <div><MissionStatusBadge mission={m} /><span className="task-row-note">{m.review ? "검토 완료" : needsResultReview(m) ? "● 관리자 확인" : dayKey(m.created_at)<day ? "이전 요청" : m.phase==="QUEUED" ? "로봇 배정 대기" : m.robot_id ?? ""}</span></div>
           </Link>)}</div> : <OperationsEmpty icon={<MissionIcon />} title={missions.length ? "조건에 맞는 작업 없음" : "작업 요청 없음"}>{missions.length ? <Button variant="ghost" onClick={()=>{setSearch("");setParams(nextParams({filter:null,priority:null,mission:null,date:day}));}}>필터 초기화</Button> : <Button variant="ghost" onClick={()=>setForm({})}>새 작업 요청</Button>}</OperationsEmpty>}
         </div>
-        <footer className="task-list-footer"><span>{isLoading || error ? "—" : filtered.length}건</span><span>진행 · 확인 필요 우선</span></footer>
+        <footer className="task-list-footer"><span>{isLoading || error ? "—" : filtered.length}건</span></footer>
       </Surface>
       <Surface padding="none" className="task-detail-panel" aria-label="작업 상세">
         {form ? <MissionRequestForm key={form.retry?.mission_id ?? "new"} retry={form.retry} onClose={()=>setForm(null)} onCreated={mission=>{setForm(null);setSearch("");setParams(nextParams({date:dayKey(mission.created_at),mission:mission.mission_id,filter:null,priority:null}));void workspace.refresh();}} />

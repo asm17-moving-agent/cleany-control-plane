@@ -25,7 +25,7 @@ export function MissionDetail({ mission, onRetry, onChanged }: { mission: Missio
   const [pending, setPending] = useState<"cancel" | "review" | null>(null), [failure, setFailure] = useState("");
   const sending = useRef(false);
   const disabled = isLoading || !!error || !!pending;
-  const facts = <dl className="task-facts"><InfoRow label="담당 로봇">{robotId ? <Link to={`/robots?robot=${encodeURIComponent(robotId)}`}>{robotId} <ChevronIcon aria-hidden="true" /></Link> : mission.phase === "QUEUED" ? "배정 대기" : "기록 없음"}</InfoRow><InfoRow label="우선순위">{mission.priority === "HIGH" ? "높음" : "보통"}</InfoRow><InfoRow label="요청 시각">{formatDateTime(mission.created_at)}</InfoRow><InfoRow label={terminal ? "완료·종료 시각" : "수락 시각"}>{terminal ? mission.finished_at ? formatDateTime(mission.finished_at) : "기록 없음" : mission.accepted_at ? formatDateTime(mission.accepted_at) : "수락 대기"}</InfoRow></dl>;
+  const facts = <dl className="task-facts"><InfoRow label="담당 로봇">{robotId ? <Link to={`/robots?robot=${encodeURIComponent(robotId)}`}>{robotId} <ChevronIcon aria-hidden="true" /></Link> : mission.phase === "QUEUED" ? "배정 대기" : "기록 없음"}</InfoRow><InfoRow label="우선순위">{mission.priority === "HIGH" ? "높음" : "보통"}</InfoRow><InfoRow label="요청 시각">{formatDateTime(mission.created_at)}</InfoRow><InfoRow label={terminal ? "종료 시각" : "수락 시각"}>{terminal ? mission.finished_at ? formatDateTime(mission.finished_at) : "기록 없음" : mission.accepted_at ? formatDateTime(mission.accepted_at) : "수락 대기"}</InfoRow></dl>;
   async function act(action: "cancel" | "review") {
     if (sending.current || disabled || (isDemo && (action === "review" || !isRecording))) return;
     if (action === "cancel" && (terminal || unsupported || mission.cancel_requested)) return;
