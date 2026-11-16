@@ -1,3 +1,5 @@
+import { Notice } from "./patterns";
+import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link } from "react-router";
 import type { Mission, Priority, Seat } from "../api/types";
@@ -52,7 +54,7 @@ export function SeatMissionPanel({ seat, unavailable, onClose, onSubmitted }: {
   return (
     <aside className="seat-mission-panel" aria-label="작업 요청 패널" onKeyDown={(event) => { if (event.key === "Escape" && !busy) { event.preventDefault(); onClose(); } }}>
       <div className="seat-mission-heading"><h2 tabIndex={-1} ref={heading}>작업 요청</h2>
-        <button className="workspace-icon-button" type="button" aria-label="작업 요청 닫기" onClick={onClose} disabled={busy}><CloseIcon /></button>
+        <Button variant="ghost" size="icon-compact" className="workspace-icon-button" type="button" aria-label="작업 요청 닫기" onClick={onClose} disabled={busy}><CloseIcon /></Button>
       </div>
       <form onSubmit={(event) => void submit(event)}>
         <div className="seat-mission-fields">
@@ -76,12 +78,12 @@ export function SeatMissionPanel({ seat, unavailable, onClose, onSubmitted }: {
           <p className="mission-queue-note">요청은 대기열에 등록됩니다.<br />진행 중인 작업을 중단하지 않습니다.</p>
         </div>
         <div className="seat-mission-submit">
-          {message && <p role={failed ? "alert" : "status"} className={failed ? "request-feedback is-error" : "request-feedback"}>{message}</p>}
-          {unavailable && <p className="request-feedback is-error">데이터 연결을 확인한 뒤 요청해 주세요.</p>}
-          {!isDemo && !supported && <p className="request-feedback is-error">{seat.mission_supported === false ? "이 좌석은 아직 로봇 작업을 지원하지 않습니다." : "런타임 연결 후 지원 좌석을 확인해 주세요."}</p>}
-          <button type="submit" className="workspace-primary-button" disabled={(isDemo && !isRecording) || !supported || busy || unavailable || !!submittedId}>
+          {message && <Notice tone={failed ? "danger" : "success"} role={failed ? "alert" : "status"} className={failed ? "request-feedback is-error" : "request-feedback"}>{message}</Notice>}
+          {unavailable && <Notice tone="danger" className="request-feedback is-error">데이터 연결을 확인한 뒤 요청해 주세요.</Notice>}
+          {!isDemo && !supported && <Notice tone="danger" className="request-feedback is-error">{seat.mission_supported === false ? "이 좌석은 아직 로봇 작업을 지원하지 않습니다." : "런타임 연결 후 지원 좌석을 확인해 주세요."}</Notice>}
+          <Button variant="primary" size="large" type="submit" className="workspace-primary-button" disabled={(isDemo && !isRecording) || !supported || busy || unavailable || !!submittedId}>
             <SendIcon />{busy ? "요청 중…" : submittedId ? "대기열 등록 완료" : failed ? "다시 요청" : "요청 보내기"}
-          </button>
+          </Button>
           {submittedId && <Link to={"/missions?mission=" + encodeURIComponent(submittedId)} className="mission-success-link">요청 현황 보기 <ChevronIcon /></Link>}
         </div>
       </form>

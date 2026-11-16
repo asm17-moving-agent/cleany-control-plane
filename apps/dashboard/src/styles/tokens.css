@@ -3,6 +3,8 @@
  * Robot 3D materials and imported raster/brand assets retain their own colors.
  */
 :root {
+  --color-background: var(--cleany-background);
+  --color-border: var(--cleany-border);
   --palette-teal: #167e70;
   --palette-charcoal: #24333d;
   --palette-gray: #687b80;
@@ -11,20 +13,20 @@
   --palette-red: #b94834; /* Error / emergency exception. */
 
   --color-text: var(--palette-charcoal);
-  --color-text-muted: var(--palette-gray);
+  --color-text-muted: #586b70;
   --color-text-disabled: color-mix(in srgb, var(--palette-gray) 75%, var(--palette-white));
-  --color-background: color-mix(in srgb, var(--palette-gray) 5%, var(--palette-white));
+  --cleany-background: color-mix(in srgb, var(--palette-gray) 5%, var(--palette-white));
   --color-surface: var(--palette-white);
   --color-surface-muted: color-mix(in srgb, var(--palette-gray) 8%, var(--palette-white));
   --color-neutral-soft: color-mix(in srgb, var(--palette-gray) 15%, var(--palette-white));
-  --color-border: color-mix(in srgb, var(--palette-gray) 25%, var(--palette-white));
+  --cleany-border: color-mix(in srgb, var(--palette-gray) 25%, var(--palette-white));
   --color-border-strong: color-mix(in srgb, var(--palette-gray) 50%, var(--palette-white));
   --color-on-action: var(--palette-white);
   --color-action: var(--palette-teal);
   --color-action-hover: color-mix(in srgb, var(--palette-teal) 85%, var(--palette-charcoal));
   --color-action-soft: color-mix(in srgb, var(--palette-teal) 9%, var(--palette-white));
   --color-action-border: color-mix(in srgb, var(--palette-teal) 35%, var(--palette-white));
-  --color-focus: color-mix(in srgb, var(--palette-teal) 55%, var(--palette-white));
+  --color-focus: var(--palette-teal);
   --color-warning: var(--palette-amber);
   --color-warning-soft: color-mix(in srgb, var(--palette-amber) 10%, var(--palette-white));
   --color-warning-border: color-mix(in srgb, var(--palette-amber) 35%, var(--palette-white));
@@ -38,3 +40,48 @@
   --color-overlay: color-mix(in srgb, var(--palette-charcoal) 85%, transparent);
   --color-surface-overlay: color-mix(in srgb, var(--palette-white) 94%, transparent);
 }
+
+:root {
+  --background: var(--cleany-background);
+  --foreground: var(--color-text);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-text);
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-text);
+  --primary: var(--color-action);
+  --primary-foreground: var(--color-on-action);
+  --secondary: var(--color-surface-muted);
+  --secondary-foreground: var(--color-text);
+  --muted: var(--color-surface-muted);
+  --muted-foreground: var(--color-text-muted);
+  --accent: var(--color-action-soft);
+  --accent-foreground: var(--color-action);
+  --destructive: var(--color-danger);
+  --border: var(--cleany-border);
+  --input: var(--color-border-strong);
+  --ring: var(--color-focus);
+  --radius: 8px;
+  --radius-panel: 12px;
+  --radius-popover: 8px;
+  --radius-auth: 24px;
+  --font-ui: "Cleany Pretendard", Pretendard, system-ui, sans-serif;
+  --font-auth: var(--font-ui);
+  --text-body: 14px;
+  --text-caption: 12px;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px;
+  --space-4: 16px; --space-5: 20px; --space-6: 24px;
+  --shadow-popover: 0 10px 35px var(--color-shadow);
+  --z-menu: 40;
+  --color-camera-background: #182326;
+  --color-camera-placeholder: #bdcbc7;
+}
+
+:root {
+ --color-action-ink: #12695d; --color-control-border: #7a8a8e;
+ --control-default: 2.5rem; --control-compact: 2rem; --control-large: 3rem;
+ --radius-control: .5rem; --radius-badge: .375rem;
+ --text-body: .875rem; --text-caption: .75rem; --text-title: 1.5rem;
+ --text-panel: 1rem; --text-entity: 1.25rem;
+ --motion-control: 150ms; --shadow-floating: 0 6px 22px var(--color-shadow);
+}
+@font-face { font-family: "Cleany Pretendard"; src: url("/fonts/PretendardVariable.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }

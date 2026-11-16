@@ -1,3 +1,5 @@
+import { lazy, Suspense } from "react";
+const UiPreviewPage = import.meta.env.DEV ? lazy(() => import("../pages/UiPreviewPage").then(module => ({ default: module.UiPreviewPage }))) : () => null;
 import { Navigate, Route, Routes } from "react-router";
 import { HomePage } from "../pages/HomePage";
 import { MissionsPage } from "../pages/MissionsPage";
@@ -11,6 +13,7 @@ import { AppShell } from "./AppShell";
 export function App() {
   return (
     <Routes>
+      {import.meta.env.DEV && <Route path="ui-preview" element={<Suspense fallback={null}><UiPreviewPage /></Suspense>} />}
       {import.meta.env.DEV && <Route path="robot-model" element={<RobotModelPage />} />}
       <Route element={<AppShell />}>
         <Route index element={<HomePage />} />

@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { ROBOT_MODEL } from "../components/robot-model-asset";
 import { SlamMap } from "../features/facility-map/SlamMap";
 import { useMemo } from "react";
@@ -70,9 +71,9 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
                 SSE {livePose.connected ? "연결됨" : "연결 끊김"} · 위치 {livePose.pose ? (livePose.stale ? "지연" : "최신") : "대기 중"}
                 {robots[0]?.control_mode && <> · {robots[0].control_mode === "mock" ? "Backend 모의 실행" : robots[0].state === "OFFLINE" ? "로봇 연결 끊김" : "로봇 연결됨"}</>}
               </span>}
-              {summaryDemo && <button className="summary-demo-exit" type="button" title="화면용 예시 데이터입니다. 데모에서는 작업 요청이 전송되지 않습니다." onClick={() => setSearchParams(current => { const next = new URLSearchParams(current); next.delete("summaryDemo"); return next; })}>데모 · 해제</button>}
+              {summaryDemo && <Button variant="secondary" size="default" className="summary-demo-exit" type="button" title="화면용 예시 데이터입니다. 데모에서는 작업 요청이 전송되지 않습니다." onClick={() => setSearchParams(current => { const next = new URLSearchParams(current); next.delete("summaryDemo"); return next; })}>데모 · 해제</Button>}
           </HomeMapHeader>
-          {error && <div className="home-data-error" role="alert"><span>데이터를 갱신하지 못했습니다. {error.message}</span><button type="button" onClick={() => void refresh()}>새로고침</button></div>}
+          {error && <div className="home-data-error" role="alert"><span>데이터를 갱신하지 못했습니다. {error.message}</span><Button variant="secondary" size="default" type="button" onClick={() => void refresh()}>새로고침</Button></div>}
           <div className="home-map-content">
         <aside className={"home-robot-panel" + (selectedRobot ? " is-hidden" : "")} aria-label="로봇 목록" inert={!!selectedRobot} aria-hidden={!!selectedRobot}>
           <div className="home-robot-heading"><h2>로봇 목록</h2><span>{robots.length}대</span></div>

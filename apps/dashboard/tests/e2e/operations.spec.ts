@@ -44,16 +44,16 @@ test("home entry points and unavailable floors remain accessible", async ({ page
   await expect(page.locator(".facility-zone-overlay, .facility-route-overlay")).toHaveCount(0);
 
   await page.getByLabel("알림", { exact: true }).click();
-  await page.getByRole("link", { name: /결과 검토/ }).click();
+  await page.getByRole("menuitem", { name: /결과 검토/ }).click();
   await expect(page).toHaveURL(/\/results\?filter=review$/);
   await expect(page.getByRole("link", { name: /검토 대상/ })).toHaveAttribute("aria-current", "page");
   await page.getByRole("navigation", { name: "주요 메뉴" }).getByRole("link", { name: "홈", exact: true }).click();
   await page.getByLabel("알림", { exact: true }).click();
-  await page.getByRole("link", { name: /즉시 조치/ }).click();
+  await page.getByRole("menuitem", { name: /즉시 조치/ }).click();
   await expect(page).toHaveURL(/\/robots\?filter=attention$/);
 
   await page.getByLabel("운영 메뉴", { exact: true }).click();
-  await page.getByRole("link", { name: "모니터링", exact: true }).click();
+  await page.getByRole("menuitem", { name: "모니터링", exact: true }).click();
   await expect(page.getByRole("heading", { name: "연결 및 작업 상태" })).toBeVisible();
 });
 

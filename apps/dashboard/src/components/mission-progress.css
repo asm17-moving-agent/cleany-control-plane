@@ -1,3 +1,4 @@
+@layer legacy {
 .mission-step-progress { margin: 18px 0 12px; }
 .mission-step-progress ol { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; }
 .mission-step-progress li { position: relative; display: flex; flex-direction: column; align-items: center; gap: 9px; min-width: 0; color: var(--color-text-muted); font-size: 10px; line-height: 1.4; }
@@ -7,15 +8,17 @@
 .mission-step-progress li[data-state=done] { color: var(--color-action); }
 .mission-step-progress li[data-state=done]::after { background: var(--color-action); }
 .mission-step-progress li[data-state=done] .mission-step-dot { border-color: var(--color-action); background: var(--color-action); }
-.mission-step-progress li[data-state=current] { color: var(--workspace-teal); font-weight: 700; }
-.mission-step-progress li[data-state=current] .mission-step-dot { border-color: var(--workspace-teal); background: var(--workspace-teal); box-shadow: 0 0 0 4px var(--color-shadow); }
+.mission-step-progress li[data-state=current] { color: var(--color-action); font-weight: 700; }
+.mission-step-progress li[data-state=current] .mission-step-dot { border-color: var(--color-action); background: var(--color-action); box-shadow: 0 0 0 4px var(--color-shadow); }
 .mission-step-progress li[data-state=current] .mission-step-dot::before { content: ""; width: 4px; height: 4px; border-radius: 50%; background: var(--color-surface); }
 .mission-step-progress li[data-state=stopped] { color: var(--color-warning); font-weight: 700; }
 .mission-step-progress li[data-state=stopped] .mission-step-dot { border-color: var(--color-warning); background: var(--color-warning-soft); }
-.mission-step-progress[data-tone=danger] li[data-state=stopped] { color: var(--workspace-danger); }
-.mission-step-progress[data-tone=danger] li[data-state=stopped] .mission-step-dot { border-color: var(--workspace-danger); background: var(--color-danger-soft); }
-.mission-step-progress .mission-step-status { margin: 14px 0 0; color: var(--workspace-teal); font-size: 12px; font-weight: 600; }
+.mission-step-progress[data-tone=danger] li[data-state=stopped] { color: var(--color-danger); }
+.mission-step-progress[data-tone=danger] li[data-state=stopped] .mission-step-dot { border-color: var(--color-danger); background: var(--color-danger-soft); }
+.mission-step-progress .mission-step-status { margin: 14px 0 0; color: var(--color-action); font-size: 12px; font-weight: 600; }
 .mission-step-progress[data-tone=success] .mission-step-status { color: var(--color-action); }
 .mission-step-progress[data-tone=warning] .mission-step-status { color: var(--color-warning); }
-.mission-step-progress[data-tone=danger] .mission-step-status { color: var(--workspace-danger); }
+.mission-step-progress[data-tone=danger] .mission-step-status { color: var(--color-danger); }
 @media (prefers-reduced-motion: reduce) { .mission-step-progress *, .mission-step-progress *::after { transition: none; } }
+
+}

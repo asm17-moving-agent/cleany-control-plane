@@ -1,3 +1,7 @@
+import { Field, Notice } from "../components/patterns";
+import { Button } from "@/components/ui/button";
+import { NativeSelect } from "@/components/ui/native-select";
+import { Input } from "@/components/ui/input";
 import { useEffect, useState, type FormEvent } from "react";
 import { useAuth } from "./AuthContext";
 import wordmark from "../assets/brand/wordmark.png";
@@ -42,7 +46,7 @@ export function LoginPage() {
       <img src={wordmark} alt="Cleany" width="124" />
       <div className="auth-language">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" /><ellipse cx="12" cy="12" rx="4" ry="9" /><path d="M3 12h18M5 6.5h14M5 17.5h14" /></svg>
-        <select aria-label={text.language} value={language} onChange={event => { setLanguage(event.target.value as "ko" | "en"); setLocalError(""); }}><option value="ko">한국어</option><option value="en">English</option></select>
+        <NativeSelect aria-label={text.language} value={language} onChange={event => { setLanguage(event.target.value as "ko" | "en"); setLocalError(""); }}><option value="ko">한국어</option><option value="en">English</option></NativeSelect>
         <svg className="auth-language-chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg>
       </div>
     </header>
@@ -52,14 +56,14 @@ export function LoginPage() {
         <h1 id="auth-title">{changing ? text.change : text.login}</h1>
         <p className="auth-intro">{changing ? text.changeIntro : text.intro}</p>
         <form onSubmit={event => void submit(event)}>
-          {!changing && <div className="auth-field"><label htmlFor="auth-login-id">{text.id}</label><input id="auth-login-id" autoComplete="username" autoCapitalize="none" spellCheck={false} placeholder={text.idPlaceholder} required maxLength={64} value={loginId} onChange={event => setLoginId(event.target.value)} /></div>}
-          <div className="auth-field"><label htmlFor="auth-password">{changing ? text.newPassword : text.password}</label><input id="auth-password" type="password" autoComplete={changing ? "new-password" : "current-password"} placeholder={changing ? text.newPlaceholder : text.passwordPlaceholder} required minLength={changing ? 15 : 1} maxLength={128} value={password} onChange={event => setPassword(event.target.value)} aria-describedby={changing ? "auth-password-hint" : undefined} />
-          {changing && <small id="auth-password-hint">{text.hint}</small>}</div>
-          {changing && <div className="auth-field"><label htmlFor="auth-confirmation">{text.confirm}</label><input id="auth-confirmation" type="password" autoComplete="new-password" placeholder={text.confirmPlaceholder} required minLength={15} maxLength={128} value={confirmation} onChange={event => setConfirmation(event.target.value)} /></div>}
-          {(localError || error) && <p className="auth-error" role="alert">{localError || (language === "ko" ? error : text.genericError)}</p>}
-          <button className="auth-submit" type="submit" disabled={busy}><span>{busy ? text.busy : changing ? text.start : language === "ko" ? "로그인" : "Sign in"}</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg></button>
+          {!changing && <Field className="auth-field" htmlFor="auth-login-id" label={text.id}><Input controlSize="large" id="auth-login-id" autoComplete="username" autoCapitalize="none" spellCheck={false} placeholder={text.idPlaceholder} required maxLength={64} value={loginId} onChange={event => setLoginId(event.target.value)} /></Field>}
+          <Field className="auth-field" htmlFor="auth-password" label={changing ? text.newPassword : text.password} hint={changing ? text.hint : undefined}><Input controlSize="large" id="auth-password" type="password" autoComplete={changing ? "new-password" : "current-password"} placeholder={changing ? text.newPlaceholder : text.passwordPlaceholder} required minLength={changing ? 15 : 1} maxLength={128} value={password} onChange={event => setPassword(event.target.value)} aria-describedby={changing ? "auth-password-hint" : undefined} />
+          </Field>
+          {changing && <Field className="auth-field" htmlFor="auth-confirmation" label={text.confirm}><Input controlSize="large" id="auth-confirmation" type="password" autoComplete="new-password" placeholder={text.confirmPlaceholder} required minLength={15} maxLength={128} value={confirmation} onChange={event => setConfirmation(event.target.value)} /></Field>}
+          {(localError || error) && <Notice tone="danger" className="auth-error" role="alert">{localError || (language === "ko" ? error : text.genericError)}</Notice>}
+          <Button variant="primary" size="large" className="auth-submit" type="submit" disabled={busy}><span>{busy ? text.busy : changing ? text.start : language === "ko" ? "로그인" : "Sign in"}</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg></Button>
         </form>
-        <div className="auth-help">{changing ? <button className="auth-secondary" onClick={() => void logout()}>{text.other}</button> : <><span>{text.help}</span><span>{text.contact}</span></>}</div>
+        <div className="auth-help">{changing ? <Button variant="ghost" size="default" className="auth-secondary" onClick={() => void logout()}>{text.other}</Button> : <><span>{text.help}</span><span>{text.contact}</span></>}</div>
       </section>
       <footer className="auth-footer"><span>{text.footer}</span><span>© {new Date().getFullYear()} Cleany</span></footer>
     </div>

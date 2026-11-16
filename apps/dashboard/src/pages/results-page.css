@@ -1,3 +1,4 @@
+@layer legacy {
 .results-layout { grid-template-columns: 330px minmax(0, 1fr); }
 .result-row { grid-template-columns: 36px minmax(0, 1fr) 16px; gap: 12px; min-height: 112px; }
 .result-row .ops-status { margin-top: 9px; font-size: 11px; }
@@ -11,7 +12,7 @@
 .result-observation { min-width: 0; border: 1px solid var(--color-border); border-radius: 8px; overflow: hidden; }
 .result-observation header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border-bottom: 1px solid var(--color-border); }
 .result-observation h4 { margin: 0; font-size: 13px; font-weight: 600; }
-.result-observation header a { display: inline-flex; align-items: center; gap: 3px; color: var(--workspace-teal); font-size: 11px; }
+.result-observation header a { display: inline-flex; align-items: center; gap: 3px; color: var(--color-action); font-size: 11px; }
 .result-observation header svg { width: 13px; height: 13px; }
 .result-observation-image { position: relative; display: flex; align-items: center; justify-content: center; height: clamp(170px, 22dvh, 240px); background: var(--color-background); }
 .result-observation-image img { display: block; width: 100%; height: 100%; object-fit: contain; }
@@ -20,7 +21,7 @@
 .result-observation-empty > svg { width: 28px; height: 28px; }
 .result-observation-empty strong { font-size: 12px; font-weight: 500; color: var(--color-text-muted); }
 .result-observation-empty span { max-width: 220px; font-size: 11px; line-height: 1.7; }
-.result-reference { color: var(--workspace-muted); font-size: 11px; }
+.result-reference { color: var(--color-text-muted); font-size: 11px; }
 .result-reference summary { cursor: pointer; }
 .result-reference code, .result-reference p { display: block; margin: 8px 0 0; overflow-wrap: anywhere; }
 .result-observation .result-reference { padding: 10px 14px; border-top: 1px solid var(--color-border); }
@@ -29,3 +30,5 @@
 .result-facts dt { margin-bottom: 6px; }
 .result-facts dd { text-align: left; }
 @media (max-width: 1280px) { .results-layout { grid-template-columns: 270px minmax(0, 1fr); } .result-row { padding-inline: 16px; gap: 10px; } .result-detail-heading { align-items: start; } .result-detail-heading .ops-detail-title h3 { font-size: 20px; } }
+
+}

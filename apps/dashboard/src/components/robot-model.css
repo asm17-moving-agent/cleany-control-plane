@@ -1,3 +1,4 @@
+@layer legacy {
 .robot-model-card {
   position: relative;
   width: 100%;
@@ -115,3 +116,5 @@
 .robot-model-page > p { margin: 0 0 24px; color: var(--color-text-muted); font-size: 13px; line-height: 1.8; }
 .robot-model-page .robot-model-stage { height: 260px; }
 @media (prefers-reduced-motion: reduce) { .robot-model-card *, .robot-model-card *::after { transition: none; } }
+
+}

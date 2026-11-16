@@ -1,10 +1,4 @@
-@font-face {
-  font-family: "Cleany Pretendard";
-  src: url("/fonts/PretendardVariable.woff2") format("woff2");
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
+@layer legacy {
 
 .auth-screen {
   min-height: 100dvh;
@@ -13,7 +7,7 @@
   padding: 130px 24px 80px;
   background: var(--color-auth-background);
   color: var(--color-text);
-  font-family: "Cleany Pretendard", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-family: var(--font-auth);
   -webkit-font-smoothing: antialiased;
   letter-spacing: -.2px;
   line-height: 1.5;
@@ -31,7 +25,7 @@
 .auth-language select:focus-visible { outline: 2px solid var(--selected); outline-offset: 3px; }
 .auth-backdrop { position: absolute; width: min(100%, 1640px); height: auto; left: 50%; top: 50%; transform: translate(-50%, -42%); z-index: -1; color: var(--color-illustration-line); pointer-events: none; }
 .auth-layout { width: min(100%, 432px); }
-.auth-card { padding: 36px 36px 30px; border: 1px solid var(--color-surface); border-radius: 24px; background: var(--color-surface); box-shadow: 0 20px 40px var(--color-shadow); }
+.auth-card { padding: 36px 36px 30px; border: 1px solid var(--color-surface); border-radius: var(--radius-auth); background: var(--color-surface); box-shadow: 0 20px 40px var(--color-shadow); }
 .auth-card h1 { text-align: center; margin: 0 0 9px; font-size: 30px; font-weight: 720; letter-spacing: -.9px; line-height: 1.3; }
 .auth-intro { text-align: center; margin: 0; font-size: 15px; line-height: 1.6; color: var(--color-text-muted); letter-spacing: -.2px; }
 .auth-card form { display: grid; gap: 17px; margin: 28px 0 22px; }
@@ -70,3 +64,5 @@
   .auth-footer { font-size: 10px; gap: 10px; flex-wrap: wrap; }.auth-footer>span+span { padding-left: 10px; }
 }
 @media (prefers-reduced-motion: reduce) { .auth-field input, .auth-submit { transition: none; } }
+
+}

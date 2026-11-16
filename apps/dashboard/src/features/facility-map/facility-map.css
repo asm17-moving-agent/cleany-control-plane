@@ -1,3 +1,4 @@
+@layer legacy {
 .facility-map-shell { display: flex; flex-direction: column; flex: 1; min-height: 0; --seat-occupied-fill: var(--color-neutral-soft); --seat-occupied-border: var(--color-border-strong); --seat-occupied-ink: var(--color-text-muted); --seat-cleaned-fill: var(--color-action-soft); --seat-cleaned-border: var(--color-action-border); --seat-cleaned-ink: var(--color-action); --seat-scheduled-fill: var(--color-warning-soft); --seat-scheduled-border: var(--color-warning-border); --seat-scheduled-ink: var(--color-warning); }
 .facility-map-stage { position: relative; flex: 1; min-height: 0; overflow: hidden; touch-action: none; cursor: grab; background: var(--color-background); container-type: inline-size; }
 .facility-map-stage.is-panning { cursor: grabbing; user-select: none; }
@@ -71,7 +72,7 @@
 .facility-seat-overlay, .facility-robot-overlay { position: absolute; inset: 0; pointer-events: none; }
 .facility-seat-overlay { z-index: 3; }
 .facility-robot-overlay { z-index: 4; }
-.facility-movement-path { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; color: var(--workspace-teal); overflow: visible; }
+.facility-movement-path { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; color: var(--color-action); overflow: visible; }
 .facility-movement-path polyline { fill: none; stroke-linecap: round; stroke-linejoin: round; }
 .facility-map-seat { position: absolute; display: grid; place-items: center; border: 1px solid var(--seat-border, var(--color-border)); border-radius: 4px; padding: 0; background: var(--seat-fill, var(--color-surface-muted)); color: var(--seat-ink, var(--color-text-muted)); font-size: max(11px, calc(10px / var(--map-scale))) !important; font-weight: 550; font-variant-numeric: tabular-nums; line-height: 1; transform: translate(-50%, -50%); pointer-events: auto; }
 .facility-map-seat[data-seat-status="occupied"] { --seat-fill: var(--seat-occupied-fill); --seat-border: var(--seat-occupied-border); --seat-ink: var(--seat-occupied-ink); }
@@ -86,14 +87,14 @@
 .facility-workstation { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .facility-workstation text { stroke: none; }
 /* Size follows the map viewport, while inverse scaling keeps it independent of map zoom. */
-.facility-map-robot { --robot-icon-width: clamp(32px, 3cqw, 56px); position: absolute; display: grid; place-items: center; width: calc(var(--robot-icon-width) + 18px); height: calc(var(--robot-icon-width) * 6 / 7 + 18px); border: 0; border-radius: 6px; padding: 0; background: transparent; color: var(--workspace-teal); transform: translate(-50%, -50%) scale(calc(1 / var(--map-scale))); pointer-events: auto; cursor: pointer; }
+.facility-map-robot { --robot-icon-width: clamp(32px, 3cqw, 56px); position: absolute; display: grid; place-items: center; width: calc(var(--robot-icon-width) + 18px); height: calc(var(--robot-icon-width) * 6 / 7 + 18px); border: 0; border-radius: 6px; padding: 0; background: transparent; color: var(--color-action); transform: translate(-50%, -50%) scale(calc(1 / var(--map-scale))); pointer-events: auto; cursor: pointer; }
 .facility-map-robot > img { position: relative; display: block; width: calc(var(--robot-icon-width) * .8); height: calc(var(--robot-icon-width) * 6 / 7 * .8); object-fit: contain; filter: saturate(.6); pointer-events: none; }
 .facility-robot-bearing { position: absolute; top: 50%; left: 50%; width: calc(var(--robot-icon-width) + 34px); height: calc(var(--robot-icon-width) + 34px); transform: translate(-50%, -50%); overflow: visible; pointer-events: none; }
 .facility-robot-bearing circle { fill: none; stroke: none; }
 .facility-robot-bearing path { fill: var(--color-action); stroke: var(--color-surface); stroke-width: 1.5; stroke-linejoin: round; }
 .is-recording .facility-map-robot { transition: none; }
 .facility-map-robot[data-state="IDLE"] { color: var(--color-text-muted); }
-.facility-map-robot[data-state="ERROR"], .facility-map-robot[data-state="OFFLINE"] { color: var(--workspace-danger); }
+.facility-map-robot[data-state="ERROR"], .facility-map-robot[data-state="OFFLINE"] { color: var(--color-danger); }
 .facility-map-robot:hover, .facility-map-robot:focus-visible, .facility-map-robot.is-selected { z-index: 1; }
 .facility-map-robot.is-stale { filter: grayscale(1); opacity: .65; }
 .facility-map-robot:focus-visible { outline: 2px solid currentColor; outline-offset: 1px; }
@@ -105,8 +106,8 @@
 .facility-map-zoom-controls button { width: 36px; height: 34px; border: 0; border-radius: 0; padding: 0; font-size: 22px; font-weight: 350; line-height: 1; box-shadow: none; }
 .facility-map-zoom-controls button + button { border-top: 1px solid var(--color-border); }
 .facility-map-fit-controls { display: flex; gap: 4px; }
-.facility-map-fit-controls button[aria-pressed="true"] { border-color: var(--workspace-teal); background: var(--color-background); color: var(--workspace-teal); }
-.facility-map-controls button:hover { background: var(--color-background); color: var(--workspace-teal); }
+.facility-map-fit-controls button[aria-pressed="true"] { border-color: var(--color-action); background: var(--color-background); color: var(--color-action); }
+.facility-map-controls button:hover { background: var(--color-background); color: var(--color-action); }
 .facility-map-controls button:disabled { opacity: .45; }
 .facility-map-controls svg { width: 17px; height: 17px; }
 .facility-map-legend { display: flex; flex-shrink: 0; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 24px; min-height: 44px; padding: 8px 20px; border-top: 1px solid var(--color-border); background: var(--color-surface); color: var(--color-text-muted); font-size: 11px; }
@@ -138,4 +139,6 @@
 /* Unknown seats use a pattern as well as color; legend shares the same treatment. */
 .facility-map-seat[data-seat-status="unknown"], .facility-map-legend .legend-unknown {
   background: repeating-linear-gradient(135deg, var(--color-surface-muted) 0 3px, var(--color-border) 3px 4px);
+}
+
 }

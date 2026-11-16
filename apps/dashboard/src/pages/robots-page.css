@@ -1,3 +1,4 @@
+@layer legacy {
 .fleet-layout { grid-template-columns: 300px minmax(0, 1fr); }
 .fleet-roster-list { display: grid; gap: 10px; max-height: 70dvh; padding: 12px; overflow-y: auto; }
 .fleet-roster-card { display: grid; grid-template-columns: 64px minmax(0, 1fr) 12px; gap: 10px; align-items: center; padding: 10px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-surface); transition: background var(--panel-transition-duration), border-color var(--panel-transition-duration); }
@@ -12,9 +13,9 @@
 .fleet-identity .battery-status { width: 100%; margin-top: 2px; padding-top: 8px; border-top: 1px solid var(--color-border); }
 .fleet-detail .ops-detail-content { padding: 24px; }
 .fleet-detail-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
-.fleet-eyebrow { display: block; margin-bottom: 5px; color: var(--workspace-muted); font-size: 12px; }
+.fleet-eyebrow { display: block; margin-bottom: 5px; color: var(--color-text-muted); font-size: 12px; }
 .fleet-detail-heading h3 { margin: 0; color: var(--color-text); font-size: 24px; font-weight: 650; letter-spacing: -.5px; overflow-wrap: anywhere; }
-.fleet-attention { display: flex; align-items: start; gap: 12px; margin-bottom: 24px; padding: 14px 16px; border: 1px solid var(--color-danger-border); border-radius: 8px; background: var(--color-danger-soft); color: var(--workspace-danger); font-size: 13px; }
+.fleet-attention { display: flex; align-items: start; gap: 12px; margin-bottom: 24px; padding: 14px 16px; border: 1px solid var(--color-danger-border); border-radius: 8px; background: var(--color-danger-soft); color: var(--color-danger); font-size: 13px; }
 .fleet-attention > svg { flex-shrink: 0; width: 18px; height: 18px; margin-top: 2px; }
 .fleet-attention p { margin: 4px 0 0; font-size: 12px; line-height: 1.7; }
 .fleet-overview { display: grid; grid-template-columns: minmax(220px, .9fr) minmax(280px, 1fr); gap: 24px; align-items: start; }
@@ -23,8 +24,8 @@
 .fleet-concept { border: 1px solid var(--color-border); border-radius: 5px; padding: 3px 7px; background: var(--color-surface); font-size: 10px; }
 .fleet-preview .robot-model-card { margin: 16px 0 0; border: 0; background: var(--color-background); }
 .fleet-preview .robot-model-stage { height: clamp(250px, 29dvh, 390px); }
-.fleet-preview > p { margin: 12px 0; color: var(--workspace-muted); text-align: center; font-size: 11px; }
-.fleet-preview > a { display: flex; align-items: center; justify-content: center; gap: 4px; padding-top: 12px; border-top: 1px solid var(--color-border); color: var(--workspace-teal); font-size: 12px; }
+.fleet-preview > p { margin: 12px 0; color: var(--color-text-muted); text-align: center; font-size: 11px; }
+.fleet-preview > a { display: flex; align-items: center; justify-content: center; gap: 4px; padding-top: 12px; border-top: 1px solid var(--color-border); color: var(--color-action); font-size: 12px; }
 .fleet-preview > a svg { width: 14px; height: 14px; }
 .fleet-state h4, .fleet-assignment h4 { margin: 0; font-size: 14px; font-weight: 650; }
 .fleet-state .ops-facts { margin: 14px 0 22px; }
@@ -36,3 +37,5 @@
 .fleet-assignment > .ops-button { width: 100%; margin-top: 18px; }
 .fleet-no-assignment { margin: 0 0 8px; font-size: 13px; font-weight: 500; }
 @media (max-width: 1280px) { .fleet-layout { grid-template-columns: 270px minmax(0, 1fr); } .fleet-overview { grid-template-columns: minmax(190px, .85fr) minmax(230px, 1fr); gap: 18px; } .fleet-detail .ops-detail-content { padding: 20px; } .fleet-roster-card { grid-template-columns: 52px minmax(0, 1fr) 12px; gap: 8px; } .fleet-preview { padding: 12px; } .fleet-preview .robot-model-stage { height: 250px; } }
+
+}

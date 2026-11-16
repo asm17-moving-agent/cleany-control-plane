@@ -1,6 +1,9 @@
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { NativeSelect } from "@/components/ui/native-select";
 import { useAuthOptional } from "../auth/AuthContext";
 import wordmark from "../assets/brand/wordmark.png";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router";
 import { BellIcon, HomeIcon, MapPinIcon, MissionIcon, MonitoringIcon, RobotIcon, SettingsIcon } from "../components/Icons";
 import { ChevronIcon, EyeIcon, ShieldIcon } from "../components/WorkspaceIcons";
@@ -40,14 +43,14 @@ export function AppShell() {
   const demo = !isDemo && location.pathname === "/" && new URLSearchParams(location.search).get("summaryDemo") === "1";
   const summary = demo ? getHomeSummary(homeSummaryDemo.robots, homeSummaryDemo.missions) : getHomeSummary(robots, missions);
   const alertsReady = demo || (!isLoading && !error);
-  const menuRef = useRef<HTMLDetailsElement>(null);
-  const alertsRef = useRef<HTMLDetailsElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [alertsOpen, setAlertsOpen] = useState(false);
   const isHome = location.pathname === "/";
   const hasPageError = ["/missions", "/results", "/robots"].includes(location.pathname);
   useEffect(() => {
     document.title = (titles[location.pathname] ?? "Cleany") + " · Cleany";
-    if (menuRef.current) menuRef.current.open = false;
-    if (alertsRef.current) alertsRef.current.open = false;
+    setMenuOpen(false);
+    setAlertsOpen(false);
   }, [location.pathname, location.search]);
   return (
     <div className={"control-app" + (isDemo ? " is-demo" : "") + (isRecording ? " is-recording" : "")}>
@@ -62,32 +65,36 @@ export function AppShell() {
         </nav>
         <div className="workspace-header-actions">
           <label className="workspace-location"><MapPinIcon aria-hidden="true" />
-            <select aria-label="운영 층 선택" value={floor.id} onChange={(event) => auth ? auth.selectSite(event.target.value) : setFloor(floors.find((item) => item.id === event.target.value) ?? facilityFloors[0])}>
+            <NativeSelect aria-label="운영 층 선택" value={floor.id} onChange={(event) => auth ? auth.selectSite(event.target.value) : setFloor(floors.find((item) => item.id === event.target.value) ?? facilityFloors[0])}>
               {floors.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
-            </select>
+            </NativeSelect>
           </label>
-          <details className="workspace-menu" ref={alertsRef}>
-            <summary aria-label="알림"><BellIcon aria-hidden="true" /><span className={"header-alert-count attention" + (summary.attention.length ? " has-items" : "")}>조치 {alertsReady ? summary.attention.length : "—"}</span><span className={"header-alert-count review" + (summary.review.length ? " has-items" : "")}>검토 {alertsReady ? summary.review.length : "—"}</span></summary>
-            <div className="workspace-popover">
-              <strong>확인할 일{demo ? " · 예시 데이터" : ""}</strong>
-              <Link to="/robots?filter=attention"><ShieldIcon />즉시 조치 <b>{alertsReady ? summary.attention.length : "—"}</b></Link>
-              <Link to="/results?filter=review"><EyeIcon />결과 검토 <b>{alertsReady ? summary.review.length : "—"}</b></Link>
-            </div>
-          </details>
-          <details className="workspace-menu" ref={menuRef}>
-            <summary aria-label="운영 메뉴"><span className="workspace-avatar">운영자</span><ChevronIcon /></summary>
-            <div className="workspace-popover">
-              <strong>{auth?.session?.display_name ?? "운영자"}</strong>
-              <Link to="/monitoring"><MonitoringIcon />모니터링</Link>
-              <Link to="/settings"><SettingsIcon />설정</Link>
-              {auth && <button type="button" onClick={() => void auth.logout()}>로그아웃</button>}
-              {!isDemo && <button type="button" onClick={() => setDemoMode(true)}>예시 데이터 보기</button>}
-              {!isRecording && <Link to="/?recording=1">촬영 모드</Link>}
-            </div>
-          </details>
+          <div className="workspace-menu">
+            <DropdownMenu modal={false} open={alertsOpen} onOpenChange={setAlertsOpen}>
+              <DropdownMenuTrigger asChild><Button variant="ghost" size="default" type="button" className="workspace-menu-trigger" aria-label="알림"><BellIcon aria-hidden="true" /><span className={"header-alert-count attention" + (summary.attention.length ? " has-items" : "")}>조치 {alertsReady ? summary.attention.length : "—"}</span><span className={"header-alert-count review" + (summary.review.length ? " has-items" : "")}>검토 {alertsReady ? summary.review.length : "—"}</span></Button></DropdownMenuTrigger>
+              <DropdownMenuContent className="workspace-popover" align="end" sideOffset={12}>
+                <DropdownMenuLabel>확인할 일{demo ? " · 예시 데이터" : ""}</DropdownMenuLabel>
+                <DropdownMenuItem asChild><Link to="/robots?filter=attention"><ShieldIcon />즉시 조치 <b>{alertsReady ? summary.attention.length : "—"}</b></Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link to="/results?filter=review"><EyeIcon />결과 검토 <b>{alertsReady ? summary.review.length : "—"}</b></Link></DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <div className="workspace-menu">
+            <DropdownMenu modal={false} open={menuOpen} onOpenChange={setMenuOpen}>
+              <DropdownMenuTrigger asChild><Button variant="ghost" size="default" type="button" className="workspace-menu-trigger" aria-label="운영 메뉴"><span className="workspace-avatar">운영자</span><ChevronIcon /></Button></DropdownMenuTrigger>
+              <DropdownMenuContent className="workspace-popover" align="end" sideOffset={12}>
+                <DropdownMenuLabel>{auth?.session?.display_name ?? "운영자"}</DropdownMenuLabel>
+                <DropdownMenuItem asChild><Link to="/monitoring"><MonitoringIcon />모니터링</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link to="/settings"><SettingsIcon />설정</Link></DropdownMenuItem>
+                {auth && <DropdownMenuItem onSelect={() => void auth.logout()}>로그아웃</DropdownMenuItem>}
+                {!isDemo && <DropdownMenuItem onSelect={() => setDemoMode(true)}>예시 데이터 보기</DropdownMenuItem>}
+                {!isRecording && <DropdownMenuItem asChild><Link to="/?recording=1">촬영 모드</Link></DropdownMenuItem>}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </header>
-      {isDemo && <div className="workspace-demo-banner" role="status"><span><strong>{isRecording ? "촬영 모드" : "예시 데이터"}</strong> {isRecording ? "좌석 요청 → 이동 → 작업 → 복귀 · 실제 로봇에는 전송하지 않습니다. 새로고침하면 초기화됩니다." : "로봇 3대 · 요청 7건 · 결과 사진은 AI 생성 이미지입니다. 작업 요청·취소는 전송되지 않습니다."}</span><button type="button" onClick={() => setDemoMode(false)}>실제 데이터로 돌아가기 <ChevronIcon /></button></div>}
+      {isDemo && <div className="workspace-demo-banner" role="status"><span><strong>{isRecording ? "촬영 모드" : "예시 데이터"}</strong> {isRecording ? "좌석 요청 → 이동 → 작업 → 복귀 · 실제 로봇에는 전송하지 않습니다. 새로고침하면 초기화됩니다." : "로봇 3대 · 요청 7건 · 결과 사진은 AI 생성 이미지입니다. 작업 요청·취소는 전송되지 않습니다."}</span><Button variant="secondary" size="default" type="button" onClick={() => setDemoMode(false)}>실제 데이터로 돌아가기 <ChevronIcon /></Button></div>}
       <main className={"control-main" + (isHome ? " is-home" : "")}>
         {!isHome && <h1 className="sr-only">{titles[location.pathname]}</h1>}
         {!isHome && !hasPageError && error && <div className="workspace-api-error" role="alert">데이터를 갱신하지 못했습니다. {error.message}</div>}

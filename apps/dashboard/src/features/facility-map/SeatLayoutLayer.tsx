@@ -1,3 +1,6 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createPortal } from "react-dom";
@@ -30,7 +33,7 @@ export function rotateLayoutSeats(layout: Layout, ids: string[], radians: number
 function NumberField({ label, value, onChange, step = 0.05 }: { label: string; value: number; onChange: (n: number) => void; step?: number }) {
   const [text, setText] = useState(String(Number(value.toFixed(3))));
   useEffect(() => setText(String(Number(value.toFixed(3)))), [value]);
-  return <label>{label}<input type="number" value={text} step={step} onChange={e => setText(e.target.value)}
+  return <label>{label}<Input controlSize="compact" type="number" value={text} step={step} onChange={e => setText(e.target.value)}
     onBlur={() => { const number = Number(text); if (text.trim() && Number.isFinite(number)) onChange(number); else setText(String(value)); }}
     onKeyDown={e => { if (e.key === "Enter") e.currentTarget.blur(); }} /></label>;
 }
@@ -134,19 +137,19 @@ export function SeatLayoutLayer({ map, siteId, scale, stage, onSelectSeat, selec
   const project = (pose: Pose) => slamPixelToDisplay(map, slamToPixel(map, pose.x, pose.y, pose.yaw));
   const panel = <>
     <div className="seat-layout-toolbar" onPointerDown={e => e.stopPropagation()}>
-      <button aria-pressed={arrows} onClick={() => setArrows(!arrows)}>접근점 {arrows ? "숨기기" : "보기"}</button>
-      <button disabled={!layout || busy} aria-pressed={!!draft} onClick={() => {
+      <Button size="compact" aria-pressed={arrows} onClick={() => setArrows(!arrows)}>접근점 {arrows ? "숨기기" : "보기"}</Button>
+      <Button size="compact" disabled={!layout || busy} aria-pressed={!!draft} onClick={() => {
         if (draft && changed) { setFailed(true); setMessage("저장하거나 변경 취소 후 편집을 닫아 주세요."); return; }
         setDraft(draft ? null : structuredClone(layout!)); setHistory([]); setMessage(""); setHomePick(false);
-      }}>{draft ? "편집 닫기" : "좌석 배치 편집"}</button>
+      }}>{draft ? "편집 닫기" : "좌석 배치 편집"}</Button>
     </div>
     {draft && <aside className="seat-layout-editor" aria-label="좌석 배치 편집기" onPointerDown={e => e.stopPropagation()}>
       <header><div><small>SEAT LAYOUT · v{draft.revision}</small><h2>좌석 배치</h2></div><span>{draft.seats.length}석</span></header>
       <p className="seat-layout-note">책상 묶음을 끌어 위치를 맞추세요.<br />저장한 배치도 현장 검증 전까지는 초안입니다.</p>
       <label className="seat-layout-check"><input type="checkbox" checked={group} onChange={e => setGroup(e.target.checked)} />책상 묶음 함께 이동·회전</label>
-      <label>좌석 선택<select aria-label="좌석 선택" value={selected ?? ""} onChange={e => setSelected(e.target.value)}><option value="">지도에서 좌석 선택</option>{draft.seats.map(s => <option key={s.seat_id} value={s.seat_id}>{s.label} · {s.zone_id.toUpperCase()}</option>)}</select></label>
+      <label>좌석 선택<NativeSelect controlSize="compact" aria-label="좌석 선택" value={selected ?? ""} onChange={e => setSelected(e.target.value)}><option value="">지도에서 좌석 선택</option>{draft.seats.map(s => <option key={s.seat_id} value={s.seat_id}>{s.label} · {s.zone_id.toUpperCase()}</option>)}</NativeSelect></label>
       {current && <>
-        <label>좌석 표시 번호<input value={current.label} maxLength={24} onChange={e => editCurrent({ label: e.target.value })} /></label>
+        <label>좌석 표시 번호<Input controlSize="compact" value={current.label} maxLength={24} onChange={e => editCurrent({ label: e.target.value })} /></label>
         <small className="seat-layout-id">{current.seat_id} · {current.table_id}</small>
         <div className="seat-layout-fields">
           <NumberField label="책상 X (m)" value={current.pose.x} onChange={x => update(moveLayoutSeats(draft, selection(current), x - current.pose.x, 0))} />
@@ -154,29 +157,29 @@ export function SeatLayoutLayer({ map, siteId, scale, stage, onSelectSeat, selec
           <NumberField label="폭 (m)" value={current.width} onChange={width => editCurrent({ width })} />
           <NumberField label="깊이 (m)" value={current.depth} onChange={depth => editCurrent({ depth })} />
         </div>
-        <div className="seat-layout-actions"><button onClick={() => update(rotateLayoutSeats(draft, selection(current), Math.PI / 12))}>↶ 15° 회전</button><button onClick={() => update(rotateLayoutSeats(draft, selection(current), -Math.PI / 12))}>↷ 15° 회전</button></div>
+        <div className="seat-layout-actions"><Button size="compact" onClick={() => update(rotateLayoutSeats(draft, selection(current), Math.PI / 12))}>↶ 15° 회전</Button><Button size="compact" onClick={() => update(rotateLayoutSeats(draft, selection(current), -Math.PI / 12))}>↷ 15° 회전</Button></div>
         <details open><summary>로봇 접근 위치 · 현장 검증 대기</summary><div className="seat-layout-fields">
           <NumberField label="접근 X (m)" value={current.approach.x} onChange={x => editCurrent({ approach: { ...current.approach, x } })} />
           <NumberField label="접근 Y (m)" value={current.approach.y} onChange={y => editCurrent({ approach: { ...current.approach, y } })} />
           <NumberField label="접근 방향 (°)" value={current.approach.yaw * 180 / Math.PI} step={5} onChange={yaw => editCurrent({ approach: { ...current.approach, yaw: wrap(yaw * Math.PI / 180) } })} />
         </div><small>화살표가 책상을 향하도록 맞추세요.</small></details>
         {query.data?.warnings[current.seat_id]?.map(warning => <p className="seat-layout-warning" key={warning}>{warning} {changed && "(저장 전 배치 기준)"}</p>)}
-        <div className="seat-layout-actions"><button onClick={clone}>{group ? "책상 묶음 복제" : "좌석 복제"}</button><button onClick={() => { update({ ...draft, seats: draft.seats.filter(s => s.seat_id !== current.seat_id) }); setSelected(null); }}>선택 좌석 삭제</button></div>
+        <div className="seat-layout-actions"><Button size="compact" onClick={clone}>{group ? "책상 묶음 복제" : "좌석 복제"}</Button><Button size="compact" onClick={() => { update({ ...draft, seats: draft.seats.filter(s => s.seat_id !== current.seat_id) }); setSelected(null); }}>선택 좌석 삭제</Button></div>
       </>}
-      <div className="seat-layout-actions"><button onClick={add}>좌석 추가</button><button aria-pressed={homePick} onClick={() => setHomePick(!homePick)}>{homePick ? "지도에서 복귀점 클릭" : "복귀점 지정"}</button></div>
+      <div className="seat-layout-actions"><Button size="compact" onClick={add}>좌석 추가</Button><Button size="compact" aria-pressed={homePick} onClick={() => setHomePick(!homePick)}>{homePick ? "지도에서 복귀점 클릭" : "복귀점 지정"}</Button></div>
       {draft.home ? <details><summary>복귀점 · 현장 검증 대기</summary><div className="seat-layout-fields">
         <NumberField label="복귀 X (m)" value={draft.home.x} onChange={x => update({ ...draft, home: { ...draft.home!, x } })} />
         <NumberField label="복귀 Y (m)" value={draft.home.y} onChange={y => update({ ...draft, home: { ...draft.home!, y } })} />
         <NumberField label="복귀 방향 (°)" value={draft.home.yaw * 180 / Math.PI} step={5} onChange={yaw => update({ ...draft, home: { ...draft.home!, yaw: wrap(yaw * Math.PI / 180) } })} />
       </div></details> : <small>복귀점 미등록 · 현장에서 지정할 수 있습니다.</small>}
-      <footer><div className="seat-layout-actions"><button disabled={!history.length || busy} onClick={() => { setDraft(history[history.length - 1]); setHistory(history.slice(0, -1)); }}>되돌리기</button>
-        <button disabled={busy} onClick={async () => { const latest = await query.refetch(); if (latest.data) { setDraft(structuredClone(latest.data.layout)); setHistory([]); setMessage("최신 저장 배치를 불러왔습니다."); setFailed(false); } }}>변경 취소·새로 읽기</button></div>
-        <button className="seat-layout-save" disabled={busy || !changed} onClick={() => void save()}>{busy ? "처리 중…" : "배치 저장"}</button>
-        <button disabled={busy || changed} onClick={() => void download()}>저장된 목표 좌표 내보내기</button>
+      <footer><div className="seat-layout-actions"><Button size="compact" disabled={!history.length || busy} onClick={() => { setDraft(history[history.length - 1]); setHistory(history.slice(0, -1)); }}>되돌리기</Button>
+        <Button size="compact" disabled={busy} onClick={async () => { const latest = await query.refetch(); if (latest.data) { setDraft(structuredClone(latest.data.layout)); setHistory([]); setMessage("최신 저장 배치를 불러왔습니다."); setFailed(false); } }}>변경 취소·새로 읽기</Button></div>
+        <Button size="compact" variant="primary" className="seat-layout-save" disabled={busy || !changed} onClick={() => void save()}>{busy ? "처리 중…" : "배치 저장"}</Button>
+        <Button size="compact" disabled={busy || changed} onClick={() => void download()}>저장된 목표 좌표 내보내기</Button>
       </footer>
       {message && <p role={failed ? "alert" : "status"} className={failed ? "seat-layout-warning" : "seat-layout-note"}>{message}</p>}
     </aside>}
-    {query.isError && <div className="seat-layout-load-error" role="alert">좌석 배치를 불러오지 못했습니다. <button onClick={() => void query.refetch()}>다시 시도</button></div>}
+    {query.isError && <div className="seat-layout-load-error" role="alert">좌석 배치를 불러오지 못했습니다. <Button size="compact" onClick={() => void query.refetch()}>다시 시도</Button></div>}
   </>;
   return <>
     <svg ref={svg} className={"slam-seat-layer" + (draft ? " is-editing" : "") + (homePick ? " is-picking" : "")}

@@ -393,3 +393,14 @@ SLAM 화면의 **좌석 배치 편집**에서 기존 좌석 번호를 유지한 
 누름 해제, 화면 이탈과 연결 오류 시 정지를 요청하며, Demo와 녹화 모드에서는
 실제 입력을 보내지 않습니다. [연결 및 검증 범위](../../docs/architecture/manual-control.md)를
 참고합니다.
+
+## UI 디자인 시스템과 비교
+
+일반 UI는 shadcn 기반 primitive와 Cleany 공통 토큰을 사용한다.
+[구체적인 시각 규칙·컴포넌트 책임·Before/After 재현 방법](../../docs/architecture/dashboard-design-system.md),
+[도입 결정](../../docs/adr/0007-dashboard-design-system.md), [UI 개발 규칙](AGENTS.md)을 따른다.
+개발 서버의 `/ui-preview?demo=1`에서 버튼·폼·상태의 표본을 볼 수 있다(인증 필요).
+
+`pnpm build` 후 `pnpm --filter @cleany/dashboard test:visual`로 개선 후 스냅샷과 비교한다.
+의도한 디자인 변경은 Before/After를 검토한 뒤 `--update-snapshots`로 반영한다.
+전체 검증 명령과 표시용 fixture의 한계는 위 명세를 참고한다.

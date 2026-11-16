@@ -1,0 +1,24 @@
+# Dashboard UI rules
+
+- 디자인 기준은 [Cleany UI 명세](../../docs/architecture/dashboard-design-system.md)와
+  `src/styles/tokens.css`, `src/styles/ui.css`다. 새 화면을 만들기 전에 읽는다.
+- 일반 버튼·입력·native select·메뉴·switch는 `components/ui/`를 사용한다.
+  링크 형태 버튼은 `Button asChild` + `Link`로 만들고 링크 의미를 유지한다.
+- 페이지 제목, 패널 제목, surface, field, badge, notice는 `components/patterns/`를 재사용한다.
+  이 두 계층에는 API, Mission 상태 판단, Query, 인증, 통신을 넣지 않는다.
+- 기본 컨트롤 40px, 지도 도구 32px, 로그인/작업 요청 주행동 48px를 선택한다.
+  임의의 색·폰트·Radius·높이를 페이지마다 추가하지 않는다. 예외는 명세에 이유를 기록한다.
+- 새 스타일은 `components` layer에 작성한다. 기존 `legacy` layer는 도메인 배치와
+  점진적 이관을 위한 것으로 새로운 시각적 규칙을 추가하지 않는다. Tailwind utility는
+  배치에 사용할 수 있으나 역할별 크기·색상·Radius를 화면별로 덮어쓰지 않는다.
+- 지도 좌석·pointer capture·조이스틱·회전 입력·3D canvas는 도메인 컴포넌트로 유지한다.
+  스타일 정리를 위해 이벤트 처리나 명령 payload, 중지 조건을 바꾸지 않는다.
+- 새로운 상태를 색만으로 표현하지 않는다. 표시 문구와 role/label, disabled/focus를 확인한다.
+  Field의 hint가 있으면 입력의 `aria-describedby`를 `${htmlFor}-hint`와 연결한다.
+- shadcn registry를 다시 가져올 때 자동 overwrite하지 않는다. `registry-provenance.json`과
+  로컬 adaptation을 비교하고 필요한 변경만 적용한다. 라이선스를 보존한다.
+- 변경 후 단위/계약 검사부터 실행한다. 공통 UI 변경에는 production build와 E2E,
+  `test:visual`을 추가한다. 실제 모델·지도·수동 조종에 영향이 있으면 관련 전용 suite도 실행한다.
+- 스냅샷 실패를 픽셀 허용치 확대나 넓은 mask로 숨기지 않는다. fixture와 렌더링을 먼저
+  안정화한다. 의도한 변경을 Before/After에서 검토한 뒤 해당 snapshot을 갱신한다.
+- mock/예시 데이터 화면과 실제 장치 검증을 구분한다. 테스트 계정과 비교 서버는 로컬 전용이다.

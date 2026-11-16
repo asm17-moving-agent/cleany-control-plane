@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { ROBOT_MODEL } from "../components/robot-model-asset";
 import { Link, useSearchParams } from "react-router";
 import { RobotModel } from "../components/RobotModel";
@@ -26,11 +27,11 @@ export function RobotsPage() {
   const selected = selectedId ? filtered.find(robot => robot.robot_id === selectedId) : filtered[0];
   const active = missions.find(mission => mission.mission_id === selected?.active_mission_id);
   return <OperationsPage className="robots-view" title="로봇 관리" description="로봇의 상태와 현재 할당된 작업을 확인하세요."
-    action={<Link className="ops-button" to="/"><TargetIcon /> 좌석 지도 보기</Link>}>
+    action={<Button asChild variant="secondary"><Link className="ops-button" to="/"><TargetIcon /> 좌석 지도 보기</Link></Button>}>
     <div className="ops-toolbar"><OperationsTabs label="로봇 필터" tabs={[
       { label: "전체 로봇", href: "/robots", active: !attentionOnly, count: isLoading || error ? "—" : robots.length },
       { label: "즉시 조치", href: "/robots?filter=attention", active: attentionOnly, count: isLoading || error ? "—" : robots.filter(needsRobotAttention).length, attention: true },
-    ]} /><button className="ops-button" onClick={() => void refresh()} disabled={isLoading}>새로고침</button></div>
+    ]} /><Button variant="secondary" size="default" className="ops-button" onClick={() => void refresh()} disabled={isLoading}>새로고침</Button></div>
     <div className="ops-body" aria-busy={isLoading}>
       {isLoading || error ? <WorkspaceMessage kind={error ? "error" : "loading"}>{error ? "로봇 정보를 불러오지 못했습니다. 새로고침해 주세요." : "로봇 정보를 불러오는 중입니다."}</WorkspaceMessage>
         : !filtered.length ? <OperationsEmpty icon={<RobotIcon />} title={attentionOnly ? "지금 조치가 필요한 로봇이 없습니다" : "등록된 로봇이 없습니다"}>{attentionOnly ? <Link to="/robots">전체 로봇 보기</Link> : "로봇이 등록되면 상태와 작업 정보를 확인할 수 있습니다."}</OperationsEmpty>
@@ -52,8 +53,8 @@ export function RobotsPage() {
                 <div className="fleet-operation">
                   <section className="fleet-state"><h4>상태 정보</h4><dl className="ops-facts"><InfoRow label="현재 상태">{robotStateLabels[selected.state]}</InfoRow><InfoRow label="배터리"><BatteryStatus /></InfoRow><InfoRow label="마지막 확인">{formatDateTime(selected.last_seen_at)}</InfoRow></dl></section>
                   <section className="fleet-assignment"><header><h4>현재 작업</h4><MissionIcon aria-hidden="true" /></header>
-                    {active ? <><h3>{missionTargetLabel(active, seats)}</h3><p className="ops-note">책상 위 물체 정리 · 우선순위 {active.priority === "HIGH" ? "높음" : "보통"}</p><MissionProgress mission={active} /><Link className="ops-button" to={"/missions?mission=" + encodeURIComponent(active.mission_id)}>요청 상세 보기 <ChevronIcon /></Link></>
-                      : <><p className="fleet-no-assignment">{selected.active_mission_id ? "할당된 작업 정보를 확인할 수 없습니다." : "현재 할당된 작업이 없습니다."}</p><p className="ops-note">{selected.active_mission_id ? "새로고침 후 작업 목록에서 확인해 주세요." : selected.state === "IDLE" ? "새 요청이 배정되면 진행 상황이 여기에 표시됩니다." : "로봇의 상태가 확인되면 작업 배정 정보를 확인할 수 있습니다."}</p><Link className="ops-button" to="/missions">작업 요청 목록 <ChevronIcon /></Link></>}
+                    {active ? <><h3>{missionTargetLabel(active, seats)}</h3><p className="ops-note">책상 위 물체 정리 · 우선순위 {active.priority === "HIGH" ? "높음" : "보통"}</p><MissionProgress mission={active} /><Button asChild variant="secondary"><Link className="ops-button" to={"/missions?mission=" + encodeURIComponent(active.mission_id)}>요청 상세 보기 <ChevronIcon /></Link></Button></>
+                      : <><p className="fleet-no-assignment">{selected.active_mission_id ? "할당된 작업 정보를 확인할 수 없습니다." : "현재 할당된 작업이 없습니다."}</p><p className="ops-note">{selected.active_mission_id ? "새로고침 후 작업 목록에서 확인해 주세요." : selected.state === "IDLE" ? "새 요청이 배정되면 진행 상황이 여기에 표시됩니다." : "로봇의 상태가 확인되면 작업 배정 정보를 확인할 수 있습니다."}</p><Button asChild variant="secondary"><Link className="ops-button" to="/missions">작업 요청 목록 <ChevronIcon /></Link></Button></>}
                   </section>
                 </div>
               </div>

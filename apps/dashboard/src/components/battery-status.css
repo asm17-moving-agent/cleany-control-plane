@@ -1,3 +1,6 @@
-.battery-status { display: inline-flex; align-items: center; gap: 4px; color: var(--workspace-muted); }
+@layer legacy {
+.battery-status { display: inline-flex; align-items: center; gap: 4px; color: var(--color-text-muted); }
 .battery-status svg { width: 17px; height: 12px; }
 .battery-status small { color: var(--color-text-muted); font-size: 10px; font-weight: 500; white-space: nowrap; }
+
+}

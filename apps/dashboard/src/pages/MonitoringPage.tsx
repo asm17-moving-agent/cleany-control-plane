@@ -1,3 +1,4 @@
+import { PageHeader } from "../components/patterns";
 import { formatDateTime, missionTargetLabel } from "../lib/operations";
 import { useOperations } from "../operations/OperationsContext";
 import { useDemoMode } from "../operations/DemoModeContext";
@@ -32,7 +33,7 @@ export function MonitoringPage() {
 
   return (
     <section className="workspace dashboard-view section-view monitoring-view">
-      <div className="view-intro"><p className="eyebrow">LIVE MONITORING</p><h2>운영 모니터링</h2><p>Robot heartbeat와 Mission 처리 흐름을 실시간으로 확인합니다.</p></div>
+      <PageHeader title="운영 모니터링" description="Robot heartbeat와 Mission 처리 흐름을 실시간으로 확인합니다." />
       <div className="metric-grid monitor-metrics">
         <article className="metric-card"><span>처리 중 / 대기</span><strong>{activeCount} / {queuedCount}</strong><small>현재 Mission</small></article>
         <article className="metric-card"><span>완료 Mission</span><strong>{terminal.length}</strong><small>전체 {missions.length}건</small></article>
