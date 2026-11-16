@@ -57,6 +57,8 @@ export function MonitoringPage() {
           </div>
           <p className="cafe-chart-caption">{average === null ? "집계 시작 전" : `00:00–${minuteLabel(snapshot.asOfMinute)} · 전체 ${snapshot.capacity}석 기준`}</p>
         </Surface>
+      </div>
+      <div className="cafe-grid cafe-grid--equal">
         <Surface className="cafe-card" aria-label="시간대별 좌석 점유율">
           <PanelHeader title="시간대별 좌석 점유율" />
           <ChartContainer config={chartConfig} style={{ height: 230, width: "100%", aspectRatio: "auto" }}>
