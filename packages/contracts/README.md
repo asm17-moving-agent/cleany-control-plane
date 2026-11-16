@@ -15,6 +15,15 @@ Dashboard, Backend와 Robot Gateway 간 machine-readable contract의 Source of T
 중복 key 범위는 고객별이다. 미션 조회는 `limit`(1~100), `before=created_at|mission_id` 커서를 받는다.
 `auth.expired` SSE를 받으면 구독을 종료하고 로그인으로 돌아간다.
 
+일별 작업은 `GET /api/missions?day=YYYY-MM-DD`로 조회한다(Asia/Seoul 요청일 또는 종료일).
+오늘 조회에는 이전 날짜의 미종료 작업도 포함한다. 기존 커서와 최대100건 페이지를 사용하며
+날짜 생략 시 최신50건 계약을 유지한다. `GET /api/missions/{id}`는 선택 시설의 단건 조회다.
+`POST /api/missions/{id}/review`는 terminal 결과를 명시적으로 검토 완료한다. 최초 확인자와
+시각을 `review`로 반환하고 중복 호출은 같은 결과를 반환한다. 처음에만 `mission.reviewed`
+SSE를 발행한다. 이는 실행 승인이 아니며 기존 outcome·sequence·로봇 보고를 바꾸지 않는다.
+`robot_id`는 기록된 담당 로봇이며 미배정/이전 기록은 null이다.
+[응답 예시](examples/mission-workspace.json), [설계 결정](../../docs/adr/0008-date-scoped-mission-workspace.md)을 따른다.
+
 Robot WebSocket은 등록한 장비 토큰을 `Authorization: Bearer ...` 또는 `X-Cleany-Robot-Token`으로 전달한다.
 사용자 세션은 장비 인증을 대체하지 않는다. 프록시 Basic 인증을 쓰면 별도 장비 토큰 헤더를 함께 전달한다.
 관측 파일은 `observation://relative/path`로 전달한다. HTTP/SSE 응답은 권한을 검사하는

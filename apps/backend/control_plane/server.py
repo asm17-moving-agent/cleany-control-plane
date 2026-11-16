@@ -7,6 +7,7 @@ import json
 import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager, suppress
+from datetime import date
 from pathlib import Path
 from time import monotonic, time
 
@@ -25,7 +26,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from control_plane.accounts import Accounts, AuthError, Identity
-from control_plane.domain import ControlPlaneStore, MissionPhase, RobotState
+from control_plane.domain import ControlPlaneStore, MissionPhase, RobotState, utc_now
 from control_plane.gateway import GatewayController
 from control_plane.head_camera import HeadCamera
 from control_plane.manual_control import ManualCommand, ManualControl, ManualStatus
@@ -38,6 +39,7 @@ from control_plane.schemas import (
     MissionListResponse,
     MissionRequest,
     MissionResponse,
+    MissionReviewResponse,
     PoseInput,
     PoseSnapshot,
     RobotListResponse,
@@ -346,6 +348,15 @@ def create_app(
     def public_mission(mission) -> MissionResponse:
         """Expose managed observations via authenticated URLs and suppress unmanaged links."""
         result = MissionResponse.model_validate(mission)
+        with control_plane.store._lock:
+            review = control_plane.accounts.db.execute(
+                "SELECT reviewed_at,reviewed_by,reviewer_name FROM mission_reviews "
+                "WHERE mission_id=?", (mission.mission_id,),
+            ).fetchone()
+        if review:
+            result.review = MissionReviewResponse(
+                reviewed_at=review[0], reviewed_by=review[1], reviewer_name=review[2]
+            )
         for field, stage in (("before_observation", "before"), ("after_observation", "after")):
             reference = getattr(result, field)
             if reference and reference.startswith("observation://"):
@@ -731,20 +742,54 @@ def create_app(
     # Newest-first facility history uses an exclusive created_at|mission_id cursor, not an offset.
     @app.get("/api/missions", response_model=MissionListResponse)
     async def list_missions(
-        request: Request, limit: int = 50, before: str | None = None
+        request: Request, limit: int = 50, before: str | None = None, day: date | None = None
     ) -> MissionListResponse:
         site_id = selected_site(request)
         if not 1 <= limit <= 100:
             raise HTTPException(422, "limit must be 1~100")
         with control_plane.store._lock:
+            selected_day = day.isoformat() if day else None
             rows = control_plane.accounts.db.execute(
                 "SELECT mission_id FROM missions WHERE customer_id=? AND site_id=? "
                 "AND (? IS NULL OR json_extract(payload,'$.created_at')||'|'||mission_id<?) "
+                "AND (? IS NULL OR date(json_extract(payload,'$.created_at'),'+9 hours')=? "
+                "OR date(json_extract(payload,'$.finished_at'),'+9 hours')=? "
+                "OR (?=date('now','+9 hours') AND json_extract(payload,'$.phase')!='TERMINAL' "
+                "AND date(json_extract(payload,'$.created_at'),'+9 hours')<?)) "
                 "ORDER BY json_extract(payload,'$.created_at') DESC,mission_id DESC LIMIT ?",
-                (request.state.identity.customer_id, site_id, before, before, limit),
+                (request.state.identity.customer_id, site_id, before, before,
+                 selected_day, selected_day, selected_day, selected_day, selected_day, limit),
             ).fetchall()
             items = [control_plane.store.get_mission(row[0]) for row in rows]
         return MissionListResponse(items=[public_mission(item) for item in items])
+
+    @app.get("/api/missions/{mission_id}", response_model=MissionResponse)
+    async def get_mission(mission_id: str, request: Request) -> MissionResponse:
+        mission = scoped_mission(request, mission_id)
+        if mission.site_id != selected_site(request):
+            raise HTTPException(404, "mission not found")
+        return public_mission(mission)
+
+    @app.post("/api/missions/{mission_id}/review", response_model=MissionResponse)
+    async def review_mission(mission_id: str, request: Request) -> MissionResponse:
+        """Idempotently acknowledge a terminal result without altering its outcome or sequence."""
+        with control_plane.store.transaction():
+            mission = scoped_mission(request, mission_id)
+            identity = control_plane.accounts.authenticate(request.cookies[cookie_name])
+            if mission.site_id != selected_site(request):
+                raise HTTPException(404, "mission not found")
+            if mission.phase != MissionPhase.TERMINAL:
+                raise HTTPException(409, "종료된 작업만 검토 완료할 수 있습니다.")
+            inserted = control_plane.accounts.db.execute(
+                "INSERT OR IGNORE INTO mission_reviews VALUES(?,?,?,?)",
+                (mission_id, utc_now(), identity.user_id, identity.display_name),
+            ).rowcount
+            result = public_mission(mission)
+            if inserted:
+                control_plane.store._publish(
+                    "mission.reviewed", mission, payload=result.model_dump(mode="json")
+                )
+            return result
 
     # Scope requests to the authenticated user and selected facility; key conflicts return 409.
     # New missions return 201; matching repeated requests return the existing record with 200.

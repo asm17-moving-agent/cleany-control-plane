@@ -9,6 +9,7 @@ domain, SQLite repository와 Robot Gateway를 분리해 core logic을 독립적�
 - 단일 Robot과 하나의 활성 Mission, SQLite Queue 및 재시작 복구
 - 양방향 Gateway WebSocket과 heartbeat, 중복 제거 및 재전송
 - Mission 생성, 조회와 checkpoint 취소
+- 한국 날짜별 이력/단건 조회와 결과 검토 완료(원본 종료 결과와 별도 저장)
 - `SEAT`, `ZONE`, `POINT` Mission target
 - D-HUB 48석과 SPACE 34석 배치 조회 (D-HUB는 Mock 점유, SPACE는 점유 미확인)
 - SSE 상태 event
@@ -64,6 +65,10 @@ uv run --project apps/backend python -m control_plane.admin reactivate USER_ID
 `facility-18f`는 기존 예시 지도이며 SLAM 시설에는 실제 좌석 좌표 등록 전까지 좌석을 제공하지 않는다.
 
 ## 기존 DB 이관
+
+날짜별 작업 화면의 `mission_reviews`는 초기화 시 자동 추가되는 별도 테이블이다.
+검토 완료는 첫 확인자/시각만 기록하며 원본 terminal payload를 변경하지 않는다.
+신규 API와 범위는 [작업 계약](../../packages/contracts/README.md)을 따른다.
 
 Backend를 멈추고 SQLite backup API로 백업한 뒤 실행한다. v1→v2 이관은 자동이며,
 미확인 활성 미션이 있으면 거절한다. 기존 미션 ID·종료 payload·inbox·outbox는 보존한다.

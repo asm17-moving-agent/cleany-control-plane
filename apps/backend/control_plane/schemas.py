@@ -53,6 +53,12 @@ class MissionRequest(BaseModel):
         return MissionTarget(kind=TargetKind.SEAT, reference_id=self.seat_id or "")
 
 
+class MissionReviewResponse(BaseModel):
+    reviewed_at: str
+    reviewed_by: str
+    reviewer_name: str
+
+
 # Full external lifecycle snapshot; observation values are media references.
 class MissionResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -79,6 +85,8 @@ class MissionResponse(BaseModel):
     failed_task: str | None = None
     needs_human_review: bool = False
     execution_profile: ExecutionProfile | None = None
+    robot_id: str | None = None
+    review: MissionReviewResponse | None = None
 
     @field_validator("execution_profile", mode="before")
     @classmethod

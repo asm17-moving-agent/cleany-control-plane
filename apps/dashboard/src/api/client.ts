@@ -52,6 +52,23 @@ export const api = {
   map: () => request<SlamMapMetadata>("/api/map"),
   seats: () => request<ListResponse<Seat>>("/api/seats"),
   missions: () => request<ListResponse<Mission>>("/api/missions"),
+  mission: (id: string) => request<Mission>(`/api/missions/${encodeURIComponent(id)}`),
+  /** Fetch every page for the selected operational day; never summarize only the latest 50. */
+  missionDay: async (day: string, signal?: AbortSignal): Promise<Mission[]> => {
+    const items: Mission[] = [];
+    let before: string | undefined;
+    for (;;) {
+      const query = new URLSearchParams({ day, limit: "100", ...(before ? { before } : {}) });
+      const page = await request<ListResponse<Mission>>("/api/missions?" + query, { signal });
+      items.push(...page.items);
+      if (page.items.length < 100) return items;
+      const last = page.items[page.items.length - 1];
+      const next = last.created_at + "|" + last.mission_id;
+      if (next === before) throw new Error("작업 목록의 다음 페이지를 불러올 수 없습니다.");
+      before = next;
+    }
+  },
+  reviewMission: (id: string) => request<Mission>(`/api/missions/${encodeURIComponent(id)}/review`, { method: "POST" }),
   robots: () => request<ListResponse<Robot>>("/api/robots"),
   /**
    * Register queued work; runtime acceptance and completion are confirmed separately.

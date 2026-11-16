@@ -10,6 +10,7 @@ for (const [name, route] of [
   test(name, async ({ page }, testInfo) => {
     await page.goto(route);
     await expect(page.getByRole("navigation", { name: "주요 메뉴" })).toBeVisible();
+    if (name === "missions" || name === "results") await expect(page.locator(".task-detail-heading")).toBeVisible();
     if (name === "monitoring") {
       // The home is lazy-loaded; navigation alone does not prove chart readiness.
       await expect(page.locator(".cafe-seat-grid > span")).toHaveCount(82);
@@ -46,6 +47,19 @@ test("empty", async ({ page }, testInfo) => {
   await page.goto("/missions");
   await expect(page.getByRole("heading", { name: "작업 요청 없음" })).toBeVisible();
   await capture(page, testInfo, "empty");
+});
+
+test("workspace request and previous day", async ({ page }, testInfo) => {
+  await page.goto('/missions?demo=1');
+  await page.getByRole('button', {name:'＋ 새 작업 요청', exact:true}).click();
+  await page.getByLabel('작업 좌석', {exact:true}).selectOption('seat-12');
+  await expect(page.getByRole('button', {name:'요청 보내기', exact:true})).toBeDisabled();
+  const submit = await page.getByRole('button', {name:'요청 보내기', exact:true}).boundingBox();
+  expect(submit!.y + submit!.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+  await capture(page, testInfo, 'workspace-request');
+  await page.getByRole('button', {name:'이전 날짜', exact:true}).click();
+  await expect(page.getByRole('region', {name:'작업 상세', exact:true})).toContainText('NAVIGATION_BLOCKED');
+  await capture(page, testInfo, 'workspace-previous-day');
 });
 
 test("manual and camera", async ({ page }, testInfo) => {

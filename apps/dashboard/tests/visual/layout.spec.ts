@@ -6,6 +6,17 @@ test("navigation and primary content stay inside supported viewports", async ({ 
   for (const path of ["/", "/map", "/missions", "/results", "/robots", "/monitoring", "/settings"]) {
     await page.goto(path + "?demo=1");
     await expect(page.getByRole("navigation", { name: "주요 메뉴" })).toBeVisible();
+    if (path === "/missions" || path === "/results") {
+      await expect(page.locator('.task-detail-heading')).toBeVisible();
+      for (const panel of await page.locator('.task-calendar-surface, .task-summary-bar, .task-list-panel, .task-detail-panel').all()) {
+        const box = await panel.boundingBox();
+        expect(box!.x).toBeGreaterThanOrEqual(0);
+        expect(box!.x + box!.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+        expect(box!.y + box!.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+      }
+      const footer = await page.locator('.task-detail-footer').boundingBox();
+      expect(footer!.y + footer!.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+    }
     if (path === "/" || path === "/monitoring") {
       await expect(page.locator(".cafe-seat-grid > span")).toHaveCount(82);
       await expect(page.locator(".cafe-home .recharts-surface")).toHaveCount(3);

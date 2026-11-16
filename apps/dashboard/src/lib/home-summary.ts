@@ -8,7 +8,7 @@ export const outcomeLabels: Record<MissionOutcome, string> = {
   BLOCKED: "작업 차단", FAILED: "실패", CANCELLED: "취소", EXPIRED: "만료",
   REJECTED: "거절", INTERRUPTED: "중단",
 };
-// Review grouping uses outcomes; needs_human_review remains a separate report field.
+// Acknowledgement is separate from the immutable result and robot's review flag.
 const reviewOutcomes = new Set<MissionOutcome>([
   "HUMAN_REVIEW_REQUIRED", "PARTIAL_SUCCESS", "BLOCKED", "FAILED", "INTERRUPTED",
 ]);
@@ -16,7 +16,8 @@ export function needsRobotAttention(robot: Robot) {
   return robot.state === "ERROR" || robot.state === "OFFLINE";
 }
 export function needsResultReview(mission: Mission) {
-  return mission.phase === "TERMINAL" && mission.outcome !== null && reviewOutcomes.has(mission.outcome);
+  return mission.phase === "TERMINAL" && !mission.review
+    && (mission.needs_human_review === true || (mission.outcome !== null && reviewOutcomes.has(mission.outcome)));
 }
 export function isSuccessfulResult(mission: Mission) {
   return mission.phase === "TERMINAL" && mission.outcome === "SUCCESS";

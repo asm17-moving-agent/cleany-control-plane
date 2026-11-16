@@ -409,6 +409,12 @@ SLAM 화면의 **좌석 배치 편집**에서 기존 좌석 번호를 유지한 
 
 ## UI 디자인 시스템과 비교
 
+작업(`/missions`)은 오늘 기준 캘린더·일별 요약·목록·상세를 함께 제공한다.
+상세에서 진행 단계, 담당 로봇, 결과와 전후 사진, 취소/재요청/검토 완료를 처리한다.
+`date=YYYY-MM-DD`, `mission=ID`, `filter=REVIEW` 등은 URL에 보존한다. 구 `/results` 링크도
+새 작업 화면으로 연결한다. 실제 API는 일별 이력을100건씩 모두 읽으며 과거 단건 링크를 지원한다.
+예시 모드의 날짜별 기록은 표시용이며 실제 요청/검토를 전송하지 않는다.
+
 일반 UI는 shadcn 기반 primitive와 Cleany 공통 토큰을 사용한다.
 [구체적인 시각 규칙·컴포넌트 책임·Before/After 재현 방법](../../docs/architecture/dashboard-design-system.md),
 [도입 결정](../../docs/adr/0007-dashboard-design-system.md), [UI 개발 규칙](AGENTS.md)을 따른다.

@@ -35,7 +35,7 @@ export function MonitoringPage() {
   return <section className="cafe-home" aria-label="스터디카페 운영 현황">
     <PageHeader title="운영 현황" action={<div className="cafe-header-actions"><StatusBadge>예시 데이터</StatusBadge>{snapshot && <time dateTime={`${snapshot.day}T${minuteLabel(snapshot.asOfMinute)}:00+09:00`}>{snapshot.day.replaceAll("-", ". ")} · {minuteLabel(snapshot.asOfMinute)} 기준</time>}<Button variant="secondary" onClick={() => setAsOf(new Date())}>새로고침</Button></div>} />
     {!snapshot ? <Surface className="cafe-empty"><h3>예시 데이터 없음</h3><p>{floor.label}</p></Surface> : <>
-      {attention && <div className="cafe-alert" role="alert"><div><strong>관리자 확인 필요</strong><span>로봇 연결 끊김 · 결과 검토 {snapshot.reviewCount}건</span></div><div><Button asChild variant="danger-outline"><Link to="/robots">로봇 보기</Link></Button><Button asChild variant="secondary"><Link to="/results?filter=review">결과 보기</Link></Button></div></div>}
+      {attention && <div className="cafe-alert" role="alert"><div><strong>관리자 확인 필요</strong><span>로봇 연결 끊김 · 결과 검토 {snapshot.reviewCount}건</span></div><div><Button asChild variant="danger-outline"><Link to="/robots">로봇 보기</Link></Button><Button asChild variant="secondary"><Link to="/missions?filter=REVIEW">결과 보기</Link></Button></div></div>}
       <div className="cafe-grid">
         <Surface className="cafe-card cafe-cleaning" aria-label="좌석 정리 현황">
           <PanelHeader title="좌석 정리 현황" action={<Button asChild variant="ghost" size="compact"><Link to="/map">지도 보기 →</Link></Button>} />

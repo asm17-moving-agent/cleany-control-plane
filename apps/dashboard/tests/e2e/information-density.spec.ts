@@ -39,7 +39,7 @@ test("result metadata folds without hiding failures, unfinished work or executio
   };
   await page.route("**/api/missions?*", route => route.fulfill({ json: { items: [result] } }));
   await page.goto("/results?mission=" + result.mission_id);
-  const detail = page.getByRole("region", { name: "작업 결과 상세" });
+  const detail = page.getByRole("region", { name: "작업 상세", exact: true });
   await expect(detail.getByText("실제 로봇 · 작업 모의 실행")).toBeVisible();
   await expect(detail.getByText("OBJECT_REMAINING")).toBeVisible();
   await expect(detail.getByText("수첩 정리")).toBeVisible();
@@ -50,7 +50,7 @@ test("result metadata folds without hiding failures, unfinished work or executio
   await page.keyboard.press("Enter");
   await expect(detail.getByText(result.mission_id, { exact: true })).toBeVisible();
   await page.reload();
-  await expect(detail.getByText("검토 필요 · 열람 후에도 검토 대상으로 유지")).toBeVisible();
+  await expect(detail.getByText("열람만으로 검토 완료되지 않습니다.")).toBeVisible();
 });
 
 test("manual help does not send commands and blocking and stop confirmation stay visible", async ({ page }) => {

@@ -59,6 +59,14 @@ class SQLiteRepository:
         from control_plane.seat_layouts import initialize_layouts
 
         initialize_layouts(self.connection)
+        # Operator acknowledgement is independent of the immutable robot result payload.
+        self.connection.execute("""
+            CREATE TABLE IF NOT EXISTS mission_reviews (
+                mission_id TEXT PRIMARY KEY REFERENCES missions(mission_id),
+                reviewed_at TEXT NOT NULL, reviewed_by TEXT NOT NULL,
+                reviewer_name TEXT NOT NULL
+            )
+        """)
 
     def migrate_accounts(self) -> None:
         """Upgrade schema v1 to v2 atomically while retaining legacy mission payloads.

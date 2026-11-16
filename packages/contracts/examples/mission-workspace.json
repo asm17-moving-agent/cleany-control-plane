@@ -1,0 +1,35 @@
+{
+  "day_query": "/api/missions?site_id=sample-site&day=2026-11-17&limit=100",
+  "day_response": {
+    "items": [{
+      "mission_id": "sample-reviewed-mission",
+      "target": {"kind": "SEAT", "reference_id": "seat-12", "label": "D-HUB · 12번 좌석"},
+      "seat_id": "seat-12",
+      "priority": "NORMAL",
+      "requested_by": "sample-operator",
+      "idempotency_key": "sample-request-key",
+      "created_at": "2026-11-17T00:00:00+00:00",
+      "accepted_at": "2026-11-17T00:00:01+00:00",
+      "finished_at": "2026-11-17T00:01:00+00:00",
+      "robot_id": "cleany-01",
+      "phase": "TERMINAL",
+      "outcome": "FAILED",
+      "message": "정리 후 물체가 남아 있습니다.",
+      "sequence": 4,
+      "cancel_requested": false,
+      "before_observation": null,
+      "after_observation": null,
+      "failure_code": "OBJECT_REMAINING",
+      "completed_tasks": [],
+      "skipped_tasks": ["책상 정리"],
+      "needs_human_review": true,
+      "review": {
+        "reviewed_at": "2026-11-17T00:10:00+00:00",
+        "reviewed_by": "sample-reviewer",
+        "reviewer_name": "예시 관리자"
+      }
+    }]
+  },
+  "review_request": {"method": "POST", "path": "/api/missions/sample-reviewed-mission/review?site_id=sample-site"},
+  "review_event_type": "mission.reviewed"
+}

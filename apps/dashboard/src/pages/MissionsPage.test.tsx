@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import "@testing-library/jest-dom/vitest";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { SettingsProvider } from "../settings/SettingsContext";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter } from "react-router";
 import { afterEach, expect, it, vi } from "vitest";
 import { homeSummaryDemo } from "../lib/home-summary-demo";
@@ -15,7 +17,7 @@ afterEach(() => { cleanup(); vi.resetAllMocks(); });
 it("prevents repeated cancellation while pending and allows retry after failure", async () => {
   let reject!: (error: Error) => void;
   cancelMission.mockImplementationOnce(() => new Promise((_, no) => { reject = no; })).mockResolvedValueOnce({});
-  render(<MemoryRouter initialEntries={["/missions?mission=demo-12"]}><MissionsPage /></MemoryRouter>);
+  render(<SettingsProvider><QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}><MemoryRouter initialEntries={["/missions?mission=demo-12"]}><MissionsPage /></MemoryRouter></QueryClientProvider></SettingsProvider>);
   const button = screen.getByRole("button", { name: "작업 취소 요청" });
   fireEvent.click(button); fireEvent.click(button);
   expect(cancelMission).toHaveBeenCalledTimes(1);
@@ -29,8 +31,9 @@ it("prevents repeated cancellation while pending and allows retry after failure"
 });
 
 it("opens a terminal request through its URL without offering cancellation", () => {
-  render(<MemoryRouter initialEntries={["/missions?mission=demo-03"]}><MissionsPage /></MemoryRouter>);
+  render(<SettingsProvider><QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}><MemoryRouter initialEntries={["/missions?mission=demo-03"]}><MissionsPage /></MemoryRouter></QueryClientProvider></SettingsProvider>);
   expect(screen.queryByRole("button", { name: "작업 취소 요청" })).not.toBeInTheDocument();
-  expect(screen.getByRole("link", { name: "작업 결과 보기" })).toHaveAttribute("href", "/results?mission=demo-03");
+  expect(screen.getByRole("region", { name: "작업 결과 상세" })).toBeInTheDocument();
+  expect(screen.getAllByText("자료 없음")).toHaveLength(2);
   expect(cancelMission).not.toHaveBeenCalled();
 });

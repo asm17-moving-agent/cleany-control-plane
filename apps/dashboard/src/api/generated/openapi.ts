@@ -192,6 +192,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/missions/{mission_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Mission */
+        get: operations["get_mission_api_missions__mission_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/missions/{mission_id}/cancel": {
         parameters: {
             query?: never;
@@ -220,6 +237,26 @@ export interface paths {
         get: operations["observation_api_missions__mission_id__observations__stage__get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/missions/{mission_id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Review Mission
+         * @description Idempotently acknowledge a terminal result without altering its outcome or sequence.
+         */
+        post: operations["review_mission_api_missions__mission_id__review_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -678,6 +715,9 @@ export interface components {
             priority: components["schemas"]["Priority"];
             /** Requested By */
             requested_by: string;
+            review?: components["schemas"]["MissionReviewResponse"] | null;
+            /** Robot Id */
+            robot_id?: string | null;
             /** Seat Id */
             seat_id: string | null;
             /** Sequence */
@@ -685,6 +725,15 @@ export interface components {
             /** Skipped Tasks */
             skipped_tasks?: string[];
             target: components["schemas"]["MissionTargetModel"];
+        };
+        /** MissionReviewResponse */
+        MissionReviewResponse: {
+            /** Reviewed At */
+            reviewed_at: string;
+            /** Reviewed By */
+            reviewed_by: string;
+            /** Reviewer Name */
+            reviewer_name: string;
         };
         /** MissionTargetModel */
         MissionTargetModel: {
@@ -1198,6 +1247,7 @@ export interface operations {
             query?: {
                 limit?: number;
                 before?: string | null;
+                day?: string | null;
             };
             header?: never;
             path?: never;
@@ -1237,6 +1287,37 @@ export interface operations {
                 "application/json": components["schemas"]["MissionRequest"];
             };
         };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_mission_api_missions__mission_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mission_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {
@@ -1308,6 +1389,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    review_mission_api_missions__mission_id__review_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                mission_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MissionResponse"];
                 };
             };
             /** @description Validation Error */

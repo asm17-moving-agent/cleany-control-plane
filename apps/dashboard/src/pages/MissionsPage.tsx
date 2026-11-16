@@ -1,81 +1,77 @@
-import { Details, Notice } from "../components/patterns";
-import { Button } from "@/components/ui/button";
-import { NativeSelect } from "@/components/ui/native-select";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
+import type { Mission } from "../api/types";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { NativeSelect } from "../components/ui/native-select";
+import { PageHeader, Surface } from "../components/patterns";
+import { MissionStatusBadge, OperationsEmpty } from "../components/OperationsPage";
 import { MissionIcon } from "../components/Icons";
-import { ChevronIcon } from "../components/WorkspaceIcons";
-import { InfoRow } from "../components/InfoRow";
-import { MissionProgress } from "../components/MissionProgress";
-import { MissionStatusBadge, OperationsEmpty, OperationsPage, OperationsTabs } from "../components/OperationsPage";
 import { WorkspaceMessage } from "../components/WorkspaceMessage";
-import { byNewestRequest } from "../lib/home-summary";
-import { formatDateTime, missionTargetLabel, missionMessage } from "../lib/operations";
 import { useOperations } from "../operations/OperationsContext";
-import { useDemoMode } from "../operations/DemoModeContext";
-import "./missions-page.css";
+import { missionTargetLabel } from "../lib/operations";
+import { needsResultReview } from "../lib/home-summary";
+import { MissionCalendar } from "../features/mission-workspace/MissionCalendar";
+import { MissionDetail } from "../features/mission-workspace/MissionDetail";
+import { MissionRequestForm } from "../features/mission-workspace/MissionRequestForm";
+import { useMissionDay } from "../features/mission-workspace/useMissionDay";
+import { clockLabel, dayKey, matchesTask, shiftDay, sortTasks, taskFilters, type TaskFilter } from "../features/mission-workspace/mission-day";
+import "../features/mission-workspace/mission-workspace.css";
 
-type PhaseFilter = "ALL" | "ACTIVE" | "QUEUED" | "TERMINAL";
-/** Keep filters and selected detail in the URL, guarding unsupported or duplicate cancel requests. */
+/** Date-scoped lifecycle workspace. Robot outcomes and operator acknowledgement remain separate. */
 export function MissionsPage() {
-  const { missions, robots, seats, cancelMission, refresh, isLoading, error } = useOperations();
-  const { isDemo, isRecording } = useDemoMode();
+  const { seats } = useOperations();
   const [params, setParams] = useSearchParams();
-  const phase = (["ACTIVE", "QUEUED", "TERMINAL"].includes(params.get("phase") ?? "") ? params.get("phase") : "ALL") as PhaseFilter;
-  const priority = ["HIGH", "NORMAL"].includes(params.get("priority") ?? "") ? params.get("priority")! : "ALL";
-  const pending = useRef<string | null>(null);
-  const [cancelling, setCancelling] = useState<string | null>(null);
-  const [cancelError, setCancelError] = useState<{ id: string; message: string } | null>(null);
-  const phaseMatches = (value: PhaseFilter, item: typeof missions[number]) => value === "ALL" || item.phase === value || (value === "ACTIVE" && !["QUEUED", "TERMINAL"].includes(item.phase));
-  const filtered = byNewestRequest(missions.filter(item => phaseMatches(phase, item) && (priority === "ALL" || item.priority === priority)));
   const selectedId = params.get("mission");
-  const selected = selectedId ? filtered.find(item => item.mission_id === selectedId) : filtered[0];
-  const assigned = robots.find(robot => robot.active_mission_id === selected?.mission_id);
-  const cancelUnsupported = !isDemo && selected?.phase !== "QUEUED"
-    && (assigned ?? robots[0])?.can_cancel === false;
-  function href(changes: Record<string, string | null>) {
-    const next = new URLSearchParams(params);
-    Object.entries(changes).forEach(([key, value]) => value && value !== "ALL" ? next.set(key, value) : next.delete(key));
-    return "/missions?" + next.toString();
+  const workspace = useMissionDay(params.get("date"), selectedId);
+  const { day, today, missions, isLoading, error } = workspace;
+  const requestedFilter = (params.get("filter") || params.get("phase") || "ALL").toUpperCase();
+  const filter: TaskFilter = taskFilters.some(([key])=>key===requestedFilter) ? requestedFilter as TaskFilter : "ALL";
+  const priority = params.get("priority") === "HIGH" ? "HIGH" : params.get("priority") === "NORMAL" ? "NORMAL" : "ALL";
+  const [search, setSearch] = useState("");
+  const [form, setForm] = useState<{ retry?: Mission } | null>(null);
+  const filtered = sortTasks(missions.filter(m => matchesTask(m,filter) && (priority === "ALL" || priority===m.priority)
+    && `${missionTargetLabel(m,seats)} ${m.mission_id}`.toLowerCase().includes(search.toLowerCase().trim())));
+  const selected = selectedId ? missions.find(m => m.mission_id === selectedId) : filtered[0];
+  const count = (state: TaskFilter) => isLoading || error ? "—" : missions.filter(m=>matchesTask(m,state)).length;
+  const dateTitle = new Intl.DateTimeFormat("ko-KR", { month:"long", day:"numeric", weekday:"long", timeZone:"Asia/Seoul" }).format(new Date(`${day}T12:00:00+09:00`));
+  function nextParams(changes: Record<string,string|null>) {
+    const next = new URLSearchParams(params); next.delete("phase");
+    Object.entries(changes).forEach(([key,value])=>value && value!=="ALL" ? next.set(key,value) : next.delete(key)); return next;
   }
-  async function cancel() {
-    if ((isDemo && !isRecording) || cancelUnsupported || !selected || selected.phase === "TERMINAL" || selected.cancel_requested || pending.current || isLoading || error) return;
-    const id = selected.mission_id;
-    pending.current = id; setCancelling(id); setCancelError(null);
-    try { await cancelMission(id); }
-    catch (failure) { setCancelError({ id, message: failure instanceof Error ? failure.message : "취소 요청을 보내지 못했습니다." }); }
-    finally { pending.current = null; setCancelling(null); }
-  }
-  return <OperationsPage className="missions-view" title="작업 요청"
-    action={<Button asChild variant="primary"><Link className="ops-button is-primary" to="/map"><span aria-hidden="true">＋</span> 새 작업 요청</Link></Button>}>
-    <div className="ops-toolbar">
-      <OperationsTabs label="작업 필터" tabs={([["ALL", "전체 요청"], ["ACTIVE", "진행 중"], ["QUEUED", "대기"], ["TERMINAL", "종료"]] as const).map(([id, label]) => ({ label, href: href({ phase: id, mission: null }), active: phase === id, count: isLoading || error ? "—" : missions.filter(item => phaseMatches(id, item)).length }))} />
-      <div className="ops-filters"><label>우선순위<NativeSelect value={priority} onChange={event => setParams(new URLSearchParams(href({ priority: event.target.value, mission: null }).split("?")[1]))}><option value="ALL">전체</option><option value="HIGH">높음</option><option value="NORMAL">보통</option></NativeSelect></label><Button variant="secondary" size="default" className="ops-button" onClick={() => void refresh()} disabled={isLoading}>새로고침</Button></div>
+  function selectDay(value: string) { setForm(null); setSearch(""); setParams(nextParams({date:value,mission:null})); }
+  return <section className="task-workspace" aria-label="작업 관리">
+    <PageHeader title="작업" action={<div className="task-actions"><Button variant="secondary" onClick={()=>void workspace.refresh()} disabled={isLoading}>새로고침</Button><Button variant="primary" onClick={()=>setForm({})}>＋ 새 작업 요청</Button></div>} />
+    <Surface className="task-summary-bar" aria-label="일별 요약">
+      <div><span>선택일 전체</span><strong>{count("ALL")}<small>건</small></strong></div>
+      {taskFilters.slice(1,6).map(([key,label])=><Button key={key} variant="ghost" className="task-summary-metric" data-state={key} aria-pressed={filter===key} title={key==="REVIEW"?"다른 상태와 중복될 수 있는 미확인 결과":undefined} onClick={()=>{setForm(null);setParams(nextParams({filter:filter===key?null:key,mission:null,date:day}));}}><span><i />{label}</span><strong>{count(key)}</strong></Button>)}
+    </Surface>
+    <div className="task-layout">
+      <aside className="task-sidebar" aria-label="날짜 선택">
+        <Surface className="task-calendar-surface"><MissionCalendar day={day} today={today} onSelect={selectDay} /></Surface>
+        <p className="task-day-note">요청·종료일 기준{day===today && " · 이전 요청 중 진행/대기 작업 포함"}</p>
+      </aside>
+      <Surface className="task-list-panel" aria-label="작업 요청 목록">
+        <header className="task-list-heading"><div><span className="task-eyebrow">{day===today ? "오늘의 작업" : `${day.slice(0,4)}년 작업`}</span><h3>{dateTitle}</h3></div><div className="task-actions"><Button variant="ghost" size="icon-compact" aria-label="이전 날짜" onClick={()=>selectDay(shiftDay(day,-1))}>‹</Button><Button variant="ghost" size="icon-compact" aria-label="다음 날짜" onClick={()=>selectDay(shiftDay(day,1))}>›</Button></div></header>
+        <div className="task-list-tools"><Input aria-label="작업 검색" placeholder="좌석 또는 요청 ID 검색" value={search} onChange={e=>{setSearch(e.target.value);setParams(nextParams({mission:null}));}} />
+          <div><NativeSelect aria-label="작업 상태" value={filter} onChange={e=>{setForm(null);setParams(nextParams({filter:e.target.value,mission:null,date:day}));}}>{taskFilters.map(([key,label])=><option key={key} value={key}>{label} · {count(key)}</option>)}</NativeSelect><NativeSelect aria-label="우선순위" value={priority} onChange={e=>setParams(nextParams({priority:e.target.value,mission:null,date:day}))}><option value="ALL">우선순위 전체</option><option value="HIGH">높음</option><option value="NORMAL">보통</option></NativeSelect></div>
+        </div>
+        <div className="task-list-scroll ops-body" aria-busy={isLoading}>
+          {isLoading || error ? <WorkspaceMessage kind={error ? "error" : "loading"} onRetry={()=>void workspace.refresh()}>{error ? "작업 목록을 불러올 수 없음" : "작업 목록 불러오는 중"}</WorkspaceMessage>
+          : filtered.length ? <div className="task-list">{filtered.map(m=><Link key={m.mission_id} className="task-row" data-tone={needsResultReview(m)?"review":matchesTask(m,"ACTIVE")?"active":undefined} to={"/missions?"+nextParams({mission:m.mission_id,date:day})} aria-current={selected?.mission_id===m.mission_id?"true":undefined} onClick={()=>setForm(null)}>
+            <div><strong>{missionTargetLabel(m,seats)}</strong><span>{m.priority==="HIGH" && <small className="task-priority">높음</small>}<time dateTime={m.created_at}>{clockLabel(m.created_at)}</time></span></div>
+            <div><MissionStatusBadge mission={m} /><span className="task-row-note">{m.review ? "검토 완료" : needsResultReview(m) ? "● 관리자 확인" : dayKey(m.created_at)<day ? "이전 요청" : m.phase==="QUEUED" ? "로봇 배정 대기" : m.robot_id ?? ""}</span></div>
+          </Link>)}</div> : <OperationsEmpty icon={<MissionIcon />} title={missions.length ? "조건에 맞는 작업 없음" : "작업 요청 없음"}>{missions.length ? <Button variant="ghost" onClick={()=>{setSearch("");setParams(nextParams({filter:null,priority:null,mission:null,date:day}));}}>필터 초기화</Button> : <Button variant="ghost" onClick={()=>setForm({})}>새 작업 요청</Button>}</OperationsEmpty>}
+        </div>
+        <footer className="task-list-footer"><span>{isLoading || error ? "—" : filtered.length}건</span><span>진행 · 확인 필요 우선</span></footer>
+      </Surface>
+      <Surface className="task-detail-panel" aria-label="작업 상세">
+        {form ? <MissionRequestForm key={form.retry?.mission_id ?? "new"} retry={form.retry} onClose={()=>setForm(null)} onCreated={mission=>{setForm(null);setSearch("");setParams(nextParams({date:dayKey(mission.created_at),mission:mission.mission_id,filter:null,priority:null}));void workspace.refresh();}} />
+        : isLoading || error ? <WorkspaceMessage kind={error?"empty":"loading"}>{error?"목록 연결을 확인하면 상세가 표시됩니다.":"작업 상세 불러오는 중"}</WorkspaceMessage>
+        : workspace.detailError ? <WorkspaceMessage kind="error" onRetry={()=>void workspace.refresh()}>선택한 작업을 불러올 수 없음</WorkspaceMessage>
+        : selected ? <MissionDetail key={selected.mission_id} mission={selected} onRetry={()=>setForm({retry:selected})} onChanged={async()=>{setParams(nextParams({date:day,mission:selected.mission_id}),{replace:true});await workspace.refresh();}} />
+        : <div className="task-detail-empty"><span aria-hidden="true"><MissionIcon /></span><h3>{selectedId?"선택한 작업 없음":"선택한 날짜의 작업이 없습니다"}</h3><p>작업을 선택하면 진행 상황과 결과를 확인할 수 있습니다.</p><Button variant="primary" onClick={()=>setForm({})}>새 작업 요청</Button></div>}
+      </Surface>
     </div>
-    <div className="ops-body" aria-busy={isLoading}>
-      {isLoading || error ? <WorkspaceMessage kind={error ? "error" : "loading"} onRetry={() => void refresh()}>{error ? "작업 목록을 불러올 수 없음" : "작업 목록 불러오는 중"}</WorkspaceMessage> : <div className="ops-layout">
-        <section className="ops-panel" aria-label="작업 요청 목록">
-          <header className="ops-panel-heading"><h3>요청 목록 <span>{filtered.length}건</span></h3><small>요청 시각 최신순</small></header>
-          {filtered.length ? <><div className="mission-table-heading" aria-hidden="true"><span>작업 대상</span><span>진행 상태</span><span>요청 시각</span><span /></div>
-          <div className="ops-list">{filtered.map(mission => <Link className="ops-row mission-table-row" key={mission.mission_id} aria-current={mission.mission_id === selected?.mission_id ? "true" : undefined} to={href({ mission: mission.mission_id })}>
-            <span><strong>{missionTargetLabel(mission, seats)}</strong>{mission.priority === "HIGH" && <small className="mission-priority-high">우선순위 높음</small>}</span>
-            <MissionStatusBadge mission={mission} /><time dateTime={mission.created_at}>{formatDateTime(mission.created_at)}</time><ChevronIcon aria-hidden="true" />
-          </Link>)}</div><footer className="ops-list-footer">배정: 높은 우선순위 먼저 · 진행 중인 작업 유지</footer></>
-          : <OperationsEmpty icon={<MissionIcon />} title={missions.length ? "조건에 맞는 작업 없음" : "작업 요청 없음"}>{missions.length ? <Link to="/missions">전체 작업</Link> : <Link to="/map">새 작업 요청</Link>}</OperationsEmpty>}
-        </section>
-        <aside className="ops-panel ops-detail" aria-label="작업 요청 상세"><header className="ops-panel-heading"><h3>요청 상세</h3><MissionIcon aria-hidden="true" /></header>
-          {selected ? <div className="ops-detail-content" key={selected.mission_id}>
-            <div className="ops-detail-title"><h3>{missionTargetLabel(selected, seats)}</h3></div>
-            <MissionProgress mission={selected} />
-            <dl className="ops-facts">{selected.priority === "HIGH" && <InfoRow label="우선순위">높음</InfoRow>}<InfoRow label="현재 배정 로봇">{assigned ? <Link to={"/robots?robot=" + encodeURIComponent(assigned.robot_id)}>{assigned.robot_id} →</Link> : selected.phase === "QUEUED" ? "배정 대기" : "현재 배정 없음"}</InfoRow></dl>
-            {selected.cancel_requested && selected.phase !== "TERMINAL" && <p className="ops-note">종료 확인 대기</p>}
-            {cancelError?.id === selected.mission_id && <Notice tone="danger" className="mission-cancel-error" role="alert">{cancelError.message}</Notice>}
-            {cancelUnsupported && selected.phase !== "TERMINAL" && <p className="ops-note">현재 작업은 원격 취소 미지원</p>}
-            <div className="ops-detail-actions">{selected.phase === "TERMINAL" ? <Button asChild variant="secondary"><Link className="ops-button" to={"/results?mission=" + encodeURIComponent(selected.mission_id)}>작업 결과 보기 <ChevronIcon /></Link></Button> : <Button variant="danger-outline" size="default" className="ops-button is-danger" disabled={(isDemo && !isRecording) || cancelUnsupported || !!cancelling || selected.cancel_requested} onClick={() => void cancel()}>{cancelling === selected.mission_id ? "취소 요청 중…" : selected.cancel_requested ? "취소 요청됨" : "작업 취소 요청"}</Button>}</div>
-            <Details label="요청 정보"><dl className="ops-facts"><InfoRow label="요청자">{selected.requested_by}</InfoRow><InfoRow label="요청 시각">{formatDateTime(selected.created_at)}</InfoRow><InfoRow label="우선순위">{selected.priority === "HIGH" ? "높음" : "보통"}</InfoRow><InfoRow label="요청 ID"><code>{selected.mission_id}</code></InfoRow></dl>{selected.message && <p>{missionMessage(selected.message)}</p>}</Details>
-          </div> : <OperationsEmpty icon={<MissionIcon />} title={selectedId ? "선택한 작업 없음" : "작업 선택"} />}
-        </aside>
-      </div>}
-    </div>
-  </OperationsPage>;
+  </section>;
 }

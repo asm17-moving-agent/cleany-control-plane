@@ -25,7 +25,7 @@ test("home uses an isolated café snapshot and keeps five destinations", async (
  await expect(home.locator('[data-cleaning=working]')).toHaveCount(1); // Legend only; no active seat.
  await expect(home.getByText('결과 검토 2건',{exact:true})).toBeVisible();
  await home.getByRole('link',{name:'결과 보기',exact:true}).click();
- await expect(page).toHaveURL(/\/results\?filter=review$/);
+ await expect(page).toHaveURL(/\/missions\?filter=REVIEW$/);
  await expect(page.getByRole('navigation',{name:'주요 메뉴'}).getByRole('link',{name:'작업',exact:true})).toHaveClass('is-active');
  expect(commands).toEqual([]);
 });

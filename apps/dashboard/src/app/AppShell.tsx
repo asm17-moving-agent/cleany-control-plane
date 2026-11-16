@@ -28,7 +28,7 @@ const navigation = [
   { path: "/settings", label: "설정", Icon: SettingsIcon },
 ];
 const titles: Record<string, string> = {
-  "/": "운영 현황", "/map": "시설 지도", "/missions": "작업 요청", "/results": "작업 결과",
+  "/": "운영 현황", "/map": "시설 지도", "/missions": "작업", "/results": "작업 결과",
   "/robots": "로봇 관리", "/monitoring": "운영 모니터링", "/settings": "관제 설정",
 };
 /** Share navigation and facility selection across routes, keeping document titles synchronized. */
@@ -77,7 +77,7 @@ export function AppShell() {
               <DropdownMenuContent className="workspace-popover" align="end" sideOffset={12}>
                 <DropdownMenuLabel>확인할 일{demo ? " · 예시 데이터" : ""}</DropdownMenuLabel>
                 <DropdownMenuItem asChild><Link to="/robots?filter=attention"><ShieldIcon />즉시 조치 <b>{alertsReady ? summary.attention.length : "—"}</b></Link></DropdownMenuItem>
-                <DropdownMenuItem asChild><Link to="/results?filter=review"><EyeIcon />결과 검토 <b>{alertsReady ? summary.review.length : "—"}</b></Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link to="/missions?filter=REVIEW"><EyeIcon />결과 검토 <b>{alertsReady ? summary.review.length : "—"}</b></Link></DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

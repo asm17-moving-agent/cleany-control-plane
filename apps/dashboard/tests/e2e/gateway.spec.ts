@@ -42,7 +42,7 @@ test("supported seat executes the external FSM phases and displays honest result
   await expect(detail).toContainText("복귀 중");
   gateway.finish(id);
   await page.goto("/results?mission=" + id);
-  const result = page.getByRole("region", { name: "작업 결과 상세" });
+  const result = page.getByRole("region", { name: "작업 상세", exact: true });
   await expect(result).toContainText("시뮬레이션 · 작업 모의 실행");
   await expect(result.getByText("요청부터 결과 수신")).not.toBeVisible();
   await result.getByText("상세 정보", {exact:true}).click();

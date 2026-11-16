@@ -63,3 +63,16 @@ def test_published_account_examples_match_api_models() -> None:
         ("sites", SitesResponse),
     ):
         model.model_validate(examples[key])
+
+
+def test_workspace_example_preserves_robot_outcome_after_operator_review() -> None:
+    from control_plane.schemas import MissionListResponse
+
+    example = json.loads(
+        (CONTRACT_ROOT.parent / "examples" / "mission-workspace.json").read_text()
+    )
+    mission = MissionListResponse.model_validate(example["day_response"]).items[0]
+    assert mission.review.reviewed_by == "sample-reviewer"
+    assert mission.outcome == "FAILED" and mission.needs_human_review
+    assert mission.failure_code == "OBJECT_REMAINING"
+    assert mission.robot_id == "cleany-01"
