@@ -23,15 +23,31 @@
  .task-calendar-legend > span { display: flex; align-items: center; gap: 5px; }
  .task-calendar-status { display: flex; align-items: center; justify-content: space-between; gap: 4px; margin: 8px 0 0; font-size: var(--text-caption); color: var(--color-text-muted); }
  .task-calendar-surface, .task-day-summary { flex-shrink: 0; }
- .task-day-summary { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); overflow: hidden; }
- .task-day-summary > div, .task-day-summary > .ui-button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; height: auto; min-width: 0; padding: 12px 4px; border: 0; border-right: 1px solid var(--color-border); border-radius: 0; }
- .task-day-summary > :last-child { border-right: 0; }
- .task-day-summary span { font-size: var(--text-caption); line-height: 18px; font-weight: 400; color: var(--color-text-muted); }
- .task-day-summary strong { font-size: var(--text-entity); line-height: 28px; font-weight: 600; font-variant-numeric: tabular-nums; }
- .task-day-summary [data-state=complete] strong { color: var(--color-action-ink); }
- .task-day-summary [data-state=review] strong { color: var(--color-warning); }
- .task-day-summary [aria-pressed=true] { background: var(--color-warning-soft); box-shadow: inset 0 -3px var(--color-warning); }
- .task-day-summary > .ui-button:focus-visible { outline-offset: -3px; }
+ .page-shell .task-day-summary.ui-surface-panel { padding: 12px; }
+ .task-day-summary > header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+ .task-day-summary h3 { margin: 0; font-size: var(--text-body); line-height: 20px; font-weight: 600; }
+ .task-summary-total { display: inline-flex; align-items: baseline; gap: 4px; }
+ .task-summary-total strong { font-size: var(--text-entity); line-height: 24px; font-weight: 600; font-variant-numeric: tabular-nums; }
+ .task-summary-total small { font-size: var(--text-caption); color: var(--color-text-muted); }
+ .task-stacked-bar { display: flex; height: 12px; overflow: hidden; border-radius: var(--radius-control); background: var(--color-neutral-soft); }
+ .task-stacked-bar > span { flex-shrink: 0; }
+ .task-day-summary [data-segment=SUCCESS] { background: var(--chart-clean-complete); }
+ .task-day-summary [data-segment=ACTIVE] { background: var(--chart-work); }
+ .task-day-summary [data-segment=QUEUED] { background: var(--chart-clean-working); }
+ .task-day-summary [data-segment=FAILED] { background: var(--color-danger); }
+ .task-day-summary [data-segment=OTHER_TERMINAL] { background: var(--color-text-muted); }
+ .task-summary-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 0 4px; margin-top: 8px; }
+ .task-summary-legend .ui-button { min-width: 0; padding-inline: 4px; justify-content: flex-start; gap: 6px; }
+ .task-summary-legend i { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+ .task-summary-legend span { white-space: nowrap; font-weight: 400; }
+ .task-summary-legend strong { margin-left: auto; font-variant-numeric: tabular-nums; font-weight: 600; }
+ .task-summary-legend [aria-pressed=true] { background: var(--color-action-soft); box-shadow: inset 0 0 0 1px var(--color-action); }
+ .task-summary-review.ui-button { width: 100%; justify-content: flex-start; gap: 8px; margin-top: 8px; background: var(--color-surface-muted); }
+ .task-summary-review strong { margin-left: auto; font-variant-numeric: tabular-nums; }
+ .task-summary-review[data-attention] { color: var(--color-warning); background: var(--color-warning-soft); }
+ .task-summary-review[aria-pressed=true] { box-shadow: inset 0 0 0 1px var(--color-warning); }
+ .task-summary-review svg { width: 12px; height: 12px; }
+ .task-summary-empty { margin: 8px 0 0; font-size: var(--text-caption); line-height: 18px; color: var(--color-text-muted); }
  .task-list-panel, .task-detail-panel { padding: 0; display: flex; flex-direction: column; min-height: 0; min-width: 0; overflow: hidden; }
  .task-list-heading { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 20px 16px 16px; }
  .task-eyebrow { display: block; font-size: var(--text-caption); color: var(--color-text-muted); margin-bottom: 4px; }

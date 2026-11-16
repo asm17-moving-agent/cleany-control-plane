@@ -1,9 +1,30 @@
 import { describe, expect, it } from "vitest";
 import { homeSummaryDemo } from "../../lib/home-summary-demo";
-import { calendarDays, dayKey, matchesTask, onMissionDay, shiftDay, summarizeTasks, validDay } from "./mission-day";
+import { calendarDays, dayKey, matchesTask, onMissionDay, shiftDay, summarizeTasks, taskDistribution, taskSegments, validDay } from "./mission-day";
+import type { MissionOutcome, MissionPhase } from "../../api/types";
 import { needsResultReview } from "../../lib/home-summary";
 const base = homeSummaryDemo.missions[0];
 describe("mission operational days",()=>{
+ it("partitions every phase and terminal outcome exactly once, including cancelled and missing results",()=>{
+  const outcomes: (MissionOutcome|null)[]=["SUCCESS","PARTIAL_SUCCESS","HUMAN_REVIEW_REQUIRED","BLOCKED","FAILED","CANCELLED","EXPIRED","REJECTED","INTERRUPTED",null];
+  const phases: MissionPhase[]=["QUEUED","OFFERED","ACCEPTED","NAVIGATING","WORKING","RETURNING"];
+  const records=[...outcomes.map((outcome,i)=>({...base,mission_id:`outcome-${i}`,phase:"TERMINAL" as const,outcome})),
+   ...phases.map(phase=>({...base,mission_id:phase,phase,outcome:null}))];
+  expect(taskDistribution(records)).toEqual({SUCCESS:1,ACTIVE:5,QUEUED:1,FAILED:6,OTHER_TERMINAL:3});
+  expect(Object.values(taskDistribution(records)).reduce((a,b)=>a+b,0)).toBe(summarizeTasks(records).total);
+  for(const record of records) expect(taskSegments.filter(s=>matchesTask(record,s.key))).toHaveLength(1);
+ });
+ it("keeps review independent from bar segments before and after acknowledgement",()=>{
+  const success={...base,phase:"TERMINAL" as const,outcome:"SUCCESS" as const,needs_human_review:true,review:null};
+  const reviewed={...success,review:{reviewed_at:"2026-11-17T00:00:00Z",reviewed_by:"operator",reviewer_name:"Operator"}};
+  expect(summarizeTasks([success])).toEqual({total:1,complete:1,review:1});
+  expect(summarizeTasks([reviewed])).toEqual({total:1,complete:1,review:0});
+  expect(taskDistribution([success])).toEqual(taskDistribution([reviewed]));
+  expect(taskDistribution([success,success]).SUCCESS).toBe(1);
+ });
+ it("returns an empty distribution without inventing a completed share",()=>{
+  expect(Object.values(taskDistribution([]))).toEqual([0,0,0,0,0]);
+ });
  it("covers leap months and adjacent year dates as full calendar weeks",()=>{
   const leap=calendarDays("2028-02"), year=calendarDays("2027-01");
   expect(leap).toContain("2028-02-29"); expect(leap.length%7).toBe(0);

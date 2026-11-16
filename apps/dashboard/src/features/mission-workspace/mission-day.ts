@@ -26,6 +26,27 @@ export function summarizeTasks(missions: Mission[]) {
     review: unique.filter(m => needsResultReview(m)).length };
 }
 export type DaySummary = ReturnType<typeof summarizeTasks>;
+export const taskSegments = [
+  { key: "SUCCESS", label: "완료", description: "정상 완료된 작업" },
+  { key: "ACTIVE", label: "진행 중", description: "배정 확인부터 이동·작업·복귀 중인 작업" },
+  { key: "QUEUED", label: "대기", description: "대기열에 등록된 작업" },
+  { key: "FAILED", label: "실패·중단", description: "실패·차단·거절·만료·중단·취소된 작업" },
+  { key: "OTHER_TERMINAL", label: "기타 종료", description: "부분 완료·사람 확인 필요·결과 미확정으로 종료된 작업" },
+] as const;
+export type TaskSegment = typeof taskSegments[number]["key"];
+/** Every mission belongs to exactly one segment; review is an independent attribute. */
+export function taskSegment(mission: Mission): TaskSegment {
+  if (mission.phase === "QUEUED") return "QUEUED";
+  if (mission.phase !== "TERMINAL") return "ACTIVE";
+  if (mission.outcome === "SUCCESS") return "SUCCESS";
+  if (["FAILED", "BLOCKED", "REJECTED", "EXPIRED", "INTERRUPTED", "CANCELLED"].includes(mission.outcome ?? "")) return "FAILED";
+  return "OTHER_TERMINAL";
+}
+export function taskDistribution(missions: Mission[]) {
+  const counts: Record<TaskSegment, number> = { SUCCESS: 0, ACTIVE: 0, QUEUED: 0, FAILED: 0, OTHER_TERMINAL: 0 };
+  for (const mission of new Map(missions.map(m => [m.mission_id, m])).values()) counts[taskSegment(mission)]++;
+  return counts;
+}
 export function missionDay(mission: Mission) { return dayKey(mission.finished_at || mission.created_at); }
 export function onMissionDay(mission: Mission, day: string, today: string) {
   return dayKey(mission.created_at) === day || (!!mission.finished_at && dayKey(mission.finished_at) === day)
@@ -33,16 +54,13 @@ export function onMissionDay(mission: Mission, day: string, today: string) {
 }
 export const taskFilters = [
   ["ALL", "전체"], ["ACTIVE", "진행 중"], ["QUEUED", "대기"], ["SUCCESS", "완료"],
-  ["FAILED", "실패"], ["REVIEW", "확인 필요"], ["TERMINAL", "종료 전체"],
+  ["FAILED", "실패·중단"], ["OTHER_TERMINAL", "기타 종료"], ["REVIEW", "확인 필요"], ["TERMINAL", "종료 전체"],
 ] as const;
 export type TaskFilter = typeof taskFilters[number][0];
 export function matchesTask(mission: Mission, filter: TaskFilter) {
   switch (filter) {
     case "ALL": return true;
-    case "ACTIVE": return !["QUEUED", "TERMINAL"].includes(mission.phase);
-    case "QUEUED": return mission.phase === "QUEUED";
-    case "SUCCESS": return mission.phase === "TERMINAL" && mission.outcome === "SUCCESS";
-    case "FAILED": return mission.phase === "TERMINAL" && ["FAILED", "BLOCKED", "REJECTED", "EXPIRED", "INTERRUPTED"].includes(mission.outcome ?? "");
+    case "ACTIVE": case "QUEUED": case "SUCCESS": case "FAILED": case "OTHER_TERMINAL": return taskSegment(mission) === filter;
     case "REVIEW": return needsResultReview(mission);
     case "TERMINAL": return mission.phase === "TERMINAL";
   }

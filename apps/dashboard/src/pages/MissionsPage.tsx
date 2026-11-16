@@ -13,6 +13,7 @@ import { useOperations } from "../operations/OperationsContext";
 import { missionTargetLabel } from "../lib/operations";
 import { needsResultReview } from "../lib/home-summary";
 import { MissionCalendar } from "../features/mission-workspace/MissionCalendar";
+import { MissionDaySummary } from "../features/mission-workspace/MissionDaySummary";
 import { MissionDetail } from "../features/mission-workspace/MissionDetail";
 import { MissionRequestForm } from "../features/mission-workspace/MissionRequestForm";
 import { useMissionDay } from "../features/mission-workspace/useMissionDay";
@@ -47,14 +48,9 @@ export function MissionsPage() {
     <div className="task-layout">
       <aside className="task-sidebar" aria-label="날짜 선택">
         <Surface padding="none" className="task-calendar-surface"><MissionCalendar day={day} today={today} localMissions={workspace.localMissions} selectedSummary={summary} onSelect={selectDay} /></Surface>
-        <Surface padding="none" className="task-day-summary" aria-label="일별 요약">
-          <div><span>전체 작업</span><strong>{summary?.total ?? "—"}</strong></div>
-          <div data-state="complete"><span>완료</span><strong>{summary?.complete ?? "—"}</strong></div>
-          <Button variant="ghost" data-state="review" aria-pressed={filter === "REVIEW"} disabled={!summary}
-            title="관리자 확인이 필요한 작업만 보기" onClick={() => { setForm(null); setSearch(""); setParams(nextParams({filter:filter === "REVIEW" ? null : "REVIEW", priority:null, mission:null, date:day})); }}>
-            <span>확인 필요</span><strong>{summary?.review ?? "—"}</strong>
-          </Button>
-        </Surface>
+        <MissionDaySummary missions={missions} summary={summary} error={!!error} filter={filter} onFilter={value => {
+          setForm(null); setSearch(""); setParams(nextParams({filter:filter === value ? null : value, priority:null, mission:null, date:day}));
+        }} />
         <p className="task-day-note">요청·종료일 기준{day===today && " · 이전 요청 중 진행/대기 작업 포함"}</p>
       </aside>
       <Surface padding="none" className="task-list-panel" aria-label="작업 요청 목록">

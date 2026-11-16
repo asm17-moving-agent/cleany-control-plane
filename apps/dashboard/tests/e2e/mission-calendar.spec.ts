@@ -28,7 +28,7 @@ test("calendar reads complete day history, month boundaries and review outside t
   expect(nextPages).toBeGreaterThan(0);
   await oldDay.click();await expect(page.locator('.task-row')).toHaveCount(105);
   const summary=page.getByRole('region',{name:'일별 요약'});
-  await expect(summary.locator('[data-state=complete] strong')).toHaveText('104');
+  await expect(summary.locator('[data-state=SUCCESS] strong')).toHaveText('104');
   await summary.getByRole('button',{name:'확인 필요 1',exact:true}).click();
   await expect(page.locator('.task-row')).toHaveCount(1);
   // Browsing a month does not change the selected day's list or summary.
@@ -37,7 +37,7 @@ test("calendar reads complete day history, month boundaries and review outside t
   await expect(page.locator('.task-row')).toHaveCount(1);
   expect(readDates.has('2026-10-31')).toBe(true);
   await page.getByRole('button',{name:'2026-10-31',exact:true}).click();
-  await expect(summary.locator('[data-state=complete] strong')).toHaveText('1');
+  await expect(summary.locator('[data-state=SUCCESS] strong')).toHaveText('1');
   await page.getByRole('combobox',{name:'작업 상태',exact:true}).selectOption('ALL');
   await expect(page.locator('.task-row')).toHaveCount(1);
   await page.getByRole('button',{name:'다음 달',exact:true}).click();

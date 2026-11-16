@@ -55,9 +55,20 @@ test("six-week calendar keeps the selected day and compact summary", async ({pag
   await page.getByRole('button',{name:'다음 달',exact:true}).click();
   await expect(page.locator('.task-calendar tbody tr')).toHaveCount(6);
   await expect(page.locator('.task-row')).toHaveCount(7);
+  await page.getByRole('region',{name:'일별 요약'}).scrollIntoViewIfNeeded();
   const summary=await page.getByRole('region',{name:'일별 요약'}).boundingBox();
   expect(summary!.y+summary!.height).toBeLessThanOrEqual(page.viewportSize()!.height);
   await capture(page,testInfo,'calendar-six-week');
+});
+
+test("day distribution and independent review", async ({page}, testInfo) => {
+  await page.goto('/missions?demo=1');
+  const summary=page.getByRole('region',{name:'일별 요약'});
+  await summary.getByRole('button',{name:'확인 필요 2',exact:true}).click();
+  await expect(page.locator('.task-row')).toHaveCount(2);
+  await expect(summary.getByLabel('전체 작업 7건',{exact:true})).toBeVisible();
+  await summary.scrollIntoViewIfNeeded();
+  await capture(page,testInfo,'day-distribution');
 });
 
 test("workspace request and previous day", async ({ page }, testInfo) => {
