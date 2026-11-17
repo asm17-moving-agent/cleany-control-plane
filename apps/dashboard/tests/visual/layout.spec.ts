@@ -28,6 +28,31 @@ test("navigation and primary content stay inside supported viewports", async ({ 
         expect(box!.x + box!.width).toBeLessThanOrEqual(page.viewportSize()!.width);
       }
     }
+    if (path === "/map") {
+      const map = page.locator(".facility-map-shell");
+      const initial = (await map.boundingBox())!;
+      const frame = (await page.locator(".home-workspace-body").boundingBox())!;
+      expect(initial.x).toBe(frame.x);
+      expect(initial.width).toBe(frame.width);
+      await page.getByRole("button", {name: /^12번 좌석 ·/}).click();
+      const request = page.getByRole("complementary", {name: "작업 요청 패널"});
+      await expect(request).toBeVisible();
+      await expect(page.locator(".home-request-drawer")).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, 0)");
+      expect(await map.boundingBox()).toEqual(initial);
+      const panel = (await request.boundingBox())!;
+      expect(panel.x).toBeGreaterThan(initial.x);
+      expect(panel.x + panel.width).toBeLessThanOrEqual(initial.x + initial.width);
+      expect(panel.y + panel.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+      const submit = (await request.getByRole("button", {name: "요청 보내기"}).boundingBox())!;
+      expect(submit.y + submit.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+      await page.getByRole("button", {name: "cleany-01 상세 열기"}).click();
+      await expect(page.getByRole("complementary", {name: "로봇 상세", exact: true})).toBeVisible();
+      await expect(request).not.toBeVisible();
+      expect(await map.boundingBox()).toEqual(initial);
+      await page.getByRole("button", {name: "로봇 목록", exact: true}).click();
+      await expect(page.getByRole("complementary", {name: "로봇 목록", exact: true})).toBeVisible();
+      expect(await map.boundingBox()).toEqual(initial);
+    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
     for (const button of await page.locator(".workspace-header button, .workspace-header select").all()) {
       const box = await button.boundingBox();

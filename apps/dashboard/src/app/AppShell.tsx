@@ -95,7 +95,7 @@ export function AppShell() {
         </div>
       </header>
       {isDemo && <div className="workspace-demo-banner" role="status"><span><strong>{isRecording ? "촬영 모드" : "예시 데이터"}</strong> · 실제 명령 미전송{isRecording && " · 새로고침 시 초기화"}</span><Button variant="secondary" size="default" type="button" onClick={() => setDemoMode(false)}>실제 데이터로 돌아가기 <ChevronIcon /></Button></div>}
-      <main data-flow={["/missions", "/results", "/robots"].includes(location.pathname) ? "workspace" : "document"} className={"control-main" + (isMap ? " is-home" : "")}>
+      <main data-flow={["/missions", "/results", "/robots", "/map"].includes(location.pathname) ? "workspace" : "document"} className="control-main">
         {!isMap && <h1 className="sr-only">{titles[location.pathname]}</h1>}
         {!isMap && !hasPageError && error && <div className="workspace-api-error" role="alert">데이터를 갱신하지 못했습니다. {error.message}</div>}
         <Outlet context={{ floor } satisfies FacilitySelection} />

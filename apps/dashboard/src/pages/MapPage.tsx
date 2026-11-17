@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { SlamMap } from "../features/facility-map/SlamMap";
 import { useMemo } from "react";
 import { useHomePanelState } from "./useHomePanelState";
+import { PageShell, StatusBadge } from "../components/patterns";
 import { panelMotionStyle } from "../components/panel-motion";
 import { useOutletContext, useSearchParams } from "react-router";
 import type { FacilityFloor, FacilitySelection } from "../app/AppShell";
@@ -20,6 +21,7 @@ import { seatSnapshots, type SeatCleaningStates } from "../lib/seat-summary";
 import { useRobotPose } from "../features/robot-pose/useRobotPose";
 import { useDemoMode } from "../operations/DemoModeContext";
 import "./home-dashboard.css";
+import "./map-page.css";
 
 /** Coordinate facility-scoped seat selection, robot details, and mission panels across runtime modes. */
 export function MapPage() {
@@ -58,19 +60,19 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
       positionMode: "live", poseStale: livePose.stale }];
   }, [isDemo, recordingPosition, recordingHeading, livePose.pose, livePose.stale, robots]);
   return (
-    <section className="home-workspace" aria-label="시설 지도 화면" style={panelMotionStyle}>
+    <PageShell width="wide" flow="workspace" className="map-view" aria-label="시설 지도 화면" style={panelMotionStyle}>
       <h1 className="sr-only">{floor.label}</h1>
+      <HomeMapHeader slam={!isDemo && !!floor.mapRef && floor.mapRef !== "facility-18f"} seats={displaySeats} mapAvailable={floor.mapAvailable}
+        unavailable={isLoading || !!error}>
+          {isDemo ? <StatusBadge className="home-telemetry-status" role="status">{isRecording ? "촬영 위치" : "예시 위치"}</StatusBadge>
+            : <StatusBadge className="home-telemetry-status" data-connected={livePose.connected} tone={!livePose.connected ? "danger" : livePose.stale || !livePose.pose ? "warning" : "success"} role="status">
+              {!livePose.connected ? "연결 끊김" : !livePose.pose ? "위치 미수신" : livePose.stale ? "위치 지연" : "연결됨"}
+            </StatusBadge>}
+          {summaryDemo && <Button variant="secondary" size="default" className="summary-demo-exit" type="button" title="화면용 예시 데이터입니다. 데모에서는 작업 요청이 전송되지 않습니다." onClick={() => setSearchParams(current => { const next = new URLSearchParams(current); next.delete("summaryDemo"); return next; })}>데모 · 해제</Button>}
+      </HomeMapHeader>
+      {error && <div className="home-data-error" role="alert"><span>갱신 실패 · {error.message}</span><Button variant="secondary" size="default" type="button" onClick={() => void refresh()}>새로고침</Button></div>}
       <div className={"home-workspace-body" + (selectedSeat ? " has-request" : "")}>
         <section className="home-map-panel" aria-label="시설 지도">
-          <HomeMapHeader slam={!isDemo && !!floor.mapRef && floor.mapRef !== "facility-18f"} seats={displaySeats} mapAvailable={floor.mapAvailable}
-            unavailable={isLoading || !!error}>
-              {isDemo ? <span className="home-telemetry-status" role="status">{isRecording ? "촬영 위치" : "예시 위치"}</span> : <span className={"home-telemetry-status " + (livePose.connected ? "is-connected" : "is-disconnected")} role="status">
-                대시보드 {livePose.connected ? "연결됨" : "연결 끊김"} · 위치 {livePose.pose ? (livePose.stale ? "지연" : "최신") : "대기 중"}
-                {robots[0]?.control_mode && <> · {robots[0].control_mode === "mock" ? "모의 실행" : robots[0].state === "OFFLINE" ? "로봇 연결 끊김" : "로봇 연결됨"}</>}
-              </span>}
-              {summaryDemo && <Button variant="secondary" size="default" className="summary-demo-exit" type="button" title="화면용 예시 데이터입니다. 데모에서는 작업 요청이 전송되지 않습니다." onClick={() => setSearchParams(current => { const next = new URLSearchParams(current); next.delete("summaryDemo"); return next; })}>데모 · 해제</Button>}
-          </HomeMapHeader>
-          {error && <div className="home-data-error" role="alert"><span>갱신 실패 · {error.message}</span><Button variant="secondary" size="default" type="button" onClick={() => void refresh()}>새로고침</Button></div>}
           <div className="home-map-content">
         <aside className={"home-robot-panel" + (selectedRobot ? " is-hidden" : "")} aria-label="로봇 목록" inert={!!selectedRobot} aria-hidden={!!selectedRobot}>
           <div className="home-robot-heading"><h2>로봇 목록</h2><span>{robots.length}대</span></div>
@@ -109,6 +111,6 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
 
       </div>
 
-    </section>
+    </PageShell>
   );
 }

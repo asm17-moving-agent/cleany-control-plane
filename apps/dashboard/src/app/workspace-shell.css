@@ -39,7 +39,6 @@
 .workspace-popover > button:hover { background: var(--color-background); }
 .workspace-popover a b { margin-left: auto; color: var(--color-action); }
 .control-main { min-height: 0; overflow: auto; padding: 30px 36px; background: var(--color-background); }
-.control-main.is-home { padding: 0; overflow: hidden; background: var(--color-background); }
 .workspace-icon-button { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 4px; background: transparent; color: var(--color-text-muted); }
 .workspace-icon-button:hover { background: var(--color-background); color: var(--color-text); }
 .workspace-primary-button { display: flex; align-items: center; justify-content: center; gap: 9px; min-height: 46px; border: 1px solid var(--color-action); border-radius: 4px; padding: 10px 16px; background: var(--color-action); color: var(--color-on-action); font-weight: 650; }
@@ -71,23 +70,11 @@
 
 .workspace-brand img { display: block; width: 120px; height: auto; object-fit: contain; }
 
-.control-app:has(.home-workspace) { min-width: 1024px; }
-@media (max-width: 1280px) {
-  .control-app:has(.home-workspace) .workspace-brand { width: 220px; flex-basis: 220px; }
-  .control-app:has(.home-workspace) .workspace-navigation { padding-left: 8px; gap: 0; }
-  .control-app:has(.home-workspace) .workspace-navigation a { padding-inline: 12px; gap: 7px; }
-  .control-app:has(.home-workspace) .workspace-header-actions { gap: 12px; padding-inline: 14px; }
-  .control-app:has(.home-workspace) .workspace-location select { width: 170px; }
-}
+
 
 .header-alert-count { color: var(--color-text-muted); font-size: 11px; white-space: nowrap; padding: 4px 5px; border-radius: 4px; }
 .header-alert-count.attention.has-items { color: var(--color-danger); background: var(--color-danger-soft); }
 .header-alert-count.review.has-items { color: var(--color-warning); background: var(--color-warning-soft); }
-@media (max-width: 1450px) {
-  .control-app:has(.home-workspace) .workspace-header-actions { gap: 10px; padding-inline: 14px; }
-  .control-app:has(.home-workspace) .workspace-brand { flex-basis: 220px; }
-  .control-app:has(.home-workspace) .workspace-navigation a { min-width: 60px; padding-inline: 12px; }
-  .control-app:has(.home-workspace) .workspace-location select { width: 175px; }
-}
+
 
 }

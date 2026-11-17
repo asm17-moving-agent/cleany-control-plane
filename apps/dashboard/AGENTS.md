@@ -6,9 +6,10 @@
   링크 형태 버튼은 `Button asChild` + `Link`로 만들고 링크 의미를 유지한다.
 - 페이지 제목, 패널 제목, surface, field, badge, notice는 `components/patterns/`를 재사용한다.
   이 두 계층에는 API, Mission 상태 판단, Query, 인증, 통신을 넣지 않는다.
-- 일반 페이지는 `PageShell`을 사용한다. 홈·설정은 standard(1440px), 작업·로봇은
-  wide(1760px)이며 제목은 투명한72px 헤더로 둔다. 지도는 전체 canvas 예외다.
-  작업·로봇은 workspace flow로 목록/상세만 스크롤하며 페이지 헤더는 고정한다.
+- 일반 페이지는 `PageShell`을 사용한다. 홈·설정은 standard(1440px), 작업·로봇·지도는
+  wide(1760px)이며 제목은 투명한72px 헤더로 둔다.
+  작업·로봇·지도는 workspace flow로 목록/상세만 스크롤하며 페이지 헤더는 고정한다.
+  지도 내부의 로봇 목록/상세와 좌석 요청은 floating overlay로 두며 지도 너비를 줄이지 않는다.
   상위 main의 배치를 feature `:has()` selector로 바꾸지 말고 AppShell의 flow에 명시한다.
 - 페이지 여백/간격은 `patterns/page-shell.css`에서 소유한다. 로봇 목록의 표시 내용은
   `RobotSummaryContent`, 작업 우선순위 입력은 `MissionPriorityField`를 재사용한다.
@@ -28,7 +29,7 @@
 - 기본 화면에는 대상·현재 상태·가능한 행동을 우선 표시한다. 제목을 반복하는 설명은
   추가하지 않는다. ID/원시 메시지/진단 정보는 `Details`로 접고 실패 이유·미처리 작업·
   검토 필요·실행 출처·조종 차단·정지 확인은 바로 보이게 유지한다.
-- 일반 페이지 헤더는 최소72px, 지도 헤더는 기존 최소96px를 유지한다. 정보량을 줄일 때
+- 지도 포함 페이지 헤더는72px로 통일한다. 정보량을 줄일 때
   본문14px와 기본 컨트롤40px를 축소하지 않는다. 실제 소비하지 않는 설정을 노출하지 않는다.
 - shadcn registry를 다시 가져올 때 자동 overwrite하지 않는다. `registry-provenance.json`과
   로컬 adaptation을 비교하고 필요한 변경만 적용한다. 라이선스를 보존한다.

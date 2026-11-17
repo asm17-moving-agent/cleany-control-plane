@@ -2,15 +2,14 @@ import { expect, test } from "./support/auth";
 import { operationsDemo } from "../../src/operations/operations-demo";
 
 test("page headers are compact and the map keeps its viewport geometry", async ({ page }) => {
-  for (const route of ["/missions", "/results", "/robots", "/monitoring", "/settings"]) {
+  for (const route of ["/missions", "/results", "/robots", "/monitoring", "/settings", "/map"]) {
     await page.goto(route + "?demo=1");
     const header = page.locator(".ui-page-header");
     await expect(header).toHaveCSS("height", "72px");
     await expect(header.locator("p")).toHaveCount(0);
   }
   await page.goto("/map?demo=1");
-  // The occupancy chart may grow beyond the map header's existing minimum.
-  await expect(page.locator(".home-map-header")).toHaveCSS("min-height", "96px");
+  await expect(page.locator(".map-view > .ui-page-header")).toHaveCSS("height", "72px");
   await expect(page.locator("button.facility-map-seat")).toHaveCount(82);
   await expect(page.getByText("좌석을 선택해 작업을 요청하세요")).toHaveCount(0);
   await expect(page.locator(".workspace-demo-banner")).toContainText("실제 명령 미전송");

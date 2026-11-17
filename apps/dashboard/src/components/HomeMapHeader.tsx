@@ -1,3 +1,4 @@
+import { PageHeader } from "./patterns";
 import type { ReactNode } from "react";
 import type { Seat } from "../api/types";
 export function HomeMapHeader({ seats, mapAvailable, unavailable, children, slam = false }: {
@@ -10,11 +11,7 @@ export function HomeMapHeader({ seats, mapAvailable, unavailable, children, slam
   const percent = (count: number) => seats.length ? count / seats.length * 100 : 0;
   const chartLabel = unavailable ? "좌석 점유 현황 확인 중" : seats.length === 0 ? "등록된 좌석 없음"
     : `전체 ${seats.length}석, 사용 중 ${occupied}석, 빈 좌석 ${available}석, 미확인 ${unknown}석`;
-  return <header className="home-map-header">
-    <div className="home-map-intro">
-      <h2>{slam ? "실측 시설 지도" : mapAvailable ? "18층 좌석 지도" : "19층 시설 지도"}</h2>
-    </div>
-    <div className="home-map-header-actions">
+  return <PageHeader title="시설 지도" action={<div className="home-map-header-actions">
       {children}
       {mapAvailable && !slam && <div className="home-occupancy" role="group" aria-label="좌석 점유 현황">
         <div className="home-occupancy-heading"><span>{unknown ? "확인된 점유" : "좌석 점유율"}</span>
@@ -33,6 +30,5 @@ export function HomeMapHeader({ seats, mapAvailable, unavailable, children, slam
           {(unavailable || unknown > 0) && <span><i className="is-unknown" />미확인 <b>{unavailable ? "—" : unknown}</b></span>}
         </div>
       </div>}
-    </div>
-  </header>;
+    </div>} />;
 }

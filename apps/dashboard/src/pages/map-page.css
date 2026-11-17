@@ -1,0 +1,9 @@
+@layer components {
+  /* Keep the common page frame; both side panels overlay the full-width map. */
+  .map-view > .home-workspace-body { flex: 1; max-width: none; }
+  .map-view .home-map-header-actions { gap: var(--space-4); }
+  .map-view .home-occupancy { width: 264px; gap: var(--space-1); }
+  .map-view .home-occupancy-heading { align-items: center; font-size: var(--text-caption); line-height: 20px; }
+  .map-view .home-occupancy-key { font-size: var(--text-caption); line-height: 16px; }
+  .map-view .home-occupancy-bar { height: var(--space-1); }
+}

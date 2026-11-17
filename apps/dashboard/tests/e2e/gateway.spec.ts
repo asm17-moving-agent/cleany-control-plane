@@ -33,8 +33,8 @@ test("supported seat executes the external FSM phases and displays honest result
   await expect(detail).toContainText("시뮬레이션 · 작업 모의 실행");
   await page.screenshot({ path: testInfo.outputPath("gateway-working.png"), fullPage: true, animations: "disabled" });
   await gateway.disconnect();
-  await expect(page.locator(".home-telemetry-status")).toContainText("대시보드 연결됨");
-  await expect(page.locator(".home-telemetry-status")).toContainText("로봇 연결 끊김");
+  await expect(page.locator(".home-telemetry-status")).toHaveAttribute("data-connected", "true");
+  await expect(page.locator(".home-robot-list .robot-state-badge")).toHaveText("연결 끊김");
   await gateway.connect();
   await expect(detail).toContainText("정리 작업 중");
   expect(gateway.offers.filter(offer => offer.mission_id === id)).toHaveLength(1);

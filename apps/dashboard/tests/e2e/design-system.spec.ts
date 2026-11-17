@@ -68,7 +68,7 @@ test('semantic text and control borders meet contrast targets', async ({page}) =
 test('page shells share title alignment, spacing and deliberate width variants', async ({page}) => {
  for (const width of [1920,1366,1024]) {
   await page.setViewportSize({width,height:1080});
-  for (const [route,max] of [['/',1440],['/settings',1440],['/missions',1760],['/robots',1760]] as const) {
+  for (const [route,max] of [['/',1440],['/settings',1440],['/missions',1760],['/robots',1760],['/map',1760]] as const) {
    await page.goto(route+'?demo=1');
    const shell=page.locator('.page-shell');await expect(shell).toBeVisible();
    const box=await shell.boundingBox();const header=shell.locator('> .ui-page-header');
