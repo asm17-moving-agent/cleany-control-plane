@@ -71,7 +71,7 @@ JPEG만 반환합니다. 2초 넘게 오래된 프레임, 연결 오류와 비�
 숨긴 탭, Demo와 녹화 UI에서는 실시간 영상을 요청하지 않습니다.
 
 - `CLEANY_CAMERA_PREVIEW_URL`: loopback HTTP origin, 예: `http://127.0.0.1:8769`
-- `CLEANY_HEAD_CAMERA_TOPIC`: 현재 헤드 RGB 발행 토픽의 절대 이름
+- `CLEANY_HEAD_CAMERA_TOPIC`: `/camera/head/color/image_redacted`. 운영 프리뷰는 이 토픽의 응답만 전달합니다.
 - `CLEANY_CAMERA_TIMEOUT_SECONDS`: Backend 요청 제한, 기본 1초
 
 Jetson의 `cleany-dashboard-camera.service`는 `CLEANY_TELEMETRY_INSTALL` overlay의 `cleany_telemetry camera_preview`를

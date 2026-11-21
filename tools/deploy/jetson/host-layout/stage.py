@@ -67,6 +67,7 @@ def write_units(release: Path) -> None:
     units.mkdir(exist_ok=True)
     services = (
         ("cleany-control-plane", "backend", "control-plane/backend", "default"),
+        ("cleany-camera-privacy", "privacy", "control-plane/camera", "default"),
         ("cleany-dashboard-camera", "camera", "control-plane/camera", "default"),
         ("cleany-dashboard-observe@", "%i", "control-plane/observations", "default"),
         ("cleany-display", "display", "display/runtime", "default"),
@@ -74,6 +75,8 @@ def write_units(release: Path) -> None:
     )
     for name, command, env, target in services:
         dependency = ""
+        if command == "camera":
+            dependency = "Wants=cleany-camera-privacy.service\nAfter=cleany-camera-privacy.service\n"
         if command == "kiosk":
             dependency = "After=cleany-display.service\nWants=cleany-display.service\nPartOf=graphical-session.target\n"
         if command == "%i":
@@ -150,6 +153,7 @@ def main() -> None:
     maps = state / "control-plane/maps"
     seed_catalog(release / "apps/backend/maps", maps)
     rewrite_env(legacy / "backend.env", config / "control-plane/backend.env", {
+        "CLEANY_HEAD_CAMERA_TOPIC": "/camera/head/color/image_redacted",
         "CLEANY_MAP_DIRECTORY": str(maps / "presentation"),
         "CLEANY_DATABASE_PATH": str(state / "control-plane/control-plane.db"),
         "CLEANY_OBSERVATION_DIRECTORY": str(state / "control-plane/observations"),

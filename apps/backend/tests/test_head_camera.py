@@ -15,14 +15,18 @@ def camera():
             database_path=":memory:",
             cookie_secure=False,
             camera_preview_url="http://127.0.0.1:8769",
-            head_camera_topic="/camera/head/color/image_raw",
+            head_camera_topic="/camera/head/color/image_redacted",
         ),
     )
     requests = []
     reply = dict(
         status_code=200,
         content=b"\xff\xd8test\xff\xd9",
-        headers={"Content-Type": "image/jpeg", "X-Frame-Age": ".1"},
+        headers={
+            "Content-Type": "image/jpeg",
+            "X-Frame-Age": ".1",
+            "X-Camera-Topic": "/camera/head/color/image_redacted",
+        },
     )
 
     def transport(request):
@@ -45,12 +49,13 @@ def test_scoped_fresh_jpeg_and_fixed_topic(camera):
     assert response.headers["cache-control"] == "no-store"
     assert response.content == b"\xff\xd8test\xff\xd9"
     assert len(requests) == 1
-    assert requests[0].url.params["topic"] == "/camera/head/color/image_raw"
+    assert requests[0].url.params["topic"] == "/camera/head/color/image_redacted"
 
 
 @pytest.mark.parametrize(
     "change",
     [
+        {"headers": {"X-Camera-Topic": "/camera/color/image_raw"}},
         {"status_code": 202},
         {"status_code": 500},
         {"content": b"bad"},
@@ -63,7 +68,10 @@ def test_scoped_fresh_jpeg_and_fixed_topic(camera):
 def test_missing_stale_or_invalid_images_not_forwarded(camera, change):
     client, app, _, reply = camera
     authorize(client, app)
-    reply.update(change)
+    if "headers" in change:
+        reply["headers"].update(change["headers"])
+    else:
+        reply.update(change)
     assert client.get("/api/robots/cleany-01/camera/head?site_id=BUSAN_SOMA_18F").status_code == 503
 
 
@@ -79,3 +87,14 @@ def test_monitor_origin_rejects_remote_or_paths():
     for origin in ("https://example.com", "http://127.0.0.1/api", "http://user:pw@localhost"):
         with pytest.raises(ValueError):
             Settings(camera_preview_url=origin)
+
+
+def test_raw_configuration_and_missing_source_header_are_rejected(camera):
+    client, app, requests, reply = camera
+    authorize(client, app)
+    url = "/api/robots/cleany-01/camera/head?site_id=BUSAN_SOMA_18F"
+    del reply["headers"]["X-Camera-Topic"]
+    assert client.get(url).status_code == 503
+    app.settings.head_camera_topic = "/camera/color/image_raw"
+    assert client.get(url).status_code == 503
+    assert len(requests) == 1
