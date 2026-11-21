@@ -266,7 +266,7 @@ def create_app(
 
     app = FastAPI(
         title="Cleany Control Plane",
-        version="0.3.0",
+        version="0.3.1",
         lifespan=lifespan,
     )
     app.state.control_plane = control_plane
