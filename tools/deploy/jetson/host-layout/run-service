@@ -30,6 +30,7 @@ fi
 source "$root/ros/local_setup.bash"
 case "$1" in
   privacy)
+    export PYTHONPATH="$root/native/torch-site:${PYTHONPATH:-}" YOLO_CONFIG_DIR="$state/cache/yolo"
     exec "$root/native/yolo-env/bin/python" "$(ros2 pkg prefix cleany_perception)/lib/cleany_perception/camera_privacy" \
       --ros-args -p gpu_lock_path:=/var/opt/cleany/state/cleany/gpu-work.lock
     ;;
