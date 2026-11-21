@@ -18,6 +18,7 @@ GLOBAL = Path("/etc/systemd/user")
 UNITS = (
     "cleany-control-plane.service", "cleany-dashboard-camera.service",
     "cleany-dashboard-observe@.service", "cleany-display.service", "cleany-display-kiosk.service",
+    "cleany-camera-privacy.service",
 )
 SERVICES = tuple(name.replace("@.", "@robot.") for name in UNITS)
 
