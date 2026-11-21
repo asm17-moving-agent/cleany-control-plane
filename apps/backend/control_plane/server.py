@@ -76,6 +76,18 @@ class ControlPlaneApplication:
         self.start_dispatcher = start_dispatcher
         self._accounts: Accounts | None = None
         self._telemetry: RobotObservations | None = None
+        self._agent = None
+
+    @property
+    def agent(self):
+        # Status/history GETs run in worker threads. Construct one shared service so
+        # its conversation lock and recovery pass cannot race with another instance.
+        with self.store._lock:
+            if self._agent is None:
+                from control_plane.agent_service import AgentService
+
+                self._agent = AgentService(self)
+            return self._agent
 
     @property
     def telemetry(self) -> RobotObservations:
@@ -933,72 +945,94 @@ def create_app(
                 )
             return result
 
-    # Scope requests to the authenticated user and selected facility; key conflicts return 409.
-    # New missions return 201; matching repeated requests return the existing record with 200.
-    @app.post("/api/missions", response_model=MissionResponse)
-    async def create_mission(
-        input: MissionRequest, request: Request, response: Response
-    ) -> MissionResponse:
+    async def admit_missions(inputs, request, *, before=None, after=None):
+        """One admission path for manual requests and approved agent batches.
+
+        The whole batch and approval audit commit atomically. Robot/Gateway still owns
+        acceptance, safety and execution; this function only enqueues validated requests.
+        """
         try:
             site_id = selected_site(request)
             async with control_plane.manual.lock:
                 if not robot_visible(request):
                     raise HTTPException(409, "시설에 연결된 로봇이 없습니다.")
-                existing_key = any(
-                    m.customer_id == request.state.identity.customer_id
-                    and m.idempotency_key == input.idempotency_key
+                existing = {
+                    m.idempotency_key
                     for m in control_plane.store.list_missions()
-                )
-                if not existing_key:
+                    if m.customer_id == request.state.identity.customer_id
+                }
+                if any(item.idempotency_key not in existing for item in inputs):
                     await control_plane.manual.require_idle()
                 with control_plane.store.transaction():
                     identity = control_plane.accounts.authenticate(request.cookies[cookie_name])
+                    request.state.identity = identity
+                    selected_site(request)
                     if not robot_visible(request):
                         raise HTTPException(409, "시설에 연결된 로봇이 없습니다.")
+                    if before:
+                        before()
                     map_ref = control_plane.accounts.db.execute(
                         "SELECT map_ref FROM sites WHERE site_id=?", (site_id,)
                     ).fetchone()[0]
-                    existing_key = any(
-                        m.customer_id == identity.customer_id
-                        and m.idempotency_key == input.idempotency_key
+                    existing = {
+                        m.idempotency_key
                         for m in control_plane.store.list_missions()
-                    )
-                    if (
-                        control_plane.settings.require_physical_missions
-                        and map_ref == "facility-18f"
-                        and not existing_key
-                    ):
-                        raise HTTPException(
-                            409, "실물 미션에는 현장 검증된 SLAM 지도가 필요합니다."
-                        )
-                    if map_ref != "facility-18f" and not existing_key:
-                        layout = site_layout(request)
-                        if not runtime_matches(layout, control_plane.store.robot.target_map):
+                        if m.customer_id == identity.customer_id
+                    }
+                    new_items = [item for item in inputs if item.idempotency_key not in existing]
+                    if new_items:
+                        if (
+                            map_ref == "facility-18f"
+                            and control_plane.settings.require_physical_missions
+                        ):
                             raise HTTPException(
-                                409, "현장 검증된 작업 위치와 런타임 지도 버전이 일치하지 않습니다."
+                                409, "실물 미션에는 현장 검증된 SLAM 지도가 필요합니다."
                             )
-                        if input.to_domain_target().reference_id not in {
-                            s.seat_id for s in layout.seats if s.verification == "field_verified"
-                        }:
-                            raise HTTPException(422, "현장 검증이 완료되지 않은 좌석입니다.")
-                    if not existing_key and not physical_profile_ready():
-                        raise HTTPException(
-                            409, "실물 미션 런타임의 연결과 실행 모드를 확인해 주세요."
-                        )
-                    mission, created = control_plane.create_mission(input, identity, site_id)
+                        if map_ref != "facility-18f":
+                            layout = site_layout(request)
+                            if not runtime_matches(layout, control_plane.store.robot.target_map):
+                                raise HTTPException(
+                                    409,
+                                    "현장 검증된 작업 위치와 런타임 지도 버전이 일치하지 않습니다.",
+                                )
+                            verified = {
+                                s.seat_id
+                                for s in layout.seats
+                                if s.verification == "field_verified"
+                            }
+                            if any(
+                                item.to_domain_target().reference_id not in verified
+                                for item in new_items
+                            ):
+                                raise HTTPException(422, "현장 검증이 완료되지 않은 좌석입니다.")
+                        if not physical_profile_ready():
+                            raise HTTPException(
+                                409, "실물 미션 런타임의 연결과 실행 모드를 확인해 주세요."
+                            )
+                    results = [
+                        control_plane.create_mission(item, identity, site_id) for item in inputs
+                    ]
+                    if after:
+                        after(results)
+                    return results
         except AuthError:
             raise
         except ValueError as error:
-            raise HTTPException(
-                status_code=(
-                    status.HTTP_409_CONFLICT
-                    if "idempotency" in str(error)
-                    else status.HTTP_422_UNPROCESSABLE_ENTITY
-                ),
-                detail=str(error),
-            ) from error
+            raise HTTPException(409 if "idempotency" in str(error) else 422, str(error)) from error
+
+    @app.post("/api/missions", response_model=MissionResponse)
+    async def create_mission(
+        input: MissionRequest, request: Request, response: Response
+    ) -> MissionResponse:
+        mission, created = (await admit_missions([input], request))[0]
         response.status_code = status.HTTP_201_CREATED if created else status.HTTP_200_OK
         return public_mission(mission)
+
+    from control_plane.agent_routes import register_agent_routes
+
+    register_agent_routes(
+        app, control_plane, selected_site, list_seats, public_mission, admit_missions, cookie_name
+    )
 
     # 202 acknowledges handling, not completion of active work; access is customer-scoped.
     @app.post("/api/missions/{mission_id}/cancel", response_model=MissionResponse, status_code=202)

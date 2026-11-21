@@ -1,3 +1,5 @@
+import { AgentProvider } from "../features/agent/AgentContext";
+import { AgentPanel, AgentTrigger } from "../features/agent/AgentPanel";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { NativeSelect } from "@/components/ui/native-select";
@@ -33,7 +35,8 @@ const titles: Record<string, string> = {
   "/map/edit": "좌석 배치 편집",
 };
 /** Share navigation and facility selection across routes, keeping document titles synchronized. */
-export function AppShell() {
+export function AppShell() { return <AgentProvider><ShellContent /></AgentProvider>; }
+function ShellContent() {
   const location = useLocation();
   const leaveGuard = useRef<() => boolean>(() => true);
   const registerLeaveGuard = useCallback((guard: () => boolean) => {
@@ -78,6 +81,7 @@ export function AppShell() {
               {floors.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
             </NativeSelect>
           </label>
+          <AgentTrigger />
           <div className="workspace-menu">
             <DropdownMenu modal={false} open={alertsOpen} onOpenChange={setAlertsOpen}>
               <DropdownMenuTrigger asChild><Button variant="ghost" size="default" type="button" className="workspace-menu-trigger" aria-label="알림"><BellIcon aria-hidden="true" /><span className={"header-alert-count attention" + (summary.attention.length ? " has-items" : "")}>조치 {alertsReady ? summary.attention.length : "—"}</span><span className={"header-alert-count review" + (summary.review.length ? " has-items" : "")}>검토 {alertsReady ? summary.review.length : "—"}</span></Button></DropdownMenuTrigger>
@@ -107,6 +111,7 @@ export function AppShell() {
         {!isMap && !hasPageError && error && <div className="workspace-api-error" role="alert">데이터를 갱신하지 못했습니다. {error.message}</div>}
         <Outlet context={{ floor, registerLeaveGuard } satisfies FacilitySelection} />
       </main>
+      <AgentPanel />
     </div>
   );
 }

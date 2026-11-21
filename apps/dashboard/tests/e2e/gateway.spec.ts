@@ -51,3 +51,28 @@ test("supported seat executes the external FSM phases and displays honest result
   await expect(result.getByText("자료 없음")).toHaveCount(2);
   await page.screenshot({ path: testInfo.outputPath("gateway-result.png"), fullPage: true, animations: "disabled" });
 });
+
+test('approved AI plan enters the existing Gateway lifecycle and follows its real result', async ({ page }) => {
+  await page.goto('/map?demo=0&recording=0');
+  await page.locator('.facility-map-seat[data-seat-id="seat-12"]').click();
+  await page.getByRole('button', { name: 'Cleany AI 열기' }).click();
+  const ai = page.getByRole('complementary', { name: 'Cleany AI 운영 도우미' });
+  await ai.getByRole('button', { name: '새 대화', exact: true }).click();
+  await ai.getByRole('textbox', { name: 'AI에게 요청' }).fill('여기 정리해 줘');
+  await ai.getByRole('button', { name: '보내기' }).click();
+  await expect(ai.getByRole('button', { name: '1건 승인·요청' })).toBeEnabled();
+  expect(gateway.offers).toHaveLength(0);
+  await ai.getByRole('button', { name: '1건 승인·요청' }).click();
+  await expect.poll(() => gateway.offers.length).toBe(1);
+  const id = gateway.offers[0].mission_id;
+  gateway.accept(id);
+  gateway.progress(id, 'NAVIGATING');
+  gateway.progress(id, 'WORKING');
+  await expect(ai.locator('.agent-missions')).toContainText('작업 중');
+  gateway.progress(id, 'RETURNING');
+  gateway.finish(id);
+  await expect(ai.locator('.agent-missions')).toContainText('완료');
+  await ai.locator('.agent-missions a').click();
+  await expect(page.getByRole('region', { name: '작업 상세', exact: true })).toContainText('pick_object, place_object');
+  expect(gateway.offers).toHaveLength(1);
+});

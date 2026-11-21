@@ -8,6 +8,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from control_plane.agent_models import AgentPlan, AgentStreamEvent
 from control_plane.gateway_protocol import BACKEND_MESSAGE, ROBOT_MESSAGE
 from control_plane.server import create_app
 from control_plane.telemetry_models import RobotObservation
@@ -21,6 +22,8 @@ def main() -> None:
     contract_root = Path(__file__).resolve().parents[1]
     outputs = {
         contract_root / "openapi.json": create_app().openapi(),
+        contract_root / "schemas/agent-plan.schema.json": AgentPlan.model_json_schema(),
+        contract_root / "schemas/agent-stream-event.schema.json": AgentStreamEvent.model_json_schema(),
         contract_root
         / "schemas/gateway-robot-message.schema.json": ROBOT_MESSAGE.json_schema(),
         contract_root

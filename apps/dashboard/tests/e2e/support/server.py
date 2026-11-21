@@ -9,7 +9,7 @@ from control_plane.accounts import token_hash, HASHER
 from control_plane.server import ControlPlaneApplication, create_app
 from control_plane.settings import Settings
 
-settings = Settings(cookie_secure=False)
+settings = Settings(cookie_secure=False, openai_api_key="e2e-provider-fixture-not-a-real-key")
 application = ControlPlaneApplication(settings=settings)
 accounts = application.accounts
 customer = accounts.create_customer("E2E customer")
@@ -25,4 +25,7 @@ with application.store.transaction():
                         (HASHER.hash("e2e-first-temporary-password"), first_user))
     accounts.db.execute("UPDATE robots SET token_hash=? WHERE robot_id='cleany-01'",
                         (token_hash("e2e-robot-token-only-for-tests"),))
+from agent_fixture import BrowserAgentProvider
+from control_plane.agent_service import AgentService
+application._agent = AgentService(application, BrowserAgentProvider())
 uvicorn.run(create_app(application), host="127.0.0.1", port=settings.port)

@@ -44,12 +44,34 @@ def main():
     adopt = commands.add_parser("adopt-legacy")
     adopt.add_argument("customer_id")
     adopt.add_argument("site_id")
+    agent = commands.add_parser("agent-permission")
+    agent.add_argument("membership_id")
+    agent.add_argument("access", choices=["operator", "read-only", "disabled"])
     args = parser.parse_args()
     repo = SQLiteRepository(args.database)
     store = ControlPlaneStore(repo)
     accounts = Accounts(store, Settings())
     try:
-        if args.command == "customer-create":
+        if args.command == "agent-permission":
+            from control_plane.agent_store import AgentRepository
+
+            AgentRepository(store, Settings())
+            with store.transaction():
+                if not accounts.db.execute(
+                    "SELECT 1 FROM memberships WHERE membership_id=?", (args.membership_id,)
+                ).fetchone():
+                    raise ValueError("membership not found")
+                accounts.db.execute(
+                    "INSERT INTO agent_permissions VALUES(?,?,?) ON CONFLICT(membership_id) "
+                    "DO UPDATE SET can_read=excluded.can_read,can_approve=excluded.can_approve",
+                    (
+                        args.membership_id,
+                        int(args.access != "disabled"),
+                        int(args.access == "operator"),
+                    ),
+                )
+            result = {"membership_id": args.membership_id, "agent_access": args.access}
+        elif args.command == "customer-create":
             result = {"customer_id": accounts.create_customer(args.name)}
         elif args.command == "site-create":
             result = {"site_id": accounts.create_site(args.customer_id, args.name, args.map_ref)}
@@ -107,7 +129,9 @@ def main():
             "admin actor=%s command=%s target=%s",
             getpass.getuser(),
             args.command,
-            getattr(args, "user_id", getattr(args, "customer_id", "new")),
+            getattr(
+                args, "membership_id", getattr(args, "user_id", getattr(args, "customer_id", "new"))
+            ),
         )
         print(json.dumps(result, ensure_ascii=False))
     finally:

@@ -59,6 +59,10 @@ test('persisted robot observations reach the UI, stale data stays labelled, and 
   await page.getByLabel('분석 기준 날짜').fill(today);
   await page.getByLabel('분석 기간').selectOption('7');
   await expect(page.locator('.robot-timeline')).toContainText('자동 복구 완료');
+  await page.goto('/robots?' + new URLSearchParams({robot:'cleany-01',date:today,days:'7',event:'supervisor:synthetic:1'}));
+  await expect(page.getByLabel('분석 기준 날짜')).toHaveValue(today);
+  await expect(page.getByLabel('분석 기간')).toHaveValue('7');
+  await expect(page.locator('.robot-timeline li[aria-current="true"]')).toContainText('자동 복구 완료');
   await page.reload();
   await expect(page.getByLabel('배터리', {exact: true})).toContainText('67');
   await expect(page.getByLabel('배터리', {exact: true})).toContainText('갱신 중단');

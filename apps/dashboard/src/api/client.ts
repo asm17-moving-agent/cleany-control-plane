@@ -26,7 +26,7 @@ export function scopedUrl(path: string) {
  * A 401 emits the shared auth-expired event before reading the response body.
  * @throws An Error for non-success responses; fetch and JSON parsing failures also propagate.
  */
-async function request<T>(path: string, init?: RequestInit, selectedSite?: string): Promise<T> {
+export async function request<T>(path: string, init?: RequestInit, selectedSite?: string): Promise<T> {
   const response = await fetch(selectedSite ? path + "?site_id=" + encodeURIComponent(selectedSite) : scopedUrl(path), init ? { ...init,
     headers: { ...init.headers, "X-CSRF-Token": csrf ?? "" },
   } : undefined);
@@ -90,3 +90,36 @@ export const api = {
   cancelMission: (missionId: string) =>
     request<Mission>(`/api/missions/${missionId}/cancel`, { method: "POST" }),
 };
+
+/** Parse UTF-8 SSE frames across arbitrary network chunks; do not treat EOF as success. */
+export async function streamRequest<T extends { type: string }>(path: string, body: unknown, signal: AbortSignal, onEvent: (event: T) => void) {
+  const response = await fetch(scopedUrl(path), { method: "POST", signal,
+    headers: { "Content-Type": "application/json", "X-CSRF-Token": csrf ?? "" }, body: JSON.stringify(body) });
+  if (response.status === 401) window.dispatchEvent(new Event("cleany:auth-expired"));
+  if (!response.ok) {
+    const data = await response.json() as ApiErrorPayload;
+    throw new Error(typeof data.detail === "string" ? data.detail : "AI 요청을 처리하지 못했습니다.");
+  }
+  if (!response.body) throw new Error("응답 스트림을 열 수 없습니다.");
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "", complete = false;
+  try {
+    for (;;) {
+      const { value, done } = await reader.read();
+      buffer += decoder.decode(value, { stream: !done });
+      let boundary: number;
+      while ((boundary = buffer.indexOf("\n\n")) >= 0) {
+        const frame = buffer.slice(0, boundary); buffer = buffer.slice(boundary + 2);
+        const payload = frame.split("\n").filter(line => line.startsWith("data: ")).map(line => line.slice(6)).join("\n");
+        if (payload) {
+          const event = JSON.parse(payload) as T;
+          if (event.type === "complete") complete = true;
+          onEvent(event);
+        }
+      }
+      if (done) break;
+    }
+    if (!complete) throw new Error("응답 연결이 끊겼습니다. 다시 시도해 주세요.");
+  } finally { await reader.cancel().catch(() => {}); reader.releaseLock(); }
+}

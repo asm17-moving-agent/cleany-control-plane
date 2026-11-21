@@ -3,12 +3,33 @@
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="CLEANY_", env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_prefix="CLEANY_", env_file=".env", extra="ignore", populate_by_name=True
+    )
+
+    openai_api_key: SecretStr = Field(
+        default=SecretStr(""), validation_alias="OPENAI_API_KEY", repr=False
+    )
+    agent_provider: str = "openai"
+    agent_qwen_url: str = "http://127.0.0.1:18764"
+    agent_model: str = "gpt-6.1-sol"
+    agent_reasoning_effort: Literal["low", "medium", "high"] = "low"
+    agent_api_base_url: str = "https://api.openai.com/v1"
+    agent_request_timeout_seconds: float = Field(default=90, gt=0, le=300)
+    agent_turn_timeout_seconds: float = Field(default=180, gt=0, le=600)
+    agent_max_output_tokens: int = Field(default=4000, ge=512, le=16000)
+    agent_max_tool_rounds: int = Field(default=6, ge=1, le=12)
+    agent_max_plan_items: int = Field(default=50, ge=1, le=50)
+    agent_plan_ttl_seconds: int = Field(default=900, ge=60, le=86400)
+    agent_history_turns: int = Field(default=20, ge=2, le=100)
+    agent_history_retention_days: int = Field(default=90, ge=1, le=3650)
+    agent_stream_heartbeat_seconds: float = Field(default=5, gt=0, le=30)
+    agent_max_concurrent_turns: int = Field(default=4, ge=1, le=32)
 
     host: str = "127.0.0.1"
     port: int = Field(default=8080, ge=1, le=65535)
@@ -67,9 +88,9 @@ class Settings(BaseSettings):
             raise ValueError("Physical missions require Gateway mode")
         return self
 
-    @field_validator("teleop_url", "camera_preview_url")
+    @field_validator("teleop_url", "camera_preview_url", "agent_qwen_url")
     @classmethod
-    def local_teleop(cls, value: str) -> str:
+    def loopback_url(cls, value: str) -> str:
         from urllib.parse import urlsplit
 
         if not value:

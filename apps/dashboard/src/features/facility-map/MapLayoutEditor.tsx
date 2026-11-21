@@ -1,3 +1,4 @@
+import { useAgentPageContext } from "../agent/AgentContext";
 import { useEffect, useMemo, useReducer, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useBlocker, useNavigate } from "react-router";
@@ -41,6 +42,7 @@ export function MapLayoutEditor({ map, initial, siteId, registerLeaveGuard }: {
   const layout = history.present;
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const selected = selectedIds.filter(id => layout.seats.some(s => s.seat_id === id));
+  useAgentPageContext({ seat_ids: selected.filter(id => saved.seats.some(seat => seat.seat_id === id)).slice(0, 50) });
   const entries = layout.seats.filter(s => selected.includes(s.seat_id)), current = entries[0];
   const [mode, setMode] = useState<EditorMode>("seats");
   const [tool, setTool] = useState<"select" | "pan">("select");

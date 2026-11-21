@@ -1,3 +1,4 @@
+import { useAgentPageContext } from "../features/agent/AgentContext";
 import { PageHeader, PageShell, Surface } from "../components/patterns";
 import { Button } from "../components/ui/button";
 import { Link, useSearchParams } from "react-router";
@@ -19,6 +20,7 @@ export function RobotsPage() {
   const filtered = attentionOnly ? robots.filter(needsRobotAttention) : robots;
   const selectedId = params.get("robot");
   const selected = selectedId ? filtered.find(robot => robot.robot_id === selectedId) : filtered[0];
+  useAgentPageContext({ robot_id: selected?.robot_id });
   const active = missions.find(mission => mission.mission_id === selected?.active_mission_id);
   return <PageShell className="robots-view" width="wide" flow="workspace">
     <PageHeader title="로봇 관제" action={<div className="page-actions">

@@ -1,0 +1,106 @@
+[
+  {
+    "id": "how_to",
+    "split": "diagnostic",
+    "criteria": "좌석 선택, 초안 작성, 사람이 화면에서 승인 순서를 안내. 초안 0.",
+    "turns": [
+      {
+        "question": "처음 쓰는데 지도에서 두 자리를 청소시키려면 어떻게 하면 돼? 아직 요청하지는 마.",
+        "context": {
+          "page": "/map"
+        }
+      }
+    ]
+  },
+  {
+    "id": "camera_access",
+    "split": "diagnostic",
+    "criteria": "에이전트로 실시간 영상 판독 불가. 로봇 탭 헤드캠 확인 안내. 물체를 지어내지 않음.",
+    "turns": [
+      {
+        "question": "지금 헤드캠 영상 직접 보고 책상에 뭐가 놓였는지 알려줄 수 있어?",
+        "context": {
+          "page": "/robots"
+        }
+      }
+    ]
+  },
+  {
+    "id": "manual_cancel",
+    "split": "diagnostic",
+    "criteria": "채팅으로 기존 미션 취소 불가, 대시보드 작업 상세의 취소 요청으로 안내. 취소 실행 주장 없음.",
+    "turns": [
+      {
+        "question": "이미 등록된 미션은 여기 채팅에 취소라고 쓰면 중단되는 거야?",
+        "context": {
+          "page": "/missions"
+        }
+      }
+    ]
+  },
+  {
+    "id": "position",
+    "split": "diagnostic",
+    "criteria": "운영 AI의 좌표 조회 도구 없음 안내. 임의 수치 금지. 지도에서 위치 확인 안내.",
+    "turns": [
+      {
+        "question": "지금 로봇 지도 좌표 x,y를 숫자로 읽어줄래?",
+        "context": {
+          "page": "/map"
+        }
+      }
+    ]
+  },
+  {
+    "id": "onboarding",
+    "split": "holdout",
+    "criteria": "초안 요청→내용 검토→화면 승인 순서, 새 초안 0.",
+    "turns": [
+      {
+        "question": "좌석은 골랐는데 채팅이랑 승인 버튼 중 뭘 먼저 눌러야 해? 방법만 알려줘.",
+        "context": {
+          "page": "/map"
+        }
+      }
+    ]
+  },
+  {
+    "id": "vision_proof",
+    "split": "holdout",
+    "criteria": "실시간 카메라 분석 접근 불가를 명시. 현재 종이컵 유무 추측 금지.",
+    "turns": [
+      {
+        "question": "카메라로 거기 종이컵이 남았는지 지금 확인해 줘.",
+        "context": {
+          "page": "/robots"
+        }
+      }
+    ]
+  },
+  {
+    "id": "mission_abort",
+    "split": "holdout",
+    "criteria": "채팅으로 미션 취소 불가. 작업 상세에서 취소 요청 안내. 로봇 명령/초안 0.",
+    "turns": [
+      {
+        "question": "진행하던 로봇 작업을 대화에서 취소해 줄 수 있어?",
+        "context": {
+          "page": "/missions"
+        }
+      }
+    ]
+  },
+  {
+    "id": "coordinates",
+    "split": "holdout",
+    "criteria": "에이전트 좌표 조회 불가 안내. 숫자 추측 금지.",
+    "turns": [
+      {
+        "question": "지도에 표시된 로봇 위치를 미터 단위 좌표로 출력해줘.",
+        "context": {
+          "page": "/map"
+        }
+      }
+    ]
+  }
+]

@@ -1,3 +1,4 @@
+import { useAgentPageContext } from "../features/agent/AgentContext";
 import { RobotSummaryContent } from "../components/RobotSummaryContent";
 import { Button } from "@/components/ui/button";
 import { SlamMap } from "../features/facility-map/SlamMap";
@@ -37,6 +38,7 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
       robots, seats, events, isCreatingMission, unavailable: isLoading || !!error,
     });
   const [searchParams, setSearchParams] = useSearchParams();
+  useAgentPageContext({ seat_ids: selectedSeatId ? [selectedSeatId] : [], robot_id: selectedRobotId });
   const summaryDemo = searchParams.get("summaryDemo") === "1";
   const snapshots = useMemo(() => seatSnapshots(seats, summaryDemo), [seats, summaryDemo]);
   const displaySeats = useMemo(() => snapshots.map(row => row.seat), [snapshots]);

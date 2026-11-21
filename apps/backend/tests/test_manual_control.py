@@ -187,7 +187,10 @@ def test_analog_vector_passes_to_phone_without_quantization(rig):
     client, app, requests, _ = rig
     login(client, app)
     vector = [0.37, -0.52, 0.21]
-    assert client.post(BASE + "control", json={**COMMAND, "vector": vector, "speed": 0.1}).status_code == 200
+    assert (
+        client.post(BASE + "control", json={**COMMAND, "vector": vector, "speed": 0.1}).status_code
+        == 200
+    )
     payload = json.loads(requests[-1].content)
     assert payload["vector"] == vector
     assert payload["speed"] == 0.1

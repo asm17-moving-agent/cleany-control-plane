@@ -18,21 +18,28 @@ try {
   await page.getByLabel('비밀번호', { exact: true }).fill(process.env.CLEANY_REVIEW_PASSWORD);
   await page.getByRole('button', { name: '로그인', exact: true }).click();
   await page.getByRole('combobox', { name: '운영 층 선택' }).selectOption(siteId);
-  const image = page.getByRole('img', { name: '실측 SLAM 기반 운영 지도' });
+  const image = page.getByRole('img', { name: '시설 도면' });
   await expect.poll(() => image.evaluate(el => el.complete && el.naturalWidth > 0)).toBe(true);
   await expect(page.locator('.slam-seat')).toHaveCount(82);
+  await page.getByRole('slider', { name: '도면과 SLAM 혼합 비율' }).press('Home');
   await page.screenshot({ path: resolve(destination, 'jetson-dashboard.png') });
   const metadata = await (await page.request.get(`${baseURL}/api/map?site_id=${siteId}`)).json();
   const asset = await page.request.get(`${baseURL}/api/map/presentation?site_id=${siteId}`);
   expect(asset.status()).toBe(200);
+  const servedLayerSha256 = {};
+  for (const [name, url] of Object.entries(metadata.presentation.layers ?? {})) {
+    const response = await page.request.get(new URL(`${url}?site_id=${siteId}`, baseURL).href);
+    expect(response.status()).toBe(200);
+    servedLayerSha256[name] = createHash('sha256').update(await response.body()).digest('hex');
+  }
   const canvas = page.locator('.slam-map-shell .facility-plan-canvas');
   const style = await canvas.getAttribute('style');
-  await page.getByRole('button', { name: 'SLAM 원본', exact: true }).click();
-  const original = page.getByRole('img', { name: 'SLAM으로 작성한 실측 점유 지도' });
+  await page.getByRole('slider', { name: '도면과 SLAM 혼합 비율' }).press('End');
+  const original = page.getByRole('img', { name: 'SLAM 지도', exact: true });
   await expect.poll(() => original.evaluate(el => el.complete && el.naturalWidth > 0)).toBe(true);
   expect(await canvas.getAttribute('style')).toBe(style);
   await page.screenshot({ path: resolve(destination, 'jetson-original.png') });
-  await page.getByRole('button', { name: '운영 지도', exact: true }).click();
+  await page.getByRole('slider', { name: '도면과 SLAM 혼합 비율' }).press('Home');
   await page.getByRole('button', { name: '지도 확대', exact: true }).click();
   expect(await canvas.getAttribute('style')).not.toBe(style);
   await page.screenshot({ path: resolve(destination, 'jetson-zoom.png') });
@@ -50,7 +57,7 @@ try {
   await writeFile(resolve(destination, 'targets-draft.json'), JSON.stringify(targets, null, 2));
   expect(errors).toEqual([]);
   const result = { baseURL, siteId, mapId: metadata.map_id, presentation: metadata.presentation,
-    servedSvgSha256: createHash('sha256').update(await asset.body()).digest('hex'), errors };
+    servedLayerSha256, servedSvgSha256: createHash('sha256').update(await asset.body()).digest('hex'), errors };
   await writeFile(resolve(destination, 'jetson-browser-check.json'), JSON.stringify(result, null, 2));
   console.log(JSON.stringify({ mapId: result.mapId, servedSvgSha256: result.servedSvgSha256, errors }));
 } finally { await browser.close(); }
