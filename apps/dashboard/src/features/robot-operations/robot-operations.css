@@ -89,3 +89,5 @@
  @media(max-width:1100px) { .robot-live-grid { grid-template-columns:minmax(0,1fr); }.robot-live-camera .head-camera-view { height:280px; }.robot-period { flex-wrap:wrap; }.robot-timeline li { grid-template-columns:104px 8px minmax(0,1fr) auto; }.robot-timeline li>.ui-status { display:none; } }
  @media(max-width:767px) { .fleet-layout { display:flex; flex-direction:column; }.fleet-roster { max-height:240px; flex-shrink:0; }.fleet-roster-list { flex-direction:row; }.fleet-roster-card { min-width:220px; }.fleet-detail { flex:1; }.robot-timeline li { grid-template-columns:8px minmax(0,1fr) auto; }.robot-timeline time { grid-column:2/-1; }.robot-preflight { grid-template-columns:1fr; } }
 }
+
+@layer components { .robot-timeline li[aria-current="true"] { background: var(--color-action-soft); outline: 1px solid var(--color-action-border); outline-offset: 4px; border-radius: var(--radius-control); } }

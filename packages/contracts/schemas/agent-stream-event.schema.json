@@ -1,0 +1,2312 @@
+{
+  "$defs": {
+    "AgentBatteryChart": {
+      "additionalProperties": false,
+      "properties": {
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "end": {
+          "format": "date-time",
+          "title": "End",
+          "type": "string"
+        },
+        "end_day": {
+          "format": "date",
+          "title": "End Day",
+          "type": "string"
+        },
+        "kind": {
+          "const": "battery_chart",
+          "default": "battery_chart",
+          "title": "Kind",
+          "type": "string"
+        },
+        "points": {
+          "items": {
+            "$ref": "#/$defs/BatteryPoint"
+          },
+          "title": "Points",
+          "type": "array"
+        },
+        "robot_id": {
+          "title": "Robot Id",
+          "type": "string"
+        },
+        "site_id": {
+          "title": "Site Id",
+          "type": "string"
+        },
+        "sources": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Sources",
+          "type": "array"
+        },
+        "start": {
+          "format": "date-time",
+          "title": "Start",
+          "type": "string"
+        },
+        "start_day": {
+          "format": "date",
+          "title": "Start Day",
+          "type": "string"
+        }
+      },
+      "required": [
+        "site_id",
+        "captured_at",
+        "start_day",
+        "end_day",
+        "robot_id",
+        "start",
+        "end",
+        "points",
+        "sources"
+      ],
+      "title": "AgentBatteryChart",
+      "type": "object"
+    },
+    "AgentCitation": {
+      "additionalProperties": false,
+      "properties": {
+        "href": {
+          "title": "Href",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "mission",
+            "robot",
+            "event",
+            "seats",
+            "history"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "label",
+        "href"
+      ],
+      "title": "AgentCitation",
+      "type": "object"
+    },
+    "AgentComparisonCard": {
+      "additionalProperties": false,
+      "properties": {
+        "earlier": {
+          "$ref": "#/$defs/AgentDayCounts"
+        },
+        "kind": {
+          "const": "day_comparison",
+          "default": "day_comparison",
+          "title": "Kind",
+          "type": "string"
+        },
+        "later": {
+          "$ref": "#/$defs/AgentDayCounts"
+        },
+        "seat_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Seat Id"
+        },
+        "site_id": {
+          "title": "Site Id",
+          "type": "string"
+        },
+        "sources": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Sources",
+          "type": "array"
+        }
+      },
+      "required": [
+        "site_id",
+        "seat_id",
+        "earlier",
+        "later",
+        "sources"
+      ],
+      "title": "AgentComparisonCard",
+      "type": "object"
+    },
+    "AgentContext": {
+      "additionalProperties": false,
+      "properties": {
+        "day": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Day"
+        },
+        "demo": {
+          "default": false,
+          "title": "Demo",
+          "type": "boolean"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "page": {
+          "anyOf": [
+            {
+              "enum": [
+                "/",
+                "/map",
+                "/map/edit",
+                "/missions",
+                "/robots",
+                "/settings"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": "/",
+          "title": "Page"
+        },
+        "robot_id": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Robot Id"
+        },
+        "seat_ids": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Seat Ids",
+          "type": "array"
+        }
+      },
+      "title": "AgentContext",
+      "type": "object"
+    },
+    "AgentDayCounts": {
+      "additionalProperties": false,
+      "properties": {
+        "cancelled": {
+          "title": "Cancelled",
+          "type": "integer"
+        },
+        "completed": {
+          "title": "Completed",
+          "type": "integer"
+        },
+        "day": {
+          "format": "date",
+          "title": "Day",
+          "type": "string"
+        },
+        "failed": {
+          "title": "Failed",
+          "type": "integer"
+        },
+        "requested": {
+          "title": "Requested",
+          "type": "integer"
+        },
+        "review_needed": {
+          "title": "Review Needed",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "day",
+        "requested",
+        "completed",
+        "failed",
+        "cancelled",
+        "review_needed"
+      ],
+      "title": "AgentDayCounts",
+      "type": "object"
+    },
+    "AgentEventTimeline": {
+      "additionalProperties": false,
+      "properties": {
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "end_day": {
+          "format": "date",
+          "title": "End Day",
+          "type": "string"
+        },
+        "events": {
+          "items": {
+            "$ref": "#/$defs/RobotOperationalEvent"
+          },
+          "title": "Events",
+          "type": "array"
+        },
+        "kind": {
+          "const": "event_timeline",
+          "default": "event_timeline",
+          "title": "Kind",
+          "type": "string"
+        },
+        "more": {
+          "title": "More",
+          "type": "boolean"
+        },
+        "robot_id": {
+          "title": "Robot Id",
+          "type": "string"
+        },
+        "site_id": {
+          "title": "Site Id",
+          "type": "string"
+        },
+        "start_day": {
+          "format": "date",
+          "title": "Start Day",
+          "type": "string"
+        }
+      },
+      "required": [
+        "site_id",
+        "captured_at",
+        "start_day",
+        "end_day",
+        "robot_id",
+        "events",
+        "more"
+      ],
+      "title": "AgentEventTimeline",
+      "type": "object"
+    },
+    "AgentInsight": {
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "title": "Basis",
+          "type": "string"
+        },
+        "buckets": {
+          "items": {
+            "$ref": "#/$defs/InsightBucket"
+          },
+          "title": "Buckets",
+          "type": "array"
+        },
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "end_day": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "End Day"
+        },
+        "kind": {
+          "enum": [
+            "outcome_mix",
+            "request_hours",
+            "elapsed_spread",
+            "failure_reasons",
+            "zone_coverage",
+            "repeat_seats",
+            "photo_pairs",
+            "run_sources",
+            "review_progress",
+            "queue_age"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "metric": {
+          "title": "Metric",
+          "type": "string"
+        },
+        "sample_count": {
+          "title": "Sample Count",
+          "type": "integer"
+        },
+        "scope_label": {
+          "title": "Scope Label",
+          "type": "string"
+        },
+        "site_id": {
+          "title": "Site Id",
+          "type": "string"
+        },
+        "sources": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Sources",
+          "type": "array"
+        },
+        "start_day": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Start Day"
+        },
+        "unit": {
+          "enum": [
+            "건",
+            "석",
+            "분",
+            "%"
+          ],
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "site_id",
+        "captured_at",
+        "kind",
+        "start_day",
+        "end_day",
+        "scope_label",
+        "basis",
+        "metric",
+        "value",
+        "unit",
+        "sample_count",
+        "buckets",
+        "sources"
+      ],
+      "title": "AgentInsight",
+      "type": "object"
+    },
+    "AgentLiveRobot": {
+      "additionalProperties": false,
+      "properties": {
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "head_camera",
+            "robot_position"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "robot_id": {
+          "title": "Robot Id",
+          "type": "string"
+        },
+        "seat_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Seat Ids",
+          "type": "array"
+        },
+        "site_id": {
+          "title": "Site Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "site_id",
+        "captured_at",
+        "kind",
+        "robot_id",
+        "seat_ids"
+      ],
+      "title": "AgentLiveRobot",
+      "type": "object"
+    },
+    "AgentMapSeat": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "last_completed": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Last Completed"
+        },
+        "profile": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExecutionProfile"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "seat_id": {
+          "title": "Seat Id",
+          "type": "string"
+        },
+        "selectable": {
+          "title": "Selectable",
+          "type": "boolean"
+        },
+        "zone_id": {
+          "title": "Zone Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "seat_id",
+        "label",
+        "zone_id",
+        "selectable"
+      ],
+      "title": "AgentMapSeat",
+      "type": "object"
+    },
+    "AgentMessage": {
+      "additionalProperties": false,
+      "properties": {
+        "cards": {
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "battery_chart": "#/$defs/AgentBatteryChart",
+                "day_comparison": "#/$defs/AgentComparisonCard",
+                "desk_photos": "#/$defs/AgentPhotos",
+                "elapsed_spread": "#/$defs/AgentInsight",
+                "event_timeline": "#/$defs/AgentEventTimeline",
+                "failure_reasons": "#/$defs/AgentInsight",
+                "head_camera": "#/$defs/AgentLiveRobot",
+                "mission_progress": "#/$defs/AgentMissionCard",
+                "outcome_mix": "#/$defs/AgentInsight",
+                "photo_pairs": "#/$defs/AgentInsight",
+                "queue_age": "#/$defs/AgentInsight",
+                "repeat_seats": "#/$defs/AgentInsight",
+                "request_hours": "#/$defs/AgentInsight",
+                "review_inbox": "#/$defs/AgentWorkList",
+                "review_progress": "#/$defs/AgentInsight",
+                "robot_health": "#/$defs/AgentRobotHealth",
+                "robot_position": "#/$defs/AgentLiveRobot",
+                "run_sources": "#/$defs/AgentInsight",
+                "seat_coverage": "#/$defs/AgentSeatMap",
+                "seat_picker": "#/$defs/AgentSeatMap",
+                "work_queue": "#/$defs/AgentWorkList",
+                "zone_coverage": "#/$defs/AgentInsight"
+              },
+              "propertyName": "kind"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/AgentMissionCard"
+              },
+              {
+                "$ref": "#/$defs/AgentComparisonCard"
+              },
+              {
+                "$ref": "#/$defs/AgentRobotHealth"
+              },
+              {
+                "$ref": "#/$defs/AgentLiveRobot"
+              },
+              {
+                "$ref": "#/$defs/AgentPhotos"
+              },
+              {
+                "$ref": "#/$defs/AgentBatteryChart"
+              },
+              {
+                "$ref": "#/$defs/AgentEventTimeline"
+              },
+              {
+                "$ref": "#/$defs/AgentWorkList"
+              },
+              {
+                "$ref": "#/$defs/AgentSeatMap"
+              },
+              {
+                "$ref": "#/$defs/AgentInsight"
+              }
+            ]
+          },
+          "title": "Cards",
+          "type": "array"
+        },
+        "citations": {
+          "items": {
+            "$ref": "#/$defs/AgentCitation"
+          },
+          "title": "Citations",
+          "type": "array"
+        },
+        "content": {
+          "title": "Content",
+          "type": "string"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AgentContext"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "created_at": {
+          "title": "Created At",
+          "type": "string"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error"
+        },
+        "message_id": {
+          "title": "Message Id",
+          "type": "string"
+        },
+        "plan_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Plan Ids",
+          "type": "array"
+        },
+        "role": {
+          "enum": [
+            "user",
+            "assistant"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "status": {
+          "default": "complete",
+          "enum": [
+            "streaming",
+            "complete",
+            "interrupted",
+            "error"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "summaries": {
+          "items": {
+            "$ref": "#/$defs/AgentSummary"
+          },
+          "title": "Summaries",
+          "type": "array"
+        }
+      },
+      "required": [
+        "message_id",
+        "role",
+        "content",
+        "created_at"
+      ],
+      "title": "AgentMessage",
+      "type": "object"
+    },
+    "AgentMetric": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "label",
+        "value"
+      ],
+      "title": "AgentMetric",
+      "type": "object"
+    },
+    "AgentMissionCard": {
+      "additionalProperties": false,
+      "properties": {
+        "cancel_requested": {
+          "title": "Cancel Requested",
+          "type": "boolean"
+        },
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "execution_profile": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExecutionProfile"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "failure_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Failure Code"
+        },
+        "kind": {
+          "const": "mission_progress",
+          "default": "mission_progress",
+          "title": "Kind",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "mission_id": {
+          "title": "Mission Id",
+          "type": "string"
+        },
+        "outcome": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MissionOutcome"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "phase": {
+          "$ref": "#/$defs/MissionPhase"
+        },
+        "review_pending": {
+          "title": "Review Pending",
+          "type": "boolean"
+        },
+        "site_id": {
+          "title": "Site Id",
+          "type": "string"
+        },
+        "target": {
+          "$ref": "#/$defs/MissionTargetModel"
+        }
+      },
+      "required": [
+        "mission_id",
+        "site_id",
+        "target",
+        "phase",
+        "outcome",
+        "cancel_requested",
+        "execution_profile",
+        "message",
+        "failure_code",
+        "review_pending",
+        "captured_at"
+      ],
+      "title": "AgentMissionCard",
+      "type": "object"
+    },
+    "AgentPhotos": {
+      "additionalProperties": false,
+      "properties": {
+        "after": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "After"
+        },
+        "before": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Before"
+        },
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "kind": {
+          "const": "desk_photos",
+          "default": "desk_photos",
+          "title": "Kind",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mission Id"
+        },
+        "profile": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExecutionProfile"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seat_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Seat Id"
+        },
+        "site_id": {
+          "title": "Site Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "site_id",
+        "captured_at",
+        "mission_id",
+        "seat_id",
+        "before",
+        "after",
+        "profile"
+      ],
+      "title": "AgentPhotos",
+      "type": "object"
+    },
+    "AgentPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "approved_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Approved At"
+        },
+        "approved_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Approved By"
+        },
+        "basis": {
+          "default": "",
+          "title": "Basis",
+          "type": "string"
+        },
+        "blockers": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Blockers",
+          "type": "array"
+        },
+        "conversation_id": {
+          "title": "Conversation Id",
+          "type": "string"
+        },
+        "created_at": {
+          "title": "Created At",
+          "type": "string"
+        },
+        "execution_mode": {
+          "default": "unknown",
+          "title": "Execution Mode",
+          "type": "string"
+        },
+        "expires_at": {
+          "title": "Expires At",
+          "type": "string"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/AgentPlanSeat"
+          },
+          "title": "Items",
+          "type": "array"
+        },
+        "mission_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Mission Ids",
+          "type": "array"
+        },
+        "plan_id": {
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "revision": {
+          "title": "Revision",
+          "type": "integer"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "submitted",
+            "cancelled",
+            "superseded",
+            "expired"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "plan_id",
+        "conversation_id",
+        "revision",
+        "status",
+        "title",
+        "reason",
+        "items",
+        "created_at",
+        "expires_at"
+      ],
+      "title": "AgentPlan",
+      "type": "object"
+    },
+    "AgentPlanSeat": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "priority": {
+          "default": "NORMAL",
+          "enum": [
+            "NORMAL",
+            "HIGH"
+          ],
+          "title": "Priority",
+          "type": "string"
+        },
+        "robot_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Robot Id",
+          "type": "string"
+        },
+        "seat_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Seat Id",
+          "type": "string"
+        },
+        "task_type": {
+          "const": "SEAT_SERVICE",
+          "default": "SEAT_SERVICE",
+          "title": "Task Type",
+          "type": "string"
+        },
+        "zone_id": {
+          "title": "Zone Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "seat_id",
+        "robot_id",
+        "label",
+        "zone_id"
+      ],
+      "title": "AgentPlanSeat",
+      "type": "object"
+    },
+    "AgentRobotHealth": {
+      "additionalProperties": false,
+      "properties": {
+        "battery": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObservedSample"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "connected": {
+          "title": "Connected",
+          "type": "boolean"
+        },
+        "kind": {
+          "const": "robot_health",
+          "default": "robot_health",
+          "title": "Kind",
+          "type": "string"
+        },
+        "last_seen_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Last Seen At"
+        },
+        "mode": {
+          "title": "Mode",
+          "type": "string"
+        },
+        "robot_id": {
+          "title": "Robot Id",
+          "type": "string"
+        },
+        "safety": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ObservedSample"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "site_id": {
+          "title": "Site Id",
+          "type": "string"
+        },
+        "state": {
+          "title": "State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "site_id",
+        "captured_at",
+        "robot_id",
+        "state",
+        "mode",
+        "connected",
+        "last_seen_at",
+        "battery",
+        "safety"
+      ],
+      "title": "AgentRobotHealth",
+      "type": "object"
+    },
+    "AgentSeatMap": {
+      "additionalProperties": false,
+      "properties": {
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "end_day": {
+          "format": "date",
+          "title": "End Day",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "seat_picker",
+            "seat_coverage"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "seats": {
+          "items": {
+            "$ref": "#/$defs/AgentMapSeat"
+          },
+          "title": "Seats",
+          "type": "array"
+        },
+        "site_id": {
+          "title": "Site Id",
+          "type": "string"
+        },
+        "start_day": {
+          "format": "date",
+          "title": "Start Day",
+          "type": "string"
+        }
+      },
+      "required": [
+        "site_id",
+        "captured_at",
+        "start_day",
+        "end_day",
+        "kind",
+        "seats"
+      ],
+      "title": "AgentSeatMap",
+      "type": "object"
+    },
+    "AgentSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "metrics": {
+          "items": {
+            "$ref": "#/$defs/AgentMetric"
+          },
+          "title": "Metrics",
+          "type": "array"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "metrics"
+      ],
+      "title": "AgentSummary",
+      "type": "object"
+    },
+    "AgentWorkList": {
+      "additionalProperties": false,
+      "properties": {
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "end_day": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "End Day"
+        },
+        "focus_seats": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Focus Seats",
+          "type": "array"
+        },
+        "kind": {
+          "enum": [
+            "work_queue",
+            "review_inbox"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "rows": {
+          "items": {
+            "$ref": "#/$defs/AgentWorkRow"
+          },
+          "title": "Rows",
+          "type": "array"
+        },
+        "site_id": {
+          "title": "Site Id",
+          "type": "string"
+        },
+        "start_day": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Start Day"
+        }
+      },
+      "required": [
+        "site_id",
+        "captured_at",
+        "kind",
+        "rows",
+        "focus_seats",
+        "start_day",
+        "end_day"
+      ],
+      "title": "AgentWorkList",
+      "type": "object"
+    },
+    "AgentWorkRow": {
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "title": "Created At",
+          "type": "string"
+        },
+        "finished_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Finished At"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "mission_id": {
+          "title": "Mission Id",
+          "type": "string"
+        },
+        "outcome": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Outcome"
+        },
+        "priority": {
+          "title": "Priority",
+          "type": "string"
+        },
+        "profile": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExecutionProfile"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "seat_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Seat Id"
+        }
+      },
+      "required": [
+        "mission_id",
+        "seat_id",
+        "label",
+        "priority",
+        "created_at",
+        "finished_at",
+        "outcome",
+        "reason",
+        "profile"
+      ],
+      "title": "AgentWorkRow",
+      "type": "object"
+    },
+    "BaseObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "angular_velocity": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Angular Velocity",
+          "type": "array"
+        },
+        "child_frame_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Child Frame Id",
+          "type": "string"
+        },
+        "frame_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Frame Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "base",
+          "title": "Kind",
+          "type": "string"
+        },
+        "linear_velocity": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Linear Velocity",
+          "type": "array"
+        },
+        "orientation": {
+          "maxItems": 4,
+          "minItems": 4,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Orientation",
+          "type": "array"
+        },
+        "position": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Position",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "frame_id",
+        "child_frame_id",
+        "position",
+        "orientation",
+        "linear_velocity",
+        "angular_velocity"
+      ],
+      "title": "BaseObservation",
+      "type": "object"
+    },
+    "BatteryObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "charging": {
+          "enum": [
+            "UNKNOWN",
+            "CHARGING",
+            "DISCHARGING",
+            "NOT_CHARGING",
+            "FULL"
+          ],
+          "title": "Charging",
+          "type": "string"
+        },
+        "kind": {
+          "const": "battery",
+          "title": "Kind",
+          "type": "string"
+        },
+        "percentage": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Percentage"
+        },
+        "voltage": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Voltage"
+        }
+      },
+      "required": [
+        "kind",
+        "percentage",
+        "charging"
+      ],
+      "title": "BatteryObservation",
+      "type": "object"
+    },
+    "BatteryPoint": {
+      "additionalProperties": false,
+      "properties": {
+        "charging_percentage": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Charging Percentage"
+        },
+        "percentage": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Percentage"
+        },
+        "samples": {
+          "title": "Samples",
+          "type": "integer"
+        },
+        "time": {
+          "title": "Time",
+          "type": "string"
+        }
+      },
+      "required": [
+        "time",
+        "percentage",
+        "charging_percentage",
+        "samples"
+      ],
+      "title": "BatteryPoint",
+      "type": "object"
+    },
+    "ExecutionProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "execution": {
+          "enum": [
+            "sim",
+            "real",
+            "mock"
+          ],
+          "title": "Execution",
+          "type": "string"
+        },
+        "navigation": {
+          "enum": [
+            "sim",
+            "real",
+            "mock"
+          ],
+          "title": "Navigation",
+          "type": "string"
+        },
+        "perception": {
+          "enum": [
+            "sim",
+            "real",
+            "mock"
+          ],
+          "title": "Perception",
+          "type": "string"
+        },
+        "planning": {
+          "enum": [
+            "sim",
+            "real",
+            "mock"
+          ],
+          "title": "Planning",
+          "type": "string"
+        }
+      },
+      "required": [
+        "navigation",
+        "perception",
+        "planning",
+        "execution"
+      ],
+      "title": "ExecutionProfile",
+      "type": "object"
+    },
+    "InsightBucket": {
+      "additionalProperties": false,
+      "properties": {
+        "capacity": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Capacity"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "tone": {
+          "default": "accent",
+          "enum": [
+            "accent",
+            "muted",
+            "warning",
+            "danger",
+            "info"
+          ],
+          "title": "Tone",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "label",
+        "value"
+      ],
+      "title": "InsightBucket",
+      "type": "object"
+    },
+    "JointObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "ages_seconds": {
+          "anyOf": [
+            {
+              "items": {
+                "minimum": 0,
+                "type": "number"
+              },
+              "maxItems": 128,
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ages Seconds"
+        },
+        "kind": {
+          "enum": [
+            "joints",
+            "joint_targets"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "names": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 128,
+          "minItems": 1,
+          "title": "Names",
+          "type": "array"
+        },
+        "positions": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 128,
+          "minItems": 1,
+          "title": "Positions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "names",
+        "positions"
+      ],
+      "title": "JointObservation",
+      "type": "object"
+    },
+    "MissionOutcome": {
+      "enum": [
+        "SUCCESS",
+        "PARTIAL_SUCCESS",
+        "HUMAN_REVIEW_REQUIRED",
+        "BLOCKED",
+        "FAILED",
+        "CANCELLED",
+        "EXPIRED",
+        "REJECTED",
+        "INTERRUPTED"
+      ],
+      "title": "MissionOutcome",
+      "type": "string"
+    },
+    "MissionPhase": {
+      "enum": [
+        "QUEUED",
+        "OFFERED",
+        "ACCEPTED",
+        "NAVIGATING",
+        "WORKING",
+        "RETURNING",
+        "TERMINAL"
+      ],
+      "title": "MissionPhase",
+      "type": "string"
+    },
+    "MissionTargetModel": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/TargetKind"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label"
+        },
+        "reference_id": {
+          "minLength": 1,
+          "title": "Reference Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "reference_id"
+      ],
+      "title": "MissionTargetModel",
+      "type": "object"
+    },
+    "ObservedSample": {
+      "additionalProperties": false,
+      "properties": {
+        "expires_at": {
+          "title": "Expires At",
+          "type": "string"
+        },
+        "observation": {
+          "$ref": "#/$defs/RobotObservation"
+        },
+        "received_at": {
+          "title": "Received At",
+          "type": "string"
+        },
+        "stale": {
+          "title": "Stale",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "received_at",
+        "expires_at",
+        "stale",
+        "observation"
+      ],
+      "title": "ObservedSample",
+      "type": "object"
+    },
+    "RobotObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "boot_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Boot Id",
+          "type": "string"
+        },
+        "provenance": {
+          "enum": [
+            "real",
+            "sim",
+            "mock"
+          ],
+          "title": "Provenance",
+          "type": "string"
+        },
+        "sample": {
+          "discriminator": {
+            "mapping": {
+              "base": "#/$defs/BaseObservation",
+              "battery": "#/$defs/BatteryObservation",
+              "joint_targets": "#/$defs/JointObservation",
+              "joints": "#/$defs/JointObservation",
+              "safety": "#/$defs/SafetyObservation",
+              "supervisor_event": "#/$defs/SupervisorEventObservation",
+              "supervisor_faults": "#/$defs/SupervisorFaultObservation",
+              "supervisor_recoveries": "#/$defs/SupervisorRecoveryObservation",
+              "supervisor_state": "#/$defs/SupervisorStateObservation"
+            },
+            "propertyName": "kind"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/BatteryObservation"
+            },
+            {
+              "$ref": "#/$defs/JointObservation"
+            },
+            {
+              "$ref": "#/$defs/BaseObservation"
+            },
+            {
+              "$ref": "#/$defs/SupervisorStateObservation"
+            },
+            {
+              "$ref": "#/$defs/SupervisorFaultObservation"
+            },
+            {
+              "$ref": "#/$defs/SupervisorRecoveryObservation"
+            },
+            {
+              "$ref": "#/$defs/SupervisorEventObservation"
+            },
+            {
+              "$ref": "#/$defs/SafetyObservation"
+            }
+          ],
+          "title": "Sample"
+        },
+        "schema_version": {
+          "const": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "sequence": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "source_age_seconds": {
+          "minimum": 0,
+          "title": "Source Age Seconds",
+          "type": "number"
+        },
+        "source_stamp": {
+          "exclusiveMinimum": 0,
+          "title": "Source Stamp",
+          "type": "number"
+        },
+        "source_topic": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Source Topic",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "boot_id",
+        "sequence",
+        "source_topic",
+        "source_stamp",
+        "source_age_seconds",
+        "provenance",
+        "sample"
+      ],
+      "title": "RobotObservation",
+      "type": "object"
+    },
+    "RobotOperationalEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "detail": {
+          "title": "Detail",
+          "type": "string"
+        },
+        "event_id": {
+          "title": "Event Id",
+          "type": "string"
+        },
+        "kind": {
+          "title": "Kind",
+          "type": "string"
+        },
+        "mission_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mission Id"
+        },
+        "occurred_at": {
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "provenance": {
+          "title": "Provenance",
+          "type": "string"
+        },
+        "severity": {
+          "title": "Severity",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event_id",
+        "occurred_at",
+        "kind",
+        "severity",
+        "title",
+        "detail",
+        "provenance"
+      ],
+      "title": "RobotOperationalEvent",
+      "type": "object"
+    },
+    "SafetyObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "detail": {
+          "maxLength": 1024,
+          "title": "Detail",
+          "type": "string"
+        },
+        "estop_engaged": {
+          "title": "Estop Engaged",
+          "type": "boolean"
+        },
+        "kind": {
+          "const": "safety",
+          "title": "Kind",
+          "type": "string"
+        },
+        "physical_release_confirmed": {
+          "title": "Physical Release Confirmed",
+          "type": "boolean"
+        },
+        "protection_ready": {
+          "title": "Protection Ready",
+          "type": "boolean"
+        },
+        "stopped": {
+          "title": "Stopped",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "kind",
+        "protection_ready",
+        "estop_engaged",
+        "physical_release_confirmed",
+        "stopped",
+        "detail"
+      ],
+      "title": "SafetyObservation",
+      "type": "object"
+    },
+    "SupervisorEventObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 128,
+          "title": "Code",
+          "type": "string"
+        },
+        "detail": {
+          "maxLength": 1024,
+          "title": "Detail",
+          "type": "string"
+        },
+        "epoch": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Epoch",
+          "type": "string"
+        },
+        "event_kind": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Event Kind",
+          "type": "string"
+        },
+        "event_sequence": {
+          "minimum": 0,
+          "title": "Event Sequence",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "supervisor_event",
+          "title": "Kind",
+          "type": "string"
+        },
+        "severity": {
+          "maxLength": 32,
+          "title": "Severity",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "epoch",
+        "event_sequence",
+        "event_kind",
+        "code",
+        "severity",
+        "detail"
+      ],
+      "title": "SupervisorEventObservation",
+      "type": "object"
+    },
+    "SupervisorFault": {
+      "additionalProperties": false,
+      "properties": {
+        "active": {
+          "title": "Active",
+          "type": "boolean"
+        },
+        "code": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "detail": {
+          "maxLength": 1024,
+          "title": "Detail",
+          "type": "string"
+        },
+        "latched": {
+          "title": "Latched",
+          "type": "boolean"
+        },
+        "recovery_policy": {
+          "maxLength": 128,
+          "title": "Recovery Policy",
+          "type": "string"
+        },
+        "severity": {
+          "maxLength": 32,
+          "title": "Severity",
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 128,
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "source",
+        "severity",
+        "active",
+        "latched",
+        "recovery_policy",
+        "detail"
+      ],
+      "title": "SupervisorFault",
+      "type": "object"
+    },
+    "SupervisorFaultObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "epoch": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Epoch",
+          "type": "string"
+        },
+        "faults": {
+          "items": {
+            "$ref": "#/$defs/SupervisorFault"
+          },
+          "maxItems": 128,
+          "title": "Faults",
+          "type": "array"
+        },
+        "kind": {
+          "const": "supervisor_faults",
+          "title": "Kind",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "epoch",
+        "faults"
+      ],
+      "title": "SupervisorFaultObservation",
+      "type": "object"
+    },
+    "SupervisorRecovery": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt": {
+          "minimum": 0,
+          "title": "Attempt",
+          "type": "integer"
+        },
+        "detail": {
+          "maxLength": 1024,
+          "title": "Detail",
+          "type": "string"
+        },
+        "fault_code": {
+          "maxLength": 128,
+          "title": "Fault Code",
+          "type": "string"
+        },
+        "job_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Job Id",
+          "type": "string"
+        },
+        "resource_held": {
+          "title": "Resource Held",
+          "type": "boolean"
+        },
+        "state": {
+          "enum": [
+            "IDLE",
+            "RUNNING",
+            "SUCCEEDED",
+            "FAILED",
+            "CANCELED"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "verifying_health": {
+          "title": "Verifying Health",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "job_id",
+        "fault_code",
+        "state",
+        "attempt",
+        "verifying_health",
+        "resource_held",
+        "detail"
+      ],
+      "title": "SupervisorRecovery",
+      "type": "object"
+    },
+    "SupervisorRecoveryObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "epoch": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Epoch",
+          "type": "string"
+        },
+        "kind": {
+          "const": "supervisor_recoveries",
+          "title": "Kind",
+          "type": "string"
+        },
+        "recoveries": {
+          "items": {
+            "$ref": "#/$defs/SupervisorRecovery"
+          },
+          "maxItems": 128,
+          "title": "Recoveries",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "epoch",
+        "recoveries"
+      ],
+      "title": "SupervisorRecoveryObservation",
+      "type": "object"
+    },
+    "SupervisorStateObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "epoch": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Epoch",
+          "type": "string"
+        },
+        "kind": {
+          "const": "supervisor_state",
+          "title": "Kind",
+          "type": "string"
+        },
+        "operating_state": {
+          "enum": [
+            "INITIALIZING",
+            "OPERATIONAL",
+            "DEGRADED",
+            "FAULT_LOCKED"
+          ],
+          "title": "Operating State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "epoch",
+        "operating_state"
+      ],
+      "title": "SupervisorStateObservation",
+      "type": "object"
+    },
+    "TargetKind": {
+      "enum": [
+        "SEAT",
+        "ZONE",
+        "POINT"
+      ],
+      "title": "TargetKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "message": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/AgentMessage"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "plan": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/AgentPlan"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "summary": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/AgentSummary"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "text": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Text"
+    },
+    "type": {
+      "enum": [
+        "started",
+        "delta",
+        "tool",
+        "plan",
+        "summary",
+        "complete",
+        "error",
+        "heartbeat"
+      ],
+      "title": "Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "type"
+  ],
+  "title": "AgentStreamEvent",
+  "type": "object"
+}

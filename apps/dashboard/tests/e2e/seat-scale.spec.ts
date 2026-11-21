@@ -32,6 +32,34 @@ test('SLAM furniture preserves legacy metric dimensions and aspect ratios', asyn
   const rect = page.locator('.slam-seat[data-seat-id="seat-01"] .slam-desk');
   expect(Number(await rect.getAttribute('height')) * metadata.resolution).toBeCloseTo(1.2, 6);
   expect(Number(await rect.getAttribute('width')) * metadata.resolution).toBeCloseTo(.77, 6);
+  const dhub = layout.seats.filter((s: { zone_id: string }) => s.zone_id === 'd-hub');
+  expect(dhub).toHaveLength(48);
+  // Project the SVG fill corners: Playwright's boundingBox includes the decorative
+  // stroke, which adds the same outline width to both dimensions and alters their ratio.
+  const deskBounds = (id: string) => page.locator(`.slam-seat[data-seat-id="${id}"] .slam-desk`).evaluate(element => {
+    const rect = element as SVGRectElement;
+    const { x, y, width, height } = rect.getBBox();
+    const matrix = rect.getScreenCTM()!;
+    const points = [[x, y], [x + width, y], [x, y + height], [x + width, y + height]]
+      .map(([px, py]) => new DOMPoint(px, py).matrixTransform(matrix));
+    const xs = points.map(p => p.x), ys = points.map(p => p.y);
+    return { x: Math.min(...xs), y: Math.min(...ys), width: Math.max(...xs) - Math.min(...xs),
+      height: Math.max(...ys) - Math.min(...ys), axisError: Math.max(Math.abs(matrix.a), Math.abs(matrix.d)) };
+  });
+  // At browser render scale, all desk tops remain 120 x 77 cm and axis aligned.
+  for (const entry of dhub) {
+    const box = await deskBounds(entry.seat_id);
+    expect(box.axisError).toBeLessThan(1e-10);
+    expect(box.width / box.height).toBeCloseTo(1.2 / .77, 5);
+  }
+  const firstDesk = await deskBounds('seat-01');
+  const metrePixels = firstDesk.width / 1.2;
+  const leftEnd = await deskBounds('seat-03');
+  const middleStart = await deskBounds('seat-04');
+  expect((middleStart.x - leftEnd.x - leftEnd.width) / metrePixels).toBeCloseTo(1.33, 5);
+  const pairedLast = await deskBounds('seat-09');
+  const nextPair = await deskBounds('seat-17');
+  expect((nextPair.y - pairedLast.y - pairedLast.height) / metrePixels).toBeCloseTo(1.63, 5);
   await page.screenshot({ path: testInfo.outputPath('corrected-dashboard.png') });
   await page.locator('.facility-plan-canvas').evaluate((el, scale) => { el.style.transform = `translate(10px, 10px) scale(${scale})`; }, 40 * metadata.resolution);
   const newBox = (await page.locator('.facility-plan-canvas').boundingBox())!;

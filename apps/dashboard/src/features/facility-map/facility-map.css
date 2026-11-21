@@ -1,3 +1,12 @@
+@layer components {
+  /* Seat SVG handlers can stop propagation before the map enters its panning state. */
+  .facility-map-stage { -webkit-user-select: none; user-select: none; }
+  .facility-map-stage :is(input, textarea, [contenteditable="true"]) {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+}
+
 @layer legacy {
 .facility-map-shell { display: flex; flex-direction: column; flex: 1; min-height: 0; --seat-occupied-fill: var(--color-neutral-soft); --seat-occupied-border: var(--color-border-strong); --seat-occupied-ink: var(--color-text-muted); --seat-cleaned-fill: var(--color-action-soft); --seat-cleaned-border: var(--color-action-border); --seat-cleaned-ink: var(--color-action); --seat-scheduled-fill: var(--color-warning-soft); --seat-scheduled-border: var(--color-warning-border); --seat-scheduled-ink: var(--color-warning); }
 .facility-map-stage { position: relative; flex: 1; min-height: 0; overflow: hidden; touch-action: none; cursor: grab; background: var(--color-background); container-type: inline-size; }

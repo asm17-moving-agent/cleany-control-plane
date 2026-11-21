@@ -510,6 +510,11 @@ class RobotObservations:
     def analytics(
         self, robot, scope, start: datetime, end: datetime, before: str | None = None
     ) -> RobotAnalytics:
+        result, _ = self.analytics_with_battery(robot, scope, start, end, before)
+        return result
+
+    def analytics_with_battery(self, robot, scope, start: datetime, end: datetime, before=None):
+        """Return the dashboard chart and statistics from the same unbucketed observations."""
         if (
             start.tzinfo is None
             or end.tzinfo is None
@@ -582,7 +587,7 @@ class RobotObservations:
                 )
             )
         last = events[99] if len(events) > 100 else None
-        return RobotAnalytics(
+        report = RobotAnalytics(
             robot_id=robot,
             start=iso(left),
             end=iso(right),
@@ -607,3 +612,14 @@ class RobotObservations:
             ],
             next_event_cursor=f"{last[2]}|{last[0]}" if last else None,
         )
+        samples = [row for row in battery_rows if row[1] is not None]
+        percentages = [row[1] for row in samples]
+        return report, {
+            "recorded_points": len(samples),
+            "first": percentages[0] if percentages else None,
+            "charging_observed": any(row[2] == "CHARGING" for row in battery_rows),
+            "min": min(percentages, default=None),
+            "max": max(percentages, default=None),
+            "latest": percentages[-1] if samples else None,
+            "provenance": sorted({row[3] for row in samples}),
+        }

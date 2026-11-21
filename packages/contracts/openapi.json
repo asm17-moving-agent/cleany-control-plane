@@ -29,6 +29,1670 @@
         "title": "ActivityDuration",
         "type": "object"
       },
+      "AgentBatteryChart": {
+        "additionalProperties": false,
+        "properties": {
+          "captured_at": {
+            "format": "date-time",
+            "title": "Captured At",
+            "type": "string"
+          },
+          "end": {
+            "format": "date-time",
+            "title": "End",
+            "type": "string"
+          },
+          "end_day": {
+            "format": "date",
+            "title": "End Day",
+            "type": "string"
+          },
+          "kind": {
+            "const": "battery_chart",
+            "default": "battery_chart",
+            "title": "Kind",
+            "type": "string"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/BatteryPoint"
+            },
+            "title": "Points",
+            "type": "array"
+          },
+          "robot_id": {
+            "title": "Robot Id",
+            "type": "string"
+          },
+          "site_id": {
+            "title": "Site Id",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "start": {
+            "format": "date-time",
+            "title": "Start",
+            "type": "string"
+          },
+          "start_day": {
+            "format": "date",
+            "title": "Start Day",
+            "type": "string"
+          }
+        },
+        "required": [
+          "site_id",
+          "captured_at",
+          "start_day",
+          "end_day",
+          "robot_id",
+          "start",
+          "end",
+          "points",
+          "sources"
+        ],
+        "title": "AgentBatteryChart",
+        "type": "object"
+      },
+      "AgentCitation": {
+        "additionalProperties": false,
+        "properties": {
+          "href": {
+            "title": "Href",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "mission",
+              "robot",
+              "event",
+              "seats",
+              "history"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "label",
+          "href"
+        ],
+        "title": "AgentCitation",
+        "type": "object"
+      },
+      "AgentComparisonCard": {
+        "additionalProperties": false,
+        "properties": {
+          "earlier": {
+            "$ref": "#/components/schemas/AgentDayCounts"
+          },
+          "kind": {
+            "const": "day_comparison",
+            "default": "day_comparison",
+            "title": "Kind",
+            "type": "string"
+          },
+          "later": {
+            "$ref": "#/components/schemas/AgentDayCounts"
+          },
+          "seat_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seat Id"
+          },
+          "site_id": {
+            "title": "Site Id",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          }
+        },
+        "required": [
+          "site_id",
+          "seat_id",
+          "earlier",
+          "later",
+          "sources"
+        ],
+        "title": "AgentComparisonCard",
+        "type": "object"
+      },
+      "AgentContext": {
+        "additionalProperties": false,
+        "properties": {
+          "day": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Day"
+          },
+          "demo": {
+            "default": false,
+            "title": "Demo",
+            "type": "boolean"
+          },
+          "mission_id": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mission Id"
+          },
+          "page": {
+            "anyOf": [
+              {
+                "enum": [
+                  "/",
+                  "/map",
+                  "/map/edit",
+                  "/missions",
+                  "/robots",
+                  "/settings"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "/",
+            "title": "Page"
+          },
+          "robot_id": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Robot Id"
+          },
+          "seat_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 50,
+            "title": "Seat Ids",
+            "type": "array"
+          }
+        },
+        "title": "AgentContext",
+        "type": "object"
+      },
+      "AgentConversation": {
+        "additionalProperties": false,
+        "properties": {
+          "conversation_id": {
+            "title": "Conversation Id",
+            "type": "string"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "updated_at": {
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "conversation_id",
+          "title",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "AgentConversation",
+        "type": "object"
+      },
+      "AgentConversationDetail": {
+        "additionalProperties": false,
+        "properties": {
+          "conversation_id": {
+            "title": "Conversation Id",
+            "type": "string"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/AgentMessage"
+            },
+            "title": "Messages",
+            "type": "array"
+          },
+          "plans": {
+            "items": {
+              "$ref": "#/components/schemas/AgentPlan"
+            },
+            "title": "Plans",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "updated_at": {
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "conversation_id",
+          "title",
+          "created_at",
+          "updated_at",
+          "messages",
+          "plans"
+        ],
+        "title": "AgentConversationDetail",
+        "type": "object"
+      },
+      "AgentConversationList": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AgentConversation"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "AgentConversationList",
+        "type": "object"
+      },
+      "AgentDayCounts": {
+        "additionalProperties": false,
+        "properties": {
+          "cancelled": {
+            "title": "Cancelled",
+            "type": "integer"
+          },
+          "completed": {
+            "title": "Completed",
+            "type": "integer"
+          },
+          "day": {
+            "format": "date",
+            "title": "Day",
+            "type": "string"
+          },
+          "failed": {
+            "title": "Failed",
+            "type": "integer"
+          },
+          "requested": {
+            "title": "Requested",
+            "type": "integer"
+          },
+          "review_needed": {
+            "title": "Review Needed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "day",
+          "requested",
+          "completed",
+          "failed",
+          "cancelled",
+          "review_needed"
+        ],
+        "title": "AgentDayCounts",
+        "type": "object"
+      },
+      "AgentEventTimeline": {
+        "additionalProperties": false,
+        "properties": {
+          "captured_at": {
+            "format": "date-time",
+            "title": "Captured At",
+            "type": "string"
+          },
+          "end_day": {
+            "format": "date",
+            "title": "End Day",
+            "type": "string"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/RobotOperationalEvent"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "kind": {
+            "const": "event_timeline",
+            "default": "event_timeline",
+            "title": "Kind",
+            "type": "string"
+          },
+          "more": {
+            "title": "More",
+            "type": "boolean"
+          },
+          "robot_id": {
+            "title": "Robot Id",
+            "type": "string"
+          },
+          "site_id": {
+            "title": "Site Id",
+            "type": "string"
+          },
+          "start_day": {
+            "format": "date",
+            "title": "Start Day",
+            "type": "string"
+          }
+        },
+        "required": [
+          "site_id",
+          "captured_at",
+          "start_day",
+          "end_day",
+          "robot_id",
+          "events",
+          "more"
+        ],
+        "title": "AgentEventTimeline",
+        "type": "object"
+      },
+      "AgentInsight": {
+        "additionalProperties": false,
+        "properties": {
+          "basis": {
+            "title": "Basis",
+            "type": "string"
+          },
+          "buckets": {
+            "items": {
+              "$ref": "#/components/schemas/InsightBucket"
+            },
+            "title": "Buckets",
+            "type": "array"
+          },
+          "captured_at": {
+            "format": "date-time",
+            "title": "Captured At",
+            "type": "string"
+          },
+          "end_day": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Day"
+          },
+          "kind": {
+            "enum": [
+              "outcome_mix",
+              "request_hours",
+              "elapsed_spread",
+              "failure_reasons",
+              "zone_coverage",
+              "repeat_seats",
+              "photo_pairs",
+              "run_sources",
+              "review_progress",
+              "queue_age"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "metric": {
+            "title": "Metric",
+            "type": "string"
+          },
+          "sample_count": {
+            "title": "Sample Count",
+            "type": "integer"
+          },
+          "scope_label": {
+            "title": "Scope Label",
+            "type": "string"
+          },
+          "site_id": {
+            "title": "Site Id",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "start_day": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Day"
+          },
+          "unit": {
+            "enum": [
+              "건",
+              "석",
+              "분",
+              "%"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "site_id",
+          "captured_at",
+          "kind",
+          "start_day",
+          "end_day",
+          "scope_label",
+          "basis",
+          "metric",
+          "value",
+          "unit",
+          "sample_count",
+          "buckets",
+          "sources"
+        ],
+        "title": "AgentInsight",
+        "type": "object"
+      },
+      "AgentLiveRobot": {
+        "additionalProperties": false,
+        "properties": {
+          "captured_at": {
+            "format": "date-time",
+            "title": "Captured At",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "head_camera",
+              "robot_position"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "robot_id": {
+            "title": "Robot Id",
+            "type": "string"
+          },
+          "seat_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Seat Ids",
+            "type": "array"
+          },
+          "site_id": {
+            "title": "Site Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "site_id",
+          "captured_at",
+          "kind",
+          "robot_id",
+          "seat_ids"
+        ],
+        "title": "AgentLiveRobot",
+        "type": "object"
+      },
+      "AgentMapSeat": {
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "last_completed": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Completed"
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExecutionProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "seat_id": {
+            "title": "Seat Id",
+            "type": "string"
+          },
+          "selectable": {
+            "title": "Selectable",
+            "type": "boolean"
+          },
+          "zone_id": {
+            "title": "Zone Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "seat_id",
+          "label",
+          "zone_id",
+          "selectable"
+        ],
+        "title": "AgentMapSeat",
+        "type": "object"
+      },
+      "AgentMessage": {
+        "additionalProperties": false,
+        "properties": {
+          "cards": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "battery_chart": "#/components/schemas/AgentBatteryChart",
+                  "day_comparison": "#/components/schemas/AgentComparisonCard",
+                  "desk_photos": "#/components/schemas/AgentPhotos",
+                  "elapsed_spread": "#/components/schemas/AgentInsight",
+                  "event_timeline": "#/components/schemas/AgentEventTimeline",
+                  "failure_reasons": "#/components/schemas/AgentInsight",
+                  "head_camera": "#/components/schemas/AgentLiveRobot",
+                  "mission_progress": "#/components/schemas/AgentMissionCard",
+                  "outcome_mix": "#/components/schemas/AgentInsight",
+                  "photo_pairs": "#/components/schemas/AgentInsight",
+                  "queue_age": "#/components/schemas/AgentInsight",
+                  "repeat_seats": "#/components/schemas/AgentInsight",
+                  "request_hours": "#/components/schemas/AgentInsight",
+                  "review_inbox": "#/components/schemas/AgentWorkList",
+                  "review_progress": "#/components/schemas/AgentInsight",
+                  "robot_health": "#/components/schemas/AgentRobotHealth",
+                  "robot_position": "#/components/schemas/AgentLiveRobot",
+                  "run_sources": "#/components/schemas/AgentInsight",
+                  "seat_coverage": "#/components/schemas/AgentSeatMap",
+                  "seat_picker": "#/components/schemas/AgentSeatMap",
+                  "work_queue": "#/components/schemas/AgentWorkList",
+                  "zone_coverage": "#/components/schemas/AgentInsight"
+                },
+                "propertyName": "kind"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/AgentMissionCard"
+                },
+                {
+                  "$ref": "#/components/schemas/AgentComparisonCard"
+                },
+                {
+                  "$ref": "#/components/schemas/AgentRobotHealth"
+                },
+                {
+                  "$ref": "#/components/schemas/AgentLiveRobot"
+                },
+                {
+                  "$ref": "#/components/schemas/AgentPhotos"
+                },
+                {
+                  "$ref": "#/components/schemas/AgentBatteryChart"
+                },
+                {
+                  "$ref": "#/components/schemas/AgentEventTimeline"
+                },
+                {
+                  "$ref": "#/components/schemas/AgentWorkList"
+                },
+                {
+                  "$ref": "#/components/schemas/AgentSeatMap"
+                },
+                {
+                  "$ref": "#/components/schemas/AgentInsight"
+                }
+              ]
+            },
+            "title": "Cards",
+            "type": "array"
+          },
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/AgentCitation"
+            },
+            "title": "Citations",
+            "type": "array"
+          },
+          "content": {
+            "title": "Content",
+            "type": "string"
+          },
+          "context": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AgentContext"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "message_id": {
+            "title": "Message Id",
+            "type": "string"
+          },
+          "plan_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Plan Ids",
+            "type": "array"
+          },
+          "role": {
+            "enum": [
+              "user",
+              "assistant"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "status": {
+            "default": "complete",
+            "enum": [
+              "streaming",
+              "complete",
+              "interrupted",
+              "error"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "summaries": {
+            "items": {
+              "$ref": "#/components/schemas/AgentSummary"
+            },
+            "title": "Summaries",
+            "type": "array"
+          }
+        },
+        "required": [
+          "message_id",
+          "role",
+          "content",
+          "created_at"
+        ],
+        "title": "AgentMessage",
+        "type": "object"
+      },
+      "AgentMessageInput": {
+        "additionalProperties": false,
+        "properties": {
+          "client_message_id": {
+            "maxLength": 80,
+            "minLength": 8,
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "title": "Client Message Id",
+            "type": "string"
+          },
+          "content": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Content",
+            "type": "string"
+          },
+          "context": {
+            "$ref": "#/components/schemas/AgentContext"
+          }
+        },
+        "required": [
+          "client_message_id",
+          "content"
+        ],
+        "title": "AgentMessageInput",
+        "type": "object"
+      },
+      "AgentMetric": {
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "value"
+        ],
+        "title": "AgentMetric",
+        "type": "object"
+      },
+      "AgentMissionCard": {
+        "additionalProperties": false,
+        "properties": {
+          "cancel_requested": {
+            "title": "Cancel Requested",
+            "type": "boolean"
+          },
+          "captured_at": {
+            "format": "date-time",
+            "title": "Captured At",
+            "type": "string"
+          },
+          "execution_profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExecutionProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "failure_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Code"
+          },
+          "kind": {
+            "const": "mission_progress",
+            "default": "mission_progress",
+            "title": "Kind",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "mission_id": {
+            "title": "Mission Id",
+            "type": "string"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MissionOutcome"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "phase": {
+            "$ref": "#/components/schemas/MissionPhase"
+          },
+          "review_pending": {
+            "title": "Review Pending",
+            "type": "boolean"
+          },
+          "site_id": {
+            "title": "Site Id",
+            "type": "string"
+          },
+          "target": {
+            "$ref": "#/components/schemas/MissionTargetModel"
+          }
+        },
+        "required": [
+          "mission_id",
+          "site_id",
+          "target",
+          "phase",
+          "outcome",
+          "cancel_requested",
+          "execution_profile",
+          "message",
+          "failure_code",
+          "review_pending",
+          "captured_at"
+        ],
+        "title": "AgentMissionCard",
+        "type": "object"
+      },
+      "AgentPhotos": {
+        "additionalProperties": false,
+        "properties": {
+          "after": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "After"
+          },
+          "before": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Before"
+          },
+          "captured_at": {
+            "format": "date-time",
+            "title": "Captured At",
+            "type": "string"
+          },
+          "kind": {
+            "const": "desk_photos",
+            "default": "desk_photos",
+            "title": "Kind",
+            "type": "string"
+          },
+          "mission_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mission Id"
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExecutionProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "seat_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seat Id"
+          },
+          "site_id": {
+            "title": "Site Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "site_id",
+          "captured_at",
+          "mission_id",
+          "seat_id",
+          "before",
+          "after",
+          "profile"
+        ],
+        "title": "AgentPhotos",
+        "type": "object"
+      },
+      "AgentPlan": {
+        "additionalProperties": false,
+        "properties": {
+          "approved_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved At"
+          },
+          "approved_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Approved By"
+          },
+          "basis": {
+            "default": "",
+            "title": "Basis",
+            "type": "string"
+          },
+          "blockers": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Blockers",
+            "type": "array"
+          },
+          "conversation_id": {
+            "title": "Conversation Id",
+            "type": "string"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "execution_mode": {
+            "default": "unknown",
+            "title": "Execution Mode",
+            "type": "string"
+          },
+          "expires_at": {
+            "title": "Expires At",
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AgentPlanSeat"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "mission_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Mission Ids",
+            "type": "array"
+          },
+          "plan_id": {
+            "title": "Plan Id",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "revision": {
+            "title": "Revision",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "draft",
+              "submitted",
+              "cancelled",
+              "superseded",
+              "expired"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "plan_id",
+          "conversation_id",
+          "revision",
+          "status",
+          "title",
+          "reason",
+          "items",
+          "created_at",
+          "expires_at"
+        ],
+        "title": "AgentPlan",
+        "type": "object"
+      },
+      "AgentPlanApproval": {
+        "additionalProperties": false,
+        "properties": {
+          "approved": {
+            "const": true,
+            "title": "Approved",
+            "type": "boolean"
+          },
+          "revision": {
+            "minimum": 1.0,
+            "title": "Revision",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "revision",
+          "approved"
+        ],
+        "title": "AgentPlanApproval",
+        "type": "object"
+      },
+      "AgentPlanDecision": {
+        "additionalProperties": false,
+        "properties": {
+          "revision": {
+            "minimum": 1.0,
+            "title": "Revision",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "revision"
+        ],
+        "title": "AgentPlanDecision",
+        "type": "object"
+      },
+      "AgentPlanEdit": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AgentPlanItem"
+            },
+            "maxItems": 50,
+            "minItems": 1,
+            "title": "Items",
+            "type": "array"
+          },
+          "revision": {
+            "minimum": 1.0,
+            "title": "Revision",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "revision",
+          "items"
+        ],
+        "title": "AgentPlanEdit",
+        "type": "object"
+      },
+      "AgentPlanItem": {
+        "additionalProperties": false,
+        "properties": {
+          "priority": {
+            "default": "NORMAL",
+            "enum": [
+              "NORMAL",
+              "HIGH"
+            ],
+            "title": "Priority",
+            "type": "string"
+          },
+          "robot_id": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Robot Id",
+            "type": "string"
+          },
+          "seat_id": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Seat Id",
+            "type": "string"
+          },
+          "task_type": {
+            "const": "SEAT_SERVICE",
+            "default": "SEAT_SERVICE",
+            "title": "Task Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "seat_id",
+          "robot_id"
+        ],
+        "title": "AgentPlanItem",
+        "type": "object"
+      },
+      "AgentPlanSeat": {
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "priority": {
+            "default": "NORMAL",
+            "enum": [
+              "NORMAL",
+              "HIGH"
+            ],
+            "title": "Priority",
+            "type": "string"
+          },
+          "robot_id": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Robot Id",
+            "type": "string"
+          },
+          "seat_id": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Seat Id",
+            "type": "string"
+          },
+          "task_type": {
+            "const": "SEAT_SERVICE",
+            "default": "SEAT_SERVICE",
+            "title": "Task Type",
+            "type": "string"
+          },
+          "zone_id": {
+            "title": "Zone Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "seat_id",
+          "robot_id",
+          "label",
+          "zone_id"
+        ],
+        "title": "AgentPlanSeat",
+        "type": "object"
+      },
+      "AgentRobotHealth": {
+        "additionalProperties": false,
+        "properties": {
+          "battery": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ObservedSample"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "captured_at": {
+            "format": "date-time",
+            "title": "Captured At",
+            "type": "string"
+          },
+          "connected": {
+            "title": "Connected",
+            "type": "boolean"
+          },
+          "kind": {
+            "const": "robot_health",
+            "default": "robot_health",
+            "title": "Kind",
+            "type": "string"
+          },
+          "last_seen_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Seen At"
+          },
+          "mode": {
+            "title": "Mode",
+            "type": "string"
+          },
+          "robot_id": {
+            "title": "Robot Id",
+            "type": "string"
+          },
+          "safety": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ObservedSample"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "site_id": {
+            "title": "Site Id",
+            "type": "string"
+          },
+          "state": {
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "site_id",
+          "captured_at",
+          "robot_id",
+          "state",
+          "mode",
+          "connected",
+          "last_seen_at",
+          "battery",
+          "safety"
+        ],
+        "title": "AgentRobotHealth",
+        "type": "object"
+      },
+      "AgentSeatMap": {
+        "additionalProperties": false,
+        "properties": {
+          "captured_at": {
+            "format": "date-time",
+            "title": "Captured At",
+            "type": "string"
+          },
+          "end_day": {
+            "format": "date",
+            "title": "End Day",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "seat_picker",
+              "seat_coverage"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "seats": {
+            "items": {
+              "$ref": "#/components/schemas/AgentMapSeat"
+            },
+            "title": "Seats",
+            "type": "array"
+          },
+          "site_id": {
+            "title": "Site Id",
+            "type": "string"
+          },
+          "start_day": {
+            "format": "date",
+            "title": "Start Day",
+            "type": "string"
+          }
+        },
+        "required": [
+          "site_id",
+          "captured_at",
+          "start_day",
+          "end_day",
+          "kind",
+          "seats"
+        ],
+        "title": "AgentSeatMap",
+        "type": "object"
+      },
+      "AgentStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "can_approve": {
+            "title": "Can Approve",
+            "type": "boolean"
+          },
+          "can_read": {
+            "title": "Can Read",
+            "type": "boolean"
+          },
+          "configured": {
+            "title": "Configured",
+            "type": "boolean"
+          },
+          "execution_mode": {
+            "title": "Execution Mode",
+            "type": "string"
+          },
+          "max_plan_items": {
+            "title": "Max Plan Items",
+            "type": "integer"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "provider": {
+            "title": "Provider",
+            "type": "string"
+          },
+          "reasoning_effort": {
+            "title": "Reasoning Effort",
+            "type": "string"
+          }
+        },
+        "required": [
+          "configured",
+          "provider",
+          "model",
+          "reasoning_effort",
+          "can_read",
+          "can_approve",
+          "max_plan_items",
+          "execution_mode"
+        ],
+        "title": "AgentStatus",
+        "type": "object"
+      },
+      "AgentStreamEvent": {
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AgentMessage"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "plan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AgentPlan"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AgentSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          },
+          "type": {
+            "enum": [
+              "started",
+              "delta",
+              "tool",
+              "plan",
+              "summary",
+              "complete",
+              "error",
+              "heartbeat"
+            ],
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "title": "AgentStreamEvent",
+        "type": "object"
+      },
+      "AgentSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/AgentMetric"
+            },
+            "title": "Metrics",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "metrics"
+        ],
+        "title": "AgentSummary",
+        "type": "object"
+      },
+      "AgentWorkList": {
+        "additionalProperties": false,
+        "properties": {
+          "captured_at": {
+            "format": "date-time",
+            "title": "Captured At",
+            "type": "string"
+          },
+          "end_day": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Day"
+          },
+          "focus_seats": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Focus Seats",
+            "type": "array"
+          },
+          "kind": {
+            "enum": [
+              "work_queue",
+              "review_inbox"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/AgentWorkRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "site_id": {
+            "title": "Site Id",
+            "type": "string"
+          },
+          "start_day": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Day"
+          }
+        },
+        "required": [
+          "site_id",
+          "captured_at",
+          "kind",
+          "rows",
+          "focus_seats",
+          "start_day",
+          "end_day"
+        ],
+        "title": "AgentWorkList",
+        "type": "object"
+      },
+      "AgentWorkRow": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "title": "Created At",
+            "type": "string"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "mission_id": {
+            "title": "Mission Id",
+            "type": "string"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "priority": {
+            "title": "Priority",
+            "type": "string"
+          },
+          "profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExecutionProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "seat_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seat Id"
+          }
+        },
+        "required": [
+          "mission_id",
+          "seat_id",
+          "label",
+          "priority",
+          "created_at",
+          "finished_at",
+          "outcome",
+          "reason",
+          "profile"
+        ],
+        "title": "AgentWorkRow",
+        "type": "object"
+      },
       "BaseObservation": {
         "additionalProperties": false,
         "properties": {
@@ -301,6 +1965,48 @@
           }
         },
         "title": "HealthResponse",
+        "type": "object"
+      },
+      "InsightBucket": {
+        "additionalProperties": false,
+        "properties": {
+          "capacity": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capacity"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "tone": {
+            "default": "accent",
+            "enum": [
+              "accent",
+              "muted",
+              "warning",
+              "danger",
+              "info"
+            ],
+            "title": "Tone",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "label",
+          "value"
+        ],
+        "title": "InsightBucket",
         "type": "object"
       },
       "JointObservation": {
@@ -691,6 +2397,26 @@
         "title": "ManualStatus",
         "type": "object"
       },
+      "MapDisplayLayers": {
+        "additionalProperties": false,
+        "description": "Edited, full-canvas rasters in presentation coordinates, never navigation inputs.",
+        "properties": {
+          "floorplan_url": {
+            "const": "/api/map/presentation/floorplan",
+            "default": "/api/map/presentation/floorplan",
+            "title": "Floorplan Url",
+            "type": "string"
+          },
+          "slam_url": {
+            "const": "/api/map/presentation/slam",
+            "default": "/api/map/presentation/slam",
+            "title": "Slam Url",
+            "type": "string"
+          }
+        },
+        "title": "MapDisplayLayers",
+        "type": "object"
+      },
       "MapPresentation": {
         "additionalProperties": false,
         "description": "Display-only rigid transform in source raster coordinates.",
@@ -705,6 +2431,16 @@
             "default": "/api/map/presentation",
             "title": "Image Url",
             "type": "string"
+          },
+          "layers": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MapDisplayLayers"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "rotation_degrees": {
             "title": "Rotation Degrees",
@@ -2457,6 +4193,298 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/agent/conversations": {
+      "get": {
+        "operationId": "conversations_api_agent_conversations_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentConversationList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Conversations"
+      },
+      "post": {
+        "operationId": "new_conversation_api_agent_conversations_post",
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentConversation"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "New Conversation"
+      }
+    },
+    "/api/agent/conversations/{key}": {
+      "get": {
+        "operationId": "conversation_api_agent_conversations__key__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key",
+            "required": true,
+            "schema": {
+              "title": "Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentConversationDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Conversation"
+      }
+    },
+    "/api/agent/conversations/{key}/messages": {
+      "post": {
+        "operationId": "message_api_agent_conversations__key__messages_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key",
+            "required": true,
+            "schema": {
+              "title": "Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentMessageInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentStreamEvent"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentStreamEvent"
+                }
+              }
+            },
+            "description": "SSE data frames containing AgentStreamEvent JSON"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Message"
+      }
+    },
+    "/api/agent/plans/{key}": {
+      "patch": {
+        "operationId": "edit_plan_api_agent_plans__key__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key",
+            "required": true,
+            "schema": {
+              "title": "Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentPlanEdit"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentPlan"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Edit Plan"
+      }
+    },
+    "/api/agent/plans/{key}/approve": {
+      "post": {
+        "operationId": "approve_plan_api_agent_plans__key__approve_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key",
+            "required": true,
+            "schema": {
+              "title": "Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentPlanApproval"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentPlan"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Approve Plan"
+      }
+    },
+    "/api/agent/plans/{key}/cancel": {
+      "post": {
+        "operationId": "cancel_plan_api_agent_plans__key__cancel_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key",
+            "required": true,
+            "schema": {
+              "title": "Key",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentPlanDecision"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentPlan"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cancel Plan"
+      }
+    },
+    "/api/agent/status": {
+      "get": {
+        "operationId": "agent_status_api_agent_status_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Agent Status"
+      }
+    },
     "/api/auth/login": {
       "post": {
         "operationId": "login_api_auth_login_post",
@@ -2645,6 +4673,42 @@
           }
         },
         "summary": "Facility Map Presentation"
+      }
+    },
+    "/api/map/presentation/{layer}": {
+      "get": {
+        "operationId": "facility_map_display_layer_api_map_presentation__layer__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "layer",
+            "required": true,
+            "schema": {
+              "enum": [
+                "floorplan",
+                "slam"
+              ],
+              "title": "Layer",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Facility Map Display Layer"
       }
     },
     "/api/missions": {

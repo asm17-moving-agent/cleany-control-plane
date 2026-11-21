@@ -41,7 +41,7 @@ export function seatLabel(seats: Seat[], seatId: string | null | undefined) {
   return seat ? `${seatDisplayLabel(seat)}번 좌석` : seatId;
 }
 
-export function missionTargetLabel(mission: Mission, seats: Seat[]) {
+export function missionTargetLabel(mission: Pick<Mission, "target">, seats: Seat[]) {
   if (mission.target.label) return mission.target.label;
   if (mission.target.kind === "SEAT") return seatLabel(seats, mission.target.reference_id);
   return mission.target.reference_id;
@@ -60,7 +60,7 @@ export function formatDateTime(value?: string | null) {
   }).format(date);
 }
 
-export function missionTone(mission: Mission) {
+export function missionTone(mission: Pick<Mission, "phase" | "outcome">) {
   if (mission.outcome === "SUCCESS") return "success";
   if (["FAILED", "BLOCKED", "REJECTED", "INTERRUPTED"].includes(mission.outcome ?? "")) {
     return "danger";
@@ -72,6 +72,7 @@ export function missionTone(mission: Mission) {
 }
 
 const missionMessages: Record<string, string> = {
+  "Mission queued.": "작업을 대기열에 등록했습니다.",
   "Mission completed successfully.": "작업이 정상적으로 완료되었습니다.",
   "Mission offered to cleany-01.": "로봇에 작업을 요청했습니다.",
   "Robot accepted the mission.": "로봇이 작업을 수락했습니다.",

@@ -27,6 +27,12 @@ def render(directory: Path) -> None:
     if layout["schema_version"] != 1:
         raise ValueError("Unsupported presentation layout version")
     a, b, c, d, e, f = layout["transform"]
+    previous = metadata.get("presentation") or {}
+    if previous.get("layers") and (
+        previous["transform"] != layout["transform"]
+        or any(previous[key] != layout["viewport"][key] for key in ("width", "height"))
+    ):
+        raise ValueError("Re-export edited display layers before changing presentation coordinates")
     if not all(math.isfinite(v) for v in (a, b, c, d, e, f)) or not all(
         (
             math.isclose(a * a + b * b, 1),
@@ -125,6 +131,7 @@ def render(directory: Path) -> None:
         ET.tostring(svg, encoding="unicode") + "\n"
     )
     metadata["presentation"] = {
+        **({"layers": previous["layers"]} if previous.get("layers") else {}),
         "image_url": "/api/map/presentation",
         **layout["viewport"],
         "transform": layout["transform"],

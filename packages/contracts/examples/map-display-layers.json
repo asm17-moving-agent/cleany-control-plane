@@ -1,0 +1,45 @@
+{
+  "description": "Display-only edited rasters; both occupy the full presentation canvas. Navigation image, origin and resolution are unchanged.",
+  "response": {
+    "map_id": "slam-20261108",
+    "label": "실측 SLAM 지도",
+    "frame_id": "map",
+    "width": 573,
+    "height": 782,
+    "resolution": 0.05000000074505806,
+    "origin": [
+      -17.203175354003907,
+      -28.241448974609376,
+      0.0
+    ],
+    "negate": 0,
+    "occupied_thresh": 0.65,
+    "free_thresh": 0.196,
+    "source_run": "2026-11-08_manual-map-edit",
+    "source_kind": "slam_manually_edited",
+    "source_sha256": {
+      "map.yaml": "64f1871cf99936f8cd3b96d0d45ab5e5e7d89f5e2323e7ac441af0b682835439",
+      "map.pgm": "03da308b9e1e48ce11128183ac8d5b1ef80820a3ddaf96defe973f8b5fb8bc89"
+    },
+    "image_url": "/api/map/image",
+    "presentation": {
+      "image_url": "/api/map/presentation",
+      "width": 762,
+      "height": 462,
+      "transform": [
+        -0.1725480287456468,
+        -0.9850011054694261,
+        0.9850011054694261,
+        -0.1725480287456468,
+        45.0,
+        540.0
+      ],
+      "rotation_degrees": -99.936,
+      "source_image_sha256": "d135945fdfc83a997f4ce29423247452743f8480c344fbe0dc0efa025ed0e63e",
+      "layers": {
+        "floorplan_url": "/api/map/presentation/floorplan",
+        "slam_url": "/api/map/presentation/slam"
+      }
+    }
+  }
+}

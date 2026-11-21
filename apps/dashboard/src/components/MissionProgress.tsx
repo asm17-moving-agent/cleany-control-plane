@@ -13,7 +13,7 @@ const phaseLabels: Record<MissionPhase, string> = {
   NAVIGATING: "좌석으로 이동 중", WORKING: "정리 작업 중", RETURNING: "복귀 중", TERMINAL: "종료",
 };
 
-export function MissionProgress({ mission }: { mission: Mission }) {
+export function MissionProgress({ mission }: { mission: Pick<Mission, "phase" | "outcome" | "cancel_requested" | "execution_profile"> }) {
   const terminal = mission.phase === "TERMINAL";
   const success = terminal && mission.outcome === "SUCCESS";
   const current = phaseStage[mission.phase];

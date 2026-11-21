@@ -4,7 +4,7 @@ import pytest
 from account_support import authorize
 from fastapi.testclient import TestClient
 
-from control_plane.maps import load_map, map_directory
+from control_plane.maps import SlamMap, load_map, map_directory
 from control_plane.server import ControlPlaneApplication, create_app
 from control_plane.settings import Settings
 
@@ -21,6 +21,8 @@ def test_map_scope_and_raster():
     with TestClient(create_app(application), base_url="http://test") as client:
         assert client.get("/api/map").status_code == 401
         assert client.get("/api/map/presentation").status_code == 401
+        assert client.get("/api/map/presentation/floorplan").status_code == 401
+        assert client.get("/api/map/presentation/slam").status_code == 401
         authorize(client, application)
         client.params = {"site_id": "BUSAN_SOMA_18F"}
         assert client.get("/api/map").status_code == 404
@@ -37,6 +39,14 @@ def test_map_scope_and_raster():
         assert presentation.status_code == 200
         assert presentation.headers["content-type"].startswith("image/svg+xml")
         assert "<svg" in presentation.text
+        for url in metadata["presentation"]["layers"].values():
+            layer = client.get(url)
+            assert layer.status_code == 200
+            assert layer.content.startswith(b"\x89PNG")
+            assert layer.headers["cache-control"] == "no-store"
+            assert client.get(url, params={"site_id": "foreign"}).status_code == 404
+            assert client.get(url, params={"site_id": "BUSAN_SOMA_19F"}).status_code == 404
+        assert client.get("/api/map/presentation/unknown").status_code == 422
         assert client.get("/api/map/presentation", params={"site_id": "foreign"}).status_code == 404
         assert client.get("/api/map", params={"site_id": "foreign"}).status_code == 404
         assert client.get("/api/map/image", params={"site_id": "foreign"}).status_code == 404
@@ -120,6 +130,47 @@ def test_structural_presentation_preserves_source_identity_and_metric_scale():
         raw_x, raw_y = ia * x + ic * y + ie, ib * x + id_ * y + iff
         assert a * raw_x + c * raw_y + e == pytest.approx(x, abs=1e-8)
         assert b * raw_x + d * raw_y + f == pytest.approx(y, abs=1e-8)
+
+
+def test_edited_layers_preserve_canvas_and_navigation_source():
+    import json
+    from hashlib import sha256
+
+    from PIL import Image
+
+    metadata = load_map(Settings().map_directory, "slam-20261108")
+    directory = Path(Settings().map_directory) / metadata.map_id
+    manifest = json.loads((directory / "display-layers.json").read_text())
+    example = (
+        Path(__file__).resolve().parents[3] / "packages/contracts/examples/map-display-layers.json"
+    )
+    assert SlamMap.model_validate(json.loads(example.read_text())["response"]) == metadata
+    assert metadata.presentation.layers is not None
+    assert manifest["navigation_source_sha256"] == metadata.source_sha256["map.pgm"]
+    assert manifest["presentation_transform"] == list(metadata.presentation.transform)
+    for name in ("floorplan", "slam"):
+        path = directory / f"display-{name}.png"
+        assert sha256(path.read_bytes()).hexdigest() == manifest["layers"][name]["sha256"]
+        with Image.open(path) as image:
+            assert list(image.size) == manifest["canvas"]
+            assert image.width / manifest["pixels_per_unit"] == metadata.presentation.width
+            assert image.height / manifest["pixels_per_unit"] == metadata.presentation.height
+
+
+def test_display_layers_are_optional_but_cannot_be_incomplete(tmp_path):
+    import json
+    import shutil
+
+    source = Path(Settings().map_directory) / "slam-20261108"
+    directory = tmp_path / source.name
+    shutil.copytree(source, directory)
+    (directory / "display-floorplan.png").unlink()
+    with pytest.raises(ValueError, match="incomplete display layers"):
+        load_map(str(tmp_path), source.name)
+    metadata = json.loads((directory / "metadata.json").read_text())
+    metadata["presentation"].pop("layers")
+    (directory / "metadata.json").write_text(json.dumps(metadata))
+    assert load_map(str(tmp_path), source.name).presentation.layers is None
 
 
 def test_reviewed_layout_is_reproducible_and_rejects_another_source(tmp_path):

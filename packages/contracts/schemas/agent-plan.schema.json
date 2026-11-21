@@ -1,0 +1,162 @@
+{
+  "$defs": {
+    "AgentPlanSeat": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "priority": {
+          "default": "NORMAL",
+          "enum": [
+            "NORMAL",
+            "HIGH"
+          ],
+          "title": "Priority",
+          "type": "string"
+        },
+        "robot_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Robot Id",
+          "type": "string"
+        },
+        "seat_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Seat Id",
+          "type": "string"
+        },
+        "task_type": {
+          "const": "SEAT_SERVICE",
+          "default": "SEAT_SERVICE",
+          "title": "Task Type",
+          "type": "string"
+        },
+        "zone_id": {
+          "title": "Zone Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "seat_id",
+        "robot_id",
+        "label",
+        "zone_id"
+      ],
+      "title": "AgentPlanSeat",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "approved_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Approved At"
+    },
+    "approved_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Approved By"
+    },
+    "basis": {
+      "default": "",
+      "title": "Basis",
+      "type": "string"
+    },
+    "blockers": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Blockers",
+      "type": "array"
+    },
+    "conversation_id": {
+      "title": "Conversation Id",
+      "type": "string"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "execution_mode": {
+      "default": "unknown",
+      "title": "Execution Mode",
+      "type": "string"
+    },
+    "expires_at": {
+      "title": "Expires At",
+      "type": "string"
+    },
+    "items": {
+      "items": {
+        "$ref": "#/$defs/AgentPlanSeat"
+      },
+      "title": "Items",
+      "type": "array"
+    },
+    "mission_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Mission Ids",
+      "type": "array"
+    },
+    "plan_id": {
+      "title": "Plan Id",
+      "type": "string"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    },
+    "revision": {
+      "title": "Revision",
+      "type": "integer"
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "submitted",
+        "cancelled",
+        "superseded",
+        "expired"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "plan_id",
+    "conversation_id",
+    "revision",
+    "status",
+    "title",
+    "reason",
+    "items",
+    "created_at",
+    "expires_at"
+  ],
+  "title": "AgentPlan",
+  "type": "object"
+}

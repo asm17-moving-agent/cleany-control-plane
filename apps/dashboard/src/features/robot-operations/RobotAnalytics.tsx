@@ -1,7 +1,7 @@
-import { memo, useMemo, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { Link } from 'react-router';
+import { BatteryChart } from "./BatteryChart";
+import { Link, useSearchParams } from 'react-router';
 import { api } from '../../api/client';
 import { useAuthOptional } from '../../auth/AuthContext';
 import { useDemoMode } from '../../operations/DemoModeContext';
@@ -15,8 +15,15 @@ const time = (value: string) => new Date(value).toLocaleString('ko-KR', { timeZo
 export const RobotAnalytics = memo(function RobotAnalytics({ robotId }: { robotId: string }) {
   const auth = useAuthOptional();
   const { isDemo } = useDemoMode();
+  const [params] = useSearchParams();
   const [day, setDay] = useState(localDay);
   const [days, setDays] = useState(1);
+  const linkedDay = params.get('date'), linkedDays = params.get('days'), linkedEvent = params.get('event');
+  useEffect(() => {
+    if (linkedDay && /^\d{4}-\d{2}-\d{2}$/.test(linkedDay) && linkedDay <= localDay() && !Number.isNaN(Date.parse(linkedDay))) setDay(linkedDay);
+    const count = Number(linkedDays ?? 1);
+    if (count >= 1 && count <= 31) setDays(count);
+  }, [linkedDay, linkedDays]);
   const { start, end } = useMemo(() => dayRange(day, days), [day, days]);
   const demo = useMemo(() => demoAnalytics(robotId, start, end, Date.now()), [robotId, start, end]);
   const query = useInfiniteQuery({ queryKey: ['robot-analytics', auth?.session?.customer_id, auth?.site?.site_id, robotId, start, end],
@@ -27,6 +34,12 @@ export const RobotAnalytics = memo(function RobotAnalytics({ robotId }: { robotI
   const pages = isDemo ? [demo] : query.data?.pages;
   const data = pages?.[0];
   const events = [...new Map((pages ?? []).flatMap(page => page.events).map(event => [event.event_id, event])).values()];
+  useEffect(() => {
+    if (!linkedEvent || !query.data) return;
+    const element = document.getElementById('robot-event-' + linkedEvent);
+    if (element) element.scrollIntoView({ block: 'center' });
+    else if (query.hasNextPage && !query.isFetchingNextPage) void query.fetchNextPage();
+  }, [linkedEvent, query.data, query.hasNextPage, query.isFetchingNextPage, query.fetchNextPage]);
   const pending = !isDemo && query.isPending;
   const failed = !isDemo && query.isError;
   const total = data?.window_seconds ?? 0;
@@ -34,22 +47,13 @@ export const RobotAnalytics = memo(function RobotAnalytics({ robotId }: { robotI
   return <section className="robot-history" aria-label="로봇 운영 분석">
     <header className="robot-section-heading"><h3>운영 분석</h3><div className="robot-period">
       <Input type="date" aria-label="분석 기준 날짜" value={day} max={localDay()} onChange={event => { if (/^\d{4}-\d{2}-\d{2}$/.test(event.target.value)) setDay(event.target.value); }} />
-      <NativeSelect aria-label="분석 기간" value={days} onChange={event => setDays(Number(event.target.value))}><option value={1}>하루</option><option value={7}>7일</option><option value={30}>30일</option></NativeSelect>
+      <NativeSelect aria-label="분석 기간" value={days} onChange={event => setDays(Number(event.target.value))}>{![1, 7, 30].includes(days) && <option value={days}>{days}일</option>}<option value={1}>하루</option><option value={7}>7일</option><option value={30}>30일</option></NativeSelect>
       <Button onClick={() => void query.refetch()} disabled={isDemo || query.isFetching}>새로고침</Button>
     </div></header>
     {failed && <div className="robot-inline-alert" role="alert">운영 기록을 불러오지 못했습니다. <Button size="compact" onClick={() => void query.refetch()}>다시 시도</Button></div>}
     <div className="robot-analytics-grid" aria-busy={pending}>
       <Surface className="robot-battery-chart"><PanelHeader title="배터리 추이" action={<div className="robot-chart-key"><span><i data-state="WORKING" />잔량</span><span><i data-state="CHARGING" />충전 중</span></div>} />
-        {data?.battery.some(point => point.percentage !== null) ? <div className="robot-chart" role="img" aria-label="시간대별 배터리 잔량과 충전 이력">
-          <ResponsiveContainer width="100%" height="100%"><LineChart data={data.battery} margin={{ top: 16, right: 16, bottom: 0, left: -12 }}>
-            <CartesianGrid vertical={false} stroke="var(--color-border)" strokeDasharray="3 3" />
-            <XAxis dataKey="time" tickFormatter={v => days === 1 ? new Date(v).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Seoul' }) : new Date(v).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric', timeZone: 'Asia/Seoul' })} minTickGap={40} tickLine={false} axisLine={false} />
-            <YAxis domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={v => `${v}%`} axisLine={false} tickLine={false} />
-            <Tooltip labelFormatter={v => time(String(v))} formatter={(value, name) => [`${Number(value).toFixed(1)}%`, name]} />
-            <Line type="linear" dataKey="percentage" name="잔량" stroke="var(--chart-work)" strokeWidth={2} dot={data.battery.filter(p => p.percentage !== null).length < 3} connectNulls={false} isAnimationActive={false} />
-            <Line type="linear" dataKey="charging_percentage" name="충전 중" stroke="var(--color-action)" strokeWidth={3} dot={false} connectNulls={false} isAnimationActive={false} />
-          </LineChart></ResponsiveContainer>
-        </div> : <div className="robot-chart-empty">{pending ? '불러오는 중' : failed ? '배터리 기록 조회 실패' : '배터리 기록 없음'}</div>}
+        {data?.battery.some(point => point.percentage !== null) ? <BatteryChart points={data.battery} days={days} /> : <div className="robot-chart-empty">{pending ? '불러오는 중' : failed ? '배터리 기록 조회 실패' : '배터리 기록 없음'}</div>}
       </Surface>
       <Surface className="robot-activity"><PanelHeader title="활동 분포" action={data && <StatusBadge>관측 {coverage}%</StatusBadge>} />
         {data?.activities.length ? <>
@@ -60,7 +64,7 @@ export const RobotAnalytics = memo(function RobotAnalytics({ robotId }: { robotI
       </Surface>
     </div>
     <Surface className="robot-events"><PanelHeader title="운영 이벤트" action={<div className="robot-data-source">{data?.provenance.map(source => <StatusBadge key={source}>{sourceLabel(source)}</StatusBadge>)}</div>} />
-      {events.length ? <ol className="robot-timeline">{events.map(event => <li key={event.event_id} data-severity={event.severity.toLowerCase()}>
+      {events.length ? <ol className="robot-timeline">{events.map(event => <li key={event.event_id} id={'robot-event-' + event.event_id} aria-current={linkedEvent === event.event_id ? 'true' : undefined} data-severity={event.severity.toLowerCase()}>
         <time dateTime={event.occurred_at}>{time(event.occurred_at)}</time><span className="robot-event-dot" aria-hidden="true" /><div><strong>{event.title}</strong>{event.detail && <p>{event.detail}</p>}</div>
         <StatusBadge>{sourceLabel(event.provenance)}</StatusBadge>{event.mission_id && <Button asChild variant="ghost" size="compact"><Link to={'/missions?mission=' + encodeURIComponent(event.mission_id)}>작업 보기</Link></Button>}
       </li>)}</ol> : <div className="robot-events-empty">{pending ? '불러오는 중' : failed ? '이벤트 조회 실패' : '운영 이벤트 없음'}</div>}

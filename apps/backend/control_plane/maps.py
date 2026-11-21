@@ -6,6 +6,14 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class MapDisplayLayers(BaseModel):
+    """Edited, full-canvas rasters in presentation coordinates, never navigation inputs."""
+
+    model_config = ConfigDict(extra="forbid")
+    floorplan_url: Literal["/api/map/presentation/floorplan"] = "/api/map/presentation/floorplan"
+    slam_url: Literal["/api/map/presentation/slam"] = "/api/map/presentation/slam"
+
+
 class MapPresentation(BaseModel):
     """Display-only rigid transform in source raster coordinates."""
 
@@ -16,6 +24,7 @@ class MapPresentation(BaseModel):
     transform: tuple[float, float, float, float, float, float]
     rotation_degrees: float
     source_image_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    layers: MapDisplayLayers | None = None
 
 
 class SlamMap(BaseModel):
@@ -57,4 +66,11 @@ def load_map(root: str, map_ref: str) -> SlamMap:
         raise ValueError("incomplete map bundle")
     if metadata.presentation and not (directory / "presentation.svg").is_file():
         raise ValueError("incomplete presentation bundle")
+    if (
+        metadata.presentation and metadata.presentation.layers
+        and any(
+            not (directory / f"display-{layer}.png").is_file() for layer in ("floorplan", "slam")
+        )
+    ):
+        raise ValueError("incomplete display layers")
     return metadata

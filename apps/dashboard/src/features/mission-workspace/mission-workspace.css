@@ -99,18 +99,18 @@
  .task-create-body .ui-notice { margin: 0; }
  .task-request-description { margin: 0; font-size: var(--text-caption); color: var(--color-text-muted); }
  .task-workspace .result-observations { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
- .task-workspace .result-observation { min-width: 0; }
- .task-workspace .result-observation header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; gap: 8px; }
- .task-workspace .result-observation h4 { margin: 0; font-size: var(--text-caption); font-weight: 600; }
- .task-workspace .result-observation header a { display: inline-flex; align-items: center; gap: 4px; font-size: var(--text-caption); color: var(--color-action-ink); }
- .task-workspace .result-observation header svg { width: 12px; height: 12px; }
- .task-workspace .result-observation-image { position: relative; display: block; overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-control); }
- .task-workspace .result-observation-image img { display: block; width: 100%; aspect-ratio: 4/3; max-height: 240px; object-fit: contain; background: var(--color-background); }
+ :is(.task-workspace, .agent-photos) .result-observation { min-width: 0; }
+ :is(.task-workspace, .agent-photos) .result-observation header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; gap: 8px; }
+ :is(.task-workspace, .agent-photos) .result-observation h4 { margin: 0; font-size: var(--text-caption); font-weight: 600; }
+ :is(.task-workspace, .agent-photos) .result-observation header a { display: inline-flex; align-items: center; gap: 4px; font-size: var(--text-caption); color: var(--color-action-ink); }
+ :is(.task-workspace, .agent-photos) .result-observation header svg { width: 12px; height: 12px; }
+ :is(.task-workspace, .agent-photos) .result-observation-image { position: relative; display: block; overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-control); }
+ :is(.task-workspace, .agent-photos) .result-observation-image img { display: block; width: 100%; aspect-ratio: 4/3; max-height: 240px; object-fit: contain; background: var(--color-background); }
  .task-workspace .result-photo-label { position: absolute; bottom: 8px; left: 8px; padding: 4px 8px; border-radius: var(--radius-badge); background: var(--color-surface); color: var(--color-text-muted); font-size: var(--text-caption); }
- .task-workspace .result-observation-empty { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; aspect-ratio: 4/3; border: 1px dashed var(--color-border-strong); border-radius: var(--radius-control); color: var(--color-text-muted); }
- .task-workspace .result-observation-empty svg { width: 24px; height: 24px; }
- .task-workspace .result-observation-empty strong { font-size: var(--text-caption); font-weight: 400; }
- .task-workspace .result-reference { margin-top: 8px; font-size: var(--text-caption); color: var(--color-text-muted); overflow-wrap: anywhere; }
+ :is(.task-workspace, .agent-photos) .result-observation-empty { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; aspect-ratio: 4/3; border: 1px dashed var(--color-border-strong); border-radius: var(--radius-control); color: var(--color-text-muted); }
+ :is(.task-workspace, .agent-photos) .result-observation-empty svg { width: 24px; height: 24px; }
+ :is(.task-workspace, .agent-photos) .result-observation-empty strong { font-size: var(--text-caption); font-weight: 400; }
+ :is(.task-workspace, .agent-photos) .result-reference { margin-top: 8px; font-size: var(--text-caption); color: var(--color-text-muted); overflow-wrap: anywhere; }
  @media (max-width: 1279px) {
   .task-layout { grid-template-columns: 208px minmax(0,3fr) minmax(0,7fr); }
   .task-sidebar { gap: 12px; }

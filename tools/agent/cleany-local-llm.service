@@ -1,0 +1,23 @@
+[Unit]
+Description=Cleany local Qwen inference server
+
+[Service]
+Type=simple
+ExecStartPre=/usr/bin/test -f /var/opt/cleany/state/cleany/gpu-work.lock.demand
+ExecStart=/usr/bin/python3 /opt/cleany/runtimes/local-llm/current/qwen_worker.py \
+    --port 18764 --model /var/opt/cleany/models/local-vlm/active \
+    --resident-runner /opt/cleany/runtimes/local-llm/current/qwen_text_runner --keep-warm \
+    --min-free-mib 3072 --load-headroom-mib 7168 \
+    --gpu-lock /var/opt/cleany/state/cleany/gpu-work.lock \
+    --also-gpu-lock %h/cleany/configs/robot/gpu-work.lock \
+    --also-gpu-lock /opt/cleany/current/native/host/configs/robot/gpu-work.lock
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=15
+RuntimeDirectory=cleany-local-llm
+RuntimeDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=default.target

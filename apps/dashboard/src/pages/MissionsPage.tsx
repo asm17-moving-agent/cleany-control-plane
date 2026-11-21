@@ -1,3 +1,4 @@
+import { useAgentPageContext } from "../features/agent/AgentContext";
 import { PlusIcon, ChevronIcon } from "../components/WorkspaceIcons";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
@@ -35,6 +36,7 @@ export function MissionsPage() {
   const filtered = sortTasks(missions.filter(m => matchesTask(m,filter) && (priority === "ALL" || priority===m.priority)
     && `${missionTargetLabel(m,seats)} ${m.mission_id}`.toLowerCase().includes(search.toLowerCase().trim())));
   const selected = selectedId ? missions.find(m => m.mission_id === selectedId) : filtered[0];
+  useAgentPageContext({ mission_id: selected?.mission_id, day });
   const count = (state: TaskFilter) => isLoading || error ? "—" : missions.filter(m=>matchesTask(m,state)).length;
   const summary = isLoading || error ? undefined : summarizeTasks(missions);
   const dateTitle = new Intl.DateTimeFormat("ko-KR", { month:"long", day:"numeric", weekday:"long", timeZone:"Asia/Seoul" }).format(new Date(`${day}T12:00:00+09:00`));

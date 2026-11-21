@@ -211,3 +211,91 @@ Robot은 장치 토큰으로 `/api/robots/{robot_id}/telemetry/ws`에 연결합�
 시각 기준입니다. 장기 보관과 고주파 관절 재생이 필요한 경우 별도 Logger를 사용합니다.
 Supervisor 상태 조회는 복구 명령 권한을 만들지 않습니다. 관측된 안전 채널이 오래되면
 수동 이동을 차단하지만 기존 STOP 경로와 물리 비상정지는 별개입니다.
+
+## 자연어 운영 AI
+
+루트에서 서버를 실행하면 `.env`의 `OPENAI_API_KEY`를 서버에서만 읽는다.
+[설계/검증](../../docs/architecture/operations-agent.md),
+[승인 경계 ADR](../../docs/adr/0012-natural-language-operations-agent.md)를 따른다.
+
+```dotenv
+OPENAI_API_KEY=your-server-side-key
+CLEANY_AGENT_PROVIDER=openai
+CLEANY_AGENT_MODEL=gpt-6.1-sol
+CLEANY_AGENT_REASONING_EFFORT=low
+CLEANY_AGENT_REQUEST_TIMEOUT_SECONDS=90
+CLEANY_AGENT_TURN_TIMEOUT_SECONDS=180
+CLEANY_AGENT_MAX_OUTPUT_TOKENS=4000
+CLEANY_AGENT_MAX_TOOL_ROUNDS=6
+CLEANY_AGENT_MAX_PLAN_ITEMS=50
+CLEANY_AGENT_PLAN_TTL_SECONDS=900
+CLEANY_AGENT_HISTORY_TURNS=20
+CLEANY_AGENT_HISTORY_RETENTION_DAYS=90
+CLEANY_AGENT_STREAM_HEARTBEAT_SECONDS=5
+CLEANY_AGENT_MAX_CONCURRENT_TURNS=4
+```
+
+### Jetson Qwen으로 개발하기
+
+기본 제공자는 OpenAI다. 로컬 모드에서는 노트북 Backend가 SSH 터널을 통해 Jetson의
+`cleany-local-llm.service`에 요청한다. 모델 선택 경로는 `/var/opt/cleany/models/local-vlm/active`다.
+
+1. Jetson에서 같은 버전의 TensorRT Edge-LLM SDK 소스와 기존 `llm_inference` 빌드 트리를 준비한다.
+   두 경로를 `EDGE_SDK_SRC`, `EDGE_SDK_BUILD`로 설정하고 저장소 루트에서 텍스트 실행기를 빌드한다.
+
+   ```bash
+   mkdir -p "$HOME/.cache/cleany-builds/local-llm"
+   binary="$HOME/.cache/cleany-builds/local-llm/qwen_text_runner"
+   CUDA_HOME=/usr/local/cuda-12.6 tools/agent/build_text_runner.sh "$EDGE_SDK_SRC" "$EDGE_SDK_BUILD" "$binary"
+   ```
+
+2. 버전 디렉터리에 `qwen_text_runner`, `tools/agent/qwen_worker.py`, `tools/agent/qwen_resident.py`,
+   `apps/backend/control_plane/agent_intents.py`를 함께 설치하고
+   `/opt/cleany/runtimes/local-llm/current`가 이 디렉터리를 가리키게 한다.
+   같은 포트에서 이전 개발 worker가 실행 중이면 교체 시점에 종료한다.
+
+   ```bash
+   target=/opt/cleany/runtimes/local-llm
+   release_id=$(sha256sum "$binary" tools/agent/{qwen_worker,qwen_resident}.py apps/backend/control_plane/agent_intents.py | sha256sum | cut -c1-12)
+   install -d -m 700 "$target/$release_id"
+   install -m 755 "$binary" "$target/$release_id/qwen_text_runner"
+   install -m 644 tools/agent/{qwen_worker,qwen_resident}.py apps/backend/control_plane/agent_intents.py "$target/$release_id/"
+   ln -sfnT "$release_id" "$target/current.next"
+   mv -Tf "$target/current.next" "$target/current"
+   install -Dm644 tools/agent/cleany-local-llm.service "$HOME/.config/systemd/user/cleany-local-llm.service"
+   systemctl --user daemon-reload
+   systemctl --user enable cleany-local-llm.service
+   systemctl --user restart cleany-local-llm.service
+   ```
+
+3. 노트북에서 기존 터널을 사용하거나 다음과 같이 연다. 준비 상태가 HTTP 200이면 Backend를 실행한다.
+
+   ```bash
+   systemd-run --user --collect --unit=cleany-dashboard-qwen-tunnel --property=Restart=on-failure --property=RestartSec=5 /usr/bin/ssh -NT -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -L 127.0.0.1:18764:127.0.0.1:18764 jetson-orin-via-n100
+   curl --fail http://127.0.0.1:18764/health
+   CLEANY_AGENT_PROVIDER=qwen uv run --project apps/backend python apps/backend/run.py
+   ```
+
+`CLEANY_AGENT_QWEN_URL`의 기본값은 `http://127.0.0.1:18764`다. 서비스는 loopback에서
+`GET /v1/models`와 `POST /v1/chat/completions`를 제공한다. 모델 이름은 `local-vlm/active`다.
+텍스트 메시지, `temperature=0`, 비스트리밍 응답과 1~256 출력 토큰을 지원한다.
+
+```bash
+curl --fail http://127.0.0.1:18764/v1/chat/completions \
+  -H 'Content-Type: application/json' \
+  -d '{"model":"local-vlm/active","messages":[{"role":"user","content":"삼각형의 변은 몇 개야?"}],"max_tokens":24}'
+```
+
+서버 한 프로세스가 4B 실행기 하나를 관리한다. 서비스 시작 시 모델을 적재하고 준비 중에는
+`/health`가 503을 반환한다. 로컬 추론은 한 번에 한 건이다. 현장 팔 계획기의 GPU 잠금은
+`/var/opt/cleany/state/cleany/gpu-work.lock`이다. 로봇이 이 잠금을 보유하거나
+짝 파일 `.demand`로 대기 의사를 표시하면 새 질문은 요청 제한 시간까지 기다린다.
+그동안 모델은 RAM에 남고, 잠금이 풀리면 같은 실행기에서 답한다. 이미 시작한
+추론은 GPU 잠금을 반납할 때까지 실행한다. 동시 요청이나 대기 시간 초과는 429다.
+운영 설정은 가용 RAM 3 GiB 미만에서 실행기를 종료하고 7 GiB 이상에서 다시 적재한다.
+단순 현재 상태 조회와 명확한 날짜
+후속 질문은 Backend에서 검증된 도구를 직접 호출한다.
+
+Jetson에서 `systemctl --user status cleany-local-llm`로 서비스를 확인한다. 중지 및
+자동 기동 해제는 `systemctl --user disable --now cleany-local-llm`로 한다.
+노트북의 터널만 닫으려면 `systemctl --user stop cleany-dashboard-qwen-tunnel`을 사용한다.

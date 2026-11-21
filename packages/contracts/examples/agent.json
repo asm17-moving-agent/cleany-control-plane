@@ -1,0 +1,162 @@
+{
+  "plan": {
+    "plan_id": "example-plan",
+    "conversation_id": "example-conversation",
+    "revision": 1,
+    "status": "draft",
+    "title": "D-HUB 18번 정리",
+    "reason": "관리자 요청",
+    "items": [
+      {
+        "seat_id": "seat-18",
+        "priority": "NORMAL",
+        "robot_id": "cleany-01",
+        "task_type": "SEAT_SERVICE",
+        "label": "18",
+        "zone_id": "d-hub"
+      }
+    ],
+    "blockers": [],
+    "created_at": "2026-11-17T09:00:00+00:00",
+    "expires_at": "2026-11-17T09:15:00+00:00",
+    "mission_ids": [],
+    "approved_by": null,
+    "approved_at": null
+  },
+  "approval": {
+    "revision": 1,
+    "approved": true
+  },
+  "stream": [
+    {
+      "type": "tool",
+      "text": "좌석 확인"
+    },
+    {
+      "type": "plan",
+      "plan": {
+        "plan_id": "example-plan",
+        "conversation_id": "example-conversation",
+        "revision": 1,
+        "status": "draft",
+        "title": "D-HUB 18번 정리",
+        "reason": "관리자 요청",
+        "items": [
+          {
+            "seat_id": "seat-18",
+            "priority": "NORMAL",
+            "robot_id": "cleany-01",
+            "task_type": "SEAT_SERVICE",
+            "label": "18",
+            "zone_id": "d-hub"
+          }
+        ],
+        "blockers": [],
+        "created_at": "2026-11-17T09:00:00+00:00",
+        "expires_at": "2026-11-17T09:15:00+00:00",
+        "mission_ids": [],
+        "approved_by": null,
+        "approved_at": null
+      }
+    },
+    {
+      "type": "delta",
+      "text": "계획을 확인해 주세요."
+    },
+    {
+      "type": "complete",
+      "message": {
+        "message_id": "example-answer",
+        "role": "assistant",
+        "status": "complete",
+        "content": "완료가 1건 줄었습니다.",
+        "created_at": "2026-11-17T09:00:00+00:00",
+        "cards": [
+          {
+            "kind": "day_comparison",
+            "earlier": {
+              "day": "2026-11-16",
+              "requested": 3,
+              "completed": 3,
+              "failed": 0,
+              "cancelled": 0,
+              "review_needed": 0
+            },
+            "later": {
+              "day": "2026-11-17",
+              "requested": 2,
+              "completed": 2,
+              "failed": 0,
+              "cancelled": 0,
+              "review_needed": 0
+            },
+            "site_id": "BUSAN_SOMA_18F",
+            "seat_id": null,
+            "sources": [
+              "mock"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "complete",
+      "message": {
+        "message_id": "example-queue-reply",
+        "role": "assistant",
+        "content": "배정 대기 작업은 0건입니다.",
+        "status": "complete",
+        "created_at": "2026-11-21T09:00:00+09:00",
+        "cards": [
+          {
+            "kind": "work_queue",
+            "site_id": "BUSAN_SOMA_18F",
+            "captured_at": "2026-11-21T09:00:00+09:00",
+            "rows": [],
+            "focus_seats": [],
+            "start_day": null,
+            "end_day": null
+          }
+        ]
+      }
+    },
+    {
+      "type": "complete",
+      "message": {
+        "message_id": "example-insight",
+        "role": "assistant",
+        "content": "검토 대상 3건 중 1건을 확인했습니다.",
+        "created_at": "2026-11-21T09:00:00+09:00",
+        "cards": [
+          {
+            "kind": "review_progress",
+            "site_id": "BUSAN_SOMA_18F",
+            "captured_at": "2026-11-21T09:00:00+09:00",
+            "start_day": "2026-11-21",
+            "end_day": "2026-11-21",
+            "scope_label": "시설 전체",
+            "basis": "검토 대상 3건",
+            "metric": "검토 완료",
+            "value": 1,
+            "unit": "건",
+            "sample_count": 3,
+            "buckets": [
+              {
+                "label": "검토 완료",
+                "value": 1
+              },
+              {
+                "label": "검토 대기",
+                "value": 2,
+                "tone": "warning"
+              }
+            ],
+            "sources": [
+              "모의"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

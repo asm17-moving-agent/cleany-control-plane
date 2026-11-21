@@ -97,3 +97,15 @@ def test_robot_observation_examples_match_published_schema():
     }
     for example in examples:
         RobotObservation.model_validate(example)
+
+
+def test_agent_contracts_and_approval_examples():
+    from control_plane.agent_models import AgentPlan, AgentPlanApproval, AgentStreamEvent
+    assert read_contract('agent-plan.schema.json') == AgentPlan.model_json_schema()
+    assert read_contract('agent-stream-event.schema.json') == AgentStreamEvent.model_json_schema()
+    examples = json.loads((CONTRACT_ROOT.parent / 'examples/agent.json').read_text())
+    plan = AgentPlan.model_validate(examples['plan'])
+    assert plan.status == 'draft' and not plan.mission_ids
+    AgentPlanApproval.model_validate(examples['approval'])
+    for event in examples['stream']:
+        AgentStreamEvent.model_validate(event)

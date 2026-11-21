@@ -3,7 +3,7 @@ import "./styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router";
+import { createBrowserRouter, RouterProvider } from "react-router";
 import { App } from "./app/App";
 import { OperationsProvider } from "./operations/OperationsContext";
 import { DemoModeProvider } from "./operations/DemoModeContext";
@@ -19,17 +19,16 @@ const queryClient = new QueryClient({
   },
 });
 
+// Data-router navigation enables the layout editor's push/back/forward blocker.
+const router = createBrowserRouter([{ path: "*", element:
+  <AuthProvider><AuthGate><DemoModeProvider><OperationsProvider><App /></OperationsProvider></DemoModeProvider></AuthGate></AuthProvider>,
+}]);
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <SettingsProvider>
-        <BrowserRouter>
-          <AuthProvider><AuthGate><DemoModeProvider>
-            <OperationsProvider>
-              <App />
-            </OperationsProvider>
-          </DemoModeProvider></AuthGate></AuthProvider>
-        </BrowserRouter>
+        <RouterProvider router={router} />
       </SettingsProvider>
     </QueryClientProvider>
   </StrictMode>,

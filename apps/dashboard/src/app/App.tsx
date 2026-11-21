@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 const UiPreviewPage = import.meta.env.DEV ? lazy(() => import("../pages/UiPreviewPage").then(module => ({ default: module.UiPreviewPage }))) : () => null;
 import { Navigate, Route, Routes, useLocation } from "react-router";
 import { MapPage } from "../pages/MapPage";
+const MapEditPage = lazy(() => import("../pages/MapEditPage").then(module => ({ default: module.MapEditPage })));
 const MonitoringPage = lazy(() => import("../pages/MonitoringPage").then(module => ({ default: module.MonitoringPage })));
 import { MissionsPage } from "../pages/MissionsPage";
 import { RobotsPage } from "../pages/RobotsPage";
@@ -18,6 +19,7 @@ export function App() {
       <Route element={<AppShell />}>
         <Route index element={<HomeEntry />} />
         <Route path="map" element={<MapPage />} />
+        <Route path="map/edit" element={<Suspense fallback={<p role="status">편집기 불러오는 중</p>}><MapEditPage /></Suspense>} />
         <Route path="missions" element={<MissionsPage />} />
         <Route path="results" element={<ResultsPage />} />
         <Route path="monitoring" element={<LegacyMonitoring />} />

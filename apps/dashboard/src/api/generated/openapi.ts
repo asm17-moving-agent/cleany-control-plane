@@ -4,6 +4,126 @@
  */
 
 export interface paths {
+    "/api/agent/conversations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Conversations */
+        get: operations["conversations_api_agent_conversations_get"];
+        put?: never;
+        /** New Conversation */
+        post: operations["new_conversation_api_agent_conversations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agent/conversations/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Conversation */
+        get: operations["conversation_api_agent_conversations__key__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agent/conversations/{key}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Message */
+        post: operations["message_api_agent_conversations__key__messages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agent/plans/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edit Plan */
+        patch: operations["edit_plan_api_agent_plans__key__patch"];
+        trace?: never;
+    };
+    "/api/agent/plans/{key}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve Plan */
+        post: operations["approve_plan_api_agent_plans__key__approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agent/plans/{key}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel Plan */
+        post: operations["cancel_plan_api_agent_plans__key__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/agent/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Agent Status */
+        get: operations["agent_status_api_agent_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/auth/login": {
         parameters: {
             query?: never;
@@ -166,6 +286,23 @@ export interface paths {
         };
         /** Facility Map Presentation */
         get: operations["facility_map_presentation_api_map_presentation_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/map/presentation/{layer}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Facility Map Display Layer */
+        get: operations["facility_map_display_layer_api_map_presentation__layer__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -465,6 +602,588 @@ export interface components {
              */
             state: "WORKING" | "MOVING" | "IDLE" | "CHARGING" | "FAULT" | "STOPPED" | "UNKNOWN";
         };
+        /** AgentBatteryChart */
+        AgentBatteryChart: {
+            /**
+             * Captured At
+             * Format: date-time
+             */
+            captured_at: string;
+            /**
+             * End
+             * Format: date-time
+             */
+            end: string;
+            /**
+             * End Day
+             * Format: date
+             */
+            end_day: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "battery_chart";
+            /** Points */
+            points: components["schemas"]["BatteryPoint"][];
+            /** Robot Id */
+            robot_id: string;
+            /** Site Id */
+            site_id: string;
+            /** Sources */
+            sources: string[];
+            /**
+             * Start
+             * Format: date-time
+             */
+            start: string;
+            /**
+             * Start Day
+             * Format: date
+             */
+            start_day: string;
+        };
+        /** AgentCitation */
+        AgentCitation: {
+            /** Href */
+            href: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "mission" | "robot" | "event" | "seats" | "history";
+            /** Label */
+            label: string;
+        };
+        /** AgentComparisonCard */
+        AgentComparisonCard: {
+            earlier: components["schemas"]["AgentDayCounts"];
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "day_comparison";
+            later: components["schemas"]["AgentDayCounts"];
+            /** Seat Id */
+            seat_id: string | null;
+            /** Site Id */
+            site_id: string;
+            /** Sources */
+            sources: string[];
+        };
+        /** AgentContext */
+        AgentContext: {
+            /** Day */
+            day?: string | null;
+            /**
+             * Demo
+             * @default false
+             */
+            demo?: boolean;
+            /** Mission Id */
+            mission_id?: string | null;
+            /**
+             * Page
+             * @default /
+             */
+            page?: ("/" | "/map" | "/map/edit" | "/missions" | "/robots" | "/settings") | null;
+            /** Robot Id */
+            robot_id?: string | null;
+            /** Seat Ids */
+            seat_ids?: string[];
+        };
+        /** AgentConversation */
+        AgentConversation: {
+            /** Conversation Id */
+            conversation_id: string;
+            /** Created At */
+            created_at: string;
+            /** Title */
+            title: string;
+            /** Updated At */
+            updated_at: string;
+        };
+        /** AgentConversationDetail */
+        AgentConversationDetail: {
+            /** Conversation Id */
+            conversation_id: string;
+            /** Created At */
+            created_at: string;
+            /** Messages */
+            messages: components["schemas"]["AgentMessage"][];
+            /** Plans */
+            plans: components["schemas"]["AgentPlan"][];
+            /** Title */
+            title: string;
+            /** Updated At */
+            updated_at: string;
+        };
+        /** AgentConversationList */
+        AgentConversationList: {
+            /** Items */
+            items: components["schemas"]["AgentConversation"][];
+        };
+        /** AgentDayCounts */
+        AgentDayCounts: {
+            /** Cancelled */
+            cancelled: number;
+            /** Completed */
+            completed: number;
+            /**
+             * Day
+             * Format: date
+             */
+            day: string;
+            /** Failed */
+            failed: number;
+            /** Requested */
+            requested: number;
+            /** Review Needed */
+            review_needed: number;
+        };
+        /** AgentEventTimeline */
+        AgentEventTimeline: {
+            /**
+             * Captured At
+             * Format: date-time
+             */
+            captured_at: string;
+            /**
+             * End Day
+             * Format: date
+             */
+            end_day: string;
+            /** Events */
+            events: components["schemas"]["RobotOperationalEvent"][];
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "event_timeline";
+            /** More */
+            more: boolean;
+            /** Robot Id */
+            robot_id: string;
+            /** Site Id */
+            site_id: string;
+            /**
+             * Start Day
+             * Format: date
+             */
+            start_day: string;
+        };
+        /** AgentInsight */
+        AgentInsight: {
+            /** Basis */
+            basis: string;
+            /** Buckets */
+            buckets: components["schemas"]["InsightBucket"][];
+            /**
+             * Captured At
+             * Format: date-time
+             */
+            captured_at: string;
+            /** End Day */
+            end_day: string | null;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "elapsed_spread" | "failure_reasons" | "outcome_mix" | "photo_pairs" | "queue_age" | "repeat_seats" | "request_hours" | "review_progress" | "run_sources" | "zone_coverage";
+            /** Metric */
+            metric: string;
+            /** Sample Count */
+            sample_count: number;
+            /** Scope Label */
+            scope_label: string;
+            /** Site Id */
+            site_id: string;
+            /** Sources */
+            sources: string[];
+            /** Start Day */
+            start_day: string | null;
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "건" | "석" | "분" | "%";
+            /** Value */
+            value: number;
+        };
+        /** AgentLiveRobot */
+        AgentLiveRobot: {
+            /**
+             * Captured At
+             * Format: date-time
+             */
+            captured_at: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "head_camera" | "robot_position";
+            /** Robot Id */
+            robot_id: string;
+            /** Seat Ids */
+            seat_ids: string[];
+            /** Site Id */
+            site_id: string;
+        };
+        /** AgentMapSeat */
+        AgentMapSeat: {
+            /** Label */
+            label: string;
+            /** Last Completed */
+            last_completed?: string | null;
+            profile?: components["schemas"]["ExecutionProfile"] | null;
+            /** Seat Id */
+            seat_id: string;
+            /** Selectable */
+            selectable: boolean;
+            /** Zone Id */
+            zone_id: string;
+        };
+        /** AgentMessage */
+        AgentMessage: {
+            /** Cards */
+            cards?: (components["schemas"]["AgentMissionCard"] | components["schemas"]["AgentComparisonCard"] | components["schemas"]["AgentRobotHealth"] | components["schemas"]["AgentLiveRobot"] | components["schemas"]["AgentPhotos"] | components["schemas"]["AgentBatteryChart"] | components["schemas"]["AgentEventTimeline"] | components["schemas"]["AgentWorkList"] | components["schemas"]["AgentSeatMap"] | components["schemas"]["AgentInsight"])[];
+            /** Citations */
+            citations?: components["schemas"]["AgentCitation"][];
+            /** Content */
+            content: string;
+            context?: components["schemas"]["AgentContext"] | null;
+            /** Created At */
+            created_at: string;
+            /** Error */
+            error?: string | null;
+            /** Message Id */
+            message_id: string;
+            /** Plan Ids */
+            plan_ids?: string[];
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "user" | "assistant";
+            /**
+             * Status
+             * @default complete
+             * @enum {string}
+             */
+            status?: "streaming" | "complete" | "interrupted" | "error";
+            /** Summaries */
+            summaries?: components["schemas"]["AgentSummary"][];
+        };
+        /** AgentMessageInput */
+        AgentMessageInput: {
+            /** Client Message Id */
+            client_message_id: string;
+            /** Content */
+            content: string;
+            context?: components["schemas"]["AgentContext"];
+        };
+        /** AgentMetric */
+        AgentMetric: {
+            /** Label */
+            label: string;
+            /** Value */
+            value: string;
+        };
+        /** AgentMissionCard */
+        AgentMissionCard: {
+            /** Cancel Requested */
+            cancel_requested: boolean;
+            /**
+             * Captured At
+             * Format: date-time
+             */
+            captured_at: string;
+            execution_profile: components["schemas"]["ExecutionProfile"] | null;
+            /** Failure Code */
+            failure_code: string | null;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "mission_progress";
+            /** Message */
+            message: string;
+            /** Mission Id */
+            mission_id: string;
+            outcome: components["schemas"]["MissionOutcome"] | null;
+            phase: components["schemas"]["MissionPhase"];
+            /** Review Pending */
+            review_pending: boolean;
+            /** Site Id */
+            site_id: string;
+            target: components["schemas"]["MissionTargetModel"];
+        };
+        /** AgentPhotos */
+        AgentPhotos: {
+            /** After */
+            after: string | null;
+            /** Before */
+            before: string | null;
+            /**
+             * Captured At
+             * Format: date-time
+             */
+            captured_at: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "desk_photos";
+            /** Mission Id */
+            mission_id: string | null;
+            profile: components["schemas"]["ExecutionProfile"] | null;
+            /** Seat Id */
+            seat_id: string | null;
+            /** Site Id */
+            site_id: string;
+        };
+        /** AgentPlan */
+        AgentPlan: {
+            /** Approved At */
+            approved_at?: string | null;
+            /** Approved By */
+            approved_by?: string | null;
+            /**
+             * Basis
+             * @default
+             */
+            basis?: string;
+            /** Blockers */
+            blockers?: string[];
+            /** Conversation Id */
+            conversation_id: string;
+            /** Created At */
+            created_at: string;
+            /**
+             * Execution Mode
+             * @default unknown
+             */
+            execution_mode?: string;
+            /** Expires At */
+            expires_at: string;
+            /** Items */
+            items: components["schemas"]["AgentPlanSeat"][];
+            /** Mission Ids */
+            mission_ids?: string[];
+            /** Plan Id */
+            plan_id: string;
+            /** Reason */
+            reason: string;
+            /** Revision */
+            revision: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "submitted" | "cancelled" | "superseded" | "expired";
+            /** Title */
+            title: string;
+        };
+        /** AgentPlanApproval */
+        AgentPlanApproval: {
+            /**
+             * Approved
+             * @constant
+             */
+            approved: true;
+            /** Revision */
+            revision: number;
+        };
+        /** AgentPlanDecision */
+        AgentPlanDecision: {
+            /** Revision */
+            revision: number;
+        };
+        /** AgentPlanEdit */
+        AgentPlanEdit: {
+            /** Items */
+            items: components["schemas"]["AgentPlanItem"][];
+            /** Revision */
+            revision: number;
+        };
+        /** AgentPlanItem */
+        AgentPlanItem: {
+            /**
+             * Priority
+             * @default NORMAL
+             * @enum {string}
+             */
+            priority?: "NORMAL" | "HIGH";
+            /** Robot Id */
+            robot_id: string;
+            /** Seat Id */
+            seat_id: string;
+            /**
+             * Task Type
+             * @default SEAT_SERVICE
+             * @constant
+             */
+            task_type?: "SEAT_SERVICE";
+        };
+        /** AgentPlanSeat */
+        AgentPlanSeat: {
+            /** Label */
+            label: string;
+            /**
+             * Priority
+             * @default NORMAL
+             * @enum {string}
+             */
+            priority?: "NORMAL" | "HIGH";
+            /** Robot Id */
+            robot_id: string;
+            /** Seat Id */
+            seat_id: string;
+            /**
+             * Task Type
+             * @default SEAT_SERVICE
+             * @constant
+             */
+            task_type?: "SEAT_SERVICE";
+            /** Zone Id */
+            zone_id: string;
+        };
+        /** AgentRobotHealth */
+        AgentRobotHealth: {
+            battery: components["schemas"]["ObservedSample"] | null;
+            /**
+             * Captured At
+             * Format: date-time
+             */
+            captured_at: string;
+            /** Connected */
+            connected: boolean;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "robot_health";
+            /** Last Seen At */
+            last_seen_at: string | null;
+            /** Mode */
+            mode: string;
+            /** Robot Id */
+            robot_id: string;
+            safety: components["schemas"]["ObservedSample"] | null;
+            /** Site Id */
+            site_id: string;
+            /** State */
+            state: string;
+        };
+        /** AgentSeatMap */
+        AgentSeatMap: {
+            /**
+             * Captured At
+             * Format: date-time
+             */
+            captured_at: string;
+            /**
+             * End Day
+             * Format: date
+             */
+            end_day: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "seat_coverage" | "seat_picker";
+            /** Seats */
+            seats: components["schemas"]["AgentMapSeat"][];
+            /** Site Id */
+            site_id: string;
+            /**
+             * Start Day
+             * Format: date
+             */
+            start_day: string;
+        };
+        /** AgentStatus */
+        AgentStatus: {
+            /** Can Approve */
+            can_approve: boolean;
+            /** Can Read */
+            can_read: boolean;
+            /** Configured */
+            configured: boolean;
+            /** Execution Mode */
+            execution_mode: string;
+            /** Max Plan Items */
+            max_plan_items: number;
+            /** Model */
+            model: string;
+            /** Provider */
+            provider: string;
+            /** Reasoning Effort */
+            reasoning_effort: string;
+        };
+        /** AgentStreamEvent */
+        AgentStreamEvent: {
+            message?: components["schemas"]["AgentMessage"] | null;
+            plan?: components["schemas"]["AgentPlan"] | null;
+            summary?: components["schemas"]["AgentSummary"] | null;
+            /** Text */
+            text?: string | null;
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "started" | "delta" | "tool" | "plan" | "summary" | "complete" | "error" | "heartbeat";
+        };
+        /** AgentSummary */
+        AgentSummary: {
+            /** Metrics */
+            metrics: components["schemas"]["AgentMetric"][];
+            /** Title */
+            title: string;
+        };
+        /** AgentWorkList */
+        AgentWorkList: {
+            /**
+             * Captured At
+             * Format: date-time
+             */
+            captured_at: string;
+            /** End Day */
+            end_day: string | null;
+            /** Focus Seats */
+            focus_seats: string[];
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "review_inbox" | "work_queue";
+            /** Rows */
+            rows: components["schemas"]["AgentWorkRow"][];
+            /** Site Id */
+            site_id: string;
+            /** Start Day */
+            start_day: string | null;
+        };
+        /** AgentWorkRow */
+        AgentWorkRow: {
+            /** Created At */
+            created_at: string;
+            /** Finished At */
+            finished_at: string | null;
+            /** Label */
+            label: string;
+            /** Mission Id */
+            mission_id: string;
+            /** Outcome */
+            outcome: string | null;
+            /** Priority */
+            priority: string;
+            profile: components["schemas"]["ExecutionProfile"] | null;
+            /** Reason */
+            reason: string;
+            /** Seat Id */
+            seat_id: string | null;
+        };
         /** BaseObservation */
         BaseObservation: {
             /** Angular Velocity */
@@ -566,6 +1285,21 @@ export interface components {
              * @constant
              */
             status?: "ok";
+        };
+        /** InsightBucket */
+        InsightBucket: {
+            /** Capacity */
+            capacity?: number | null;
+            /** Label */
+            label: string;
+            /**
+             * Tone
+             * @default accent
+             * @enum {string}
+             */
+            tone?: "accent" | "muted" | "warning" | "danger" | "info";
+            /** Value */
+            value: number;
         };
         /** JointObservation */
         JointObservation: {
@@ -735,6 +1469,24 @@ export interface components {
             web_max_velocity?: number;
         };
         /**
+         * MapDisplayLayers
+         * @description Edited, full-canvas rasters in presentation coordinates, never navigation inputs.
+         */
+        MapDisplayLayers: {
+            /**
+             * Floorplan Url
+             * @default /api/map/presentation/floorplan
+             * @constant
+             */
+            floorplan_url?: "/api/map/presentation/floorplan";
+            /**
+             * Slam Url
+             * @default /api/map/presentation/slam
+             * @constant
+             */
+            slam_url?: "/api/map/presentation/slam";
+        };
+        /**
          * MapPresentation
          * @description Display-only rigid transform in source raster coordinates.
          */
@@ -747,6 +1499,7 @@ export interface components {
              * @constant
              */
             image_url?: "/api/map/presentation";
+            layers?: components["schemas"]["MapDisplayLayers"] | null;
             /** Rotation Degrees */
             rotation_degrees: number;
             /** Source Image Sha256 */
@@ -1353,6 +2106,238 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    conversations_api_agent_conversations_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentConversationList"];
+                };
+            };
+        };
+    };
+    new_conversation_api_agent_conversations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentConversation"];
+                };
+            };
+        };
+    };
+    conversation_api_agent_conversations__key__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentConversationDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    message_api_agent_conversations__key__messages_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgentMessageInput"];
+            };
+        };
+        responses: {
+            /** @description SSE data frames containing AgentStreamEvent JSON */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentStreamEvent"];
+                    "text/event-stream": components["schemas"]["AgentStreamEvent"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    edit_plan_api_agent_plans__key__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgentPlanEdit"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentPlan"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approve_plan_api_agent_plans__key__approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgentPlanApproval"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentPlan"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_plan_api_agent_plans__key__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AgentPlanDecision"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentPlan"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    agent_status_api_agent_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AgentStatus"];
+                };
+            };
+        };
+    };
     login_api_auth_login_post: {
         parameters: {
             query?: never;
@@ -1568,6 +2553,35 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    facility_map_display_layer_api_map_presentation__layer__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                layer: "floorplan" | "slam";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };
