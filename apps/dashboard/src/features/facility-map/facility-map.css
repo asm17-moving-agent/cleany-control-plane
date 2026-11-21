@@ -43,8 +43,6 @@
   font-weight: 760;
   letter-spacing: -.02em;
 }
-.facility-plan-label[data-plan-label="d-hub"] { opacity: .5; }
-.facility-plan-label[data-plan-label^="space-"] { opacity: 1; fill: var(--color-text-muted); font-weight: 500; stroke: none; letter-spacing: .3px; }
 .facility-inactive-areas path { fill: var(--color-background); fill-opacity: .86; stroke: none; }
 .facility-dhub-wall-mask { fill: var(--color-surface); stroke: none; }
 .facility-dhub-wall { fill: none; stroke: var(--color-text-muted); stroke-width: 1.5px; vector-effect: non-scaling-stroke; }

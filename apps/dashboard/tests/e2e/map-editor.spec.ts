@@ -17,6 +17,7 @@ async function edit(page: Page) {
   await page.getByRole("link", { name: "배치 편집", exact: true }).click();
   await expect(page.getByRole("heading", { name: "좌석 배치 편집", exact: true })).toBeVisible();
   await expect(page.locator(".slam-seat")).toHaveCount(82);
+  await expect(page.locator(".slam-seat-layer text").filter({ hasText: /SPACE [AM]\d|D-HUB/i })).toHaveCount(0);
 }
 async function selectOne(page: Page, id = "seat-01") {
   await page.getByRole("combobox", { name: "좌석 선택", exact: true }).selectOption(id);

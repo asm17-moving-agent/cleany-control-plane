@@ -21,17 +21,9 @@ interface PlanLabel {
 // centering against the edited PNG explicit and independently adjustable.
 const PLAN_LABELS: PlanLabel[] = [
   { id: "storage-top-left", lines: ["창고"], x: 41, y: 48 },
-  { id: "space-a4", lines: ["SPACE A4"], size: 10, x: 150.85, y: 116 },
-  { id: "space-m1", lines: ["SPACE M1"], size: 10, x: 262.85, y: 116 },
-  { id: "space-m2", lines: ["SPACE M2"], size: 10, x: 391.85, y: 116 },
-  { id: "space-m3", lines: ["SPACE M3"], size: 10, x: 519.85, y: 116 },
   { id: "relax-zone-m", lines: ["RELAX ZONE", "(M)"], size: 13, x: 1065, y: 107 },
-  { id: "space-a3", lines: ["SPACE A3"], size: 10, x: 68, y: 130 },
-  { id: "space-a2", lines: ["SPACE A2"], size: 10, x: 68, y: 225 },
   { id: "the-grond", lines: ["THE GROND"], size: 15, x: 360, y: 307 },
-  { id: "d-hub", lines: ["D-HUB"], size: 15, x: 776, y: 35 },
   { id: "relax-zone-w", lines: ["RELAX ZONE", "(W)"], size: 13, x: 1093, y: 297 },
-  { id: "space-a1", lines: ["SPACE A1"], size: 10, x: 68, y: 325 },
   { id: "storage-bottom-left", lines: ["창고"], x: 38, y: 593 },
   { id: "restroom-women", lines: ["화장실", "(여)"], x: 856, y: 524 },
   { id: "restroom-men", lines: ["화장실", "(남)"], x: 1019, y: 524 },

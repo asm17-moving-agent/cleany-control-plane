@@ -40,7 +40,8 @@ test("home entry points and unavailable floors remain accessible", async ({ page
   await expect(page.locator("button.facility-map-seat")).toHaveCount(0);
   await floorSelect.selectOption("BUSAN_SOMA_18F");
   await expect(page.locator("button.facility-map-seat")).toHaveCount(82);
-  await expect(page.locator(".facility-plan-label", { hasText: "SPACE A1" })).toBeVisible();
+  await expect(page.locator(".facility-plan-label").filter({ hasText: /SPACE [AM]\d|D-HUB/i })).toHaveCount(0);
+  await expect(page.locator('[data-plan-label="storage-top-left"]')).toBeVisible();
   await expect(page.locator(".facility-zone-overlay, .facility-route-overlay")).toHaveCount(0);
 
   await page.getByLabel("알림", { exact: true }).click();

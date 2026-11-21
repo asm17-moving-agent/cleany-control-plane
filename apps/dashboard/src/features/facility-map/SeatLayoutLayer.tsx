@@ -49,12 +49,6 @@ export function SeatLayoutLayer({ map, layout, selectedIds, onSelectSeat, editin
     {...editing?.surface}>
     {editing && <rect width="100%" height="100%" fill="transparent" pointerEvents="all" />}
     <defs><marker id={arrowId} markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0 0 L5 2.5 L0 5" fill="currentColor" /></marker></defs>
-    {Array.from(new Set(layout.seats.map(s => s.zone_id))).map(zone => {
-      const positions = layout.seats.filter(s => s.zone_id === zone).map(s => project(s.pose));
-      const vertical = ["space-a1", "space-a2", "space-a3"].includes(zone);
-      return <text key={zone} className="slam-zone-label" x={positions.reduce((sum, p) => sum + p.x, 0) / positions.length + (vertical ? 25 : 0)}
-        y={vertical ? positions.reduce((sum, p) => sum + p.y, 0) / positions.length : Math.min(...positions.map(p => p.y)) - 15} textAnchor={vertical ? "start" : "middle"}>{zone === "d-hub" ? `D-HUB · ${positions.length}` : zone.replace("space-", "SPACE ").toUpperCase()}</text>;
-    })}
     {layout.seats.map(seat => {
       const point = project(seat.pose), active = selectedIds.includes(seat.seat_id);
       const width = seat.width / map.resolution, depth = seat.depth / map.resolution;

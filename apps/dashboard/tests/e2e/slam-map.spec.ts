@@ -15,6 +15,7 @@ test("facility preserves SLAM alignment with 82 draft seats", async ({ page }, t
   await expect(page.locator(".facility-map-robot")).toHaveCount(0);
   // A drag beginning on SVG seat text must not create a browser text selection,
   // even though seat pointer handlers stop propagation before map panning starts.
+  await expect(page.locator(".slam-seat-layer text").filter({ hasText: /SPACE [AM]\d|D-HUB/i })).toHaveCount(0);
   const label = page.locator('.slam-seat[data-seat-id="seat-01"] text');
   const labelBox = (await label.boundingBox())!;
   await page.evaluate(() => window.getSelection()?.removeAllRanges());

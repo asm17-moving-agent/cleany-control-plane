@@ -15,7 +15,6 @@
 .slam-home circle { fill: #fff8e8; stroke: #a67936; stroke-width: 1; }
 .slam-home text { fill: #80602c; font: 600 7px system-ui; }
 .slam-seat-layer.is-picking { pointer-events: all; cursor: crosshair; }
-.slam-zone-label { font: 500 7px system-ui, sans-serif; fill: #718a7b; stroke: none; letter-spacing: .7px; pointer-events: none; }
 }
 
 @layer components {
