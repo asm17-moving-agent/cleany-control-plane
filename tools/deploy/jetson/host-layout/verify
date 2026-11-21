@@ -1,0 +1,51 @@
+#!/bin/bash
+# Exercise the release on loopback with an empty /home and a separate ROS domain.
+set -eo pipefail
+if [[ ${1:-} != --inside ]]; then
+  umask 077
+  audit=$(mktemp -d /var/opt/cleany/cache/layout-check.XXXXXXXX)
+  cd /opt/cleany/current
+  exec env -i HOME="$audit" PATH=/usr/bin:/bin ROS_LOG_DIR="$audit" \
+    ROS_DOMAIN_ID=87 ROS_LOCALHOST_ONLY=1 CLEANY_DATABASE_PATH="$audit/test.db" \
+    CLEANY_OBSERVATION_DIRECTORY="$audit/observations" CLEANY_DISPLAY_CONFIG="$audit/display.json" \
+    bwrap --bind / / --dev-bind /dev /dev --tmpfs /home --unshare-net -- /opt/cleany/current/installer/verify --inside
+fi
+test ! -e /home/cleany
+python3 - <<'PY'
+import json, os
+from pathlib import Path
+cfg = json.loads(Path("/etc/opt/cleany/display/display.json").read_text())
+cfg["port"] = 18770
+Path(os.environ["CLEANY_DISPLAY_CONFIG"]).write_text(json.dumps(cfg))
+PY
+children=()
+stop_children() {
+  for pid in "${children[@]}"; do kill -TERM -- "-$pid" 2>/dev/null || true; done
+  wait || true
+}
+trap stop_children EXIT
+for service in backend display camera; do
+  CLEANY_PORT=18081 CLEANY_CAMERA_PORT=18769 setsid /opt/cleany/current/run-service "$service" >"$HOME/$service.log" 2>&1 &
+  children+=("$!")
+done
+probe() {
+  local url=$1
+  for ((i=0;i<40;i++)); do
+    if curl --max-time 2 -fs "$url" >"$HOME/response"; then echo "$url OK"; return; fi
+    sleep 0.5
+  done
+  echo "Failed $url; see $HOME" >&2
+  return 1
+}
+probe http://127.0.0.1:18081/api/health
+grep -q '"status":"ok"' "$HOME/response"
+probe http://127.0.0.1:18081/
+grep -q '<title>' "$HOME/response"
+probe http://127.0.0.1:18770/healthz
+grep -q '"mode"' "$HOME/response"
+probe http://127.0.0.1:18769/api/cameras
+source /opt/ros/humble/setup.bash
+source /opt/cleany/current/ros/local_setup.bash
+ros2 launch cleany_control_bridge robot_observations.launch.py --show-args >/dev/null
+browser=$(sed -n 's/^CLEANY_DISPLAY_BROWSER=//p' /etc/opt/cleany/display/runtime.env)
+"$browser" --version

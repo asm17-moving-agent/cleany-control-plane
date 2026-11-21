@@ -274,3 +274,36 @@ def test_queued_target_binding_must_match_loaded_runtime(gateway):
     assert mission.phase == MissionPhase.QUEUED
     gateway.receive(snapshot(target_map=binding))
     assert offer(gateway, mission)["payload"]["target_id"] == "seat-12"
+
+
+def test_physical_mode_holds_new_and_retried_offers_if_gateway_profile_changes(gateway):
+    gateway.settings.require_physical_missions = True
+    mission = request(gateway)
+    assert not any(e["event_type"] == "mission.offer" for e in gateway.tick())
+    gateway.receive(snapshot(execution_profile=dict.fromkeys(PROFILE, "real")))
+    command = offer(gateway, mission)
+    gateway.receive(snapshot())
+    gateway.repository.connection.execute("UPDATE command_outbox SET next_attempt=0")
+    assert not any(e["event_type"] == "mission.offer" for e in gateway.tick())
+    gateway.receive(snapshot(execution_profile=dict.fromkeys(PROFILE, "real")))
+    assert any(e["event_id"] == command["event_id"] for e in gateway.tick())
+
+
+@pytest.mark.parametrize("reported", ["SUCCESS", "PARTIAL_SUCCESS"])
+def test_physical_mission_rechecks_final_execution_profile(gateway, reported):
+    gateway.settings.require_physical_missions = True
+    gateway.receive(snapshot(execution_profile=dict.fromkeys(PROFILE, "real")))
+    mission = request(gateway)
+    offer(gateway, mission)
+    result = feedback(mission, "mission.result", 1, outcome=reported)
+    gateway.receive(result)
+    assert mission.outcome == MissionOutcome.HUMAN_REVIEW_REQUIRED
+    assert mission.needs_human_review and mission.failure_code == "NON_PHYSICAL_RESULT"
+    assert mission.execution_profile == PROFILE
+    assert gateway.receive(result)["payload"]["disposition"] == "duplicate"
+
+
+
+def test_field_deployment_requires_gateway_mode():
+    with pytest.raises(ValueError, match="Physical missions require Gateway mode"):
+        Settings(require_physical_missions=True, robot_mode="mock")

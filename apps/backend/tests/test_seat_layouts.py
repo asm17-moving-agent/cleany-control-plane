@@ -238,6 +238,25 @@ def test_field_evidence_promotes_only_selected_seats_and_edits_revoke_it(tmp_pat
         assert set(exported["seats"]) == set(evidence["seat_ids"])
         # Approval alone cannot make an offline or differently configured runtime eligible.
         assert not any(s["mission_supported"] for s in client.get("/api/seats").json()["items"])
+        app.store.robot.target_map = {
+            k: exported[k] for k in ("map_id", "source_sha256", "layout_revision", "target_digest")
+        }
+        app.store.robot.supported_seat_ids = [s["seat_id"] for s in saved["seats"]]
+        supported = {
+            s["seat_id"] for s in client.get("/api/seats").json()["items"] if s["mission_supported"]
+        }
+        assert supported == set(evidence["seat_ids"])
+
+        def submit(seat):
+            return client.post(
+                "/api/missions",
+                json={"seat_id": seat, "idempotency_key": "draft-check", "priority": "NORMAL"},
+            )
+
+        assert submit("seat-02").status_code == 422
+        app.settings.require_physical_missions = True
+        assert not any(s["mission_supported"] for s in client.get("/api/seats").json()["items"])
+        assert submit("seat-01").status_code == 409
         stale = subprocess.run(
             [
                 sys.executable,
@@ -312,39 +331,56 @@ def test_correcting_seed_preserves_history_and_refuses_user_edits():
             )
 
 
-def test_outer_dhub_desks_touch_traced_walls_with_no_metric_rescaling():
+def test_dhub_is_axis_aligned_with_measured_dimensions_and_clearances():
     import math
-    import re
+    from hashlib import sha256
     from pathlib import Path
 
-    root = Path(__file__).resolve().parents[1] / "maps/slam-20261108"
-    tracing = json.loads((root / "presentation-layout.json").read_text())
-    layout = json.loads((root / "seat-layout.json").read_text())
+    directory = Path(__file__).resolve().parents[1] / "maps/slam-20261108"
+    reference = json.loads((directory / "dhub-layout-reference.json").read_text())
+    image_hash = sha256((directory / reference["display_image"]).read_bytes()).hexdigest()
+    assert image_hash == reference["display_image_sha256"]
+    layout = json.loads((directory / "seat-layout.json").read_text())
     metadata = load_map(Settings().map_directory, "slam-20261108")
     a, b, c, d, e, f = metadata.presentation.transform
-    for wall_id, column in [("main-west", 1), ("north-east", 10)]:
-        path = next(w["d"] for w in tracing["walls"] if w["id"] == wall_id)
-        points = [
-            (float(x), float(y)) for x, y in re.findall(r"[ML]\s*([-+0-9.eE]+),([-+0-9.eE]+)", path)
-        ]
-        (x1, y1), (x2, y2) = max(
-            zip(points, points[1:], strict=False), key=lambda pair: abs(pair[1][1] - pair[0][1])
+    rows = {}
+    for seat in layout["seats"]:
+        if seat["zone_id"] != "d-hub":
+            continue
+        center = MetricPose(**seat["pose"])
+        px, py = raster_point(metadata, center)
+        cx, cy = a * px + c * py + e, b * px + d * py + f
+        heading = math.radians(metadata.presentation.rotation_degrees) - center.yaw
+        assert math.cos(heading) == pytest.approx(0, abs=1e-12)
+        assert math.sin(heading) == pytest.approx(1 if seat["row"] % 2 else -1)
+        assert (seat["width"], seat["depth"]) == (1.2, 0.77)
+        approach = seat["approach"]
+        assert approach["yaw"] == center.yaw
+        approach_distance = 0.8 + 0.77 / 2
+        assert math.hypot(approach["x"] - center.x, approach["y"] - center.y) == pytest.approx(
+            approach_distance
         )
-        for seat in layout["seats"]:
-            if seat["zone_id"] != "d-hub" or seat["grid_column"] != column:
-                continue
-            center = MetricPose(**seat["pose"])
-            px, py = raster_point(metadata, center)
-            cx, cy = a * px + c * py + e, b * px + d * py + f
-            heading = math.radians(metadata.presentation.rotation_degrees) - center.yaw
-            corners = []
-            for dx in [-seat["depth"] / 2, seat["depth"] / 2]:
-                for dy in [-seat["width"] / 2, seat["width"] / 2]:
-                    x = cx + (math.cos(heading) * dx - math.sin(heading) * dy) / metadata.resolution
-                    y = cy + (math.sin(heading) * dx + math.cos(heading) * dy) / metadata.resolution
-                    distance = abs((y2 - y1) * (x - x1) - (x2 - x1) * (y - y1)) / math.hypot(
-                        y2 - y1, x2 - x1
-                    )
-                    corners.append(distance)
-            assert sorted(corners)[:2] == pytest.approx([0, 0], abs=1e-8)
-            assert (seat["width"], seat["depth"]) == (1.2, 0.77)
+        assert approach["x"] + math.cos(center.yaw) * approach_distance == pytest.approx(center.x)
+        assert approach["y"] + math.sin(center.yaw) * approach_distance == pytest.approx(center.y)
+        rows.setdefault(seat["row"], []).append((cx, cy))
+    assert len(rows) == 6
+    for row in rows.values():
+        assert len(row) == 8
+        row.sort()
+        assert [y for _, y in row] == pytest.approx([row[0][1]] * 8, abs=1e-10)
+        # All six rows share the same eight columns; the two aisles are exactly 1.33 m.
+        assert [x for x, _ in row] == pytest.approx([x for x, _ in sorted(rows[1])])
+        gaps = [(row[i + 1][0] - row[i][0]) * metadata.resolution - 1.2 for i in range(7)]
+        assert gaps == pytest.approx([0, 0, 1.33, 0, 1.33, 0, 0], abs=1e-10)
+    pitches = [(rows[i + 1][0][1] - rows[i][0][1]) * metadata.resolution for i in range(1, 6)]
+    assert pitches == pytest.approx([0.77, 2.4, 0.77, 2.4, 0.77])
+    # The open space between paired blocks is 2.4 - 0.77 = 1.63 m.
+    walls, units = reference["wall_center_pixels"], reference["pixels_per_unit"]
+    cx = (rows[1][0][0] + rows[1][-1][0]) / 2
+    cy = (rows[1][0][1] + rows[6][0][1]) / 2
+    assert cx == pytest.approx((walls["west"] + walls["east"]) / (2 * units))
+    assert cy == pytest.approx((walls["north"] + walls["south"]) / (2 * units))
+    furniture_width = (rows[1][-1][0] - rows[1][0][0]) * metadata.resolution + 1.2
+    assert furniture_width == pytest.approx(12.26)
+    drawn_width = (walls["east"] - walls["west"]) / units * metadata.resolution
+    assert abs(furniture_width - drawn_width) < metadata.resolution

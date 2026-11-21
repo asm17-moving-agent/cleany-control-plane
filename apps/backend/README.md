@@ -211,3 +211,46 @@ Robot은 장치 토큰으로 `/api/robots/{robot_id}/telemetry/ws`에 연결합�
 시각 기준입니다. 장기 보관과 고주파 관절 재생이 필요한 경우 별도 Logger를 사용합니다.
 Supervisor 상태 조회는 복구 명령 권한을 만들지 않습니다. 관측된 안전 채널이 오래되면
 수동 이동을 차단하지만 기존 STOP 경로와 물리 비상정지는 별개입니다.
+
+## 실물 미션 운영
+
+Jetson의 설치본은 `/opt/cleany/current`, 설정과 토큰은 `/etc/opt/cleany`,
+SQLite와 관측 파일은 `/var/opt/cleany/control-plane`을 사용한다. 개발 체크아웃에서
+업데이트를 준비한 뒤 운영 서비스는 별도 배포본으로 실행한다. Jetson의 native
+LAN 서비스는 `/etc/cleany-lan`에서 DNS와 Caddy 설정을 읽고 Caddy의 인증서를
+`/var/lib/cleany-lan-caddy`에 보관한다. `/etc/opt/cleany/lan`에는 기존 Compose
+배포에 사용한 설정 사본이 있다.
+
+기존 홈 배포를 이관할 때는 `tools/deploy/jetson/host-layout/stage.py`에 실제 대시보드,
+ROS install, 얼굴 화면 디렉터리를 지정한다. 새 릴리스의 `current` 링크가 준비되면
+같은 도구 디렉터리의 `verify`를 실행한다. 검사는 홈과 운영 네트워크를 가린 뒤
+별도 SQLite로 대시보드, 얼굴 화면, 카메라 HTTP를 기동한다. 실제 서비스 전환은
+운영 미션이 없을 때만 진행한다.
+
+키오스크 서비스는 `/opt/cleany/current/kiosk-browser`를 실행한다. 각 릴리스는
+`browsers` 링크로 `/opt/cleany/shared/runtimes/chromium/`의 브라우저 버전을 고정한다.
+새 브라우저를 배포하려면 얼굴 화면 설치본의 `browsers/`와 `browser.path`를 함께 제공한다.
+브라우저를 별도로 제공하지 않으면 현재 릴리스의 버전을 재사용한다.
+
+Jetson 배포 도구는 `cleany_navigation` ELF의 DWARF를
+`/var/opt/cleany/debug/navigation/.build-id/`에 압축해 보관한다.
+`releases/<릴리스>.json`에는 실행 파일별 build ID와 SHA-256이 기록된다.
+GDB에서는 실행 파일을 열기 전에 `set debug-file-directory /var/opt/cleany/debug/navigation`을 설정한다.
+
+native 센서가 Fast DDS를 사용하는 Jetson에서는 최초 이관 시
+`--observer-fastdds-profile /etc/opt/cleany/field/fastdds.xml`을 지정한다.
+카메라 미리보기와 로봇 관측은 `/etc/opt/cleany/ros/observations-fastdds.xml`을
+공유하고, 이후 릴리스에서도 이 사이트 설정을 사용한다.
+
+```bash
+sudo install -m 0644 /opt/cleany/current/systemd-user/*.service /etc/systemd/user/
+sudo systemctl --global enable cleany-control-plane.service cleany-dashboard-camera.service \
+  cleany-dashboard-observe@robot.service cleany-display.service cleany-display-kiosk.service
+python3 tools/deploy/jetson/host-layout/switch.py
+```
+
+전환 도구는 DB 상태를 검사하고 쓰기를 멈춘 상태에서 백업한 뒤 DB 디렉터리를
+이동한다. 이전 DB 경로는 운영 DB로 연결된다. 기존 unit, autostart 파일과 전환
+직전 DB는 `/var/opt/cleany/backups/switch-*`에서 확인한다.
+
+Jetson 운영 배포에서는 `CLEANY_ROBOT_MODE=gateway`와 `CLEANY_REQUIRE_PHYSICAL_MISSIONS=true`를 사용한다. 현재 배치와 Runtime의 목표 digest가 일치하고, 현장에서 검증한 좌석이며, Gateway가 네 단계의 `real` 실행 모드를 보고해야 작업을 요청할 수 있다. 미션 완료 보고에 모의 실행 단계가 섞이면 운영 결과는 `HUMAN_REVIEW_REQUIRED`가 된다. 원본 결과는 Gateway 수신 기록에 남는다.

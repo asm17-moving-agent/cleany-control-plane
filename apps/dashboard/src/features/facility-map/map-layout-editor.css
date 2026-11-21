@@ -1,0 +1,54 @@
+@layer components {
+  .map-editor-workspace { flex: 1; min-height: 0; display: flex; flex-direction: column; border: 1px solid var(--color-border); border-radius: var(--radius-panel); background: var(--color-surface); overflow: hidden; }
+  .map-editor-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-border); }
+  .editor-tool-group { display: flex; align-items: center; gap: var(--space-1); }
+  .editor-tool-group + .editor-tool-group { padding-left: var(--space-3); border-left: 1px solid var(--color-border); }
+  .editor-tool-group button[aria-pressed=true] { color: var(--color-action); background: var(--color-action-soft); border-color: var(--color-action-border); }
+  .editor-object-actions { margin-left: auto; }
+  .editor-snap, .editor-group-toggle { display: flex; align-items: center; gap: var(--space-2); color: var(--color-text-muted); font-size: var(--text-caption); white-space: nowrap; }
+  .editor-snap select { width: 90px; }
+  .editor-group-toggle input { accent-color: var(--color-action); }
+  .map-editor-body { display: grid; grid-template-columns: minmax(0, 1fr) 304px; flex: 1; min-height: 0; }
+  .map-editor-canvas { display: flex; min-width: 0; min-height: 0; }
+  .map-editor-properties { border-left: 1px solid var(--color-border); overflow-y: auto; min-height: 0; }
+  .map-editor-properties > .ui-panel-header { padding: var(--space-4); border-bottom: 1px solid var(--color-border); }
+  .editor-property-body { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; margin: 0; border: 0; padding: var(--space-4); }
+  .editor-property-body label { display: flex; flex-direction: column; gap: var(--space-1); font-size: var(--text-caption); color: var(--color-text-muted); }
+  .editor-property-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+  .editor-property-grid label { min-width: 0; }
+  .editor-opacity > span { display: flex; justify-content: space-between; align-items: center; }
+  .editor-opacity output { color: var(--color-text); font-variant-numeric: tabular-nums; }
+  .editor-rotation { display: flex; align-items: end; gap: var(--space-2); }
+  .editor-rotation > label { flex: 1; min-width: 0; }
+  .editor-rotation > button { flex: 0 0 32px; padding: 0; }
+  .editor-alignment { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-1); }
+  .editor-alignment button { padding-inline: var(--space-1); font-size: var(--text-caption); }
+  .editor-empty { color: var(--color-text-muted); font-size: var(--text-caption); margin: 0; }
+  .map-editor .facility-map-legend { gap: var(--space-3); min-height: 36px; padding: var(--space-2); }
+  .map-editor .slam-map-blend { width: 210px; }
+  .map-editor .slam-seat-layer.is-editing { pointer-events: all; cursor: crosshair; outline: none; }
+  .map-editor .slam-seat-layer[data-tool=pan], .map-editor .slam-seat-layer[data-tool=pan] .slam-seat { cursor: grab; }
+  .map-editor .slam-seat-layer:focus-visible { outline: 1px solid var(--color-focus); outline-offset: -1px; }
+  .editor-selection-box, .editor-marquee { stroke: var(--color-action); stroke-width: 1.25; fill: none; }
+  .editor-selection-box :is(rect,line,circle), .editor-marquee { vector-effect: non-scaling-stroke; }
+  .editor-marquee { fill: color-mix(in srgb, var(--color-action) 12%, transparent); }
+  .slam-rotation-handle { pointer-events: all; cursor: crosshair; fill: var(--color-surface); stroke: var(--color-action); }
+  .slam-editor-marker { color: var(--color-warning); fill: var(--color-surface); stroke: var(--color-warning); stroke-width: 1.4; }
+  .slam-editor-marker [role=button] { pointer-events: all; cursor: move; outline: none; }
+  .slam-editor-marker :is(circle,path,line) { vector-effect: non-scaling-stroke; }
+  .slam-editor-marker path { fill: none; pointer-events: none; }
+  .slam-editor-marker text { fill: var(--color-text-muted); stroke: none; pointer-events: none; }
+  .slam-editor-marker.is-selected circle { fill: var(--color-warning-soft); }
+  .slam-editor-marker [role=button]:focus-visible circle { stroke: var(--color-action); stroke-width: 3; }
+  .layout-review-overlay { position: fixed; inset: 0; background: var(--color-overlay); z-index: 90; }
+  .layout-review-dialog { position: fixed; z-index: 91; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(680px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-6); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-panel); box-shadow: var(--shadow-floating); }
+  .layout-review-dialog header, .layout-review-dialog footer { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+  .layout-review-dialog h2 { font-size: var(--text-entity); margin: 0; }
+  .layout-review-dialog p { margin: 0; color: var(--color-text-muted); }
+  .layout-review-dialog footer { justify-content: flex-end; }
+  .layout-review-table { min-height: 0; overflow: auto; }
+  .layout-review-table table { width: 100%; border-collapse: collapse; font-size: var(--text-body); }
+  .layout-review-table :is(th,td) { text-align: left; padding: var(--space-3) var(--space-2); border-bottom: 1px solid var(--color-border); }
+  .layout-review-table th { color: var(--color-text-muted); background: var(--color-surface-muted); }
+  @media (max-width: 1279px) { .map-editor-body { grid-template-columns: minmax(0,1fr) 272px; } .map-editor-toolbar { gap: var(--space-2); } .map-editor .facility-map-legend > span:last-child { display: none; } }
+}

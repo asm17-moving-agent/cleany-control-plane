@@ -66,6 +66,24 @@ class GatewayController:
                 store.robot.last_seen_at = None
             store.robot.state = RobotState.OFFLINE
 
+    @staticmethod
+    def _all_stages_real(profile: dict) -> bool:
+        stages = ("navigation", "perception", "planning", "execution")
+        return all(profile.get(stage) == "real" for stage in stages)
+
+    def _unverified_success(self, report: dict) -> bool:
+        return (
+            self.settings.require_physical_missions
+            and report["outcome"] in (MissionOutcome.SUCCESS, MissionOutcome.PARTIAL_SUCCESS)
+            and not self._all_stages_real(report["execution_profile"])
+        )
+
+    def permits_execution_profile(self) -> bool:
+        if not self.settings.require_physical_missions:
+            return True
+        profile = self.store.robot.execution_profile or {}
+        return self.connected and self.synchronized and self._all_stages_real(profile)
+
     def claim(self) -> bool:
         """Claim connection ownership and require a fresh snapshot before dispatching work.
 
@@ -331,9 +349,15 @@ class GatewayController:
             raise ValueError("event references unknown mission")
         payload, kind = data["payload"], data["event_type"]
         if mission.phase == MissionPhase.TERMINAL:
-            if kind == "mission.result" and payload["outcome"] != mission.outcome:
-                logger.error("immutable terminal conflict mission=%s", mission.mission_id)
-                return "conflict"
+            if kind == "mission.result":
+                outcome = (
+                    MissionOutcome.HUMAN_REVIEW_REQUIRED
+                    if self._unverified_success(payload)
+                    else MissionOutcome(payload["outcome"])
+                )
+                if outcome != mission.outcome:
+                    logger.error("immutable terminal conflict mission=%s", mission.mission_id)
+                    return "conflict"
             return "stale"
         if data["sequence"] <= mission.robot_sequence:
             return "stale"
@@ -391,11 +415,15 @@ class GatewayController:
                 setattr(mission, key, payload[key])
             if mission.accepted_at is None:
                 mission.accepted_at = utc_now()
+            outcome = MissionOutcome(payload["outcome"])
+            message = payload["message"]
+            if self._unverified_success(payload):
+                outcome = MissionOutcome.HUMAN_REVIEW_REQUIRED
+                message = "실물 미션에 모의 실행 결과가 도착해 현장 확인이 필요합니다."
+                mission.failure_code = "NON_PHYSICAL_RESULT"
+                mission.needs_human_review = True
             self.store.transition(
-                mission.mission_id,
-                MissionPhase.TERMINAL,
-                payload["message"],
-                outcome=MissionOutcome(payload["outcome"]),
+                mission.mission_id, MissionPhase.TERMINAL, message, outcome=outcome
             )
             self.repository.retire(mission.mission_id)
             # A report is not proof that the robot has become IDLE (fatal -> ERROR is possible).
@@ -466,7 +494,7 @@ class GatewayController:
                 self.sync_reason = None
             if self.synchronized:
                 if (
-                    reservation is None
+                    reservation is None and self.permits_execution_profile()
                     and self.store.robot.state == RobotState.IDLE
                     and self.store.robot.active_mission_id is None
                 ):
@@ -495,6 +523,11 @@ class GatewayController:
                             )
                         )
                 for event, attempts in self.repository.pending(now):
+                    if (
+                        event["event_type"] == "mission.offer"
+                        and not self.permits_execution_profile()
+                    ):
+                        continue
                     output.append(event)
                     delay = min(
                         self.settings.gateway_retry_max_seconds,

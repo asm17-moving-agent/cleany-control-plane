@@ -15,34 +15,16 @@
 .slam-home circle { fill: #fff8e8; stroke: #a67936; stroke-width: 1; }
 .slam-home text { fill: #80602c; font: 600 7px system-ui; }
 .slam-seat-layer.is-picking { pointer-events: all; cursor: crosshair; }
-.seat-layout-toolbar { position: absolute; right: 18px; top: 70px; display: flex; gap: 6px; z-index: 3; }
-.seat-layout-toolbar button, .seat-layout-editor button, .seat-layout-load-error button { border: 1px solid var(--color-border); background: var(--color-surface-overlay); color: var(--color-action); border-radius: 7px; padding: 8px 10px; font: inherit; font-size: 12px; cursor: pointer; }
-.seat-layout-toolbar button[aria-pressed="true"], .seat-layout-editor button[aria-pressed="true"] { background: var(--color-action-soft); border-color: var(--color-action-border); }
-.seat-layout-editor { position: absolute; left: 16px; top: 16px; width: 280px; max-height: calc(100% - 88px); overflow-y: auto; box-sizing: border-box; background: var(--color-surface); color: var(--color-text); border: 1px solid var(--color-border); border-radius: 14px; box-shadow: 0 6px 22px var(--color-shadow); padding: 16px; z-index: 9; display: flex; flex-direction: column; gap: 12px; font-size: 12px; }
-.home-map-content:has(.seat-layout-editor) .home-robot-panel, .home-map-content:has(.seat-layout-editor) .home-robot-drawer, .home-map-content:has(.seat-layout-editor) .home-request-drawer { visibility: hidden; pointer-events: none; }
-.seat-layout-editor header { display: flex; justify-content: space-between; align-items: center; }
-.seat-layout-editor header small { font-size: 9px; letter-spacing: 1px; color: var(--color-text-muted); }
-.seat-layout-editor h2 { font-size: 19px; margin: 4px 0 0; }
-.seat-layout-editor header > span { padding: 5px 9px; background: var(--color-surface-muted); border-radius: 20px; }
-.seat-layout-note { color: var(--color-text-muted); line-height: 1.6; margin: 0; }
-.seat-layout-editor label { display: flex; flex-direction: column; gap: 5px; font-size: 11px; color: var(--color-text-muted); }
-.seat-layout-editor input:not([type="checkbox"]), .seat-layout-editor select { width: 100%; min-width: 0; box-sizing: border-box; border: 1px solid var(--color-border); border-radius: 6px; padding: 7px 8px; font: inherit; background: #fff; color: var(--color-text); }
-.seat-layout-editor label.seat-layout-check { flex-direction: row; align-items: center; gap: 6px; }
-.seat-layout-editor input[type="checkbox"] { accent-color: var(--color-action); }
-.seat-layout-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.seat-layout-actions { display: flex; gap: 6px; }
-.seat-layout-actions > button { flex: 1; padding-inline: 4px; }
-.seat-layout-id { font-size: 10px; color: var(--color-text-muted); overflow-wrap: anywhere; }
-.seat-layout-editor details { border-top: 1px solid var(--color-border); padding-top: 10px; }
-.seat-layout-editor summary { cursor: pointer; font-size: 11px; margin-bottom: 10px; }
-.seat-layout-editor details small { display: block; margin-top: 8px; color: var(--color-text-muted); font-size: 10px; }
-.seat-layout-editor footer { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--color-border); padding-top: 12px; }
-.seat-layout-editor button.seat-layout-save { color: #fff; background: var(--color-action); border-color: var(--color-action); }
-.seat-layout-editor button:disabled { opacity: .45; cursor: default; }
-.seat-layout-warning { background: #fff5e6; color: var(--color-warning); padding: 8px; border-radius: 6px; margin: 0; font-size: 11px; line-height: 1.5; }
-.seat-layout-load-error { position: absolute; bottom: 64px; right: 18px; background: #fff5e6; padding: 10px; font-size: 12px; }
-@media (max-width: 800px) { .seat-layout-editor { width: 245px; } .seat-layout-toolbar { right: 10px; top: 64px; } }
-
 .slam-zone-label { font: 500 7px system-ui, sans-serif; fill: #718a7b; stroke: none; letter-spacing: .7px; pointer-events: none; }
+}
 
+@layer components {
+  /* Override the legacy 22px icon rule for the full map hit surface. */
+  .slam-seat-layer { width: 100%; height: 100%; }
+  .slam-seat[data-seat-status=occupied] .slam-desk { fill: var(--color-neutral-soft); stroke: var(--color-border-strong); }
+  .slam-seat[data-seat-status=unknown] .slam-desk { fill: var(--color-surface-muted); stroke: var(--color-border-strong); stroke-dasharray: 2 1; }
+  .slam-seat[data-seat-status=ready] .slam-desk { fill: var(--color-action-soft); stroke: var(--color-action-border); }
+  .slam-seat:is([data-seat-status=waiting],[data-seat-status=working]) .slam-desk { fill: var(--color-warning-soft); stroke: var(--color-warning-border); }
+  .slam-seat[data-seat-status=review] .slam-desk { fill: var(--color-danger-soft); stroke: var(--color-danger-border); }
+  .slam-seat.is-selected .slam-desk { stroke: var(--color-action); stroke-width: 1.3; stroke-dasharray: none; }
 }

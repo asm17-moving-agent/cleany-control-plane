@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -55,9 +55,17 @@ class Settings(BaseSettings):
     teleop_token_file: str = ""
     teleop_timeout_seconds: float = Field(default=0.18, gt=0, le=0.25)
 
+    require_physical_missions: bool = False
+
     camera_preview_url: str = ""
     head_camera_topic: str = ""
     camera_timeout_seconds: float = Field(default=1, gt=0, le=3)
+
+    @model_validator(mode="after")
+    def check_dispatcher_mode(self):
+        if self.require_physical_missions and self.robot_mode != "gateway":
+            raise ValueError("Physical missions require Gateway mode")
+        return self
 
     @field_validator("teleop_url", "camera_preview_url")
     @classmethod

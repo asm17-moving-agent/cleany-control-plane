@@ -33,6 +33,10 @@
       540.0
     ],
     "rotation_degrees": -99.936,
-    "source_image_sha256": "d135945fdfc83a997f4ce29423247452743f8480c344fbe0dc0efa025ed0e63e"
+    "source_image_sha256": "d135945fdfc83a997f4ce29423247452743f8480c344fbe0dc0efa025ed0e63e",
+    "layers": {
+      "floorplan_url": "/api/map/presentation/floorplan",
+      "slam_url": "/api/map/presentation/slam"
+    }
   }
 }

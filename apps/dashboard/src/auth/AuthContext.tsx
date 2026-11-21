@@ -113,7 +113,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
       void queryClient.cancelQueries(); queryClient.clear();
       configureClient(session.csrf_token, siteId); setSite(next);
       const url = new URL(window.location.href); url.searchParams.set("site", siteId);
-      window.history.replaceState(null, "", url);
+      // Preserve the router index/key so Back can guard an unsaved editor draft.
+      window.history.replaceState(window.history.state, "", url);
     },
   }}>{children}</AuthContext.Provider>;
 }

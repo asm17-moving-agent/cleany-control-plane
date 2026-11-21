@@ -174,6 +174,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/map/presentation/{layer}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Facility Map Display Layer */
+        get: operations["facility_map_display_layer_api_map_presentation__layer__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/missions": {
         parameters: {
             query?: never;
@@ -735,6 +752,24 @@ export interface components {
             web_max_velocity?: number;
         };
         /**
+         * MapDisplayLayers
+         * @description Edited, full-canvas rasters in presentation coordinates, never navigation inputs.
+         */
+        MapDisplayLayers: {
+            /**
+             * Floorplan Url
+             * @default /api/map/presentation/floorplan
+             * @constant
+             */
+            floorplan_url?: "/api/map/presentation/floorplan";
+            /**
+             * Slam Url
+             * @default /api/map/presentation/slam
+             * @constant
+             */
+            slam_url?: "/api/map/presentation/slam";
+        };
+        /**
          * MapPresentation
          * @description Display-only rigid transform in source raster coordinates.
          */
@@ -747,6 +782,7 @@ export interface components {
              * @constant
              */
             image_url?: "/api/map/presentation";
+            layers?: components["schemas"]["MapDisplayLayers"] | null;
             /** Rotation Degrees */
             rotation_degrees: number;
             /** Source Image Sha256 */
@@ -1568,6 +1604,35 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    facility_map_display_layer_api_map_presentation__layer__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                layer: "floorplan" | "slam";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };

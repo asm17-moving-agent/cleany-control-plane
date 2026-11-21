@@ -1,0 +1,41 @@
+#!/bin/bash
+set -eo pipefail
+root=/opt/cleany/current
+config=/etc/opt/cleany
+state=/var/opt/cleany
+case "${1:?missing service name}" in
+  backend)
+    exec "$root/apps/backend/.venv/bin/python" "$root/apps/backend/run.py"
+    ;;
+  kiosk)
+    browser=${CLEANY_DISPLAY_BROWSER:?missing browser path}
+    url=${CLEANY_DISPLAY_URL:-http://127.0.0.1:8770}
+    until curl -fsS --max-time 2 "$url/healthz" >/dev/null; do sleep 1; done
+    export CHROME_CONFIG_HOME="$state/display/browser-config" __GL_YIELD=USLEEP
+    exec gnome-session-inhibit --app-id org.cleany.Display --reason 'Cleany robot face' --inhibit idle \
+      "$browser" --kiosk --password-store=basic --disable-infobars --lang=ko \
+      --disable-extensions --disable-background-networking --disable-sync --disable-component-update \
+      --no-first-run --no-default-browser-check --noerrdialogs --disable-session-crashed-bubble \
+      --user-data-dir="$state/display/browser-profile" "$url/"
+    ;;
+esac
+source /opt/ros/humble/setup.bash
+if [[ $1 == display ]]; then
+  source "$root/display-ros/local_setup.bash"
+  exec /usr/bin/python3 -m cleany_display.node --config "${CLEANY_DISPLAY_CONFIG:-$config/display/display.json}"
+fi
+source "$root/ros/local_setup.bash"
+case "$1" in
+  camera)
+    exec ros2 run cleany_telemetry camera_preview --ros-args -p host:=127.0.0.1 -p "port:=${CLEANY_CAMERA_PORT:-8769}"
+    ;;
+  robot)
+    exec ros2 launch cleany_control_bridge robot_observations.launch.py \
+      "url:=${CLEANY_ROBOT_WS_URL:?}/telemetry/ws" "device_token_file:=${CLEANY_DEVICE_TOKEN_FILE:?}" provenance:=real
+    ;;
+  pose)
+    exec ros2 launch cleany_bringup pose_observation.launch.py source:=tf enable_backend:=true \
+      "map_id:=${CLEANY_MAP_ID:?}" "pose_url:=${CLEANY_ROBOT_WS_URL:?}/pose/ws" "device_token_file:=${CLEANY_DEVICE_TOKEN_FILE:?}"
+    ;;
+  *) echo "Unknown service: $1" >&2; exit 2 ;;
+esac

@@ -691,6 +691,26 @@
         "title": "ManualStatus",
         "type": "object"
       },
+      "MapDisplayLayers": {
+        "additionalProperties": false,
+        "description": "Edited, full-canvas rasters in presentation coordinates, never navigation inputs.",
+        "properties": {
+          "floorplan_url": {
+            "const": "/api/map/presentation/floorplan",
+            "default": "/api/map/presentation/floorplan",
+            "title": "Floorplan Url",
+            "type": "string"
+          },
+          "slam_url": {
+            "const": "/api/map/presentation/slam",
+            "default": "/api/map/presentation/slam",
+            "title": "Slam Url",
+            "type": "string"
+          }
+        },
+        "title": "MapDisplayLayers",
+        "type": "object"
+      },
       "MapPresentation": {
         "additionalProperties": false,
         "description": "Display-only rigid transform in source raster coordinates.",
@@ -705,6 +725,16 @@
             "default": "/api/map/presentation",
             "title": "Image Url",
             "type": "string"
+          },
+          "layers": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MapDisplayLayers"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "rotation_degrees": {
             "title": "Rotation Degrees",
@@ -2645,6 +2675,42 @@
           }
         },
         "summary": "Facility Map Presentation"
+      }
+    },
+    "/api/map/presentation/{layer}": {
+      "get": {
+        "operationId": "facility_map_display_layer_api_map_presentation__layer__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "layer",
+            "required": true,
+            "schema": {
+              "enum": [
+                "floorplan",
+                "slam"
+              ],
+              "title": "Layer",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Facility Map Display Layer"
       }
     },
     "/api/missions": {

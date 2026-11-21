@@ -1,6 +1,19 @@
 {
   "reference_room_width_units": 400,
   "reference_room_width_m": 12.26,
-  "dhub": { "width_m": 1.2, "depth_m": 0.77, "chair_width_m": 0.52, "chair_depth_m": 0.55 },
-  "room": { "width_units": 38, "depth_units": 28, "scale": 0.85, "column_pitch_units": 40, "half_row_pitch_units": 16 }
+  "dhub": {
+    "width_m": 1.2,
+    "depth_m": 0.77,
+    "chair_width_m": 0.52,
+    "chair_depth_m": 0.55,
+    "block_gap_m": 1.33,
+    "row_pair_pitch_m": 3.17
+  },
+  "room": {
+    "width_units": 38,
+    "depth_units": 28,
+    "scale": 0.85,
+    "column_pitch_units": 40,
+    "half_row_pitch_units": 16
+  }
 }

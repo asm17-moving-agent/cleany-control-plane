@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "coordinate_space": "presentation",
+  "display_image": "display-floorplan.png",
+  "display_image_sha256": "e0379e95c5dd1b88baaf61ba64c3e0e09aa8c46f337354cffa4b1335ea8bd333",
+  "pixels_per_unit": 3,
+  "wall_center_pixels": {
+    "west": 1106.5,
+    "east": 1841.5,
+    "north": 95.0,
+    "south": 843.0
+  },
+  "historical_measurement": {
+    "repository": "cleany",
+    "commit": "58606e62f31ff1e9367721b594396bb7dcb5488e",
+    "file": "ros2_ws/src/cleany_gazebo_sim/README.md",
+    "section": "Demo study-room evaluation world",
+    "room_inside_m": [
+      12.26,
+      10.94
+    ],
+    "desk_m": [
+      1.2,
+      0.77
+    ],
+    "block_gap_m": 1.33,
+    "pair_pitch_m": 3.17
+  },
+  "note": "Wall centres measured from the edited display raster. Centre the measured furniture arrangement without stretching it to the larger drawn room depth. Display alignment is not physical validation."
+}

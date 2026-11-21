@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Reproduce the 82-seat draft from legacy ordering and reviewed SLAM furniture anchors."""
+"""Reproduce the 82-seat draft from measured D-HUB geometry and reviewed display anchors."""
+import hashlib
 import json
 import math
-import re
 import sys
 from pathlib import Path
 
@@ -37,16 +37,18 @@ rooms = {'space-a4': (96, 75, 2, False), 'space-m1': (169, 75, 3, False),
          'space-m2': (250, 75, 3, False), 'space-m3': (331, 75, 3, False),
          'space-a3': (64, 133, 2, True), 'space-a2': (64, 190, 2, True),
          'space-a1': (64, 251, 2, True)}
-structure = json.loads((DIRECTORY / 'presentation-layout.json').read_text())
+reference = json.loads((DIRECTORY / 'dhub-layout-reference.json').read_text())
+image_hash = hashlib.sha256((DIRECTORY / reference['display_image']).read_bytes()).hexdigest()
+if image_hash != reference['display_image_sha256']:
+    raise ValueError('Review the D-HUB anchor again after editing the background')
+walls = reference['wall_center_pixels']
+units = reference['pixels_per_unit']
+dhub_cx = (walls['west'] + walls['east']) / (2 * units)
+dhub_cy = (walls['north'] + walls['south']) / (2 * units)
+block_gap = geometry['dhub']['block_gap_m']
+pair_pitch = geometry['dhub']['row_pair_pitch_m']
 
 
-def wall_segment(wall_id):
-    path = next(w['d'] for w in structure['walls'] if w['id'] == wall_id)
-    points = [(float(x), float(y)) for x, y in re.findall(r'[ML]\s*([-+0-9.eE]+),([-+0-9.eE]+)', path)]
-    return max(zip(points, points[1:]), key=lambda segment: abs(segment[1][1]-segment[0][1]))
-
-
-west_wall, east_wall = wall_segment('main-west'), wall_segment('north-east')
 entries = []
 for seat in SEATS:
     row, column = seat['row'], seat['grid_column']
@@ -56,22 +58,14 @@ for seat in SEATS:
         index = indices.index(column)
         group = 0 if index < 3 else 1 if index < 5 else 2
         slot = index if group == 0 else index-3 if group == 1 else index-5
-        count = 2 if group == 1 else 3
         width, depth = geometry['dhub']['width_m'], geometry['dhub']['depth_m']
-        cy = [98, 160, 226][(row-1)//2]
-        angle = 0
-        cx = 489
-        if group != 1:
-            (x1, y1), (x2, y2) = west_wall if group == 0 else east_wall
-            slope = (x2-x1)/(y2-y1)
-            angle = math.atan(-slope)
-            half_table = count*width*pixels_per_meter/2
-            # Place the complete outer table edge on the traced wall, including its tilt.
-            cx = x1 + slope*(cy-y1) + (1 if group == 0 else -1)*half_table*math.hypot(1, slope)
-        lx, ly = (slot-(count-1)/2)*width*pixels_per_meter, side*depth/2*pixels_per_meter
-        x = cx + math.cos(angle)*lx - math.sin(angle)*ly
-        y = cy + math.sin(angle)*lx + math.cos(angle)*ly
-        heading = (90 if side < 0 else -90) + math.degrees(angle)
+        # Keep measured furniture dimensions/pitch. Do not fit desks to tilted SLAM walls.
+        total_width = 8 * width + 2 * block_gap
+        previous_columns = [0, 3, 5][group]
+        x_m = -total_width / 2 + previous_columns * width + group * block_gap + (slot + 0.5) * width
+        y_m = ((row-1)//2 - 1) * pair_pitch + side * depth / 2
+        x, y = dhub_cx + x_m * pixels_per_meter, dhub_cy + y_m * pixels_per_meter
+        heading = 90 if side < 0 else -90
         table_id = f'dhub-{(row-1)//2+1}-{group+1}'
     else:
         cx, cy, count, vertical = rooms[seat['zone_id']]

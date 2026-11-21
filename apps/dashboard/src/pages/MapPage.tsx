@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { useHomePanelState } from "./useHomePanelState";
 import { PageShell, StatusBadge } from "../components/patterns";
 import { panelMotionStyle } from "../components/panel-motion";
-import { useOutletContext, useSearchParams } from "react-router";
+import { Link, useOutletContext, useSearchParams } from "react-router";
 import type { FacilityFloor, FacilitySelection } from "../app/AppShell";
 import { FacilityMap, type FacilityRobotMarker } from "../features/facility-map/FacilityMap";
 import { worldToMap } from "../features/facility-map/seat-layout";
@@ -69,6 +69,7 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
               {!livePose.connected ? "연결 끊김" : !livePose.pose ? "위치 미수신" : livePose.stale ? "위치 지연" : "연결됨"}
             </StatusBadge>}
           {summaryDemo && <Button variant="secondary" size="default" className="summary-demo-exit" type="button" title="화면용 예시 데이터입니다. 데모에서는 작업 요청이 전송되지 않습니다." onClick={() => setSearchParams(current => { const next = new URLSearchParams(current); next.delete("summaryDemo"); return next; })}>데모 · 해제</Button>}
+          {!isDemo && floor.mapAvailable && floor.mapRef && floor.mapRef !== "facility-18f" && <Button asChild><Link to={`/map/edit?site=${encodeURIComponent(floor.id)}`}>배치 편집</Link></Button>}
       </HomeMapHeader>
       {error && <div className="home-data-error" role="alert"><span>갱신 실패 · {error.message}</span><Button variant="secondary" size="default" type="button" onClick={() => void refresh()}>새로고침</Button></div>}
       <div className={"home-workspace-body" + (selectedSeat ? " has-request" : "")}>
@@ -94,6 +95,7 @@ function HomeWorkspace({ floor }: { floor: FacilityFloor }) {
           </MapOverlayPanel>
           {!isDemo && floor.mapRef && floor.mapRef !== "facility-18f" && floor.mapAvailable ? <SlamMap
             onSelectSeat={selectSeat} selectedSeatId={selectedSeatId}
+            seats={displaySeats} seatCleaning={displayCleaning}
             siteId={floor.id} robot={robots[0]} pose={livePose.pose} sourcePose={pose} stale={livePose.stale}
             selectedRobotId={selectedRobotId} robotFocusKey={robotFocusKey} onSelectRobot={selectRobot}
           /> : floor.mapAvailable ? <FacilityMap seats={displaySeats} seatCleaning={displayCleaning} robots={mapRobots} selectedSeatId={selectedSeatId}

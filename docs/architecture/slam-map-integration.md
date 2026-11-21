@@ -21,6 +21,18 @@ uv run --project apps/backend python -m control_plane.admin \
 좌석을 복사하지 않는다. 실제 지도에서 검증한 좌석·접근 자세 등록은 후속 통합 대상이다.
 시설 변경 뒤 Dashboard를 새로고침한다.
 
+## Jetson 운영 경로
+
+| 용도 | 경로 |
+|---|---|
+| 대시보드 표시 이미지, 좌표 변환, 초기 좌석 배치 | `/var/opt/cleany/control-plane/maps/presentation/<map_id>/` |
+| Backend가 보관하는 등록 주행 지도 | `/var/opt/cleany/control-plane/maps/navigation/<map_id>/<revision>/` |
+| Nav2가 읽는 로봇 로컬 지도 | `/var/opt/cleany/robot/map/source.yaml` |
+
+최초 배포 때 릴리스에 포함된 지도로 Backend 카탈로그를 채운다. 이후 배포는 운영 카탈로그를 유지한다. Backend의 `CLEANY_MAP_DIRECTORY`는 `presentation`을 가리킨다. 좌석 검토에 쓰는 PGM은 해당 표시 지도에 연결된 Backend 보관본이고, 사용자가 저장한 좌석과 Home은 기존 SQLite DB에서 읽는다.
+
+로봇은 현재 지도 한 벌을 보관한다. 현장에서 새 SLAM 결과를 직접 적용하거나 운영자가 선택한 등록본을 복사해 쓴다. 표시 PNG 편집과 로봇 지도 교체는 독립적이다. 로봇에서 지도를 확장했으면 대시보드 좌표와 승인 좌석을 새 격자에 대조한 뒤 현장 미션을 재개한다.
+
 ## API와 좌표
 
 | 경로 | 계약 |
@@ -34,6 +46,44 @@ uv run --project apps/backend python -m control_plane.admin \
 않는다. Runtime은 localization의 `map -> base_link` 좌표를 제공해야 하며 기존 odom relay만
 연결한 상태는 지도 위치 검증을 통과한 것으로 보지 않는다. 좌표는 origin의 회전을
 역변환하고 resolution으로 나눈 뒤 이미지의 Y축 방향을 뒤집는다.
+
+## 편집 지도와 SLAM 혼합 표시 (2026-11-17)
+
+`slam-20261108`은 사용자가 수정한 `cleany-map-overlay.xcf`의 두 레이어를 사용한다.
+`display-floorplan.png`와 `display-slam.png`는 모두 2286 × 1386 캔버스로 내보내며,
+등록된 762 × 462 표시 좌표에 3 pixel/unit로 대응한다. 레이어의 저장 위치와 그려진
+내용은 유지하고, GIMP의 비교용 불투명도만 100%로 풀어 각각 내보낸다.
+`display-layers.json`에 XCF/PNG 해시, 캔버스, 레이어 offset과 원본 지도 연결을 기록한다.
+XCF 편집 원본은 저장소 밖의 사용자 작업 파일로 보존한다.
+
+```bash
+python3 tools/maps/export_display_layers.py /path/to/cleany-map-overlay.xcf \
+  apps/backend/maps/slam-20261108 --pixels-per-unit 3
+```
+
+내보내기는 별도의 비대화형 GIMP 3 인스턴스에서 실행하며 열려 있는 편집 창과 원본 XCF를
+변경하지 않는다. 캔버스 크기나 레이어 구성이 바뀌면 내보내기를 거절한다. 편집용 PNG는
+표시 전용으로, 주행용 `map.pgm`, `map.png`, origin, resolution, 지도 ID를 바꾸지 않는다.
+
+- 선택적 `presentation.layers`에 인증된 `floorplan_url`, `slam_url`을 제공한다.
+  `GET /api/map/presentation/{floorplan|slam}`은 기존 시설 권한을 검사하고 PNG를 반환한다.
+  두 이미지는 이미 표시 좌표이므로 프런트엔드에서 SLAM 회전 변환을 다시 적용하지 않는다.
+- 화면 오른쪽 위의 **도면 — SLAM** 슬라이더 하나로 0=도면, 100=SLAM,
+  중간=혼합을 표시한다. 기본값은0이며 브라우저의 시설/지도별 마지막 값을 저장한다.
+  표시용 SLAM도 사용자 편집본이므로 “SLAM 원본”이라고 부르지 않는다.
+- 두 배경만 격리된 합성 영역에서 교차 혼합한다. 좌석/접근점/로봇과 카메라의 변환은
+  유지한다. 슬라이더 pointerdown은 지도 pan으로 전달하지 않으며 키보드 조작도 지원한다.
+- SLAM 표시본은 브라우저에서 미확인 셀의 회색 `RGB(205,205,205)`만 투명하게 처리한다.
+  벽·장애물·자유 공간의 다른 픽셀과 좌표는 유지하며, 캔버스 바깥과 같은 배경 위에 놓는다.
+  회전한 레이어의 부분 투명 경계에는 Canvas의 8-bit premultiplied 반올림 오차만 보정한다.
+  불투명한 픽셀에는 색상 허용 범위를 넓히지 않는다.
+  원본 PNG와 XCF는 변경하지 않는다. 새로 내보낸 편집 레이어에도 같은 표시 처리를 적용하며,
+  이미지 또는 변환 실패는 기존 SLAM 로드 오류로 표시한다.
+- 레이어 없는 기존 지도는 기존 SVG와 원본 PNG를 같은 슬라이더로 혼합한다.
+  presentation 자체가 없으면 원본만 표시한다. 이미지 오류는 레이어별로 유지한다.
+- `tests/e2e/slam-map.spec.ts`는 혼합 양끝/중간, 드래그 시 카메라 고정, 저장값 복원,
+  좌석 편집, 합성 로봇 좌표, 기존 지도 호환과 이미지 실패를 검사한다. 아래 SVG 생성
+  경로는 기존 구조 표현을 보존하며, 편집 PNG가 등록된 상태에서 좌표를 바꾸는 재생성은 거절한다.
 
 ## 운영 지도 표현
 
@@ -154,11 +204,34 @@ Dashboard 폴더에서 `node tools/capture-slam-map.mjs URL OUTPUT_DIRECTORY SIT
 대기 또는 진행 중인 미션이 있으면 저장을 거부하며, 편집 저장은 현장 검증 상태를 해제합니다.
 원본 점유 지도나 로봇 명령은 수정하지 않습니다. 점유 상태는 데이터 연결 전까지 UNKNOWN입니다.
 
-Dashboard의 **좌석 배치 편집**에서 책상 묶음을 드래그하거나 개별 접근점과 방향을
-수정합니다. 복제와 좌석 추가는 새 ID를 만들고, 표시 번호 수정은 기존 ID를 유지합니다.
-되돌리기는 최근 30회 편집을 복원하고 변경 취소는 서버의 최신 저장본을 읽습니다.
-저장 후 **목표 좌표 내보내기**로 schema 2 JSON 파일을 받습니다. 파일은 YAML 파서로도
-읽을 수 있습니다. 초안은 `validation_status=draft`이며 Runtime에서 실행할 수 없습니다.
+Dashboard는 조회용 `/map`과 편집용 `/map/edit`를 분리합니다. 일반 지도에는 시설·좌석
+상태·로봇 위치와 기존 작업 요청을 유지하고 **배치 편집** 링크로 편집기에 진입합니다.
+편집기는 공유 `SlamMapViewport`(레이어 혼합·확대·이동·축척)와 `SeatLayoutLayer`(좌석·접근점
+기하)를 사용합니다. 좌표 변환과 API는 조회/편집에서 동일합니다. 편집 상태·이력·저장은
+`MapLayoutEditor`, 포인터 조작은 `LayoutEditorCanvas`, 순수 연산은 `seat-layout-editor.ts`가
+담당합니다. 속성 패널은 캔버스 옆에 공간을 확보하며 지도 위에 겹치지 않습니다.
+
+- 좌석: 클릭/묶음 선택, Shift·Ctrl 추가 선택, 빈 영역 드래그로 영역 선택. 드래그 이동,
+  회전 손잡이, 여섯 방향 정렬, 추가·복제·삭제를 제공합니다. 복제와 추가는 새 ID를 만들고
+  표시 번호 수정은 기존 ID를 유지합니다. 폭·깊이·회전만 기본 노출하고 X/Y는 고급 설정에 둡니다.
+- 스냅: 표시 지도 축 기준 10/25/50 cm 또는 끄기. 회전은 스냅이 켜져 있으면15도 단위이며
+  Alt를 누른 드래그는 잠시 스냅을 해제합니다. 이동 도구(H)에서 배경을 끌어 지도를 이동합니다.
+- 접근점/복귀점: 별도 도구로 마커를 끌어 위치를, 화살표 끝점을 끌어 방향을 바꿉니다.
+  접근점 조작은 책상을 이동하지 않습니다. 책상 이동/회전은 연관 접근점을 함께 변환합니다.
+- 선택 좌석 불투명도: 기본75%, 0–100%를5% 단위로 조절합니다. 선택된 책상·의자에만
+  적용하고 번호·접근점은 선명하게 유지합니다. 조회 화면은100%이며 저장 데이터와 무관합니다.
+- 실행 취소/다시 실행: 최근80개 연산. 한 번의 드래그는 한 연산입니다. Ctrl+Z/Ctrl+Shift+Z,
+  Ctrl+A(전체 선택), Ctrl+D(복제), Delete, 방향키 이동을 지원합니다. 입력 중에는 단축키를 가로채지 않습니다.
+- 저장: 대상별 추가/삭제/이동/크기/회전/접근점 변경 요약을 확인한 뒤 기존 PUT API로 저장합니다.
+  성공 후 Query 캐시를 갱신해 조회 지도에도 즉시 반영합니다. 오류·revision 충돌 시 편집본을
+  유지하며, **변경 취소**는 확인 후 서버 최신본을 다시 읽습니다.
+- 이탈: 변경 중 편집 종료·탭 이동·브라우저 뒤로/앞으로·층 변경·로그아웃에 확인을 요구하고
+  새로고침/창 닫기는 브라우저 기본 경고를 사용합니다. Router의 navigation blocker를 사용하며
+  인증 만료 후에는 미저장 편집본이 보존되지 않습니다.
+
+저장 후 **목표 파일**의 내보내기로 schema 2 JSON을 받습니다. 초안은
+`validation_status=draft`이며 Runtime에서 실행할 수 없습니다. 편집 저장은 모든 좌석과
+복귀점의 현장 검증 상태를 해제합니다. UI 조작 검사는 물리 로봇 접근 검증이 아닙니다.
 
 현장에서 복귀점과 대표 좌석의 주행·정지·정밀 접근을 검증한 뒤 승인한 좌석만 배포 목표에
 포함합니다. 좌표 digest는 `target_digest`를 제외한 payload를 키 정렬, compact JSON,
@@ -191,18 +264,45 @@ apps/backend/.venv/bin/python tools/maps/verify_seat_layout.py \
 기존 Runtime 실행 절차의 `targets_file`에 그 파일을 지정합니다. snapshot의 버전 확인과
 현장 실행 검증은 서로 다른 단계입니다. 편집 저장은 이 승인 상태를 다시 해제합니다.
 
-### 기존 화면의 책상 비율 유지
+### D-HUB 실측 기록과 책상 배치
 
 기존 화면과 SLAM 배치는 `apps/dashboard/src/features/facility-map/seat-geometry.json`의
-치수를 공유합니다. D-HUB는 1.2 × 0.77 m, 방 안 책상은 기존 도면의 38 × 28 단위에
-0.85 배율과 `400 / 12.26` 단위/m를 적용합니다. 이는 기존 화면의 기준 치수이며 현장
-실측 확정값은 아닙니다. SLAM의 resolution과 origin은 변경하지 않습니다.
+치수를 공유합니다. D-HUB는 과거 시연실 기록의 **1.2 × 0.77 m**를 사용합니다.
+원본 근거는 `cleany` 저장소 commit `58606e62f31ff1e9367721b594396bb7dcb5488e`의
+`ros2_ws/src/cleany_gazebo_sim/README.md`, “Demo study-room evaluation world”입니다.
+해당 기록의 방 안쪽 크기는 **12.26 × 10.94 m**입니다. 이번 작업에서 현장을 다시
+측정한 것은 아닙니다. A/M 방 안 책상은 별도 실측 기록이 없어 기존 도면의 38 × 28
+단위에 0.85 배율과 `400 / 12.26` 단위/m를 적용한 값을 유지합니다.
 
-D-HUB 좌우 가장자리의 3열 책상 묶음은 구조 도면의 `main-west`, `north-east` 벽선에
-외곽 변이 맞닿도록 배치합니다. 벽선의 작은 기울기는 책상 묶음을 강체 회전하여 따르며,
-책상 폭과 깊이, 묶음 내 좌석 간격은 바꾸지 않습니다.
+2026-11-17 사용자가 수정한 `display-floorplan.png`의 벽선 중심을 같은 지도 축척으로
+비교하면 D-HUB는 약 **12.25 × 12.47 m**입니다. 가로폭은 과거 기록과 거의 같지만,
+세로는 약 1.53 m 더 길게 그려져 있습니다. 책상을 배경에 맞춰 확대하거나 SLAM의
+resolution, origin, presentation transform을 변경하지 않습니다.
+
+48석은 화면의 수평·수직 축에 맞춰 3–2–3 열, 마주 보는 두 행씩 세 묶음으로 배치합니다.
+좌우 묶음 사이 상판 간격은 **1.33 m**, 앞뒤 묶음 사이 상판 간격은 **1.63 m**입니다.
+전체 배치는 수정한 도면의 D-HUB 중심에 놓고 남북의 추가 여백을 나눕니다.
+기존 좌우 묶음의 벽선 추종 회전을 제거하며, A/M 방 34석은 유지합니다.
+이 간격은 상판 기준이며 의자나 로봇의 통과 가능 폭을 의미하지 않습니다.
+
+`apps/backend/maps/slam-20261108/dhub-layout-reference.json`은 원본 기록의 위치,
+수정 도면 SHA-256, 벽선 중심 픽셀을 보존합니다. `tools/maps/seed_seat_layout.py`는
+이 기준으로 ROS map 좌표와 접근 방향을 함께 생성합니다. 도면이 다시 수정되어 해시가
+달라지면 기준점을 재검토하도록 생성을 거부합니다. 좌석은 계속 `draft`이며 현재 현장의
+로봇 접근점 검증을 의미하지 않습니다.
 
 초기 배치 오류를 정정할 때 `tools/maps/replace_seat_seed.py`는 저장된 배치가 이전 초안과
 일치하는 경우에만 새 revision을 추가합니다. 사용자 수정이 있으면 교체를 거부합니다.
 이전 revision과 원본 지도는 보존합니다. `tests/e2e/seat-scale.spec.ts`는 이전 화면과 새
-화면에서 책상 치수를 직접 비교하고 동일한 40 pixel/m 화면을 생성합니다.
+화면에서 책상 치수를 직접 비교하고 동일한 40 pixel/m 화면을 생성합니다. D-HUB 48석의
+수평·수직 정렬과 두 방향 통로 간격은 API 좌표 및 실제 브라우저 렌더링 모두에서 검사합니다.
+
+### 데모 좌석 후보 검토
+
+`tools/maps/review_demo_stops.py`는 저장된 운영 배치, 원본 점유 격자, 지정한 좌석 접근점과 Home 후보를 같은 좌표계에서 그린다. `--review-radius`에 지정한 반경으로 빈 공간의 연결 여부와 장애물까지의 거리를 산출하고 출력 디렉터리에 JSON과 PNG를 저장한다. 실제 치수, 주행 경로, 팔 작업 공간은 현장에서 확인해 배치 검증 기록에 반영한다.
+
+```bash
+uv run --with numpy --with scipy --with pillow python tools/maps/review_demo_stops.py \
+  --layout "$LAYOUT_JSON" --map apps/backend/maps/slam-20261108 \
+  --seats seat-02 seat-05 --home 2.92 -14.72 1.55 --review-radius 0.45 --output "$RUN_DIR"
+```

@@ -1,0 +1,39 @@
+{
+  "source_file": "cleany-map-overlay.xcf",
+  "source_sha256": "c9c04802e0f2c92ec66618f130c0b8ab10a99a08b9c7837697c1dbf051ea268b",
+  "coordinate_space": "presentation",
+  "canvas": [
+    2286,
+    1386
+  ],
+  "pixels_per_unit": 3,
+  "presentation_transform": [
+    -0.1725480287456468,
+    -0.9850011054694261,
+    0.9850011054694261,
+    -0.1725480287456468,
+    45.0,
+    540.0
+  ],
+  "navigation_source_sha256": "03da308b9e1e48ce11128183ac8d5b1ef80820a3ddaf96defe973f8b5fb8bc89",
+  "layers": {
+    "floorplan": {
+      "source_layer": "기존 지도 · 수정용",
+      "offset": [
+        48,
+        82
+      ],
+      "editing_opacity": 43.99999976158142,
+      "sha256": "e0379e95c5dd1b88baaf61ba64c3e0e09aa8c46f337354cffa4b1335ea8bd333"
+    },
+    "slam": {
+      "source_layer": "SLAM 지도",
+      "offset": [
+        -162,
+        -480
+      ],
+      "editing_opacity": 100.0,
+      "sha256": "890ed5a0e3344d3348679f41549a7f200a50dc0489e258d4c9815839650ccfc5"
+    }
+  }
+}

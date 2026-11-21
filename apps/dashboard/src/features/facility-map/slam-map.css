@@ -1,22 +1,13 @@
-@layer legacy {
-.slam-map-raster { display: block; user-select: none; pointer-events: none; transform-origin: 0 0; }
-.slam-map-shell .facility-plan-canvas { background: #e8edea; overflow: hidden; box-shadow: none; border-radius: 8px; }
-.slam-map-shell.is-original .facility-plan-canvas { background: #cdcdcd; }
-.slam-map-shell.is-original .slam-map-raster { image-rendering: pixelated; }
-.slam-map-shell .facility-map-stage { background: #f4f7f5; }
-.slam-map-shell .facility-map-legend { flex-wrap: wrap; }
-.slam-map-shell .facility-map-legend > span { display: inline-flex; align-items: center; gap: 6px; }
-.slam-swatch { width: 10px; height: 10px; display: inline-block; border-radius: 3px; border: 1px solid #71857840; }
-.slam-swatch.occupied { background: #546d64; }
-.slam-swatch.free { background: #fdfcf8; }
-.slam-swatch.unknown { background: #e8edea; }
-.is-original .slam-swatch.occupied { background: #000; }
-.is-original .slam-swatch.free { background: #fff; }
-.is-original .slam-swatch.unknown { background: #cdcdcd; }
-.slam-map-view-switch { position: absolute; top: 18px; right: 18px; display: flex; gap: 3px; padding: 4px; background: var(--color-surface-overlay); border: 1px solid var(--color-border); border-radius: 10px; box-shadow: 0 2px 8px var(--color-shadow); }
-.slam-map-view-switch button { border: 0; background: transparent; color: var(--color-text-muted); border-radius: 7px; padding: 8px 12px; font: inherit; font-size: 12px; cursor: pointer; }
-.slam-map-view-switch button[aria-pressed="true"] { background: var(--color-action-soft); color: var(--color-action); font-weight: 600; }
-.slam-map-scale { position: absolute; right: 22px; bottom: 22px; display: flex; flex-direction: column; align-items: center; gap: 5px; color: #52675d; font-size: 11px; pointer-events: none; }
-.slam-map-scale span { display: block; height: 6px; border: solid #52675d; border-width: 0 1px 2px; }
-
+@layer components {
+  .slam-map-shell .facility-plan-canvas { background: transparent; overflow: hidden; box-shadow: none; border-radius: var(--radius-control); }
+  .slam-map-shell .facility-map-stage { background: var(--color-background); }
+  .slam-map-background { position: absolute; inset: 0; isolation: isolate; pointer-events: none; }
+  /* Add premultiplied colors for a true crossfade, including transparent canvas margins. */
+  .slam-map-raster { position: absolute; left: 0; top: 0; display: block; max-width: none; user-select: none; pointer-events: none; transform-origin: 0 0; mix-blend-mode: plus-lighter; }
+  .slam-map-shell .facility-map-legend { flex-wrap: wrap; }
+  .slam-map-shell .facility-map-legend > span { display: inline-flex; align-items: center; gap: var(--space-2); }
+  .slam-map-blend { position: absolute; top: var(--space-4); right: var(--space-4); display: flex; align-items: center; gap: var(--space-3); width: 240px; padding: 0 var(--space-3); color: var(--color-text-muted); background: var(--color-surface-overlay); border: 1px solid var(--color-border); border-radius: var(--radius-control); box-shadow: var(--shadow-floating); }
+  .slam-map-blend > span { flex-shrink: 0; font-size: var(--text-caption); }
+  .slam-map-scale { position: absolute; right: var(--space-6); bottom: var(--space-6); display: flex; flex-direction: column; align-items: center; gap: var(--space-1); color: var(--color-text-muted); font-size: var(--text-caption); pointer-events: none; }
+  .slam-map-scale span { display: block; height: 6px; border: solid currentColor; border-width: 0 1px 2px; }
 }

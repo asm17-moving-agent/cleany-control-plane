@@ -10,6 +10,7 @@ from contextlib import asynccontextmanager, suppress
 from datetime import date, datetime
 from pathlib import Path
 from time import monotonic, time
+from typing import Literal
 
 import uvicorn
 from fastapi import (
@@ -513,6 +514,18 @@ def create_app(
             headers={"Cache-Control": "private, no-store"},
         )
 
+    @app.get("/api/map/presentation/{layer}", response_class=FileResponse)
+    def facility_map_display_layer(request: Request, layer: Literal["floorplan", "slam"]):
+        metadata = site_map(request)
+        if metadata.presentation is None or metadata.presentation.layers is None:
+            raise HTTPException(404, "map display layers not registered")
+        return FileResponse(
+            map_directory(control_plane.settings.map_directory, metadata.map_id)
+            / f"display-{layer}.png",
+            media_type="image/png",
+            headers={"Cache-Control": "private, no-store"},
+        )
+
     def site_layout(request: Request, metadata: SlamMap | None = None) -> SeatLayout:
         metadata = metadata or site_map(request)
         try:
@@ -564,6 +577,13 @@ def create_app(
         return HealthResponse()
 
     # Inventory is map-specific; unknown runtime capabilities remain null rather than unsupported.
+    def physical_profile_ready() -> bool:
+        if not control_plane.settings.require_physical_missions:
+            return True
+        return (
+            control_plane.gateway is not None and control_plane.gateway.permits_execution_profile()
+        )
+
     @app.get("/api/seats", response_model=SeatListResponse)
     async def list_seats(request: Request) -> SeatListResponse:
         site_id = selected_site(request)
@@ -591,7 +611,11 @@ def create_app(
                         "occupancy": "UNKNOWN",
                         "occupant_name": None,
                         "mission_supported": bool(
-                            visible and matches and seat.seat_id in (robot.supported_seat_ids or [])
+                            visible
+                            and matches
+                            and seat.verification == "field_verified"
+                            and seat.seat_id in (robot.supported_seat_ids or [])
+                            and physical_profile_ready()
                         ),
                     }
                     for seat in layout.seats
@@ -601,7 +625,9 @@ def create_app(
             items=[
                 {
                     **seat,
-                    "mission_supported": (
+                    "mission_supported": False
+                    if control_plane.settings.require_physical_missions
+                    else (
                         True
                         if visible and robot.control_mode == "mock"
                         else None
@@ -937,6 +963,14 @@ def create_app(
                         and m.idempotency_key == input.idempotency_key
                         for m in control_plane.store.list_missions()
                     )
+                    if (
+                        control_plane.settings.require_physical_missions
+                        and map_ref == "facility-18f"
+                        and not existing_key
+                    ):
+                        raise HTTPException(
+                            409, "실물 미션에는 현장 검증된 SLAM 지도가 필요합니다."
+                        )
                     if map_ref != "facility-18f" and not existing_key:
                         layout = site_layout(request)
                         if not runtime_matches(layout, control_plane.store.robot.target_map):
@@ -944,9 +978,13 @@ def create_app(
                                 409, "현장 검증된 작업 위치와 런타임 지도 버전이 일치하지 않습니다."
                             )
                         if input.to_domain_target().reference_id not in {
-                            s.seat_id for s in layout.seats
+                            s.seat_id for s in layout.seats if s.verification == "field_verified"
                         }:
-                            raise HTTPException(422, "등록되지 않은 좌석입니다.")
+                            raise HTTPException(422, "현장 검증이 완료되지 않은 좌석입니다.")
+                    if not existing_key and not physical_profile_ready():
+                        raise HTTPException(
+                            409, "실물 미션 런타임의 연결과 실행 모드를 확인해 주세요."
+                        )
                     mission, created = control_plane.create_mission(input, identity, site_id)
         except AuthError:
             raise
