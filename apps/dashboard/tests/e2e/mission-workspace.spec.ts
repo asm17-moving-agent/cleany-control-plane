@@ -27,6 +27,9 @@ test("calendar, summary filters and inline results share a single workspace", as
  await expect(page.getByRole('textbox',{name:'작업 검색'})).toHaveValue('');
  await expect(page.getByRole('combobox',{name:'우선순위',exact:true})).toHaveValue('ALL');
  await expect(page.locator('.task-row')).toHaveCount(2);
+ // Near Korean midnight several demo requests share a timestamp and their order can tie.
+ await expect(page.locator('.task-row').first()).toHaveAttribute('aria-current','true');
+ await page.locator('.task-row').filter({hasText:'07번 좌석'}).click();
  await expect(page.getByRole('region',{name:'작업 상세',exact:true})).toContainText('07번 좌석');
  await expect(page.getByRole('img',{name:'작업 전 AI 생성 예시 사진'})).toBeVisible();
  await expect(page.getByRole('button',{name:'검토 완료',exact:true})).toBeDisabled();
