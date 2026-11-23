@@ -33,18 +33,22 @@ def test_browser_reuse_upgrade_and_corruption(tmp_path, publisher):
     assert a.resolve() == first
 
 
-def test_relocated_venv_can_seed_another_release(tmp_path, publisher):
+@pytest.mark.parametrize(("kind", "metadata"), [
+    ("yolo-env", "ultralytics-8.dist-info"),
+    ("curobo", "nvidia_curobo-0.7.8.dist-info"),
+])
+def test_relocated_venv_can_seed_another_release(tmp_path, publisher, kind, metadata):
     source = tmp_path / "home/venv"
     (source / "bin").mkdir(parents=True)
-    (source / "lib/python3.10/site-packages/ultralytics-8.dist-info").mkdir(parents=True)
+    (source / "lib/python3.10/site-packages" / metadata).mkdir(parents=True)
     (source / "bin/pip").write_text(f"#!{source}/bin/python\n")
     (source / "bin/activate").write_text(f"VIRTUAL_ENV={source}\n")
     (source / "bin/python").symlink_to("/usr/bin/python3")
     store = tmp_path / "store"
-    link = tmp_path / "a/native/yolo-env"
-    shared = publisher("yolo-env", source, link, store=store)
+    link = tmp_path / "a/native" / kind
+    shared = publisher(kind, source, link, store=store)
     assert (shared / "bin/pip").read_text() == f"#!{shared}/bin/python\n"
     assert (shared / "bin/activate").read_text() == f"VIRTUAL_ENV={shared}\n"
     assert (source / "bin/pip").read_text() == f"#!{source}/bin/python\n"
     assert (shared / "bin/python").is_symlink()
-    assert publisher("yolo-env", link, tmp_path / "b/native/yolo-env", store=store) == shared
+    assert publisher(kind, link, tmp_path / "b/native" / kind, store=store) == shared
