@@ -85,3 +85,9 @@ loopback으로 실행합니다. `~/.config/cleany-control-plane/camera.env`에�
 기존 배포의 `CLEANY_CAMERA_MONITOR_URL`은 `CLEANY_CAMERA_PREVIEW_URL`로 변경합니다.
 카메라 서비스만 사용하는 경우 Backend, pose relay와 dev_monitor는 실행할 필요가 없습니다.
 미리보기 HTTP는 loopback에만 열고 외부 접근은 Backend의 인증 경로를 사용합니다.
+
+## Jetson 로컬 게임패드
+
+`CLEANY_GAMEPAD_SOCKET`에 같은 사용자 전용 디렉터리 안의 절대 경로를 지정하면 Backend가 모드 0600의 Unix 소켓을 엽니다. 예를 들어 Jetson UID가 1000이면 `/run/user/1000/cleany-gamepad.sock`을 사용합니다. 기본값은 빈 문자열이며 입력 서비스를 비활성화합니다. 기존 loopback teleop URL과 토큰 설정, 등록된 로봇과 시설이 필요합니다.
+
+로컬 ROS 어댑터는 연결마다 개행으로 끝나는 JSON 객체 하나를 보냅니다. `command`는 기존 ManualCommand 형식입니다. `expires_at`은 같은 호스트의 단조 시각(초)입니다. Backend는 등록된 로봇의 시설을 조회하고 대시보드와 동일한 잠금, 미션 대기열과 안전 상태 검사를 거칩니다. 조종기별 ID와 증가 순번은 기존 서버까지 전달합니다. 임박한 입력만 승인하고 패드의 정지는 해당 소유자만 해제합니다. 최초 허가 응답의 `ok`와 `forward_only`를 확인한 뒤 주행을 갱신합니다. 만료되거나 더 최신 순번으로 대체된 갱신은 `discarded: true`로 응답합니다. 미션, 안전 또는 소유권 거부는 주행 중지를 요구합니다. Backend는 loopback HTTP 클라이언트를 재사용하고 요청마다 현재 토큰을 읽습니다. 이 기능은 게임패드 명령을 지원하는 버전의 `cleany_teleop`와 함께 배포합니다.

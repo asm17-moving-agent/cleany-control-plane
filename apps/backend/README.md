@@ -170,6 +170,8 @@ SLAM 지도에서는 `GET/PUT /api/seat-layout`으로 시설별 배치 revision�
 ## 수동 조종 연결
 
 로봇 탭은 같은 Jetson의 기존 `phone_remote` HTTP 서버에 인증된 입력을 전달합니다.
+게임패드를 사용할 때는 같은 계정의 `$XDG_RUNTIME_DIR/cleany-gamepad.sock` 절대 경로를
+`CLEANY_GAMEPAD_SOCKET`에 지정합니다. 기본값은 비어 있습니다.
 설정, 입력 만료와 미션 충돌 검사는 [수동 조종 계약](../../docs/architecture/manual-control.md)을
 참고합니다. 서버 설정만으로 하드웨어 런타임을 시작하지 않습니다.
 

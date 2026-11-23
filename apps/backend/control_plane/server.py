@@ -28,6 +28,7 @@ from pydantic import BaseModel, Field
 
 from control_plane.accounts import Accounts, AuthError, Identity
 from control_plane.domain import ControlPlaneStore, MissionPhase, RobotState, utc_now
+from control_plane.gamepad_socket import GamepadRequest, gamepad_listener
 from control_plane.gateway import GatewayController
 from control_plane.head_camera import HeadCamera
 from control_plane.manual_control import ManualCommand, ManualControl, ManualStatus
@@ -250,7 +251,8 @@ def create_app(
         task = asyncio.create_task(maintenance())
         observation_task = asyncio.create_task(observation_maintenance())
         try:
-            yield
+            async with gamepad_listener(control_plane.settings.gamepad_socket, gamepad_command):
+                yield
         finally:
             task.cancel()
             observation_task.cancel()
@@ -260,6 +262,7 @@ def create_app(
                 await observation_task
             if mock:
                 control_plane.dispatcher.stop()
+            await control_plane.manual.close()
             control_plane.telemetry.unsubscribe()
             if control_plane.store.repository:
                 control_plane.store.repository.close()
@@ -768,14 +771,40 @@ def create_app(
         if robot_id != "cleany-01" or not robot_visible(request):
             raise HTTPException(404, "robot not found")
 
-    def pending_work(request: Request) -> bool:
+    def pending_work(scope: tuple[str, str]) -> bool:
         with control_plane.store._lock:
             return bool(
                 control_plane.accounts.db.execute(
                     "SELECT 1 FROM missions WHERE customer_id=? AND site_id=? "
                     "AND json_extract(payload,'$.phase')!='TERMINAL' LIMIT 1",
-                    (request.state.identity.customer_id, selected_site(request)),
+                    scope,
                 ).fetchone()
+            )
+
+    def check_manual_motion(robot_id: str, scope: tuple[str, str]) -> None:
+        if pending_work(scope):
+            raise HTTPException(409, "대기 또는 진행 중인 작업을 종료한 뒤 조종하세요.")
+        blocked = control_plane.telemetry.manual_block(robot_id, scope)
+        if blocked:
+            raise HTTPException(409, blocked)
+
+    async def gamepad_command(request: GamepadRequest) -> ManualStatus:
+        command = request.command
+        session = "local-gamepad"
+        if command.action == "stop":
+            return await control_plane.manual.command(
+                command, session, gamepad_deadline=request.expires_at
+            )
+        async with control_plane.manual.lock:
+            if not 0 < request.expires_at - monotonic() <= 0.25:
+                raise HTTPException(408, "만료된 패드 입력입니다.")
+            robot_id = "cleany-01"
+            scope = control_plane.accounts.robot_scope(robot_id)
+            if scope is None:
+                raise HTTPException(404, "robot not found")
+            check_manual_motion(robot_id, scope)
+            return await control_plane.manual.command(
+                command, session, gamepad_deadline=request.expires_at
             )
 
     @app.get(
@@ -792,10 +821,9 @@ def create_app(
     @app.get("/api/robots/{robot_id}/manual/status", response_model=ManualStatus)
     async def manual_status(robot_id: str, request: Request):
         manual_scope(robot_id, request)
-        result = await control_plane.manual.status(pending_work(request))
-        blocked = control_plane.telemetry.manual_block(
-            robot_id, observation_scope(robot_id, request)
-        )
+        scope = observation_scope(robot_id, request)
+        result = await control_plane.manual.status(pending_work(scope))
+        blocked = control_plane.telemetry.manual_block(robot_id, scope)
         if blocked:
             result.ready = False
             result.blocked_reason = blocked
@@ -811,13 +839,7 @@ def create_app(
         async with control_plane.manual.lock:
             # Authentication may have been revoked while another request held admission.
             control_plane.accounts.authenticate(request.cookies[cookie_name])
-            if pending_work(request):
-                raise HTTPException(409, "대기 또는 진행 중인 작업을 종료한 뒤 조종하세요.")
-            blocked = control_plane.telemetry.manual_block(
-                robot_id, observation_scope(robot_id, request)
-            )
-            if blocked:
-                raise HTTPException(409, blocked)
+            check_manual_motion(robot_id, observation_scope(robot_id, request))
             return await control_plane.manual.command(input, session_key)
 
     @app.get("/api/robots/cleany-01/pose", response_model=PoseSnapshot)

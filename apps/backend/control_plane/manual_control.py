@@ -53,6 +53,7 @@ class ManualControl:
         # STOP bypasses this lock and carries a newer upstream sequence.
         self.lock = asyncio.Lock()
         self.transport: httpx.AsyncBaseTransport | None = None
+        self._client: httpx.AsyncClient | None = None
 
     @property
     def configured(self) -> bool:
@@ -62,6 +63,11 @@ class ManualControl:
             and self.settings.teleop_token_file
         )
 
+    async def close(self) -> None:
+        if self._client is not None:
+            await self._client.aclose()
+            self._client = None
+
     async def exchange(self, command: dict | None = None) -> ManualStatus:
         if not self.configured:
             raise HTTPException(503, "수동 조종 서버 연결이 설정되지 않았습니다.")
@@ -69,20 +75,27 @@ class ManualControl:
             token = Path(self.settings.teleop_token_file).expanduser().read_text().strip()
             if len(token) < 32 or not token.isascii():
                 raise ValueError("invalid token")
-            async with httpx.AsyncClient(
-                timeout=self.settings.teleop_timeout_seconds,
-                trust_env=False,
-                transport=self.transport,
-                follow_redirects=False,
-            ) as client:
-                response = await client.request(
-                    "POST" if command else "GET",
-                    self.settings.teleop_url + ("/api/control" if command else "/api/status"),
-                    headers={"X-Control-Token": token, "Origin": self.settings.teleop_url},
-                    **({"json": command} if command else {}),
+            if self._client is None:
+                self._client = httpx.AsyncClient(
+                    timeout=self.settings.teleop_timeout_seconds,
+                    trust_env=False,
+                    transport=self.transport,
+                    follow_redirects=False,
                 )
+            response = await self._client.request(
+                "POST" if command else "GET",
+                self.settings.teleop_url + ("/api/control" if command else "/api/status"),
+                headers={"X-Control-Token": token, "Origin": self.settings.teleop_url},
+                **({"json": command} if command else {}),
+            )
             if response.status_code == 409:
-                raise HTTPException(409, str(response.json().get("error", "조종 요청 거부"))[:200])
+                rejection = response.json()
+                reason = str(rejection.get("error", "조종 요청 거부"))[:200]
+                if command and command.get("action") == "gamepad_update" and (
+                    rejection.get("stale_request") is True or reason == "만료된 패드 입력입니다"
+                ):
+                    raise HTTPException(408, reason)
+                raise HTTPException(409, reason)
             response.raise_for_status()
             data = response.json()
             # Treat incomplete upstream responses as disconnected, never as permission.
@@ -109,10 +122,15 @@ class ManualControl:
             result.blocked_reason = "대기 또는 진행 중인 작업을 종료한 뒤 조종하세요."
         return result
 
-    async def command(self, command: ManualCommand, session_key: str) -> ManualStatus:
+    async def command(
+        self, command: ManualCommand, session_key: str, *, gamepad_deadline: float | None = None
+    ) -> ManualStatus:
         data = command.model_dump(exclude_none=True)
         # A browser cannot impersonate another authenticated session's controller lease.
         data["client"] = hashlib.sha256(f"{session_key}:{command.client}".encode()).hexdigest()
+        if gamepad_deadline is not None:
+            data["action"] = "release" if command.action == "stop" else f"gamepad_{command.action}"
+            data["expires_at"] = gamepad_deadline
         data["ui_version"] = 2
         return await self.exchange(data)
 
