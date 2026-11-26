@@ -11,7 +11,8 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 STORE = Path("/opt/cleany/shared/runtimes")
-KINDS = ("torch", "yolo-env", "chromium")
+VENV_KINDS = ("yolo-env", "curobo")
+KINDS = ("torch", *VENV_KINDS, "chromium")
 
 
 def pip_prefix(tree: Path) -> bytes:
@@ -29,7 +30,7 @@ def script_data(path: Path, prefix: bytes, replacement: bytes) -> bytes:
 def fingerprint(tree: Path, kind: str, names: list[str]) -> str:
     """Include paths, file modes, content and literal symlink targets."""
     digest = hashlib.sha256()
-    prefix = pip_prefix(tree) if kind == "yolo-env" else None
+    prefix = pip_prefix(tree) if kind in VENV_KINDS else None
 
     def visit(path: Path) -> None:
         if kind != "chromium" and path.name == "__pycache__":
@@ -78,8 +79,9 @@ def pin(kind: str, source: Path, link: Path, names: list[str] | None = None, sto
     selected = sorted(set(names if names is not None else os.listdir(source)))
     if not selected or any(Path(n).name != n or n in (".", "..", "") for n in selected):
         raise ValueError("Expected top-level runtime files or directories")
-    pattern = {"torch": "torch-*.dist-info", "yolo-env": "ultralytics-*.dist-info", "chromium": "chromium-*"}[kind]
-    metadata = source.glob("lib/python*/site-packages/" + pattern) if kind == "yolo-env" else source.glob(pattern)
+    pattern = {"torch": "torch-*.dist-info", "yolo-env": "ultralytics-*.dist-info", "chromium": "chromium-*",
+               "curobo": "nvidia_curobo-*.dist-info"}[kind]
+    metadata = source.glob("lib/python*/site-packages/" + pattern) if kind in VENV_KINDS else source.glob(pattern)
     versions = sorted(p.name.removesuffix(".dist-info") for p in metadata if p.is_dir())
     version = "-".join(versions)
     if not version:
@@ -103,7 +105,7 @@ def pin(kind: str, source: Path, link: Path, names: list[str] | None = None, sto
                         shutil.copytree(src, dst, symlinks=True, ignore=ignore)
                     else:
                         shutil.copy2(src, dst, follow_symlinks=False)
-                if kind == "yolo-env":
+                if kind in VENV_KINDS:
                     old = pip_prefix(tree)
                     for script in (tree / "bin").iterdir():
                         if script.is_file() and not script.is_symlink():
@@ -115,7 +117,7 @@ def pin(kind: str, source: Path, link: Path, names: list[str] | None = None, sto
                 tree.rename(target)
         elif fingerprint(target, kind, sorted(os.listdir(target))) != identity:
             raise ValueError(f"Existing runtime checksum mismatch: {target}")
-        if kind == "yolo-env" and pip_prefix(target) != os.fsencode(target):
+        if kind in VENV_KINDS and pip_prefix(target) != os.fsencode(target):
             raise ValueError(f"Incorrect venv interpreter in {target}")
         replace_link(link, target)
     return target

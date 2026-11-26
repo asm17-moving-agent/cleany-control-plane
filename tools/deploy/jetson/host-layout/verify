@@ -4,11 +4,16 @@ set -eo pipefail
 if [[ ${1:-} != --inside ]]; then
   umask 077
   audit=$(mktemp -d /var/opt/cleany/cache/layout-check.XXXXXXXX)
-  cd /opt/cleany/current
+  candidate=$(realpath -e "${1:-/opt/cleany/current}")
+  [[ $(dirname "$candidate") == /opt/cleany/releases && -x "$candidate/installer/verify" ]] || exit 2
+  cd /
   exec env -i HOME="$audit" PATH=/usr/bin:/bin ROS_LOG_DIR="$audit" \
     ROS_DOMAIN_ID=87 ROS_LOCALHOST_ONLY=1 CLEANY_DATABASE_PATH="$audit/test.db" \
     CLEANY_OBSERVATION_DIRECTORY="$audit/observations" CLEANY_DISPLAY_CONFIG="$audit/display.json" \
-    bwrap --bind / / --dev-bind /dev /dev --tmpfs /home --unshare-net -- /opt/cleany/current/installer/verify --inside
+    bwrap --ro-bind / / --dev /dev --tmpfs /dev/shm --tmpfs /tmp --tmpfs /home --unshare-net \
+      --tmpfs /opt/cleany --ro-bind /opt/cleany/releases /opt/cleany/releases \
+      --ro-bind /opt/cleany/shared /opt/cleany/shared --ro-bind "$candidate" /opt/cleany/current \
+      --bind "$audit" "$audit" -- /opt/cleany/current/installer/verify --inside
 fi
 test ! -e /home/cleany
 python3 - <<'PY'

@@ -223,11 +223,14 @@ LAN 서비스는 `/etc/cleany-lan`에서 DNS와 Caddy 설정을 읽고 Caddy의 
 `/var/lib/cleany-lan-caddy`에 보관한다. `/etc/opt/cleany/lan`에는 기존 Compose
 배포에 사용한 설정 사본이 있다.
 
-기존 홈 배포를 이관할 때는 `tools/deploy/jetson/host-layout/stage.py`에 실제 대시보드,
-ROS install, 얼굴 화면 디렉터리를 지정한다. 새 릴리스의 `current` 링크가 준비되면
-같은 도구 디렉터리의 `verify`를 실행한다. 검사는 홈과 운영 네트워크를 가린 뒤
-별도 SQLite로 대시보드, 얼굴 화면, 카메라 HTTP를 기동한다. 실제 서비스 전환은
-운영 미션이 없을 때만 진행한다.
+Dashboard 체크아웃에서 `pnpm build`로 웹 화면을 준비한다. 릴리스 이름은 현지 날짜와 시각을 사용한다. 다음 명령은 기존 Jetson의 설정과 토큰을 읽고 현재 얼굴 화면, Chromium 및 Python 설치본을 재사용한다. Dashboard 체크아웃의 Backend에 별도 Python 설치본이 있으면 그것을 우선 사용한다.
+
+```bash
+python3 tools/deploy/jetson/host-layout/stage.py "$(date +%Y%m%d-%H%M%S)" \
+  --dashboard "$DASHBOARD_CHECKOUT" --ros "$ROS_INSTALL"
+```
+
+최초로 홈 배포에서 이관할 때는 `--display "$DISPLAY_BUILD" --import-legacy-home "$LEGACY_HOME"`을 함께 지정한다. 신규 호스트에는 별도로 준비한 사이트 설정, 얼굴 화면 및 브라우저가 필요하다. 같은 도구 디렉터리의 `verify /opt/cleany/releases/<버전>`은 후보 릴리스를 홈과 운영 네트워크에서 격리하고 별도 SQLite로 대시보드, 얼굴 화면, 카메라 HTTP를 확인한다. 서비스 전환은 운영 미션이 없을 때 진행한다.
 
 키오스크 서비스는 `/opt/cleany/current/kiosk-browser`를 실행한다. 각 릴리스는
 `browsers` 링크로 `/opt/cleany/shared/runtimes/chromium/`의 브라우저 버전을 고정한다.
