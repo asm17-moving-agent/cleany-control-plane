@@ -153,7 +153,7 @@ def main() -> None:
     maps = state / "control-plane/maps"
     seed_catalog(release / "apps/backend/maps", maps)
     rewrite_env(legacy / "backend.env", config / "control-plane/backend.env", {
-        "CLEANY_HEAD_CAMERA_TOPIC": "/camera/head/color/image_redacted",
+        "CLEANY_HEAD_CAMERA_TOPIC": "/camera/head/color/image_preview_redacted",
         "CLEANY_MAP_DIRECTORY": str(maps / "presentation"),
         "CLEANY_DATABASE_PATH": str(state / "control-plane/control-plane.db"),
         "CLEANY_OBSERVATION_DIRECTORY": str(state / "control-plane/observations"),

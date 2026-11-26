@@ -6,7 +6,7 @@ state=/var/opt/cleany
 case "${1:?missing service name}" in
   backend)
     if [[ -n ${CLEANY_HEAD_CAMERA_TOPIC:-} ]]; then
-      export CLEANY_HEAD_CAMERA_TOPIC=/camera/head/color/image_redacted
+      export CLEANY_HEAD_CAMERA_TOPIC=/camera/head/color/image_preview_redacted
     fi
     exec "$root/apps/backend/.venv/bin/python" "$root/apps/backend/run.py"
     ;;
@@ -35,7 +35,7 @@ case "$1" in
       --ros-args -p gpu_lock_path:=/var/opt/cleany/state/cleany/gpu-work.lock
     ;;
   camera)
-    exec ros2 run cleany_telemetry camera_preview --ros-args -p allowed_topic:=/camera/head/color/image_redacted -p host:=127.0.0.1 -p "port:=${CLEANY_CAMERA_PORT:-8769}"
+    exec ros2 run cleany_telemetry camera_preview --ros-args -p allowed_topic:=/camera/head/color/image_preview_redacted -p host:=127.0.0.1 -p "port:=${CLEANY_CAMERA_PORT:-8769}"
     ;;
   robot)
     exec ros2 launch cleany_control_bridge robot_observations.launch.py \
