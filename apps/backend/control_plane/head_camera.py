@@ -7,7 +7,7 @@ from fastapi import HTTPException, Response
 
 from control_plane.settings import Settings
 
-REDACTED_HEAD_TOPIC = "/camera/head/color/image_redacted"
+PREVIEW_HEAD_TOPIC = "/camera/head/color/image_preview_redacted"
 
 
 class HeadCamera:
@@ -20,7 +20,7 @@ class HeadCamera:
         if (
             settings.robot_mode != "gateway"
             or not settings.camera_preview_url
-            or settings.head_camera_topic != REDACTED_HEAD_TOPIC
+            or settings.head_camera_topic != PREVIEW_HEAD_TOPIC
         ):
             raise HTTPException(503, "헤드캠 연결이 설정되지 않았습니다.")
         try:
@@ -40,7 +40,7 @@ class HeadCamera:
                 if response.status_code == 202:
                     raise HTTPException(503, "헤드캠의 새 영상을 기다리고 있습니다.")
                 response.raise_for_status()
-                if response.headers.get("X-Camera-Topic") != REDACTED_HEAD_TOPIC:
+                if response.headers.get("X-Camera-Topic") != PREVIEW_HEAD_TOPIC:
                     raise ValueError("invalid camera source")
                 age = float(response.headers.get("X-Frame-Age", "nan"))
                 if not math.isfinite(age) or not 0 <= age <= 2:

@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import httpx
 import pytest
@@ -194,3 +195,100 @@ def test_analog_vector_passes_to_phone_without_quantization(rig):
     payload = json.loads(requests[-1].content)
     assert payload["vector"] == vector
     assert payload["speed"] == 0.1
+
+
+def test_local_gamepad_shares_admission_and_does_not_release_browser(tmp_path):
+    import os
+    import socket
+    import time
+
+    path = tmp_path / "pad.sock"
+    token = tmp_path / "phone-token"
+    token.write_text("test-private-phone-token-123456789")
+    app = ControlPlaneApplication(
+        start_dispatcher=False,
+        settings=Settings(
+            database_path=":memory:",
+            cookie_secure=False,
+            allowed_origins=["http://test"],
+            teleop_url="http://127.0.0.1:8766",
+            teleop_token_file=str(token),
+            gamepad_socket=str(path),
+        ),
+    )
+    received = []
+
+    reject_update = None
+
+    def upstream(request):
+        received.append(json.loads(request.content))
+        if reject_update and received[-1]["action"] == "gamepad_update":
+            return httpx.Response(409, json=reject_update)
+        return httpx.Response(200, json=STATUS)
+
+    def pad(action, sequence, age=0):
+        with socket.socket(socket.AF_UNIX) as peer:
+            peer.settimeout(1)
+            peer.connect(str(path))
+            obj = dict(
+                command={**COMMAND, "action": action, "sequence": sequence},
+                expires_at=time.monotonic() + 0.14 - age,
+            )
+            peer.sendall(json.dumps(obj).encode() + b"\n")
+            with peer.makefile("rb") as output:
+                return json.loads(output.readline())
+
+    app.manual.transport = httpx.MockTransport(upstream)
+    with TestClient(create_app(app), base_url="http://test") as client:
+        assert os.stat(path).st_mode & 0o777 == 0o600
+        assert not pad("press", 0)["ok"]  # 미등록 로봇
+        login(client, app)
+        assert client.post(BASE + "control", json=COMMAND).status_code == 200
+        browser = received[-1]["client"]
+        assert pad("press", 1)["ok"]
+        physical = received[-1]["client"]
+        assert physical != browser and received[-1]["action"] == "gamepad_press"
+        rejected = pad("update", 2, age=1)
+        assert not rejected["ok"] and rejected["discarded"]
+        assert received[-1]["action"] == "gamepad_press"
+        for response_body, discarded in [
+            ({"error": "만료된 패드 입력입니다"}, True),
+            ({"error": "이전 요청은 처리하지 않습니다", "stale_request": True}, True),
+            ({"error": "조종이 종료되었습니다"}, False),
+        ]:
+            reject_update = response_body
+            rejected = pad("update", len(received) + 2)
+            assert not rejected["ok"] and rejected["discarded"] is discarded
+        reject_update = None
+        identity = app.accounts.authenticate(client.cookies["cleany_session"])
+        with app.store.transaction():
+            app.store.create_mission(
+                target=MissionTarget(TargetKind.SEAT, "seat-01"),
+                priority=Priority.NORMAL,
+                requested_by=identity.user_id,
+                customer_id=identity.customer_id,
+                site_id="BUSAN_SOMA_18F",
+                requested_membership_id=identity.membership_id,
+                idempotency_key="pad-pending",
+            )
+        rejected = pad("update", 10)
+        assert not rejected["ok"] and not rejected["discarded"]
+        client.portal.call(app.manual.lock.acquire)
+        try:
+            assert pad("stop", 11)["ok"]
+        finally:
+            client.portal.call(app.manual.lock.release)
+        assert received[-1]["action"] == "release" and received[-1]["client"] == physical
+    assert not path.exists()
+
+
+def test_relay_reuses_client_and_reads_rotated_token(rig):
+    client, app, requests, _ = rig
+    login(client, app)
+    assert client.get(BASE + "status").status_code == 200
+    pool = app.manual._client
+
+    Path(app.settings.teleop_token_file).write_text("rotated-local-phone-token-123456789")
+    assert client.post(BASE + "control", json=COMMAND).status_code == 200
+    assert pool is not None and app.manual._client is pool
+    assert requests[-1].headers["X-Control-Token"] == "rotated-local-phone-token-123456789"

@@ -72,6 +72,7 @@ class Settings(BaseSettings):
 
     map_directory: str = str(Path(__file__).resolve().parents[1] / "maps")
 
+    gamepad_socket: str = ""
     teleop_url: str = ""
     teleop_token_file: str = ""
     teleop_timeout_seconds: float = Field(default=0.18, gt=0, le=0.25)

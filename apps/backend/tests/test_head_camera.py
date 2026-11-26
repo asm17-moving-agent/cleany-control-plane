@@ -15,7 +15,7 @@ def camera():
             database_path=":memory:",
             cookie_secure=False,
             camera_preview_url="http://127.0.0.1:8769",
-            head_camera_topic="/camera/head/color/image_redacted",
+            head_camera_topic="/camera/head/color/image_preview_redacted",
         ),
     )
     requests = []
@@ -25,7 +25,7 @@ def camera():
         headers={
             "Content-Type": "image/jpeg",
             "X-Frame-Age": ".1",
-            "X-Camera-Topic": "/camera/head/color/image_redacted",
+            "X-Camera-Topic": "/camera/head/color/image_preview_redacted",
         },
     )
 
@@ -49,13 +49,14 @@ def test_scoped_fresh_jpeg_and_fixed_topic(camera):
     assert response.headers["cache-control"] == "no-store"
     assert response.content == b"\xff\xd8test\xff\xd9"
     assert len(requests) == 1
-    assert requests[0].url.params["topic"] == "/camera/head/color/image_redacted"
+    assert requests[0].url.params["topic"] == "/camera/head/color/image_preview_redacted"
 
 
 @pytest.mark.parametrize(
     "change",
     [
         {"headers": {"X-Camera-Topic": "/camera/color/image_raw"}},
+        {"headers": {"X-Camera-Topic": "/camera/head/color/image_redacted"}},
         {"status_code": 202},
         {"status_code": 500},
         {"content": b"bad"},
